@@ -466,7 +466,7 @@ void mvceditor::SymbolTableClass::GetTokensAtPos(int pos, int& token, int& lastT
 		token = iteratorToken;
 		lastToken = token;
 		nextToLastToken = token;
-		while (iteratorToken > 0 && mvceditor::TokenClass::ENDOFFILE != iteratorToken) {
+		while (!mvceditor::TokenClass::IsTerminatingToken(iteratorToken)) {
 			nextToLastToken = lastToken;
 			lastToken = token;
 			token = iteratorToken;

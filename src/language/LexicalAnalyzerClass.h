@@ -79,9 +79,12 @@ class LexicalAnalyzerClass {
 	bool OpenString(const UnicodeString& code);
 
 	/**
-	 * gets the next token.
+	 * gets the next token. Checking for the end is not as simple as checking for T_EOF, you will
+	 * need to call mvceditor::TokenClass::IsTerminatingToken() to ensure that the end of stream
+	 * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
 	 * 
-	 * @return int token ID, or an error code.
+	 * @return int token ID
+	 * @see mvceditor::TokenClass::TokenIds
 	 */
 	int NextToken();
 

@@ -62,11 +62,14 @@ enum YYCONDTYPE {
 namespace mvceditor {
 	 
 /**
- * Get the next token from the given buffer.
+ * Get the next token from the given buffer. Checking for the end is not as simple as checking for T_EOF, you will
+ * need to call mvceditor::TokenClass::IsTerminatingToken() to ensure that the end of stream
+ * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
  * 
  * @param UCharBufferedFileClass &buffer contains the code to be tokenized
  * @param YYCONDTYPE &condition the current state the the parser is in. this needs 
  * to be an argument to avoid global variables.
+ * @return int the next token.
  */
 int NextToken(UCharBufferedFileClass &buffer, YYCONDTYPE &condition);
 

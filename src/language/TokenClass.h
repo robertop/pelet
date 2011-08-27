@@ -34,54 +34,70 @@ namespace mvceditor {
 	
 class TokenClass {
 public:
+
+	
         
-        enum TokenIds {
-                
-                /*
-                 * errors
-                 */
-                ERROR_UNTERMINATED_COMMENT = T_ERROR_UNTERMINATED_COMMENT,
-                ERROR_UNTERMINATED_STRING = T_ERROR_UNTERMINATED_STRING,
-                ENDOFFILE = T_END_OF_FILE,
-                
-                /*
-                 * tokens 
-                 */
-                CLASS = T_CLASS,
-                FUNCTION = T_FUNCTION,
-                NEW = T_NEW,
-                STATIC = T_STATIC,
-                VAR = T_VAR,
-                ASSIGNMENT = '=',
-                OPENBRACE = '{',
-                CLOSEBRACE = '}',
-                OPENPARENTHESIS = '(',
-                CLOSEPARENTHESIS = ')',
-				
-				/*
-				 * due to following PHP parsing rules; the number tokens are only a POSITIVE numbers
-				 * for example 1.23
-				 * negative numbers are actually 2 tokens; negative sign AND the number
-				 */
-                DECIMALNUMBER = T_DNUMBER,
-				INTEGERNUMBER = T_LNUMBER,
-				NEGATIVESIGN = '-',
-                SEMICOLON = ';',
-                SINGLEQUOTESTRING = T_CONSTANT_ENCAPSED_STRING,
-                DOUBLEQUOTESTRING = T_ENCAPSED_AND_WHITESPACE,
-                IMPLEMENTS = T_IMPLEMENTS,
-                INTERFACE = T_INTERFACE,
-                PRIVATE = T_PRIVATE,
-                PUBLIC = T_PUBLIC,
-                PROTECTED = T_PROTECTED,
-                CONST_KEYWORD = T_CONST, //when compiling in MSW, some other library is defining "CONST"  as a macro
-                SCOPERESOLUTION = T_PAAMAYIM_NEKUDOTAYIM,
-                METHODOPERATOR = T_OBJECT_OPERATOR, 
-                IDENTIFIER = T_STRING,  
-                PHPDOCCOMMENT = T_DOC_COMMENT,
-                PHPOPENTAG = T_OPEN_TAG,
-				VARIABLE = T_VARIABLE
-        };
+	enum TokenIds {
+			
+			/*
+			 * errors
+			 */
+			ERROR_UNTERMINATED_COMMENT = T_ERROR_UNTERMINATED_COMMENT,
+			ERROR_UNTERMINATED_STRING = T_ERROR_UNTERMINATED_STRING,
+			ENDOFFILE = T_END_OF_FILE,
+			
+			/*
+			 * tokens 
+			 */
+			CLASS = T_CLASS,
+			FUNCTION = T_FUNCTION,
+			NEW = T_NEW,
+			STATIC = T_STATIC,
+			VAR = T_VAR,
+			ASSIGNMENT = '=',
+			OPENBRACE = '{',
+			CLOSEBRACE = '}',
+			OPENPARENTHESIS = '(',
+			CLOSEPARENTHESIS = ')',
+			
+			/*
+			 * due to following PHP parsing rules; the number tokens are only a POSITIVE numbers
+			 * for example 1.23
+			 * negative numbers are actually 2 tokens; negative sign AND the number
+			 */
+			DECIMALNUMBER = T_DNUMBER,
+			INTEGERNUMBER = T_LNUMBER,
+			NEGATIVESIGN = '-',
+			SEMICOLON = ';',
+			SINGLEQUOTESTRING = T_CONSTANT_ENCAPSED_STRING,
+			DOUBLEQUOTESTRING = T_ENCAPSED_AND_WHITESPACE,
+			IMPLEMENTS = T_IMPLEMENTS,
+			INTERFACE = T_INTERFACE,
+			PRIVATE = T_PRIVATE,
+			PUBLIC = T_PUBLIC,
+			PROTECTED = T_PROTECTED,
+			CONST_KEYWORD = T_CONST, //when compiling in MSW, some other library is defining "CONST"  as a macro
+			SCOPERESOLUTION = T_PAAMAYIM_NEKUDOTAYIM,
+			METHODOPERATOR = T_OBJECT_OPERATOR, 
+			IDENTIFIER = T_STRING,  
+			PHPDOCCOMMENT = T_DOC_COMMENT,
+			PHPOPENTAG = T_OPEN_TAG,
+			VARIABLE = T_VARIABLE
+	};
+	
+	/**
+	 * Returns TRUE if the given token signifies the end of tile. Unfortunately due to bison
+	 * insisting that all token be positive the only way to flag unterminating string
+	 * is to give it a positive token number,and this prevents us from doing easy
+	 * checks for end of file such as token > 0
+	 * @return bool if TRUE caller should stop lexing as there is no more input.
+	 */
+	static bool IsTerminatingToken(int token) {
+		return ERROR_UNTERMINATED_COMMENT == token ||
+			ERROR_UNTERMINATED_STRING == token ||
+			T_ERROR_UNTERMINATED_BACKTICK == token ||
+			ENDOFFILE == token;
+	}
 };
 
 }

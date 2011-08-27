@@ -405,8 +405,7 @@ bool mvceditor::ParserClass::Advance() {
 }
 
 bool mvceditor::ParserClass::MoreTokens() {
-	return Token > 0 && Token != mvceditor::TokenClass::ENDOFFILE && Token != mvceditor::TokenClass::ERROR_UNTERMINATED_COMMENT &&
-		Token != mvceditor::TokenClass::ERROR_UNTERMINATED_STRING;
+	return !mvceditor::TokenClass::IsTerminatingToken(Token);
 }
 
 void mvceditor::ParserClass::ScanDefineDeclaration(const UnicodeString& phpDocComment) {
