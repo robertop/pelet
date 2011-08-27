@@ -263,6 +263,7 @@ solution "mvc_editor"
 			"src/language/UCharBufferedFileClass.cpp",
 			"src/language/Php53LexicalAnalyzerImpl.cpp",
 			"src/language/Php53ParserImpl.cpp",
+			"src/language/LanguageDiscoveryClass.cpp",
 			"src/search/DirectorySearchClass.cpp",
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",

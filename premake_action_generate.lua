@@ -44,13 +44,21 @@ end
 newaction {
 	trigger = "generate",
 	description = "Generate the source code for the PHP parser and PHP lexer. This needs to be done " ..
-					"whenever the bison or re2c files are modified.",
+					"whenever any bison or re2c files are modified.",
 	execute = function()
+	
 		-- regenerate the parser and lexer implementation files
 		-- re2c does not escape windows paths and leads to compile errors, turn off debug info
 		cmd = "re2c -c -i --no-generation-date " ..
 			"-o " .. normalizepath("src/language/Php53LexicalAnalyzerImpl.cpp") .. " " ..
 			normalizepath("src/language/Php53LexicalAnalyzerImpl.re");
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("re2c command failed. Is re2c installed? Is it in the PATH?");	
+		end
+		cmd = "re2c -c -i --no-generation-date " ..
+			"-o " .. normalizepath("src/language/LanguageDiscoveryClass.cpp") .. " " ..
+			normalizepath("src/language/LanguageDiscoveryClass.re");
 		code = os.execute(cmd) 
 		if code ~= 0 then
 			print("re2c command failed. Is re2c installed? Is it in the PATH?");	
