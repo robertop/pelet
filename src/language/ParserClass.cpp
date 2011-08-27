@@ -455,7 +455,7 @@ bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsCl
 }
 
 mvceditor::LintResultsClass::LintResultsClass()
-	: Error(NULL)
+	: Error()
 	, File()
 	, LineNumber(0)
 	, CharacterPosition(0) {
