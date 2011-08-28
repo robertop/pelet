@@ -43,11 +43,11 @@ TEST(DiscoverHtmlAndPhp) {
 	
 	int pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
 	mvceditor::LanguageDiscoveryClass::Syntax syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::HTML, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 }
 
 TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
@@ -76,31 +76,31 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 	mvceditor::LanguageDiscoveryClass::Syntax syntax;
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("double"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_DOUBLE_QUOTE_STRING, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("heredoc"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_HEREDOC, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("nowdoc"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_NOWDOC, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("backtick"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_BACKTICK, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("multiline"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_MULTI_LINE_COMMENT, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::HTML, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 }
 
 TEST(MultipleHtmlBlocks) {
@@ -117,19 +117,29 @@ TEST(MultipleHtmlBlocks) {
 	int pos;
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("$title"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("</head>"));
+	// a start tag
+	pos = code.indexOf(UNICODE_STRING_SIMPLE("itle>"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::HTML, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
+	
+	pos = code.indexOf(UNICODE_STRING_SIMPLE("/head>"));
+	syntax = discover.at(pos);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("$theclass"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::PHP_SCRIPT, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
+	
+	pos = code.indexOf(UNICODE_STRING_SIMPLE("id="));
+	syntax = discover.at(pos);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("thebody"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::HTML, syntax);
+	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE, syntax);
+	
 }
 
 }

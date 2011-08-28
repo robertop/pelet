@@ -49,11 +49,28 @@ public:
 	/**
 	 * The possible languages that this class can discover.
 	 */
-	enum Syntax {
-		HTML,
-		PHP_SCRIPT
+	 enum Syntax {
+		SYNTAX_HTML,
+		SYNTAX_HTML_TAG,
+		SYNTAX_HTML_ATTRIBUTE,
+		SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE,
+		SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE,
+		SYNTAX_HTML_ENTITY,
+		
+		// TODO: HTML_COMMENT ???
+		SYNTAX_PHP_SCRIPT,
+		SYNTAX_PHP_LINE_COMMENT,
+		SYNTAX_PHP_MULTI_LINE_COMMENT,
+		SYNTAX_PHP_SINGLE_QUOTE_STRING,
+		SYNTAX_PHP_DOUBLE_QUOTE_STRING,
+		SYNTAX_PHP_HEREDOC,
+		SYNTAX_PHP_NOWDOC,
+		SYNTAX_PHP_BACKTICK,
+		
 		// TODO: add SQL
 		// TODO: add javascript
+		// TODO: HTML links to internal pages so that autocomplete can fill in internal links
+		// TODO: HTML classes from CSS so that autocomplete can fill in CSS class names
 	};
 
 	LanguageDiscoveryClass();
@@ -76,18 +93,6 @@ public:
 
 private:
 
-	enum ScannerState {
-		STATE_HTML,
-		// TODO: HTML_COMMENT ???
-		STATE_PHP_SCRIPT,
-		STATE_PHP_LINE_COMMENT,
-		STATE_PHP_MULTI_LINE_COMMENT,
-		STATE_PHP_SINGLE_QUOTE_STRING,
-		STATE_PHP_DOUBLE_QUOTE_STRING,
-		STATE_PHP_HEREDOC,
-		STATE_PHP_NOWDOC,
-		STATE_PHP_BACKTICK,
-	};
 
 	/**
 	 * The tokenizer positions
