@@ -325,6 +325,42 @@ solution "mvc_editor"
 			icuconfiguration("Release", _ACTION)
 			wxconfiguration("Release", _ACTION)
 			
+	project "code_control_profiler"
+		language "C++"
+		kind "WindowedApp"
+		files { 
+			"profilers/code_control_profiler.cpp",
+			"src/widgets/CodeControlOptionsClass.cpp",
+			"src/widgets/CodeControlClass.cpp",
+			"src/windows/StringHelperClass.cpp",
+			"src/php_frameworks/ProjectClass.cpp",
+			"src/language/*.cpp",
+			"src/search/FinderClass.cpp",
+			"src/search/FindInFilesClass.cpp",
+			"src/search/ResourceFinderClass.cpp"
+		}
+		includedirs { "src/" }
+		configuration "Debug"
+			pickywarnings(_ACTION)
+			wxconfiguration("Debug", _ACTION)
+			wxappconfiguration("Debug", _ACTION)
+			icuconfiguration("Debug", _ACTION)
+		configuration "Release"
+			pickywarnings(_ACTION)
+			wxconfiguration("Release", _ACTION)
+			wxappconfiguration("Release", _ACTION)
+			icuconfiguration("Release", _ACTION)
+		configuration { "Debug", "vs2008" }
+			includedirs { "$(WXWIN)/contrib/include/" }
+			links {  "wxmsw28ud_stc" }
+		configuration {"Debug", "gmake or codelite"} 
+			links { "wx_gtk2ud_stc-2.8" }
+		configuration { "Release", "vs2008" }
+			includedirs { "$(WXWIN)/contrib/include/" }
+			links {  "wxmsw28u_stc" }
+		configuration {"Release", "gmake or codelite"} 
+			links { "wx_gtk2u_stc-2.8" }
+	
 	project "unit_test++"
 		language "C++"
 		kind "StaticLib"

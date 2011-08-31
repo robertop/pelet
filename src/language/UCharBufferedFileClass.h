@@ -84,7 +84,8 @@ public:
 	/**
 	 * Marks the end of the buffer. When Current == Limit then we need to refill the buffer. 
 	 * This pointer may be reassigned from one lexeme to the 
-	 * next and in between long lexemes.
+	 * next and in between long lexemes. This pointer is guaranteed to be NULL when the end of 
+	 * the file has been reached.
 	 */
 	UChar* Limit;
 
@@ -166,6 +167,15 @@ private:
 	 * will be changed to point to the new buffer.
 	 */
 	void GrowBuffer();
+	
+	/**
+	 * At some point while filling the buffer, Current will reach the end of the buffer (Limit - Buffer) == BufferCapacity
+	 * but there will be room at the start of the buffer (TokenStart - 1 - Buffer) for more characters (previous tokens
+	 * that were already read). This method will copy the current token to the start of the buffer in order to 
+	 * prevent growing the buffer unless the entire buffer is used up with the current token.
+	 * 
+	 */
+	void AlignToBufferStart();
 	
 	/**
 	 * The name of the file being analyzed
