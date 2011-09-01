@@ -34,7 +34,7 @@
 namespace mvceditor {
 	
 /**
- * The UCharBufferedFile encapsulates a file; it will buffer reads so that calling NextChar() method
+ * The UCharBufferedFile encapsulates a file; it will buffer reads so that calling AppendToLexeme() method
  * will read from an internal buffer and not from disk every single time.
  * Simple example:
  * 
@@ -58,6 +58,9 @@ namespace mvceditor {
  * @endcode
  *
  * Note that this class will only work with text files, as it interprets a null character as the end of file. 
+ * 
+ * The public API was designed to fit the re2c generated scanners; it is not the preference of the author
+ * to have public pointers that may change at any time.  Beware.
  */
 class UCharBufferedFileClass {
 	
@@ -65,27 +68,32 @@ public:
 		
 	/**
 	 * The position of the current character. This pointer may be reassigned from one lexeme to the 
-	 * next and in between long lexemes.
+	 * next and in between long lexemes. For this reason, do NOT store Current pointer since it may change at
+	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
 	UChar* Current;
 	
 	/**
 	 * Points to the start of a token. This pointer may be reassigned from one lexeme to the 
-	 * next and in between long lexemes.
+	 * next and in between long lexemes. For this reason, do NOT store Current pointer since it may change at
+	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
 	UChar* TokenStart;
 	
 	/**
 	 * Used for backtracking. This pointer may be reassigned from one lexeme to the 
-	 * next and in between long lexemes.
+	 * next and in between long lexemes. For this reason, do NOT store Current pointer since it may change at
+	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
 	UChar* Marker;
 	
 	/**
 	 * Marks the end of the buffer. When Current == Limit then we need to refill the buffer. 
 	 * This pointer may be reassigned from one lexeme to the 
-	 * next and in between long lexemes. This pointer is guaranteed to be NULL when the end of 
-	 * the file has been reached.
+	 * next and in between long lexemes.For this reason, do NOT store Current pointer since it may change at
+	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
+	 * This pointer is guaranteed to be NULL when the end of 
+	 * the file has been reached. 
 	 */
 	UChar* Limit;
 

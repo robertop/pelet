@@ -63,17 +63,20 @@ int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString id
 		/*
 		 * read one line at a time.  If the line is the identifier we'll stop. If we reach the
 		 * end, then this heredoc in unterminated.
+		 * be careful; do NOT store buffer.Current since it may change at any after buffer.AppendToLexeme
+		 * is called
 		 */
-		UChar *lineStart = buffer.Current;
+		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {
+			line.append(c);
 			YYFILL(1);
 			c = *(++buffer.Current);
+			
 		}
 		if (c == 0) {
 			end = true;
 			return T_ERROR_UNTERMINATED_STRING;
 		}
-		UnicodeString line(lineStart, buffer.Current - lineStart);
 		if (!line.endsWith(UNICODE_STRING(";", 1))) {
 			line.append(UNICODE_STRING(";", 1));
 		}

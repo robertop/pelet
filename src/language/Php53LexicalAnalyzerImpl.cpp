@@ -23,8 +23,8 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  * @author     $Author: robertop2004@gmail.com $
- * @date       $Date: 2011-08-20 14:52:24 -0700 (Sat, 20 Aug 2011) $
- * @version    $Rev: 599 $ 
+ * @date       $Date: 2011-08-07 11:24:39 -0700 (Sun, 07 Aug 2011) $
+ * @version    $Rev: 586 $ 
  */
  
 #include <language/Php53LexicalAnalyzerImpl.h>
@@ -65,16 +65,17 @@ int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString id
 		 * read one line at a time.  If the line is the identifier we'll stop. If we reach the
 		 * end, then this heredoc in unterminated.
 		 */
-		UChar *lineStart = buffer.Current;
+		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {
+			line.append(c);
 			YYFILL(1);
 			c = *(++buffer.Current);
+			
 		}
 		if (c == 0) {
 			end = true;
 			return T_ERROR_UNTERMINATED_STRING;
 		}
-		UnicodeString line(lineStart, buffer.Current - lineStart);
 		if (!line.endsWith(UNICODE_STRING(";", 1))) {
 			line.append(UNICODE_STRING(";", 1));
 		}
