@@ -37,11 +37,11 @@
  * 
  * Also, note the use of UChar arrays.  Using arrays (and in some cases arrays allocated on the
  * stack) greatly improved the tokenizer performance.
- * 
+ *
  * Buffer usage:
- * 
+ *
  * Buffer will be initially set to some fixed size.
- * 
+ *
  *               ------------------------------
  *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
  * --------------------------------------------
@@ -51,11 +51,11 @@
  * --------------------------------------------
  *  TokenStart    ^ |   |   |   |   |   |   |
  * --------------------------------------------
- * 
- * 
+ *
+ *
  * As AppendLexeme() is called, buffer is filled with contents from the file
  * Example: AppendLexeme(7)
- * 
+ *
  *               ------------------------------
  *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
  * --------------------------------------------
@@ -65,31 +65,29 @@
  * --------------------------------------------
  *  TokenStart    ^ |   |   |   |  |   |    |
  * --------------------------------------------
- * 
+ *
  * The caller will kepp incrementing the Current Pointer until it decides
  * that it has found a token.  A token can then be retrieved with by reading
- * the string that starts at TokenStart and is of length (Current - TokenStart). 
- * The caller then calls ResetBuffer() to start the reading of the next token
- * Note that for speed purposes the other pointers are left as is.
- * 
+ * the string that starts at TokenStart and is of length (Current - TokenStart).
+ * The caller then calls ResetBuffer() to start the reading of the next token. Resetting 
+ * the buffer will copy any unread contents (that have been read from the file but have
+ * not been given out) to the start of the buffer.
+ * This copying makes the lexing process less efficient; there was an attempt to remove the 
+ * copy for speed purposes  however this proved difficult because it is very easy to run 
+ * into out of bounds errors. (Notice index 0, 1, and 2 are overwritten).
+ *
  *               ------------------------------
  *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
  * --------------------------------------------
- *  contents      e | c | h | o | ' | h | e |
+ *  contents      ' | h | e | o | ' | h | e |
  * --------------------------------------------
- *  Current         |   |   |   | ^ |   |   |
+ *  Current       ^ |   |   |   |   |   |   |
  * --------------------------------------------
- *  TokenStart    x | x | x | x | ^ |   |    |
+ *  TokenStart    ^ |   |   |   |  |   |    |
  * --------------------------------------------
- * 
+ *
  * At some point, Current will reach the end of the buffer (Current - Buffer) == BufferCapacity. In this
- * case, there are 2 cases to account for.  First, since TokenStart grows in the positive
- * direction there is room at the start of the buffer (TokenStart - 1 - Buffer) for more characters. This
- * can be seen by the positions marked by 'x' above (the tokens that have already been read). We can
- * recover the space left by this gap by copying the token currently being read to be 
- * beginning of the buffer (AlignToBufferStart() does this).
- * 
- * The second case is when the token is bigger than the buffer; we will need to allocate more space
+ * case, the token is bigger than the buffer; we will need to allocate more space
  * for the buffer (GrowBuffer() does this).
  */
  
@@ -120,55 +118,26 @@ void mvceditor::UCharBufferedFileClass::GrowBuffer() {
 void mvceditor::UCharBufferedFileClass::ResetBuffer() {
 	
 	// copy any unread content to the beginning of the buffer
-	//int unread = Limit - Current;
-	int read = Current - TokenStart;
-	//u_strncpy(Buffer, Current, unread);
+	int unread = Limit - Current;
+	int read = Current - Buffer;
+	u_strncpy(Buffer, Current, unread);
 	
 	// make everything point to the beginning of the buffer
 	// also move limit back to the end of the unread content
-	//TokenStart = Buffer;
-	//Current = Buffer;
-	//Marker = Buffer;
-	//Limit = Buffer + unread;
-	
-	TokenStart = Current;
-	Marker = Current;
-	CharacterPos += read;
-}
-
-void mvceditor::UCharBufferedFileClass::AlignToBufferStart() {
-	if (TokenStart == Buffer) {
-		
-		//already aligned no more free space
-		return;
-	}
-	
-	// copy the current token content to the beginning of the buffer
-	// from the start of the token until limit
-	// remember that there may be stuff that has been buffered (read from the file) but
-	// not yet given out
-	int buffered = Limit - TokenStart;
-	int read = Current - TokenStart;
-	if (buffered) {
-		for (int i = 0; i < buffered; i++) {
-			Buffer[i] = TokenStart[i];
-		}
-	}
-	
-	// make everything point to the beginning of the buffer
-	// also move limit back to the end of the unread content
-	// put the Current pointer where it left off (not the start of the token).
 	TokenStart = Buffer;
+	Current = Buffer;
 	Marker = Buffer;
-	Current = Buffer + read;
-	Limit = Buffer + buffered;
+	Limit = Buffer + unread;
+
+	CharacterPos += read;
 }
 
 void mvceditor::UCharBufferedFileClass::AppendToLexeme(int charsToFill) {
 	UChar32 ch = 0;
 	bool eof = false;
+	int i = 0;
 	if (NULL != File) {
-		for (int i = 0; i < charsToFill && !eof; i++) {
+		for (; i < charsToFill && !eof; i++) {
 			ch = u_fgetc(File);
 			*Limit = ch;
 			Limit++;
@@ -179,9 +148,6 @@ void mvceditor::UCharBufferedFileClass::AppendToLexeme(int charsToFill) {
 				// terminate the string properly, lexical analyzer will look for null character as the end-of-file
 				*(Limit - 1) = '\0';
 				eof = true;
-			}
-			if ((Limit - Buffer) >= BufferCapacity && !eof) {
-				AlignToBufferStart();
 			}
 			if ((Limit - Buffer) >= BufferCapacity && !eof) {
 				GrowBuffer();
