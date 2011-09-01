@@ -179,12 +179,7 @@ end
 
 function pickywarnings(action) 
 	if action == "vs2008" then
-		-- disable this for now
-		-- bison will generate a file that contains a warning; 
-		--    warning C4065: switch statement contains 'default' but no 'case' labels
-		-- the warning makes the build fail
-		-- TODO: if premake4 allows setting of flags per file; turn this back on
-		-- flags { "FatalWarnings" }
+		flags { "FatalWarnings" }
 	elseif action == "gmake" or action == "codelite" then
 		
 		-- when compiling strict warning checks; also check against variable length arrays

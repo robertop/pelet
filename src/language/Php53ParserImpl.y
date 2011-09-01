@@ -31,6 +31,11 @@
  #include <language/LexicalAnalyzerClass.h>
  #include <unicode/unistr.h>
  #include <string>
+ 
+ #if defined(_MSC_VER)
+    #pragma warning(disable:4065) // Bison generates a switch statement without a case
+ #endif
+ 
  #define YYSTYPE int
  
  int php53lex(YYSTYPE* semanticValue, mvceditor::LexicalAnalyzerClass &analyzer);
