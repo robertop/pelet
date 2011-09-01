@@ -147,10 +147,12 @@ void mvceditor::UCharBufferedFileClass::AlignToBufferStart() {
 	// from the start of the token until limit
 	// remember that there may be stuff that has been buffered (read from the file) but
 	// not yet given out
-	int buffered = Limit- TokenStart;
+	int buffered = Limit - TokenStart;
 	int read = Current - TokenStart;
 	if (buffered) {
-		u_strncpy(Buffer, TokenStart, buffered);
+		for (int i = 0; i < buffered; i++) {
+			Buffer[i] = TokenStart[i];
+		}
 	}
 	
 	// make everything point to the beginning of the buffer
