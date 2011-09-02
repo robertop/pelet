@@ -22,9 +22,6 @@
  *
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
- * @author     $Author: robertop2004@gmail.com $
- * @date       $Date: 2011-08-07 11:24:39 -0700 (Sun, 07 Aug 2011) $
- * @version    $Rev: 586 $ 
  */
  
 #include <language/Php53LexicalAnalyzerImpl.h>
@@ -64,6 +61,8 @@ int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString id
 		/*
 		 * read one line at a time.  If the line is the identifier we'll stop. If we reach the
 		 * end, then this heredoc in unterminated.
+		 * be careful; do NOT store buffer.Current since it may change at any after buffer.AppendToLexeme
+		 * is called
 		 */
 		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {

@@ -21,9 +21,6 @@
 --
 -- @copyright  2009-2011 Roberto Perpuly
 -- @license    http://www.opensource.org/licenses/mit-license.php The MIT License
--- @author     $Author$
--- @date       $Date$
--- @version    $Rev$ 
 -------------------------------------------------------------------
 newaction {
 	trigger = "xulrunner",

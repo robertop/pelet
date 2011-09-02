@@ -21,9 +21,6 @@
  *
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
- * @author     $Author: robertop2004@gmail.com $
- * @date       $Date: 2011-08-07 11:24:39 -0700 (Sun, 07 Aug 2011) $
- * @version    $Rev: 586 $ 
  */
  
 #include <language/Php53LexicalAnalyzerImpl.h>
