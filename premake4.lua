@@ -32,14 +32,14 @@ dofile "premake_action_generate.lua"
 
 -- these are the core wx widgets libraries and their Win32 dependencies (win dependencies listed first)
 WX_LIBS_DEBUG = { 
-	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
+	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32", "gdiplus",
 	"wxmsw28ud_core", "wxbase28ud", "wxexpatd",	"wxjpegd", "wxpngd", "wxregexud", 
 	"wxtiffd","wxzlibd"
 }
 
 -- these are the core wx widgets libraries and their Win32 dependencies (win dependencies listed first)
 WX_LIBS_RELEASE = { 
-	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
+	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32", "gdiplus",
 	"wxmsw28u_core", "wxbase28u", "wxexpat", "wxjpeg", "wxpng", "wxregexu", 
 	"wxtiff","wxzlib"
 }
