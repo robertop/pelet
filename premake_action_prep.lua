@@ -50,6 +50,13 @@ newaction {
 			os.execute("cp -r " .. os.getcwd() .. "/lib/icu/mvc_editor/Release/lib/*.so* Release/");
 			os.execute("cp -r " .. os.getcwd() .. "/lib/wxWidgets-2.8.10/mvc_editor/Debug/lib/*.so* Debug/");
 			os.execute("cp -r " .. os.getcwd() .. "/lib/wxWidgets-2.8.10/mvc_editor/Release/lib/*.so* Release/");
+			if os.isdir "lib/soci/mvc_editor/lib64" then
+				os.execute("cp -r " .. os.getcwd() .. "/lib/soci/mvc_editor/lib64/*.so* Debug/");
+				os.execute("cp -r " .. os.getcwd() .. "/lib/soci/mvc_editor/lib64/*.so* Release/");
+			else
+				os.execute("cp -r " .. os.getcwd() .. "/lib/soci/mvc_editor/lib/*.so* Debug/");
+				os.execute("cp -r " .. os.getcwd() .. "/lib/soci/mvc_editor/lib/*.so* Release/");
+			end
 		end
 	end
 }
