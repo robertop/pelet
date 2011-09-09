@@ -21,9 +21,6 @@
  *
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
- * @author     $Author: robertop2004@gmail.com $
- * @date       $Date: 2011-08-13 20:31:56 -0700 (Sat, 13 Aug 2011) $
- * @version    $Rev: 596 $ 
  */
 #include <UnitTest++.h>
 #include <language/ParserClass.h>

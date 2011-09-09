@@ -29,6 +29,7 @@ dofile "premake_action_wxwidgets.lua"
 dofile "premake_action_xulrunner.lua"
 dofile "premake_action_dist.lua"
 dofile "premake_action_generate.lua"
+dofile "premake_action_soci.lua"
 
 -- these are the core wx widgets libraries and their Win32 dependencies (win dependencies listed first)
 WX_LIBS_DEBUG = { 
@@ -138,6 +139,23 @@ function wxappconfiguration(config, action)
 	end
 end
 
+function sociconfiguration()
+	includedirs { 
+		"lib/soci/mvc_editor/include",
+		"lib/soci/mvc_editor/include/soci",
+		"lib/soci/mvc_editor/include/soci/mysql",
+		MYSQL_INSTALL_DIR .. "include/mysql/"
+	}
+	
+	-- soci creates lib directory with the architecture name
+	if os.isdir "lib/soci/mvc_editor/lib64" then
+		libdirs { "lib/soci/mvc_editor/lib64" }
+	else 
+		libdirs { "lib/soci/mvc_editor/lib" }
+	end
+	links { "soci_core", "soci_mysql" }
+end
+
 function pickywarnings(action) 
 	if action == "vs2008" then
 		flags { "FatalWarnings" }
@@ -182,11 +200,13 @@ solution "mvc_editor"
 		includedirs { "src/", "lib/keybinder/include/" }
 		links { "tests", "keybinder" }
 		
+		sociconfiguration()
 		configuration "Debug"
 			pickywarnings(_ACTION)
 			icuconfiguration("Debug", _ACTION)
 			wxconfiguration("Debug", _ACTION)
 			wxappconfiguration("Debug", _ACTION)
+			
 		configuration "Release"
 			pickywarnings(_ACTION)
 			icuconfiguration("Release", _ACTION)
@@ -456,3 +476,13 @@ solution "mvc_editor"
 			pickywarnings(_ACTION)
 			wxconfiguration("Release", _ACTION)
 			wxappconfiguration("Release", _ACTION)
+		
+	project "soci_tutorial"
+		language "C++"
+		kind "ConsoleApp"
+		files { "tutorials/soci_tutorial.cpp" }
+		sociconfiguration()
+		configuration "Debug"
+			pickywarnings(_ACTION)
+		configuration "Release"
+			pickywarnings(_ACTION)
