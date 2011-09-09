@@ -32,18 +32,17 @@ dofile "premake_action_generate.lua"
 
 -- these are the core wx widgets libraries and their Win32 dependencies (win dependencies listed first)
 WX_LIBS_DEBUG = { 
-	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32", "gdiplus",
+	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
 	"wxmsw28ud_core", "wxbase28ud", "wxexpatd",	"wxjpegd", "wxpngd", "wxregexud", 
 	"wxtiffd","wxzlibd"
 }
 
 -- these are the core wx widgets libraries and their Win32 dependencies (win dependencies listed first)
 WX_LIBS_RELEASE = { 
-	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32", "gdiplus",
+	"winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
 	"wxmsw28u_core", "wxbase28u", "wxexpat", "wxjpeg", "wxpng", "wxregexu", 
 	"wxtiff","wxzlib"
 }
-
 
 WX_LIBS_WINDOW_DEBUG = { "wxmsw28ud_adv", "wxmsw28ud_aui", "wxmsw28ud_html" }
 WX_LIBS_WINDOW_RELEASE = { "wxmsw28u_adv", "wxmsw28u_aui", "wxmsw28u_html" }
@@ -88,11 +87,12 @@ end
 -- must point to the location of wxWidgets
 function wxconfiguration(config, action)
 	if config == "Debug" and action == "vs2008" then
-		libdirs { "$(WXWIN)/lib/vc_lib/" }
-		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_lib/mswud/" }
+		libdirs { "$(WXWIN)/lib/vc_dll/" }
+		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_dll/mswud/" }
 		
 		-- wxWidgets framework needs these
-		defines { "WIN32", "_DEBUG", "_WINDOWS" }
+		-- tell wxWidgets to import DLL symbols
+		defines { "WIN32", "_DEBUG", "_WINDOWS", "WXUSINGDLL" }
 		
 		-- enable the "Use Unicode Character Set" option under General .. Character Set
 		-- wxWidgets needs this in order to link properly
@@ -102,11 +102,12 @@ function wxconfiguration(config, action)
 		buildoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Debug/bin/wx-config --cxxflags --debug=yes --unicode=yes`" }
 		linkoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Debug/bin/wx-config --debug=yes --unicode=yes --libs core,base`" }
 	elseif config == "Release" and action ==  "vs2008" then
-		libdirs { "$(WXWIN)/lib/vc_lib/" }
-		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_lib/mswu/" }
+		libdirs { "$(WXWIN)/lib/vc_dll/" }
+		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_dll/mswu/" }
 		
 		-- wxWidgets framework needs these
-		defines { "WIN32", "_WINDOWS", "__WXMSW__" }
+		-- tell wxWidgets to import DLL symbols
+		defines { "WIN32", "_WINDOWS", "__WXMSW__", "WXUSINGDLL" }
 		
 		-- enable the "Use Unicode Character Set" option under General .. Character Set
 		-- wxWidgets needs this in order to link properly
@@ -118,50 +119,13 @@ function wxconfiguration(config, action)
 	end
 end
 
-
--- this configuration sets up the WX library and include files for Visual Studio projects
--- NOTE: for this configuration to work correctly a WXWIN environment variable must be defined and
--- must point to the location of wxWidgets
-function wxstaticconfiguration(config, action)
-	if config == "Debug" and action == "vs2008" then
-		
-		-- wxWidgets framework needs these
-		defines { "WIN32", "_DEBUG", "_WINDOWS" }
-		
-		-- enable the "Use Unicode Character Set" option under General .. Character Set
-		-- wxWidgets needs this in order to link properly
-		flags { "Unicode" }
-		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_lib/mswud/" }
-		libdirs { "$(WXWIN)/lib/vc_lib/" }
-		links { WX_LIBS_DEBUG }
-	elseif config == "Debug" and (action == "gmake" or action == "codelite") then
-		buildoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Debug/bin/wx-config --cxxflags --debug=yes --unicode=yes`" }
-		linkoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Debug/bin/wx-config --debug=yes --unicode=yes --libs core,base`" }
-	elseif config == "Release" and action ==  "vs2008" then
-	
-		-- wxWidgets framework needs these
-		defines { "WIN32", "_WINDOWS" }
-		
-		-- enable the "Use Unicode Character Set" option under General .. Character Set
-		-- wxWidgets needs this in order to link properly
-		flags { "Unicode" }
-		includedirs { "$(WXWIN)/include/", "$(WXWIN)/lib/vc_lib/mswu/" }
-		libdirs { "$(WXWIN)/lib/vc_lib/" }
-		links { WX_LIBS_RELEASE } 
-	elseif config == "Release" and (action == "gmake" or action == "codelite") then
-		buildoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Release/bin/wx-config --cxxflags --debug=no --unicode=yes`" }
-		linkoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Release/bin/wx-config --debug=no --unicode=yes --libs core,base`" }
-	end
-
-end
-
 function wxappconfiguration(config, action)
 
 	if action == "vs2008" then
 	
-		-- prevent the  "error LNK2019: unresolved external symbol _main referenced in function ___tmainCRTStartup		
-		flags { "WinMain"}
-	end 
+		-- prevent the  "error LNK2019: unresolved external symbol _main referenced in function ___tmainCRTStartup
+		flags { "WinMain" }
+	end
 	
 	if config == "Debug" and (action == "gmake" or action == "codelite") then
 		linkoptions { "`../../lib/wxWidgets-2.8.10/mvc_editor/Debug/bin/wx-config --debug=yes --unicode=yes --libs aui,adv`" }
@@ -215,8 +179,8 @@ solution "mvc_editor"
 		language "C++"
 		kind "WindowedApp"
 		files { "src/**.cpp", "src/**.h", "*.lua", "src/**.re, src/**.y, src/**.hpp" }
-		includedirs { "src/", "lib/keybinder/include/", "lib/webconnect/webconnect/" }
-		links { "tests", "keybinder", "webconnect" }
+		includedirs { "src/", "lib/keybinder/include/" }
+		links { "tests", "keybinder" }
 		
 		configuration "Debug"
 			pickywarnings(_ACTION)
@@ -393,13 +357,16 @@ solution "mvc_editor"
 		
 	project "keybinder"
 		language "C++"
-		kind "StaticLib"
+		kind "SharedLib"
 		files { "lib/keybinder/include/wx/*.h", "lib/keybinder/src/*.cpp" }
+		
+		-- this is needed so that symbols are exported
+		defines { "DLL_EXPORTS", "WXMAKINGDLL_KEYBINDER" }
 		includedirs { "lib/keybinder/include" }
 		configuration { "Debug" }
-			wxstaticconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 		configuration { "Release" }
-			wxstaticconfiguration("Release", _ACTION)
+			wxconfiguration("Release", _ACTION)
 		configuration { "vs2008" }
 			-- prevent warning from killing build: warning C4018: '<' : signed/unsigned mismatch
 			buildoptions { "/W1" }
@@ -411,36 +378,10 @@ solution "mvc_editor"
 		includedirs { "lib/keybinder/include" }
 		links { "keybinder" }
 		configuration "Debug"
-			wxstaticconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 			wxappconfiguration("Debug", _ACTION)
 		configuration "Release"
-			wxstaticconfiguration("Release", _ACTION)
-			wxappconfiguration("Release", _ACTION)
-
-	project "webconnect"
-		language "C++"
-		kind "StaticLib"
-		files { "lib/webconnect/webconnect/*.h", "lib/webconnect/webconnect/*.cpp" }
-		includedirs { "lib/webconnect/webconnect/" }
-		configuration "Debug"
-			wxstaticconfiguration("Debug", _ACTION)
-		configuration "Release"
-			wxstaticconfiguration("Release", _ACTION)
-			
-	project "webconnect_test"
-		language "C++"
-		kind "WindowedApp"
-		files { "lib/webconnect/testapp/*.cpp" }
-		includedirs { "lib/webconnect/webconnect/" }
-		links { "webconnect" }
-		
-		-- put executable in a place where it can find the xulrunner 
-		targetdir "lib/webconnect/testapp/"
-		configuration "Debug"
-			wxstaticconfiguration("Debug", _ACTION)
-			wxappconfiguration("Debug", _ACTION)
-		configuration "Release"
-			wxstaticconfiguration("Release", _ACTION)
+			wxconfiguration("Release", _ACTION)
 			wxappconfiguration("Release", _ACTION)
 			
 	project "icu_file_tutorial"
