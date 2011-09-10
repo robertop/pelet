@@ -76,6 +76,46 @@ newaction {
 			else 
 				print "WXWIN environment variable not found. Generated Solution file WILL NOT WORK. Please install wxPack."
 			end
+			
+			SOCI_SRC = normalizepath("lib/soci/src/")
+			dlls = os.matchfiles("lib/soci/src/bin/Debug/*.dll")
+			if #dlls > 0 then
+				sociLibPath = normalizepath("lib/soci/src/bin/Debug/*.dll")
+				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Release\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "SOCI Debug libraries have not been built. You need to build the SOCI library in Debug configuration. "
+				print ("Open the solution found at " .. SOCI_SRC .. "\\SOCI.sln")
+				print "Build the solution in Debug configuration"
+			end
+			
+			dlls = os.matchfiles("lib/soci/src/bin/Release/*.dll")
+			if #dlls > 0 then
+				sociLibPath = normalizepath("lib/soci/src/bin/Release/*.dll")
+				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Release\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "SOCI Release libraries have not been built. You need to build the SOCI library in Release configuration. "
+				print ("Open the solution found at " .. SOCI_SRC .. "\\SOCI.sln")
+				print "Build the solution in Debug configuration"
+				print "Build the solution in Release configuration"
+			end	
+			
+			dlls = os.matchfiles("lib/mysql-connector-c-noinstall-6.0.2-win32/lib/*.dll")
+			if  #dlls > 0 then
+				mysqlLibPath = normalizepath("lib/mysql-connector-c-noinstall-6.0.2-win32/lib/*.dll")
+				cmd = "xcopy /S /Y " .. mysqlLibPath  .. " \"Debug\\\""
+				print(cmd)
+				os.execute(cmd)
+				
+				cmd = "xcopy /S /Y " .. mysqlLibPath  .. " \"Release\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "MySQL libraries not found. Please download the MySQL Connector/C from http://dev.mysql.com/downloads/connector/c/"
+			end
 		else 
 			os.execute("cp -r " .. os.getcwd() .. "/lib/icu/mvc_editor/Debug/lib/*.so* Debug/");
 			os.execute("cp -r " .. os.getcwd() .. "/lib/icu/mvc_editor/Release/lib/*.so* Release/");

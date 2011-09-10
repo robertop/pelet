@@ -140,20 +140,35 @@ function wxappconfiguration(config, action)
 end
 
 function sociconfiguration()
-	includedirs { 
-		"lib/soci/mvc_editor/include",
-		"lib/soci/mvc_editor/include/soci",
-		"lib/soci/mvc_editor/include/soci/mysql",
-		MYSQL_INSTALL_DIR .. "include/mysql/"
-	}
-	
-	-- soci creates lib directory with the architecture name
-	if os.isdir "lib/soci/mvc_editor/lib64" then
-		libdirs { "lib/soci/mvc_editor/lib64" }
+
+	-- TODO this section needs to be cleaned up, it's a little confusing because the SOCI headers and
+	-- libraries do not end up in the same place (is there an INSTALL for SOCI windows?)
+	if os.is "windows" then
+		includedirs { 
+			"lib/soci/src/core",
+			"lib/soci/src/backends/mysql",
+			MYSQL_INCLUDE_DIR
+		}
+		
+		-- TODO Debug version?
+		libdirs { "lib/soci/src/lib/Release" }
+		links { "soci_core_3_1", "soci_mysql_3_1" }
 	else 
-		libdirs { "lib/soci/mvc_editor/lib" }
+		includedirs { 
+			"lib/soci/mvc_editor/include",
+			"lib/soci/mvc_editor/include/soci",
+			"lib/soci/mvc_editor/include/soci/mysql",
+			MYSQL_INCLUDE_DIR .. "/mysql/"
+		}
+		
+		-- soci creates lib directory with the architecture name
+		if os.isdir "lib/soci/mvc_editor/lib64" then
+			libdirs { "lib/soci/mvc_editor/lib64" }
+		else 
+			libdirs { "lib/soci/mvc_editor/lib" }
+		end
+		links { "soci_core", "soci_mysql" }
 	end
-	links { "soci_core", "soci_mysql" }
 end
 
 function pickywarnings(action) 
