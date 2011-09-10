@@ -39,8 +39,8 @@ newaction {
 				os.execute(cmd)
 			else 
 				print("ICU DLLs not found.  You need to build the ICU library. ")
-				print("Extract ICU to lib\\icu")
-				print("open lib\\icu\\source\\allinone\\allinone.sln")
+				print("Extract the ICU library by issuing the command: premake4.exe icu ")
+				print("open teh following solution file n Visual Studio: lib\\icu\\source\\allinone\\allinone.sln")
 				print("Choose Debug|Win32 Build. Go to Build .. Rebuild Solution")
 				print("Choose Release|Win32 Build. Go to Build .. Rebuild Solution")
 				print("(Note: Batch Build \"Select All\" won't work on Visual Studio 2008 Express Edition because it does not support 64 bit compilation)")
@@ -81,7 +81,7 @@ newaction {
 			dlls = os.matchfiles("lib/soci/src/bin/Debug/*.dll")
 			if #dlls > 0 then
 				sociLibPath = normalizepath("lib/soci/src/bin/Debug/*.dll")
-				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Release\\\""
+				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Debug\\\""
 				print(cmd)
 				os.execute(cmd)
 			else 
