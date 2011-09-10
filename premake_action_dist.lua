@@ -36,7 +36,6 @@ newaction {
 				"mkdir dist\\mvc_editor\\lib &&" .. 
 				"mkdir dist\\mvc_editor\\resources && "  .. 
 				"xcopy /S /Y Release\\*.dll dist\\mvc_editor\\bin && " ..
-				"xcopy /S /Y /I lib\\xulrunner dist\\mvc_editor\\lib\\xulrunner && " ..
 				"copy Release\\mvc_editor.exe dist\\mvc_editor\\bin &&" ..
 				"copy resources\\native.php dist\\mvc_editor\\resources "
 			)
@@ -46,7 +45,6 @@ newaction {
 				"mkdir -p dist/mvc_editor/bin && " .. 
 				"mkdir -p dist/mvc_editor/resources && " .. 
 				"cp -R Release/*so* dist/mvc_editor/bin && " .. 
-				"cp -R lib/xulrunner dist/mvc_editor/lib/ && " .. 
 				"cp Release/mvc_editor dist/mvc_editor/bin/mvc_editor && " .. 
 				"cp resources/native.php dist/mvc_editor/resources/ && " .. 
 				"cd dist && " .. 
