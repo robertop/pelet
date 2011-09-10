@@ -26,7 +26,6 @@
 dofile "premake_action_prep.lua"
 dofile "premake_action_icu.lua"
 dofile "premake_action_wxwidgets.lua"
-dofile "premake_action_xulrunner.lua"
 dofile "premake_action_dist.lua"
 dofile "premake_action_generate.lua"
 dofile "premake_action_soci.lua"
