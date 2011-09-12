@@ -32,7 +32,11 @@ newaction {
 					print("ICU library could not unzipped (looking for lib\\icu4c-4_2_1-src.tgz). " ..
 						"Is WinRAR installed and in the PATH? Does the source archive exist?")
 				else 
-					print("ICU library unzipped at lib\\icu. Use the Visual Studio solution provided by ICU to build the libraries");
+					print("ICU library unzipped at lib\\icu.");
+					print("Open the following solution file n Visual Studio: lib\\icu\\source\\allinone\\allinone.sln")
+					print("Choose Debug|Win32 Build. Go to Build .. Rebuild Solution")
+					print("Choose Release|Win32 Build. Go to Build .. Rebuild Solution")
+					print("(Note: Batch Build \"Select All\" won't work on Visual Studio 2008 Express Edition because it does not support 64 bit compilation)")
 				end
 			else
 				-- build the debug version 

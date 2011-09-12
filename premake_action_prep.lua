@@ -39,11 +39,82 @@ newaction {
 				os.execute(cmd)
 			else 
 				print("ICU DLLs not found.  You need to build the ICU library. ")
-				print("Extract ICU to lib\\icu")
-				print("open lib\\icu\\source\\allinone\\allinone.sln")
+				print("Extract the ICU library by issuing the command: premake4.exe icu ")
+				print("open teh following solution file n Visual Studio: lib\\icu\\source\\allinone\\allinone.sln")
 				print("Choose Debug|Win32 Build. Go to Build .. Rebuild Solution")
 				print("Choose Release|Win32 Build. Go to Build .. Rebuild Solution")
 				print("(Note: Batch Build \"Select All\" won't work on Visual Studio 2008 Express Edition because it does not support 64 bit compilation)")
+			end
+			wxLocation = os.getenv("WXWIN");
+			if wxLocation then
+				dlls = os.matchfiles(wxLocation .. "/lib/vc_dll/*.dll");
+				if #dlls > 0 then
+					cmd = "xcopy /S /Y \"" .. wxLocation .. "\\lib\\vc_dll\\*.dll\" \"Debug\\\""
+					print(cmd)
+					os.execute(cmd)
+					
+					cmd = "xcopy /S /Y \"" .. wxLocation .. "\\lib\\vc_dll\\*.dll\" \"Release\\\""
+					print(cmd)
+					os.execute(cmd)
+					
+				else 
+					print("wxWidgets DLLs not found.  You need to build the wxWidgets library (Unicode Debug and Unicode Release configurations). ")
+					print("Use the Visual Studio solution provided by wxWidgets to build the libraries \n" .. 
+							"1) Download wxPack. Install to a C:\\users\\[user]\\wxWidgets directory \n" ..
+							"2) Open Solution wx.dsw located build\msw directory\n" .. 
+							"3) Select 'DLL Debug Unicode' from Configuration Manager\n" .. 
+							"4) Build Entire Solution\n" .. 
+							"5) Select 'DLL Release Unicode' from Configuration Manager\n" .. 
+							"6) Build Entire Solution\n" .. 
+							"7) Open Solution stc.dsw located in contrib\build\msw directory\n" .. 
+							"8) Select 'DLL Debug Unicode' from Configuration Manager\n" .. 
+							"9) Build Entire Solution\n" .. 
+							"10) Select 'DLL Release Unicode' from Configuration Manager\n" .. 
+							"11) Build Entire Solution\n"
+					);
+				end
+			else 
+				print "WXWIN environment variable not found. Generated Solution file WILL NOT WORK. Please install wxPack."
+			end
+			
+			SOCI_SRC = normalizepath("lib/soci/src/")
+			dlls = os.matchfiles("lib/soci/src/bin/Debug/*.dll")
+			if #dlls > 0 then
+				sociLibPath = normalizepath("lib/soci/src/bin/Debug/*.dll")
+				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Debug\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "SOCI Debug libraries have not been built. You need to build the SOCI library in Debug configuration. "
+				print ("Open the solution found at " .. SOCI_SRC .. "\\SOCI.sln")
+				print "Build the solution in Debug configuration"
+			end
+			
+			dlls = os.matchfiles("lib/soci/src/bin/Release/*.dll")
+			if #dlls > 0 then
+				sociLibPath = normalizepath("lib/soci/src/bin/Release/*.dll")
+				cmd = "xcopy /S /Y " .. sociLibPath  .. " \"Release\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "SOCI Release libraries have not been built. You need to build the SOCI library in Release configuration. "
+				print ("Open the solution found at " .. SOCI_SRC .. "\\SOCI.sln")
+				print "Build the solution in Debug configuration"
+				print "Build the solution in Release configuration"
+			end	
+			
+			dlls = os.matchfiles("lib/mysql-connector-c-noinstall-6.0.2-win32/lib/*.dll")
+			if  #dlls > 0 then
+				mysqlLibPath = normalizepath("lib/mysql-connector-c-noinstall-6.0.2-win32/lib/*.dll")
+				cmd = "xcopy /S /Y " .. mysqlLibPath  .. " \"Debug\\\""
+				print(cmd)
+				os.execute(cmd)
+				
+				cmd = "xcopy /S /Y " .. mysqlLibPath  .. " \"Release\\\""
+				print(cmd)
+				os.execute(cmd)
+			else 
+				print "MySQL libraries not found. Please download the MySQL Connector/C from http://dev.mysql.com/downloads/connector/c/"
 			end
 		else 
 			os.execute("cp -r " .. os.getcwd() .. "/lib/icu/mvc_editor/Debug/lib/*.so* Debug/");
