@@ -254,6 +254,7 @@ solution "mvc_editor"
 			"src/language/Php53LexicalAnalyzerImpl.cpp",
 			"src/language/Php53ParserImpl.cpp",
 			"src/language/LanguageDiscoveryClass.cpp",
+			"src/php_frameworks/ProjectClass.cpp",
 			"src/search/DirectorySearchClass.cpp",
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
