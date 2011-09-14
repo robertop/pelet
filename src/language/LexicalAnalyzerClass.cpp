@@ -77,7 +77,9 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 	bool isDoubleQuoteString = false;
 	bool isHeredoc = false;
 	bool isNowdoc = false;
-	if ((end - start) > 0) {
+	
+	// be careful, take Limit into account too... we dont want to read past what is allowed
+	if ((end - start) > 0 && UCharBufferedFile.Current <= UCharBufferedFile.Limit) {
 	
 		// the lexer may ask for too much when the last token is an identifier
 		// in this case current will point to past the null character
