@@ -23,21 +23,6 @@
 -- @license    http://www.opensource.org/licenses/mit-license.php The MIT License
 -------------------------------------------------------------------
 
--- takes a path relative to the project root and returns an absolute path that 
--- this function will also enclose the path in quotes; allowing file paths with spaces to be used.
--- main purpose of this function is to generate paths that can be embedded into strings that consist
--- of system commands.
-function normalizepath(path) 
-	if os.is "windows" then
-	
-		-- Windows XP doesn't like forward slashes
-		path = "\"" .. string.gsub(os.getcwd(), "/", "\\") .. "\\" .. string.gsub(path, "/", "\\") .. "\"";
-	else 
-		path = "\"" .. os.getcwd() .. "/" .. path .. "\"";
-	end
-	return path
-end
-
 newaction {
 	trigger = "generate",
 	description = "Generate the source code for the PHP parser and PHP lexer. This needs to be done " ..

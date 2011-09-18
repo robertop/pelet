@@ -23,6 +23,7 @@
 -- @license    http://www.opensource.org/licenses/mit-license.php The MIT License
 -------------------------------------------------------------------
 
+dofile "premake_functions.lua"
 dofile "premake_action_prep.lua"
 dofile "premake_action_icu.lua"
 dofile "premake_action_wxwidgets.lua"
@@ -146,7 +147,7 @@ function sociconfiguration()
 		includedirs { 
 			"lib/soci/src/core",
 			"lib/soci/src/backends/mysql",
-			MYSQL_INCLUDE_DIR
+			MYSQL_BUILD_DIR .. "include/"
 		}
 		
 		-- TODO Debug version?
@@ -157,7 +158,7 @@ function sociconfiguration()
 			"lib/soci/mvc_editor/include",
 			"lib/soci/mvc_editor/include/soci",
 			"lib/soci/mvc_editor/include/soci/mysql",
-			MYSQL_INCLUDE_DIR .. "/mysql/"
+			MYSQL_BUILD_DIR .. "include/"
 		}
 		
 		-- soci creates lib directory with the architecture name
@@ -166,7 +167,10 @@ function sociconfiguration()
 		else 
 			libdirs { "lib/soci/mvc_editor/lib" }
 		end
-		links { "soci_core", "soci_mysql" }
+		libdirs {
+			MYSQL_BUILD_DIR .. "lib/"
+		}
+		links { "soci_core", "soci_mysql", "mysql" }
 	end
 end
 
@@ -246,7 +250,9 @@ solution "mvc_editor"
 		kind "ConsoleApp"
 		files { 
 			"tests/**.cpp", 
-			"src/environment/ApacheClass.cpp" ,
+			"src/environment/ApacheClass.cpp",
+			"src/environment/DatabaseInfoClass.cpp",
+			"src/environment/SqlResourceFinderClass.cpp",
 			"src/language/ParserClass.cpp",
 			"src/language/LexicalAnalyzerClass.cpp",
 			"src/language/SymbolTableClass.cpp",
@@ -264,6 +270,7 @@ solution "mvc_editor"
 		includedirs { "src/", "lib/UnitTest++/src/", "tests/" }
 		links { "unit_test++" }
 		
+		sociconfiguration()
 		configuration "Debug"
 			pickywarnings(_ACTION)
 			icuconfiguration("Debug", _ACTION)
