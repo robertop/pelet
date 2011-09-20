@@ -331,6 +331,7 @@ solution "mvc_editor"
 			"src/widgets/CodeControlOptionsClass.cpp",
 			"src/widgets/CodeControlClass.cpp",
 			"src/windows/StringHelperClass.cpp",
+			"src/environment/DatabaseInfoClass.cpp",
 			"src/php_frameworks/ProjectClass.cpp",
 			"src/language/*.cpp",
 			"src/search/FinderClass.cpp",
@@ -338,6 +339,7 @@ solution "mvc_editor"
 			"src/search/ResourceFinderClass.cpp"
 		}
 		includedirs { "src/" }
+		sociconfiguration()
 		configuration "Debug"
 			pickywarnings(_ACTION)
 			wxconfiguration("Debug", _ACTION)
