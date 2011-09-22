@@ -332,6 +332,7 @@ solution "mvc_editor"
 			"src/widgets/CodeControlClass.cpp",
 			"src/windows/StringHelperClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
+			"src/environment/SqlResourceFinderClass.cpp",
 			"src/php_frameworks/ProjectClass.cpp",
 			"src/language/*.cpp",
 			"src/search/FinderClass.cpp",
