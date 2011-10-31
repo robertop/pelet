@@ -238,6 +238,10 @@ UnicodeString mvceditor::ParserClass::ScanMethod(const UnicodeString& className,
 	}
 	if (mvceditor::TokenClass::FUNCTION == Token) {
 		Advance();
+		// handle functions that return a reference ie. function &doWork() {}
+		if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
+			Advance();
+		}
 		if (mvceditor::TokenClass::IDENTIFIER == Token) {
 			methodName = Lexeme;
 			UnicodeString signature;
@@ -266,6 +270,11 @@ UnicodeString mvceditor::ParserClass::ScanFunction(const UnicodeString& phpDocCo
 	UnicodeString functionName;
 	if (mvceditor::TokenClass::FUNCTION == Token) {
 		Advance();
+
+		// handle functions that return a reference ie. function &doWork() {}
+		if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
+			Advance();
+		}
 		if (mvceditor::TokenClass::IDENTIFIER == Token) {
 			functionName = Lexeme;
 			UnicodeString signature;

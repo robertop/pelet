@@ -56,6 +56,8 @@ public:
 			CLOSEBRACE = '}',
 			OPENPARENTHESIS = '(',
 			CLOSEPARENTHESIS = ')',
+			REFERENCE_OPERATOR = '&',
+
 			
 			/*
 			 * due to following PHP parsing rules; the number tokens are only a POSITIVE numbers
