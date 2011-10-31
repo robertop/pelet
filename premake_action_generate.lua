@@ -36,21 +36,28 @@ newaction {
 			normalizepath("src/language/Php53LexicalAnalyzerImpl.re");
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("re2c command failed. Is re2c installed? Is it in the PATH?");	
+			print("re2c command failed for file src/language/Php53LexicalAnalyzerImpl.re. Is re2c installed? Is it in the PATH?");	
 		end
 		cmd = "re2c -c -i --no-generation-date " ..
 			"-o " .. normalizepath("src/language/LanguageDiscoveryClass.cpp") .. " " ..
 			normalizepath("src/language/LanguageDiscoveryClass.re");
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("re2c command failed. Is re2c installed? Is it in the PATH?");	
+			print("re2c command failed for file src/language/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
+		end
+		cmd = "re2c -c -i --no-generation-date " ..
+			"-o " .. normalizepath("src/language/SqlLexicalAnalyzerClass.cpp") .. " " ..
+			normalizepath("src/language/SqlLexicalAnalyzerClass.re");
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("re2c command failed for file src/language/SqlLexicalAnalyzerClass.re. Is re2c installed? Is it in the PATH?");	
 		end
 		cmd = "bison --no-lines --warnings=error --defines " ..
 			"-o " .. normalizepath("src/language/Php53ParserImpl.cpp") .. " " ..
 			normalizepath("src/language/Php53ParserImpl.y")
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("Bison command failed. Is bison installed? Is it in the PATH?");	
+			print("Bison command failed for file src/language/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
 	end
 }

@@ -249,12 +249,14 @@ solution "mvc_editor"
 		language "C++"
 		kind "ConsoleApp"
 		files { 
-			"tests/**.cpp", 
+			"tests/**.cpp",
+			"tests/**.h",
 			"src/environment/ApacheClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/SqlResourceFinderClass.cpp",
 			"src/language/ParserClass.cpp",
 			"src/language/LexicalAnalyzerClass.cpp",
+			"src/language/SqlLexicalAnalyzerClass.cpp",
 			"src/language/SymbolTableClass.cpp",
 			"src/language/UCharBufferedFileClass.cpp",
 			"src/language/Php53LexicalAnalyzerImpl.cpp",
