@@ -26,6 +26,7 @@
 #include <TestReporterStdout.h>
 #include <TestRunner.h>
 #include <unicode/uclean.h>
+#include <soci-mysql.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -100,5 +101,8 @@ int main(int argc, char **argv) {
 	// calling cleanup here so that we can run this binary through a memory leak detector 
 	// ICU will cache many things and that will cause the detector to output "possible leaks"
 	u_cleanup();
+	
+	// clean up the MySQL library. Same reason as the ICU cleanup.
+	mysql_library_end();
 	return ret;
 }
