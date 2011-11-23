@@ -148,11 +148,14 @@ function sociconfiguration()
 			"lib/soci/src/core",
 			"lib/soci/src/backends/mysql",
 			MYSQL_BUILD_DIR .. "include/"
+		}	
+		libdirs {
+			MYSQL_BUILD_DIR .. "lib/"
 		}
 		
 		-- TODO Debug version?
 		libdirs { "lib/soci/src/lib/Release" }
-		links { "soci_core_3_1", "soci_mysql_3_1" }
+		links { "soci_core_3_1", "soci_mysql_3_1", "libmysql" }
 	else 
 		includedirs { 
 			"lib/soci/mvc_editor/include",
