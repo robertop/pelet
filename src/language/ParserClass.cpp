@@ -89,6 +89,8 @@ void mvceditor::ParserClass::Scan() {
 	UnicodeString className,
 		functionName,
 		phpDocComment;
+	bool isStatic = false;
+	mvceditor::TokenClass::TokenIds visibility  = mvceditor::TokenClass::PUBLIC;
 	while (MoreTokens()) {
 		if (mvceditor::TokenClass::PHPDOCCOMMENT == Token) {
 			phpDocComment = Lexeme;
@@ -99,17 +101,39 @@ void mvceditor::ParserClass::Scan() {
 				className = ScanClass(phpDocComment);
 				phpDocComment = UNICODE_STRING_SIMPLE("");
 				break;
+			case mvceditor::TokenClass::STATIC:
+				isStatic = true;
+
+				// could just have the static w/out a visibility modifier "static $name;"
+				if (LookaheadToken == mvceditor::TokenClass::VARIABLE) {
+					ScanMemberVariable(className, phpDocComment, visibility, isStatic);
+					isStatic = false;
+					visibility = mvceditor::TokenClass::PUBLIC;
+				}
+				else {
+					Advance();
+				}
+				break;
 			case mvceditor::TokenClass::PRIVATE:
 			case mvceditor::TokenClass::PUBLIC:
 			case mvceditor::TokenClass::PROTECTED:
-			case mvceditor::TokenClass::VAR:
-				if (mvceditor::TokenClass::FUNCTION == LookaheadToken || mvceditor::TokenClass::FUNCTION == NextLookaheadToken) {
-					functionName = ScanMethod(className, phpDocComment);
+				visibility = (mvceditor::TokenClass::TokenIds)Token;
+				if (LookaheadToken == mvceditor::TokenClass::VARIABLE) {
+
+					// could just have visibility modifier w/out static "private $name;"
+					ScanMemberVariable(className, phpDocComment, visibility, isStatic);
+					isStatic = false;
+					visibility = mvceditor::TokenClass::PUBLIC;
 				}
 				else {
-					ScanMemberVariable(className, phpDocComment);
+					Advance();
 				}
+				break;
+			case mvceditor::TokenClass::VAR:
+				ScanMemberVariable(className, phpDocComment, visibility, isStatic);
 				phpDocComment = UNICODE_STRING_SIMPLE("");
+				isStatic = false;
+				visibility = mvceditor::TokenClass::PUBLIC;
 				break;
 			case mvceditor::TokenClass::CONST_KEYWORD:
 				ScanConstantDeclaration(className, phpDocComment);
@@ -117,12 +141,14 @@ void mvceditor::ParserClass::Scan() {
 				break;
 			case mvceditor::TokenClass::FUNCTION:
 				if (!className.isEmpty()) {
-					functionName = ScanMethod(className, phpDocComment);
+					functionName = ScanMethod(className, phpDocComment, visibility, isStatic);
 				}
 				else {
 					functionName = ScanFunction(phpDocComment);
 				}
 				phpDocComment = UNICODE_STRING_SIMPLE("");
+				isStatic = false;
+				visibility = mvceditor::TokenClass::PUBLIC;
 				break;
 			case mvceditor::TokenClass::VARIABLE:
 				ScanVariableDeclarations(className, functionName);
@@ -173,24 +199,15 @@ UnicodeString mvceditor::ParserClass::ScanClass(const UnicodeString& phpDocComme
 	return className;
 }
 
-void mvceditor::ParserClass::ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment) {
-	bool modifiers = false;
-	if (mvceditor::TokenClass::PRIVATE == Token ||  mvceditor::TokenClass::PROTECTED == Token ||
-		mvceditor::TokenClass::PUBLIC == Token ||  mvceditor::TokenClass::VAR == Token ||
-		mvceditor::TokenClass::STATIC == Token) {
-		modifiers = true;
-		Advance();
-		if (mvceditor::TokenClass::PRIVATE == Token ||  mvceditor::TokenClass::PROTECTED == Token ||
-			mvceditor::TokenClass::PUBLIC == Token || mvceditor::TokenClass::STATIC == Token) {
-			Advance();
-		}
-	}
-	if (modifiers && Token == mvceditor::TokenClass::VARIABLE) {
+void mvceditor::ParserClass::ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment, 
+												mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
+	Advance(); // eat the 'var'
+	if (Token == mvceditor::TokenClass::VARIABLE) {
 		UnicodeString memberName = Lexeme;
 		memberName.remove(0, 1); // member observer expects the name only; no '$'
 		if (ClassMemberObserver) {
 			ClassMemberObserver->PropertyFound(className, memberName,  
-				ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, false);
+				ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, visibility, false, isStatic);
 		}
 		while (MoreTokens() && mvceditor::TokenClass::SEMICOLON != Token) {
 			Advance();
@@ -216,7 +233,8 @@ void mvceditor::ParserClass::ScanConstantDeclaration(const UnicodeString& classN
 				) {
 				if (ClassMemberObserver) {
 					ClassMemberObserver->PropertyFound(className, memberName,  
-							ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, true);
+							ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, 
+							mvceditor::TokenClass::PUBLIC, true, true);
 				}
 			}
 			while (MoreTokens() && Token != mvceditor::TokenClass::SEMICOLON) {
@@ -226,41 +244,33 @@ void mvceditor::ParserClass::ScanConstantDeclaration(const UnicodeString& classN
 	}
 }
 
-UnicodeString mvceditor::ParserClass::ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment) {
+UnicodeString mvceditor::ParserClass::ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment,
+												 mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
 	UnicodeString methodName;
-	if (mvceditor::TokenClass::PRIVATE == Token || mvceditor::TokenClass::PROTECTED == Token ||
-		mvceditor::TokenClass::PUBLIC == Token || mvceditor::TokenClass::STATIC == Token) {
+	Advance(); // eat 'function'
+
+	// handle functions that return a reference ie. function &doWork() {}
+	if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
 		Advance();
-		if (mvceditor::TokenClass::PRIVATE == Token ||  mvceditor::TokenClass::PROTECTED == Token ||
-			mvceditor::TokenClass::PUBLIC == Token || mvceditor::TokenClass::STATIC == Token) {
-			Advance();
-		}
 	}
-	if (mvceditor::TokenClass::FUNCTION == Token) {
-		Advance();
-		// handle functions that return a reference ie. function &doWork() {}
-		if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
+	if (mvceditor::TokenClass::IDENTIFIER == Token) {
+		methodName = Lexeme;
+		UnicodeString signature;
+		
+		// lookupo for abstract methods; they will not have a function body ({})
+		while (MoreTokens() && (mvceditor::TokenClass::OPENBRACE != Token && mvceditor::TokenClass::SEMICOLON != Token)) {
+			signature += Lexeme;
+			int previousToken = Token;
 			Advance();
+			// only put spaces when the function uses type hinting (identififer followed by '$')
+			if (previousToken == mvceditor::TokenClass::IDENTIFIER && Token == mvceditor::TokenClass::VARIABLE) {
+				signature += UNICODE_STRING_SIMPLE(" ");
+			}
 		}
-		if (mvceditor::TokenClass::IDENTIFIER == Token) {
-			methodName = Lexeme;
-			UnicodeString signature;
-			
-			// lookupo for abstract methods; they will not have a function body ({})
-			while (MoreTokens() && (mvceditor::TokenClass::OPENBRACE != Token && mvceditor::TokenClass::SEMICOLON != Token)) {
-				signature += Lexeme;
-				int previousToken = Token;
-				Advance();
-				// only put spaces when the function uses type hinting (identififer followed by '$')
-				if (previousToken == mvceditor::TokenClass::IDENTIFIER && Token == mvceditor::TokenClass::VARIABLE) {
-					signature += UNICODE_STRING_SIMPLE(" ");
-				}
-			}
-			Advance(); // eat the '{'
-			if (ClassMemberObserver) {
-				ClassMemberObserver->MethodFound(className, methodName, signature, 
-					 ReturnTypeFromPhpDocComment(phpDocComment), phpDocComment);
-			}
+		Advance(); // eat the '{'
+		if (ClassMemberObserver) {
+			ClassMemberObserver->MethodFound(className, methodName, signature, 
+				 ReturnTypeFromPhpDocComment(phpDocComment), phpDocComment, visibility, isStatic);
 		}
 	}
 	return methodName;

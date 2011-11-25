@@ -77,7 +77,8 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 }
 
 void mvceditor::SymbolTableClass::MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-	const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) {
+	const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+	TokenClass::TokenIds visibility, bool isStatic) {
 	SymbolClass symbol;
 	symbol.Lexeme = methodName;
 	symbol.Signature = signature;
@@ -97,7 +98,8 @@ void mvceditor::SymbolTableClass::MethodFound(const UnicodeString& className, co
 }
 
 void mvceditor::SymbolTableClass::PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
-	const UnicodeString& propertyType, const UnicodeString& comment, bool isConst) {
+	const UnicodeString& propertyType, const UnicodeString& comment, 
+	TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
 	SymbolClass symbol;
 	symbol.Lexeme = propertyName;
 	symbol.Signature = UNICODE_STRING_SIMPLE("");
@@ -202,7 +204,8 @@ void mvceditor::SymbolTableClass::VariableCreatedWithAnotherVariableFound(const 
 }
 
 bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& resourceFinder, SymbolClass::Types& type, 
-		UnicodeString& typeLexeme, UnicodeString& objectMember, UnicodeString& comment) {
+		UnicodeString& typeLexeme, UnicodeString& objectMember, UnicodeString& comment, bool& isThisCall, 
+		bool& isParentCall, bool& isStaticCall) {
 	UnicodeString className,
 			functionName,
 			lexeme,
@@ -233,6 +236,7 @@ bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& res
 				break;
 			}
 		}
+		isThisCall = true;
 		found = true;
 	}
 	else if (mvceditor::TokenClass::SCOPERESOLUTION == token && mvceditor::TokenClass::IDENTIFIER == lastToken) {
@@ -243,13 +247,16 @@ bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& res
 		type = SymbolClass::OBJECT;
 		if (isLastTokenParent) {
 			typeLexeme = resourceFinder.GetResourceParentClassName(className, UNICODE_STRING_SIMPLE(""));
+			isParentCall = true;
 		}
 		else if (isLastTokenSelf) {
 			typeLexeme = className;
+			isThisCall = true;
 		}
 		else {
 			typeLexeme = lastLexeme;
 		}
+		isStaticCall = true;
 		objectMember = UNICODE_STRING_SIMPLE("");
 		found = !typeLexeme.isEmpty();
 	}	
@@ -267,6 +274,7 @@ bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& res
 				break;
 			}
 		}
+		isThisCall = true;
 		found = true;
 	}
 	else if (mvceditor::TokenClass::IDENTIFIER == token && mvceditor::TokenClass::SCOPERESOLUTION == lastToken &&
@@ -279,13 +287,16 @@ bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& res
 		objectMember = lexeme;
 		if (isNextToLastTokenParent) {
 			typeLexeme = resourceFinder.GetResourceParentClassName(className, objectMember);
+			isParentCall = true;
 		}
 		else if (isNextToLastTokenSelf) {
 			typeLexeme = className;
+			isThisCall = true;
 		}
 		else {
 			typeLexeme = nextToLastLexeme;
 		}
+		isStaticCall = true;
 		found = !typeLexeme.isEmpty();
 	}
 	else if (mvceditor::TokenClass::METHODOPERATOR == token &&  mvceditor::TokenClass::VARIABLE == lastToken) {

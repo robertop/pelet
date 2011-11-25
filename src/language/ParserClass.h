@@ -26,6 +26,7 @@
 #define __parserclass__
 
 #include <language/LexicalAnalyzerClass.h>
+#include <language/TokenClass.h>
 #include <wx/string.h>
 #include <unicode/unistr.h>
 
@@ -227,9 +228,12 @@ private:
 	 * 
 	 * @param const UnicodeString& className the class name the method is in
 	 * @param const UnicodeString& phpDocComment the phpDOC comment for the method
+	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
+	 * @param isStatic true if the method is static
 	 * @return UnicodeString the name of the method that was parsed.
 	 */
-	UnicodeString ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment);
+	UnicodeString ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment, 
+		TokenClass::TokenIds visibility, bool isStatic);
 
 	/**
 	 * Scans a member declaration ("protected $name;" ), eating up tokens up to and including the semicolon ';'
@@ -237,8 +241,11 @@ private:
 	 * 
 	 * @param const UnicodeString& className the class name the method is in
 	 * @param const UnicodeString& phpDocComment the phpDOC comment for the member
+	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
+	 * @param isStatic true if the method is static
 	 */
-	void ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment);
+	void ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment, 
+		TokenClass::TokenIds visibility, bool isStatic);
 		
 	/**
 	 * Scans a constant declaration ("const NAME='';"), eating up tokens up to and including the semicolon ';'
@@ -433,9 +440,12 @@ public:
 	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
 	 * @param const UnicodeString& returnType the method's return type, as dictated by the PHPDoc comment
 	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
+	 * @param isStatic true if the method is static
 	 */
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) = 0;
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
+		TokenClass::TokenIds visibility, bool isStatic) = 0;
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
@@ -444,10 +454,13 @@ public:
 	 * @param const UnicodeString& propertyName the name of the property that was found
 	 * @param const UnicodeString& propertyType the property's type, as dictated by the PHPDoc comment
 	 * @param const UnicodeString& comment PHPDoc attached to the property
+	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
 	 * @param bool isConst true if property is a constant
+	 * @param isStatic true if the method is static
 	 */
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
-		const UnicodeString& propertyType, const UnicodeString& comment, bool isConst) = 0;
+		const UnicodeString& propertyType, const UnicodeString& comment, 
+		TokenClass::TokenIds visibility, bool isConst, bool isStatic) = 0;
 };
 
 /**

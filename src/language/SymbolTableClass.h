@@ -139,7 +139,11 @@ public:
 	 *     if (symbolTable.CreateSymbols(sourceCode)) {
 	 *       UnicodeString variableType, objectMember, variablePhpDocComment;
 	 *       SymbolClass::Types type;
-	 *       if (symbolTable.Lookup(79, resourceFinder, type, variableType, objectMember, variablePhpDocComment)) {
+	 *       bool isThisCall = false;
+	 *       bool isParentCall = false;
+	 *       bool isStaticCall = false;
+	 *       if (symbolTable.Lookup(79, resourceFinder, type, variableType, objectMember, variablePhpDocComment, isThisCall, 
+	 *              isParentCall, isStaticCall)) {
 	 *       	puts(variableName); // prints out UserClass
 	 *       }
 	 *     }
@@ -153,10 +157,13 @@ public:
 	 * @param SymbolClass::Types& type the symbol's type
 	 * @param UnicodeString& typeLexeme the symbol's class name, if it is an object
 	 * @param UnicodeString& objectMember the symbol's member invocation, if it is an object
+	 * @param bool isThisCall TRUE if symbol is used this access ("$this->")
+	 * @param bool isParentCall TRUE if symbol is used parent access ("parent::")	 
+	 * @param bool isStaticCall TRUE if symbol is used a static access ("::")
 	 * @return bool true if there is a symbol at pos.
 	 */
-	bool Lookup(int pos, const ResourceFinderClass& resourceFinder, SymbolClass::Types& type, UnicodeString& typeLexeme, UnicodeString& objectMember, 
-		UnicodeString& comment);
+	bool Lookup(int pos, const ResourceFinderClass& resourceFinder, SymbolClass::Types& type, UnicodeString& typeLexeme, 
+		UnicodeString& objectMember, UnicodeString& comment, bool& isThisCall, bool& isParentCall, bool& isStaticCall);
 	
 	/**
 	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
@@ -178,10 +185,12 @@ public:
 			const UnicodeString& comment);
 	
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment);
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+		TokenClass::TokenIds visibility, bool isStatic);
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
-		const UnicodeString& propertyType, const UnicodeString& comment, bool isConst);
+		const UnicodeString& propertyType, const UnicodeString& comment, 
+		TokenClass::TokenIds visibility, bool isConst, bool isStatic);
 	
 	virtual void FunctionFound(const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment);
