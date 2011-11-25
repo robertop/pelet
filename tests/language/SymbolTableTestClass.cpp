@@ -106,12 +106,16 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForThisKeyword) {
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** This is the user class */"), comment);
+	CHECK(isThisCall);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForThisKeyword) {
@@ -140,8 +144,11 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForThisKeywo
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::PROPERTY, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), objectMember);
@@ -176,7 +183,10 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForLocalVari
 	UnicodeString typeLexeme, 
 		objectMember, 
 		comment;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
@@ -210,8 +220,11 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetObjectNameAndMemberForLocalVar
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getName"), objectMember);
@@ -245,8 +258,11 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetCommentForLocalVariable) {
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
@@ -294,8 +310,11 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForLocalVariableWhenM
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
@@ -332,12 +351,16 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentClass) {
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
+	CHECK(isParentCall);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentMethod) {
@@ -371,12 +394,16 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentMethod) {
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), objectMember);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
+	CHECK(isParentCall);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetAncestorOnlyWhenMethodMatches) {
@@ -412,12 +439,16 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetAncestorOnlyWhenMethodMatches)
 	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
 	UnicodeString typeLexeme, 
 		objectMember, 
-		comment;	
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment));
+		comment;
+	bool isThisCall = false,
+		isParentCall = false,
+		isStaticCall = false;
+	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
 	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), objectMember);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
+	CHECK(isParentCall);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScope) {

@@ -78,7 +78,7 @@ public:
 			"\tfunction getName() {\n"
 			"\t\treturn $this->name;\n"
 			"\t}\n"
-			"\tfunction setName($name) {\n"
+			"\tprivate static function setName($name) {\n"
 			"\t\t$this->name = $name;\n"
 			"\t}\n"
 			"}\n"
@@ -120,8 +120,8 @@ public:
 						VariableMethodCalledName, VariableFunctionCalledName, VariableObjectName, 
 						VariableSourceVariable, VariableConstant,
 						DefinedName, DefinedValue, DefinedComment;
-	std::vector<bool> PropertyConsts;
-			
+	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
+	std::vector<mvceditor::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
 	
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment) {
@@ -131,21 +131,27 @@ public:
 	}
 	
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) {
+			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+			mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
 		MethodClassName.push_back(className);
 		MethodName.push_back(methodName);
 		MethodSignature.push_back(signature);
 		MethodReturnType.push_back(returnType);
 		MethodComment.push_back(comment);
+		MethodVisibility.push_back(visibility);
+		MethodIsStatic.push_back(isStatic);
 	}
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
-			const UnicodeString& propertyType, const UnicodeString& comment, bool isConst) {
+			const UnicodeString& propertyType, const UnicodeString& comment, 
+			mvceditor::TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
 		PropertyClassName.push_back(className);
 		PropertyName.push_back(propertyName);
 		PropertyType.push_back(propertyType);
 		PropertyComment.push_back(comment);
 		PropertyConsts.push_back(isConst);
+		PropertyVisibility.push_back(visibility);
+		PropertyIsStatic.push_back(isStatic);
 	}
 	
 	virtual void FunctionFound(const UnicodeString& functionName, 
@@ -247,7 +253,6 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 	if(!observer.DefinedComment.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a define comment\n */"), observer.DefinedComment[0]);		
 	}
-	
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
@@ -284,6 +289,16 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	if (observer.MethodReturnType.size() == 4) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("void"), observer.MethodReturnType[0]);
 	}
+	CHECK_EQUAL((size_t)4, observer.MethodVisibility.size());
+	if (observer.MethodVisibility.size() == 4) {
+		CHECK_EQUAL(mvceditor::TokenClass::PUBLIC, observer.MethodVisibility[0]);
+		CHECK_EQUAL(mvceditor::TokenClass::PRIVATE, observer.MethodVisibility[3]);
+	}
+	CHECK_EQUAL((size_t)4, observer.MethodIsStatic.size());
+	if (observer.MethodIsStatic.size() == 4) {
+		CHECK_EQUAL(false, observer.MethodIsStatic[0]);
+		CHECK_EQUAL(true, observer.MethodIsStatic[3]);
+	}
 	CHECK_EQUAL((size_t)2, observer.PropertyClassName.size());
 	if (observer.PropertyClassName.size() == 2) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.PropertyClassName[0]);
@@ -293,6 +308,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	if (observer.PropertyName.size() == 2) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), observer.PropertyName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("DEFAULT_NAME"), observer.PropertyName[1]);
+		
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyComment.size());
 	if (observer.PropertyComment.size() == 2) {
@@ -306,12 +322,22 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), observer.PropertyType[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), observer.PropertyType[1]);
 	}
-	
 	CHECK_EQUAL((size_t)2, observer.PropertyConsts.size());
 	if (observer.PropertyComment.size() == 2) {
 		CHECK_EQUAL(false, observer.PropertyConsts[0]);
 		CHECK_EQUAL(true, observer.PropertyConsts[1]);
 	}
+	CHECK_EQUAL((size_t)2, observer.PropertyVisibility.size());
+	if (observer.PropertyVisibility.size() == 2) {
+		CHECK_EQUAL(mvceditor::TokenClass::PRIVATE, observer.PropertyVisibility[0]);
+		CHECK_EQUAL(mvceditor::TokenClass::PUBLIC, observer.PropertyVisibility[1]);
+	}
+	CHECK_EQUAL((size_t)2, observer.PropertyIsStatic.size());
+	if (observer.PropertyIsStatic.size() == 2) {
+		CHECK_EQUAL(false, observer.PropertyIsStatic[0]);
+		CHECK_EQUAL(true, observer.PropertyIsStatic[1]);
+	}
+	
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
