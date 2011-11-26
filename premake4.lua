@@ -336,6 +336,8 @@ solution "mvc_editor"
 			"profilers/code_control_profiler.cpp",
 			"src/widgets/CodeControlOptionsClass.cpp",
 			"src/widgets/CodeControlClass.cpp",
+			"src/widgets/ResourceUpdateThreadClass.cpp",
+			"src/widgets/ThreadWithHeartbeatClass.cpp",
 			"src/windows/StringHelperClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/*.cpp",
