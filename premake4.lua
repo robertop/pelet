@@ -338,6 +338,7 @@ solution "mvc_editor"
 			"src/widgets/CodeControlClass.cpp",
 			"src/widgets/ResourceUpdateThreadClass.cpp",
 			"src/widgets/ThreadWithHeartbeatClass.cpp",
+			"src/widgets/DocumentClass.cpp",
 			"src/windows/StringHelperClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/*.cpp",
