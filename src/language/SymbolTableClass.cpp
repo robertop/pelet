@@ -211,9 +211,9 @@ bool mvceditor::SymbolTableClass::Lookup(int pos, const ResourceFinderClass& res
 			lexeme,
 			lastLexeme,
 			nextToLastLexeme;
-	int token,
-		lastToken,
-		nextToLastToken;
+	int token(0),
+		lastToken(0),
+		nextToLastToken(0);
 	bool found = false;
 	GetTokensAtPos(pos, token, lastToken, nextToLastToken, lexeme, lastLexeme, nextToLastLexeme, className, functionName);
 	
