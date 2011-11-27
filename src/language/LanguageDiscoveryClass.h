@@ -71,6 +71,8 @@ public:
 	};
 
 	LanguageDiscoveryClass();
+	
+	~LanguageDiscoveryClass();
 
 	/**
 	 * Initialize with the given code
@@ -96,7 +98,7 @@ private:
 	 *
 	 * @var UCharBufferedFileClass
 	 */
-	UCharBufferedFileClass Buffer;
+	UCharBufferClass Buffer;
 
 	/**
 	 * The actual code being parsed

@@ -38,6 +38,10 @@ mvceditor::LanguageDiscoveryClass::LanguageDiscoveryClass()
 	, Code() {
 }
 
+mvceditor::LanguageDiscoveryClass::~LanguageDiscoveryClass() {
+	Buffer.Close();
+}
+
 bool mvceditor::LanguageDiscoveryClass::Open(const UnicodeString& code) {
 	bool ret = Buffer.OpenString(code);
 	if (ret) {
@@ -69,7 +73,7 @@ discovery_start:
 		return syntax;
 	}
 	
-	Buffer.ResetBuffer();
+	Buffer.MarkTokenStart();
 	
 discovery_next_char:
 
@@ -746,7 +750,7 @@ discovery_PHP_HEREDOC:
 		{ return syntax; }
 discovery_175:
 		++Buffer.Current;
-		{ if (mvceditor::HandleHeredoc(Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+		{ if (mvceditor::HandleHeredoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 /* *********************************** */
 discovery_PHP_LINE_COMMENT:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
@@ -840,7 +844,7 @@ discovery_PHP_NOWDOC:
 		{ return syntax; }
 discovery_207:
 		++Buffer.Current;
-		{ if (mvceditor::HandleNowdoc(Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+		{ if (mvceditor::HandleNowdoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 /* *********************************** */
 discovery_PHP_SCRIPT:
 		if ((Buffer.Limit - Buffer.Current) < 3) DISCOVERY_BUFFER_FILL(3);

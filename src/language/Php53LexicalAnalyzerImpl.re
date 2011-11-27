@@ -31,16 +31,16 @@
 #define YYCTYPE UChar
 
 // this is the pointer to the current position; 
-#define YYCURSOR buffer.Current
+#define YYCURSOR buffer->Current
 
-#define YYMARKER buffer.Marker
+#define YYMARKER buffer->Marker
 
 // this is the pointer that signals the end of the buffered content
 // when Current >= Limit YYFILL will be called
-#define YYLIMIT buffer.Limit
+#define YYLIMIT buffer->Limit
 
 // we will use the file buffer to fill the lexer buffer
-#define YYFILL(n) { buffer.AppendToLexeme(n); }
+#define YYFILL(n) { buffer->AppendToLexeme(n); }
 
 // condition is actually a variable (reference) that is passed into the nextToken() function
 #define YYGETCONDITION() condition
@@ -49,25 +49,25 @@
 #define YYSETCONDITION(c)  condition = c
 
 
-int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString identifier) {
+int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 	bool end = false;
 	
 	// add semicolon to make checks easier
 	identifier.append(';');
-	UChar c = *buffer.Current;
+	UChar c = *buffer->Current;
 	while (!end) {
 	
 		/*
 		 * read one line at a time.  If the line is the identifier we'll stop. If we reach the
 		 * end, then this heredoc in unterminated.
-		 * be careful; do NOT store buffer.Current since it may change at any after buffer.AppendToLexeme
+		 * be careful; do NOT store buffer->Current since it may change at any after buffer->AppendToLexeme
 		 * is called
 		 */
 		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {
 			line.append(c);
 			YYFILL(1);
-			c = *(++buffer.Current);
+			c = *(++buffer->Current);
 			
 		}
 		if (c == 0) {
@@ -81,17 +81,17 @@ int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString id
 			end = true;
 			
 			// semicolons and newlines are NOT part of the nowdoc; the parser will look for semicolons
-			buffer.Current--;
+			buffer->Current--;
 		}
 		else {
 			YYFILL(1);
-			c = *(++buffer.Current);
+			c = *(++buffer->Current);
 		}
 	}
 	return 0;
 }
 
-int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
+int mvceditor::HandleHeredoc(BufferClass *buffer) {
 
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -103,7 +103,7 @@ int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat heredoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer.TokenStart + 3, buffer.Current - buffer.TokenStart - 3 - 1);
+	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
 	identifier.trim();
 	
 	// remove double quotes if they are there
@@ -121,7 +121,7 @@ int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
 	return failed;
 }
 
-int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
+int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -133,7 +133,7 @@ int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat nowdoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer.TokenStart + 3, buffer.Current - buffer.TokenStart - 3 - 1);
+	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
 	identifier.trim();
 	
 	// remove the single quotes
@@ -147,14 +147,17 @@ int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
 	return failed;
 }
 
-int mvceditor::NextToken(UCharBufferedFileClass &buffer, YYCONDTYPE &condition) {
-	buffer.ResetBuffer();
-	UChar *start = buffer.TokenStart;
+int mvceditor::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {
+	if (buffer->HasReachedEnd()) {
+		return T_END_OF_FILE;
+	}
+	buffer->MarkTokenStart();
+	const UChar *start = buffer->TokenStart;
 	
 // goto this label when we want to advance to the next character but DISCARD the previous
 // lexeme.	
 php_5_3_lexical_analyzer_next_token_start:
-	buffer.ResetBuffer();
+	buffer->MarkTokenStart();
 
 // goto this label when we want to advance to the next character but KEEP ACCUMULATING the previous
 // lexeme.
@@ -274,8 +277,8 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 /*!ignore:re2c
  * longest symbols first; because they need to take precedence when consuming
  */
-<SCRIPT> "<<<" WHITESPACE* ((["]IDENTIFIER["]) | (IDENTIFIER)) NEWLINE { buffer.IncrementLine(); condition = yycHEREDOC; goto php_5_3_lexical_analyzer_next_char; }
-<SCRIPT> "<<<" WHITESPACE* "'" IDENTIFIER "'" NEWLINE { buffer.IncrementLine(); condition = yycNOWDOC; goto php_5_3_lexical_analyzer_next_char; }
+<SCRIPT> "<<<" WHITESPACE* ((["]IDENTIFIER["]) | (IDENTIFIER)) NEWLINE { buffer->IncrementLine(); condition = yycHEREDOC; goto php_5_3_lexical_analyzer_next_char; }
+<SCRIPT> "<<<" WHITESPACE* "'" IDENTIFIER "'" NEWLINE { buffer->IncrementLine(); condition = yycNOWDOC; goto php_5_3_lexical_analyzer_next_char; }
 <SCRIPT> "<<=" { return T_SL_EQUAL; }
 <SCRIPT> ">>=" { return T_SR_EQUAL; }
 <SCRIPT> "===" { return T_IS_IDENTICAL; }
@@ -285,10 +288,10 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SCRIPT> "::" { return T_PAAMAYIM_NEKUDOTAYIM; }
 <SCRIPT> "->" { condition = yycPROPERTY; return T_OBJECT_OPERATOR; }
 <SCRIPT> '<?php' (WHITESPACE) { return T_OPEN_TAG; }
-<SCRIPT> '<?php' (NEWLINE) { buffer.IncrementLine(); return T_OPEN_TAG; }
+<SCRIPT> '<?php' (NEWLINE) { buffer->IncrementLine(); return T_OPEN_TAG; }
 <SCRIPT> "<?" { return T_OPEN_TAG; }
 <SCRIPT> '<?' (WHITESPACE) { return T_OPEN_TAG; }
-<SCRIPT> '<?' (NEWLINE) { buffer.IncrementLine(); return T_OPEN_TAG; }
+<SCRIPT> '<?' (NEWLINE) { buffer->IncrementLine(); return T_OPEN_TAG; }
 <SCRIPT> "||" { return T_BOOLEAN_OR; }
 <SCRIPT> "&&" { return T_BOOLEAN_AND; }
 <SCRIPT> "++" { return T_INC; }
@@ -320,12 +323,12 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  */
 <SCRIPT> "\\" { return T_NS_SEPARATOR; }
 <SCRIPT> "`" { condition = yycBACKTICK; goto php_5_3_lexical_analyzer_next_token_start; }
-<SCRIPT> SINGLE_SYMBOLS { return *buffer.TokenStart; }
+<SCRIPT> SINGLE_SYMBOLS { return *buffer->TokenStart; }
 <SCRIPT> "#" { condition = yycLINE_COMMENT; goto php_5_3_lexical_analyzer_next_token_start; }
 <SCRIPT> "'" { condition = yycSINGLE_QUOTE_STRING; goto php_5_3_lexical_analyzer_next_char; }
 <SCRIPT> "\"" { condition = yycDOUBLE_QUOTE_STRING; goto php_5_3_lexical_analyzer_next_char; }
 
-<SCRIPT> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+<SCRIPT> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 <SCRIPT> WHITESPACE { goto php_5_3_lexical_analyzer_next_token_start; }
 <SCRIPT> NONPRINTABLE { goto php_5_3_lexical_analyzer_next_token_start; }
 <SCRIPT> EOF { return T_END_OF_FILE; }
@@ -348,16 +351,16 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  *  <p><?php echo "hello"; // again ?></p>
  * when the close tag is encountered; put it back so that it can be tokenized
  */
-<LINE_COMMENT> NEWLINE { buffer.IncrementLine(); condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
+<LINE_COMMENT> NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
 <LINE_COMMENT> EOF { return T_END_OF_FILE; }
-<LINE_COMMENT> "?>" { condition = yycINLINE_HTML; buffer.TokenStart = buffer.Current - 2; return T_CLOSE_TAG; }
+<LINE_COMMENT> "?>" { condition = yycINLINE_HTML; buffer->TokenStart = buffer->Current - 2; return T_CLOSE_TAG; }
 <LINE_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
 
 /*!ignore:re2c
  * by going to next_token_start the lexeme is discarded; comments are treated like whitespace
  */
-<MULTI_LINE_COMMENT> EOF { buffer.TokenStart = buffer.Current; return T_ERROR_UNTERMINATED_COMMENT; }
-<MULTI_LINE_COMMENT> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+<MULTI_LINE_COMMENT> EOF { buffer->TokenStart = buffer->Current; return T_ERROR_UNTERMINATED_COMMENT; }
+<MULTI_LINE_COMMENT> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 <MULTI_LINE_COMMENT> "*/" {  condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
 <MULTI_LINE_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
 
@@ -365,8 +368,8 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  * by going to next_char the lexeme is KEPT; DOC comments are treated special
  */
 <DOC_COMMENT> "*/" { condition = yycSCRIPT; return T_DOC_COMMENT; }
-<DOC_COMMENT> EOF { buffer.TokenStart = buffer.Limit; return T_ERROR_UNTERMINATED_COMMENT; }
-<DOC_COMMENT> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+<DOC_COMMENT> EOF { buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
+<DOC_COMMENT> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 <DOC_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
@@ -378,7 +381,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SINGLE_QUOTE_STRING> [\\][\\] { goto php_5_3_lexical_analyzer_next_char; }
 <SINGLE_QUOTE_STRING> "'" { condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 <SINGLE_QUOTE_STRING> EOF { return T_ERROR_UNTERMINATED_STRING; }
-<SINGLE_QUOTE_STRING> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+<SINGLE_QUOTE_STRING> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 <SINGLE_QUOTE_STRING> ANY { goto php_5_3_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
@@ -394,7 +397,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <DOUBLE_QUOTE_STRING> [\\][\\] { goto php_5_3_lexical_analyzer_next_char; } 
 <DOUBLE_QUOTE_STRING> '"' { condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 <DOUBLE_QUOTE_STRING> EOF { return T_ERROR_UNTERMINATED_STRING; }
-<DOUBLE_QUOTE_STRING> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+<DOUBLE_QUOTE_STRING> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> ANY { goto php_5_3_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
@@ -410,11 +413,11 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  * no need to send the T_INLINE_HTML when open tag is at the beginning.
  * return token;
  */
-<INLINE_HTML> '<?php' WHITESPACE { condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
-<INLINE_HTML> '<?php' NEWLINE { buffer.IncrementLine(); condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
-<INLINE_HTML> '<?' WHITESPACE { condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
-<INLINE_HTML> '<?' NEWLINE { buffer.IncrementLine(); condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
-<INLINE_HTML> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?php' WHITESPACE { condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
+<INLINE_HTML> '<?php' NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
+<INLINE_HTML> '<?' WHITESPACE { condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
+<INLINE_HTML> '<?' NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
+<INLINE_HTML> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 <INLINE_HTML> EOF { return T_END_OF_FILE; }
 <INLINE_HTML> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
 
@@ -426,7 +429,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  */
 <PROPERTY> IDENTIFIER { condition = yycSCRIPT; return T_STRING; }
 <PROPERTY> EOF { return T_END_OF_FILE; }
-<PROPERTY> ANY { condition = yycSCRIPT; buffer.Current = buffer.TokenStart; goto php_5_3_lexical_analyzer_next_char; }
+<PROPERTY> ANY { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_5_3_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
  * backticks; for now anything inside of backticks treat like a constant string.
@@ -435,7 +438,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  * TODO: can backticks be escaped??
  */
 <BACKTICK> [`] { condition = yycSCRIPT; return '`'; }
-<BACKTICK> NEWLINE { buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+<BACKTICK> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 <BACKTICK> EOF { return T_ERROR_UNTERMINATED_BACKTICK; }
 <BACKTICK> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
 */

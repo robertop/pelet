@@ -97,7 +97,6 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindWhenFileEndsWithIdenti
 	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
 }
 
-
 TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
 	UnicodeString code  = mvceditor::StringHelperClass::charToIcu(
 		"$s = 'hello';\n"
@@ -452,7 +451,6 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
 	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
 }
-
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {
 	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(

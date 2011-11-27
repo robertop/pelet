@@ -37,6 +37,10 @@ mvceditor::LanguageDiscoveryClass::LanguageDiscoveryClass()
 	, Code() {
 }
 
+mvceditor::LanguageDiscoveryClass::~LanguageDiscoveryClass() {
+	Buffer.Close();
+}
+
 bool mvceditor::LanguageDiscoveryClass::Open(const UnicodeString& code) {
 	bool ret = Buffer.OpenString(code);
 	if (ret) {
@@ -68,7 +72,7 @@ discovery_start:
 		return syntax;
 	}
 	
-	Buffer.ResetBuffer();
+	Buffer.MarkTokenStart();
 	
 discovery_next_char:
 /*!re2c
@@ -216,8 +220,8 @@ WHITESPACE = [ \t\v\f];
  * check to see if we are past the wanted position and return immediately so that 
  * we give the correct condition to the caller
  */
-<PHP_HEREDOC> ANY { if (mvceditor::HandleHeredoc(Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-<PHP_NOWDOC> ANY { if (mvceditor::HandleNowdoc(Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+<PHP_HEREDOC> ANY { if (mvceditor::HandleHeredoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+<PHP_NOWDOC> ANY { if (mvceditor::HandleNowdoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 
 
 /*!ignore:re2c

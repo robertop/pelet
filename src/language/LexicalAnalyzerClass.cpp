@@ -31,7 +31,7 @@
 
 mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const wxString& fileName) 
 	: ParserError()
-	, UCharBufferedFile()
+	, Buffer(NULL)
 	, FileName()
 	, Condition(yycINLINE_HTML) {
 	OpenFile(fileName);
@@ -39,39 +39,56 @@ mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const wxString& fileName)
 
 mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass()
 	: ParserError()
-	, UCharBufferedFile()
+	, Buffer(NULL)
 	, FileName()
 	, Condition(yycINLINE_HTML) {
 }
 
 mvceditor::LexicalAnalyzerClass::~LexicalAnalyzerClass() {
+	Close();
+}
+
+void mvceditor::LexicalAnalyzerClass::Close() {
+	if (Buffer) {
+		Buffer->Close();
+		delete Buffer;
+		Buffer = NULL;
+	}
 }
 
 bool mvceditor::LexicalAnalyzerClass::OpenFile(const wxString& newFile) {
-	 FileName = newFile;
-	 Condition = yycINLINE_HTML;
+	Close();
+	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
+	Buffer = bufferFile;
+	FileName = newFile;
+	Condition = yycINLINE_HTML;
 	 
 	// ATTN: fn_str() would not compile in MSW
 	// what about unicode file names?
-	return UCharBufferedFile.OpenFile(newFile.ToAscii());
+	return bufferFile->OpenFile(newFile.ToAscii());
 }
 
 bool mvceditor::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
+	Close();
 	FileName = wxT("");
 	Condition = yycSCRIPT;
-	return UCharBufferedFile.OpenString(code);
+	mvceditor::UCharBufferClass* memBuffer = new UCharBufferClass();
+	Buffer = memBuffer;
+	return memBuffer->OpenString(code);
 }
 
 int mvceditor::LexicalAnalyzerClass::NextToken() {
-	return mvceditor::NextToken(UCharBufferedFile, Condition);
+	return Buffer ? mvceditor::NextToken(Buffer, Condition) : T_END_OF_FILE;
 }
 
 bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 	// TODO: escape sequences \x41 to 'A' for double quoted strings and heredoc
-
+	if (!Buffer) {
+		return false;
+	}
 	lexeme.remove();
-	UChar *start = UCharBufferedFile.TokenStart;
-	UChar *end =  UCharBufferedFile.Current;
+	const UChar *start = Buffer->TokenStart;
+	const UChar *end =  Buffer->Current;
 	bool ret = false;
 	bool isSingleQuoteString = false;
 	bool isDoubleQuoteString = false;
@@ -79,12 +96,12 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 	bool isNowdoc = false;
 	
 	// be careful, take Limit into account too... we dont want to read past what is allowed
-	if ((end - start) > 0 && UCharBufferedFile.Current <= UCharBufferedFile.Limit) {
+	if ((end - start) > 0 && Buffer->Current <= Buffer->Limit) {
 	
 		// the lexer may ask for too much when the last token is an identifier
 		// in this case current will point to past the null character
-		if (UCharBufferedFile.Current > UCharBufferedFile.Limit) {
-			end = UCharBufferedFile.Limit;
+		if (Buffer->Current > Buffer->Limit) {
+			end = Buffer->Limit;
 		}
 		if (start[0] == '\'') {
 			isSingleQuoteString = true;
@@ -173,15 +190,15 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 }
 
 int mvceditor::LexicalAnalyzerClass::GetLineNumber() const {
-	return UCharBufferedFile.GetLineNumber();
+	return Buffer ? Buffer->GetLineNumber() : 0;
 }
 
 int mvceditor::LexicalAnalyzerClass::GetColumnNumber() const {
-	return UCharBufferedFile.GetColumnNumber();
+	return Buffer ? Buffer->GetColumnNumber() : 0;
 }
 
 int mvceditor::LexicalAnalyzerClass::GetCharacterPosition() const {
-	return UCharBufferedFile.GetCharacterPosition();
+	return Buffer ? Buffer->GetCharacterPosition() : 0;
 }
 
 wxString mvceditor::LexicalAnalyzerClass::GetFileName() const {

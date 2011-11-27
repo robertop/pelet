@@ -62,18 +62,29 @@ class LexicalAnalyzerClass {
 	~LexicalAnalyzerClass();
 	
 	/**
-	 * prepares file to be anlyzed.
+	 * prepares file to be analyzed. If another file is currently opened it 
+	 * will be closed.
+	 * 
 	 * @param const wxString& newFile to open
 	 * @return bool true if file can be opened for reading
 	 */
 	bool OpenFile(const wxString& newFile);
 	
 	/**
-	 * prepares the given code to be anlyzed.
-	 * @param const wxString& code to analyze
+	 * prepares the given code to be analyzed. If another file/buffer is currently
+	 * opened it will be closed. The lexer will assume that code start with
+	 * pure PHP code.
+	 * 
+	 * @param wxString& code to analyze
 	 * @return bool true if source could be successfully turned to utf-16
 	 */
 	bool OpenString(const UnicodeString& code);
+	
+	/**
+	 * Clean up any resources after lexing
+	 */
+	 // TODO: this needs to get called by the Parsers
+	void Close();
 
 	/**
 	 * gets the next token. Checking for the end is not as simple as checking for T_EOF, you will
@@ -133,9 +144,9 @@ private:
 	/**
 	 * The file buffer
 	 * 
-	 * @var UCharBufferedFile
+	 * @var BufferClass
 	 */
-	UCharBufferedFileClass UCharBufferedFile;
+	BufferClass* Buffer;
 	
 	/**
 	 * The file being parsed. Exactly what was given to OpenFile().

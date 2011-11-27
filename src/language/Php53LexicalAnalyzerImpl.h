@@ -63,42 +63,42 @@ namespace mvceditor {
  * need to call mvceditor::TokenClass::IsTerminatingToken() to ensure that the end of stream
  * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
  * 
- * @param UCharBufferedFileClass &buffer contains the code to be tokenized
+ * @param BufferClass* buffer contains the code to be tokenized. This function will NOT own the pointer.
  * @param YYCONDTYPE &condition the current state the the parser is in. this needs 
  * to be an argument to avoid global variables.
  * @return int the next token.
  */
-int NextToken(UCharBufferedFileClass &buffer, YYCONDTYPE &condition);
+int NextToken(BufferClass* buffer, YYCONDTYPE &condition);
 
 /**
  * This function will advance the current pointer of the buffer all the way until 
  * it encounters the given identifier on a line. (the end of a heredoc / nowdoc).
  *
- * @param buffer the content being lexed
+ * @param buffer the content being lexed. This function will NOT own the pointer.
  * @param identifier the identifier to look for.
  * @return 0 for success; ERROR_UNTERMINATED_STRING if identifier was not found
  */
-int SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString identifier);
+int SkipToIdentifier(BufferClass* buffer, UnicodeString identifier);
 
 /**
  * This function will advance the current pointer of the buffer all the way until
  * it encounters the end of the heredoc. It will leave the ending semicolon in the stream to be consumed
  * next. 
  * 
- * @param buffer the content being lexed
+ * @param buffer the content being lexed. This function will NOT own the pointer.
  * @return int token; could be T_END_OF_FILE or T_ERROR_UNTERMINATED_STRING 
  */
-int HandleNowdoc(UCharBufferedFileClass &buffer);
+int HandleNowdoc(BufferClass* buffer);
 
 /**
  * This function will advance the current pointer of the buffer all the way until
  * it encounters the end of the nowdoc. It will leave the ending semicolon in the stream to be consumed
  * next. 
  * 
- * @param buffer the content being lexed
+ * @param buffer the content being lexed. This function will NOT own the pointer.
  * @return int token; could be T_END_OF_FILE or T_ERROR_UNTERMINATED_STRING 
  */
-int HandleHeredoc(UCharBufferedFileClass &buffer);
+int HandleHeredoc(BufferClass* buffer);
 
 }
 

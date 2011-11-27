@@ -32,16 +32,16 @@
 #define YYCTYPE UChar
 
 // this is the pointer to the current position; 
-#define YYCURSOR buffer.Current
+#define YYCURSOR buffer->Current
 
-#define YYMARKER buffer.Marker
+#define YYMARKER buffer->Marker
 
 // this is the pointer that signals the end of the buffered content
 // when Current >= Limit YYFILL will be called
-#define YYLIMIT buffer.Limit
+#define YYLIMIT buffer->Limit
 
 // we will use the file buffer to fill the lexer buffer
-#define YYFILL(n) { buffer.AppendToLexeme(n); }
+#define YYFILL(n) { buffer->AppendToLexeme(n); }
 
 // condition is actually a variable (reference) that is passed into the nextToken() function
 #define YYGETCONDITION() condition
@@ -50,25 +50,25 @@
 #define YYSETCONDITION(c)  condition = c
 
 
-int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString identifier) {
+int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 	bool end = false;
 	
 	// add semicolon to make checks easier
 	identifier.append(';');
-	UChar c = *buffer.Current;
+	UChar c = *buffer->Current;
 	while (!end) {
 	
 		/*
 		 * read one line at a time.  If the line is the identifier we'll stop. If we reach the
 		 * end, then this heredoc in unterminated.
-		 * be careful; do NOT store buffer.Current since it may change at any after buffer.AppendToLexeme
+		 * be careful; do NOT store buffer->Current since it may change at any after buffer->AppendToLexeme
 		 * is called
 		 */
 		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {
 			line.append(c);
 			YYFILL(1);
-			c = *(++buffer.Current);
+			c = *(++buffer->Current);
 			
 		}
 		if (c == 0) {
@@ -82,17 +82,17 @@ int mvceditor::SkipToIdentifier(UCharBufferedFileClass &buffer, UnicodeString id
 			end = true;
 			
 			// semicolons and newlines are NOT part of the nowdoc; the parser will look for semicolons
-			buffer.Current--;
+			buffer->Current--;
 		}
 		else {
 			YYFILL(1);
-			c = *(++buffer.Current);
+			c = *(++buffer->Current);
 		}
 	}
 	return 0;
 }
 
-int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
+int mvceditor::HandleHeredoc(BufferClass *buffer) {
 
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -104,7 +104,7 @@ int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat heredoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer.TokenStart + 3, buffer.Current - buffer.TokenStart - 3 - 1);
+	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
 	identifier.trim();
 	
 	// remove double quotes if they are there
@@ -122,7 +122,7 @@ int mvceditor::HandleHeredoc(UCharBufferedFileClass &buffer) {
 	return failed;
 }
 
-int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
+int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -134,7 +134,7 @@ int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat nowdoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer.TokenStart + 3, buffer.Current - buffer.TokenStart - 3 - 1);
+	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
 	identifier.trim();
 	
 	// remove the single quotes
@@ -148,14 +148,17 @@ int mvceditor::HandleNowdoc(UCharBufferedFileClass &buffer) {
 	return failed;
 }
 
-int mvceditor::NextToken(UCharBufferedFileClass &buffer, YYCONDTYPE &condition) {
-	buffer.ResetBuffer();
-	UChar *start = buffer.TokenStart;
+int mvceditor::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {
+	if (buffer->HasReachedEnd()) {
+		return T_END_OF_FILE;
+	}
+	buffer->MarkTokenStart();
+	const UChar *start = buffer->TokenStart;
 	
 // goto this label when we want to advance to the next character but DISCARD the previous
 // lexeme.	
 php_5_3_lexical_analyzer_next_token_start:
-	buffer.ResetBuffer();
+	buffer->MarkTokenStart();
 
 // goto this label when we want to advance to the next character but KEEP ACCUMULATING the previous
 // lexeme.
@@ -198,7 +201,7 @@ php_5_3_lexical_analyzer_2:
 php_5_3_lexical_analyzer_4:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_5:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_6:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -236,11 +239,11 @@ php_5_3_lexical_analyzer_15:
 		{ goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_16:
 		++YYCURSOR;
-		{ buffer.TokenStart = buffer.Limit; return T_ERROR_UNTERMINATED_COMMENT; }
+		{ buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
 php_5_3_lexical_analyzer_18:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_19:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_20:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -286,7 +289,7 @@ php_5_3_lexical_analyzer_31:
 php_5_3_lexical_analyzer_33:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_34:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_35:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -336,7 +339,7 @@ php_5_3_lexical_analyzer_50:
 php_5_3_lexical_analyzer_51:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_52:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_53:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -377,11 +380,11 @@ php_5_3_lexical_analyzer_60:
 		}
 php_5_3_lexical_analyzer_61:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
+		{ condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
 php_5_3_lexical_analyzer_63:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_64:
-		{ buffer.IncrementLine(); condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
+		{ buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
 php_5_3_lexical_analyzer_65:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -409,7 +412,7 @@ php_5_3_lexical_analyzer_67:
 php_5_3_lexical_analyzer_68:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_69:
-		{ buffer.IncrementLine(); condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
+		{ buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
 php_5_3_lexical_analyzer_70:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -418,7 +421,7 @@ php_5_3_lexical_analyzer_70:
 		}
 php_5_3_lexical_analyzer_71:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; if (buffer.TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
+		{ condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
 /* *********************************** */
 yyc_LINE_COMMENT:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
@@ -433,7 +436,7 @@ yyc_LINE_COMMENT:
 php_5_3_lexical_analyzer_75:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_76:
-		{ buffer.IncrementLine(); condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->IncrementLine(); condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_77:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -456,7 +459,7 @@ php_5_3_lexical_analyzer_82:
 		goto php_5_3_lexical_analyzer_81;
 php_5_3_lexical_analyzer_83:
 		++YYCURSOR;
-		{ condition = yycINLINE_HTML; buffer.TokenStart = buffer.Current - 2; return T_CLOSE_TAG; }
+		{ condition = yycINLINE_HTML; buffer->TokenStart = buffer->Current - 2; return T_CLOSE_TAG; }
 php_5_3_lexical_analyzer_85:
 		++YYCURSOR;
 		yych = *YYCURSOR;
@@ -474,11 +477,11 @@ yyc_MULTI_LINE_COMMENT:
 		}
 php_5_3_lexical_analyzer_88:
 		++YYCURSOR;
-		{ buffer.TokenStart = buffer.Current; return T_ERROR_UNTERMINATED_COMMENT; }
+		{ buffer->TokenStart = buffer->Current; return T_ERROR_UNTERMINATED_COMMENT; }
 php_5_3_lexical_analyzer_90:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_91:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_92:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -603,7 +606,7 @@ php_5_3_lexical_analyzer_108:
 		{ return T_END_OF_FILE; }
 php_5_3_lexical_analyzer_110:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; buffer.Current = buffer.TokenStart; goto php_5_3_lexical_analyzer_next_char; }
+		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_112:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
@@ -1014,7 +1017,7 @@ php_5_3_lexical_analyzer_137:
 		default:	goto php_5_3_lexical_analyzer_138;
 		}
 php_5_3_lexical_analyzer_138:
-		{ return *buffer.TokenStart; }
+		{ return *buffer->TokenStart; }
 php_5_3_lexical_analyzer_139:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -1227,7 +1230,7 @@ php_5_3_lexical_analyzer_164:
 php_5_3_lexical_analyzer_166:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_167:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_168:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -1770,7 +1773,7 @@ php_5_3_lexical_analyzer_268:
 php_5_3_lexical_analyzer_270:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_271:
-		{ buffer.IncrementLine(); return T_OPEN_TAG; }
+		{ buffer->IncrementLine(); return T_OPEN_TAG; }
 php_5_3_lexical_analyzer_272:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -1798,7 +1801,7 @@ php_5_3_lexical_analyzer_274:
 php_5_3_lexical_analyzer_275:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_276:
-		{ buffer.IncrementLine(); return T_OPEN_TAG; }
+		{ buffer->IncrementLine(); return T_OPEN_TAG; }
 php_5_3_lexical_analyzer_277:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -1998,7 +2001,7 @@ php_5_3_lexical_analyzer_286:
 php_5_3_lexical_analyzer_288:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_289:
-		{ buffer.IncrementLine(); condition = yycHEREDOC; goto php_5_3_lexical_analyzer_next_char; }
+		{ buffer->IncrementLine(); condition = yycHEREDOC; goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_290:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -2166,7 +2169,7 @@ php_5_3_lexical_analyzer_296:
 php_5_3_lexical_analyzer_297:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_298:
-		{ buffer.IncrementLine(); condition = yycNOWDOC; goto php_5_3_lexical_analyzer_next_char; }
+		{ buffer->IncrementLine(); condition = yycNOWDOC; goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_299:
 		yych = *++YYCURSOR;
 		switch (yych) {
@@ -9435,7 +9438,7 @@ php_5_3_lexical_analyzer_782:
 php_5_3_lexical_analyzer_784:
 		++YYCURSOR;
 php_5_3_lexical_analyzer_785:
-		{ buffer.IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_786:
 		yych = *++YYCURSOR;
 		switch (yych) {
