@@ -271,6 +271,8 @@ solution "mvc_editor"
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
 			"src/search/ResourceFinderClass.cpp",
+			"src/widgets/ResourceUpdateThreadClass.cpp",
+			"src/widgets/ThreadWithHeartbeatClass.cpp",
 			"src/windows/StringHelperClass.cpp"
 		}
 		includedirs { "src/", "lib/UnitTest++/src/", "tests/" }
