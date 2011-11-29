@@ -22,7 +22,6 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <search/ResourceFinderClass.h>
 #include <language/SymbolTableClass.h>
 #include <windows/StringHelperClass.h>
 #include <FileTestFixtureClass.h>
@@ -35,9 +34,9 @@ static int PREDEFINED_VARIABLE_COUNT = 14;
 class SymbolTableTestClass : public FileTestFixtureClass {
 public:	
 	SymbolTableTestClass()
-	 : FileTestFixtureClass(wxT("symbol_table")) {
+	 : FileTestFixtureClass(wxT("symbol_table")) 
+	 , Symbol() {
 		SymbolTable = new mvceditor::SymbolTableClass();
-		ResourceFinder = new mvceditor::ResourceFinderClass();
 		if (wxDirExists(TestProjectDir)) {
 			RecursiveRmDir(TestProjectDir);
 		}
@@ -45,7 +44,6 @@ public:
 	
 	virtual ~SymbolTableTestClass() {
 		delete SymbolTable;
-		delete ResourceFinder;
 	}
 	
 	/**
@@ -74,7 +72,7 @@ public:
 	}
 
 	mvceditor::SymbolTableClass* SymbolTable;
-	mvceditor::ResourceFinderClass* ResourceFinder;
+	mvceditor::SymbolClass Symbol;
 };
 
 SUITE(SymbolTableTestClass) {
@@ -103,19 +101,10 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForThisKeyword) {
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** This is the user class */"), comment);
-	CHECK(isThisCall);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForThisKeyword) {
@@ -141,18 +130,10 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForThisKeywo
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::PROPERTY, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** @var string */"), comment);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::PROPERTY, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForLocalVariable) {
@@ -179,18 +160,10 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForLocalVari
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** This is the user class */"), comment);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetObjectNameAndMemberForLocalVariable) {
@@ -217,18 +190,10 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetObjectNameAndMemberForLocalVar
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getName"), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** @return string */"), comment);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getName"), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetCommentForLocalVariable) {
@@ -255,42 +220,13 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetCommentForLocalVariable) {
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** This is the user class */"), comment);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("user"), Symbol.Lexeme);
 }
 
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForLocalVariableWhenMethodIsInAnotherFile) {
-	
-	/*
-	 * create a class in a separate file
-	 */
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	));
-	CHECK(ResourceFinder->Prepare(wxT("a")));
-	ResourceFinder->Walk(TestProjectDir + wxT("test.php"));
+TEST_FIXTURE(SymbolTableTestClass, LookupShouldFillInSourceSignatureWhenMethodIsInAnotherFile) {
 	
 	/*
 	 * use the class in another file 
@@ -307,20 +243,14 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForLocalVariableWhenM
 	int pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), Symbol.Lexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass::getName"), Symbol.SourceSignature);
 }
 
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentClass) {
+TEST_FIXTURE(SymbolTableTestClass, LookupShouldSetParentType) {
 	wxString sourceCode = wxString::FromAscii(
 		"<?php\n"
 		"/** This is the user class */\n"
@@ -343,24 +273,13 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentClass) {
 	);
 	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
 	CreateFixtureFile(wxT("test.php"), sourceCode);
-	CHECK(ResourceFinder->Prepare(wxT("a")));
-	ResourceFinder->Walk(TestProjectDir + wxT("test.php"));
 	int pos;
 	uniCode = FindCursor(uniCode, pos);
 	SymbolTable->CreateSymbols(uniCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
-	CHECK(isParentCall);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("AdminClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentMethod) {
@@ -385,25 +304,13 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentMethod) {
 		"?>\n"
 	);
 	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
-	CreateFixtureFile(wxT("test.php"), sourceCode);
-	CHECK(ResourceFinder->Prepare(wxT("a")));
-	ResourceFinder->Walk(TestProjectDir + wxT("test.php"));
 	int pos;
 	uniCode = FindCursor(uniCode, pos);
 	SymbolTable->CreateSymbols(uniCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
-	CHECK(isParentCall);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("AdminClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetAncestorOnlyWhenMethodMatches) {
@@ -429,26 +336,18 @@ TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetAncestorOnlyWhenMethodMatches)
 		"}\n"
 		"?>\n"
 	);
+	
+	// even if a class overloads a method, using parent:: should return the correct
+	// Type (note that it will NOT fill in TypeLexeme because it might not be able
+	// to resolve it
 	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
-	CreateFixtureFile(wxT("test.php"), sourceCode);
-	CHECK(ResourceFinder->Prepare(wxT("a")));
-	ResourceFinder->Walk(TestProjectDir + wxT("test.php"));
 	int pos;
 	uniCode = FindCursor(uniCode, pos);
 	SymbolTable->CreateSymbols(uniCode);
-	mvceditor::SymbolClass::Types type = mvceditor::SymbolClass::PRIMITIVE;
-	UnicodeString typeLexeme, 
-		objectMember, 
-		comment;
-	bool isThisCall = false,
-		isParentCall = false,
-		isStaticCall = false;
-	CHECK(SymbolTable->Lookup(pos, *ResourceFinder, type, typeLexeme, objectMember, comment, isThisCall, isParentCall, isStaticCall));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, type);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), typeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), objectMember);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), comment);
-	CHECK(isParentCall);
+	CHECK(SymbolTable->Lookup(pos, Symbol));
+	CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("SuperAdminClass"), Symbol.TypeLexeme);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), Symbol.Lexeme);
 }
 
 TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScope) {

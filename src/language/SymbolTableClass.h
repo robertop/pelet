@@ -48,43 +48,65 @@ public:
 	enum Types {
 		PRIMITIVE, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
 		ARRAY,
-		OBJECT,
+		OBJECT, // this symbol is an object
 		FUNCTION,
-		CLASS,
-		METHOD, // 5
-		PROPERTY		
+		CLASS,  
+		METHOD, // this symbol is a method call  // 5 
+		PROPERTY,
+		PARENT // this symbol is a call to a parent method
 	};
 	
 	/**
-	 * The symbol's name
+	 * The symbol's name. In the case of a variable: the variable name 
+	 * (minus the siguil '$').
+	 * Examples
+	 * 
+	 * this
+	 * self
+	 * parent
+	 * aVariable
+	 * 
 	 * @var UnicodeString
 	 */
 	UnicodeString Lexeme;
 	
 	/**
-	 * When a symbol is an object, TypeLexeme is the class name. when TypeLexeme is a function/method, TypeLexeme is the 
-	 * function/method's return type.
-	 * Note that this may be the empty string.  If it is, then its type will be stored in the Signature and will be
-	 * retrieved during the second pass.
+	 * If this a symbol is an object, TypeLexeme is the class name that the variable
+	 * belongs to.  
+	 * Note that this may be the empty string (in the case of primitives). 
 	 * 
 	 * @var UnicodeString
 	 */
-	UnicodeString	TypeLexeme;
-
-	/**
-	 * When symbols is a function/method,this is the signature (list of parameters)
-	 */
-	UnicodeString Signature;
+	UnicodeString TypeLexeme;
 	
 	/**
-	 * PHPDoc comment for this symbol
+	 * If this symbol is a variable; the SourceSignature will contain the function (or method)
+	 * signature that was used to create the variable.  For example for the line
+	 * 
+	 *   class Action {
+	 *     // ...
+	 *     function func() {
+	 *       $name = $this->getName();
+	 *     }
+	 *   }
+	 * 
+	 * then  for the symbol name the SourceSignature will be Action::getName
+	 * For types PRIMITIVE, ARRAY, FUNCTION, and CLASS this property will hold the empty string,
 	 */
-	UnicodeString Comment;
+	UnicodeString SourceSignature;
 	
 	/**
 	 * The symbol type
 	 */
 	Types Type;
+	
+	/**
+	 * If TRUE, this symbol uses static access ("::")
+	 */
+	bool IsStatic;
+	
+	SymbolClass();
+	
 };
 
 /**
@@ -138,13 +160,9 @@ public:
 	 *     // line 79 = line inside getName() method
 	 *     if (symbolTable.CreateSymbols(sourceCode)) {
 	 *       UnicodeString variableType, objectMember, variablePhpDocComment;
-	 *       SymbolClass::Types type;
-	 *       bool isThisCall = false;
-	 *       bool isParentCall = false;
-	 *       bool isStaticCall = false;
-	 *       if (symbolTable.Lookup(79, resourceFinder, type, variableType, objectMember, variablePhpDocComment, isThisCall, 
-	 *              isParentCall, isStaticCall)) {
-	 *       	puts(variableName); // prints out UserClass
+	 *       SymbolClass symbol;
+	 *       if (symbolTable.Lookup(79, symbol)) {
+	 *       	puts(symbol.Lexeme); // prints out UserClass
 	 *       }
 	 *     }
 	 *   </code>
@@ -152,18 +170,28 @@ public:
 	 * Type information can be calculated for variables, as well as function calls, method calls, and property getters.
 	 * 
 	 * @param int the position the symbol is located in; position is index into code string given to the CreateSymbols() method.
-	 * @param ResourceFinderClass used to resolve return types from functions; this will help in identifying the types for 
-	 *        variables that are created from function calls.
-	 * @param SymbolClass::Types& type the symbol's type
-	 * @param UnicodeString& typeLexeme the symbol's class name, if it is an object
-	 * @param UnicodeString& objectMember the symbol's member invocation, if it is an object
-	 * @param bool isThisCall TRUE if symbol is used this access ("$this->")
-	 * @param bool isParentCall TRUE if symbol is used parent access ("parent::")	 
-	 * @param bool isStaticCall TRUE if symbol is used a static access ("::")
-	 * @return bool true if there is a symbol at pos.
+	 * @param SymbolClass symbol the symbol's type and name. Note that since the SymbolTable uses information
+	 * from the source code only; it cannot verify the TypeLexeme for "parent"
+	 * The objects properties will be reset every call; even if symbol is not found.  In this case,
+	 * the properties will be set to the empty string.
+	 * 
+	 * Special Case: if a symbol references "parent::" then the symbol's TypeLexeme will be set
+	 * to the current class; and the caller will need to figure out what "parent" is by looking at
+	 * the inheritance chain of TypeLexeme.  For example:
+	 * 
+	 * class Action {
+	 * 
+	 *   function func() {
+	 *     parent::work();
+	 *   }
+	 * }
+	 * The symbol will be as follows:
+	 *   Lexeme: "work"
+	 *   TypeLexeme: "Action"
+	 *   Type: PARENT
+	 *   IsStatic: false
 	 */
-	bool Lookup(int pos, const ResourceFinderClass& resourceFinder, SymbolClass::Types& type, UnicodeString& typeLexeme, 
-		UnicodeString& objectMember, UnicodeString& comment, bool& isThisCall, bool& isParentCall, bool& isStaticCall);
+	bool Lookup(int pos, SymbolClass& symbol);
 	
 	/**
 	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
@@ -246,17 +274,6 @@ private:
 	 */
 	std::vector<SymbolClass>& GetScope(const UnicodeString& className, const UnicodeString& functionName);
 
-	/**
-	 * because a class/method may be used before is it declared, we need to go back and fill in
-	 * the types after they have been parsed.
-	 * 
-	 * @param ResourceFinderClass& resourceFinder cache of all of a project's resources. ResourceFinderClass used to resolve return 
-	 *        types from functions; this will help in identifying the types for 
-	 *        variables that are created from function calls.
-	 * @param SymbolClass& symbol the symbol to resolve
-	 */
-	void FillInTypeLexeme(const ResourceFinderClass& resourceFinder, SymbolClass& symbol);
-	
 	/**
 	 * Get the last 3 tokens at the given position.
 	 */
