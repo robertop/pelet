@@ -425,6 +425,60 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
 }
 
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDontEndWithSemicolon) {
+
+	// this test is for the semicolon AFTER the ending marker
+	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+		"<?php\n"
+		"$s = <<<EOF\n"
+		"this is an \"escaped\" string;\n"
+		"EOF\r\n"
+		";"
+		"$a = 55;\n"
+	));
+	wxString file = TestProjectDir;
+	file += wxT("test.php");
+	CHECK(Lexer->OpenFile(file));
+	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
+	CheckTokenLexeme('=', UNICODE_STRING_SIMPLE("="));
+	CheckTokenLexeme(T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;"));
+	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
+	CheckTokenLexeme('=', UNICODE_STRING_SIMPLE("="));
+	CheckTokenLexeme(T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
+	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEmptyLines) {
+
+	// this test is for the semicolon AFTER the ending marker
+	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+		"<?php\n"
+		"$s = <<<EOF\n"
+		"this is an \"escaped\" string;\n"
+		"\n"
+		"this is an \"escaped\" string;\n"
+		"EOF;\n"
+		"$a = 55;\n"
+	));
+	wxString file = TestProjectDir;
+	file += wxT("test.php");
+	CHECK(Lexer->OpenFile(file));
+	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
+	CheckTokenLexeme('=', UNICODE_STRING_SIMPLE("="));
+	CheckTokenLexeme(T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;\n\nthis is an \"escaped\" string;"));
+	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
+	CheckTokenLexeme('=', UNICODE_STRING_SIMPLE("="));
+	CheckTokenLexeme(T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
+	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
+}
+
+
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 
 	// heredocs follow the same escaping rules as double quoted strings.

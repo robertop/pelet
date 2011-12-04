@@ -66,7 +66,12 @@ int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 		UnicodeString line;
 		while (c != 0 && c != '\n' && c != '\r') {
 			line.append(c);
-			YYFILL(1);
+			
+			// only fill buffer when we its close to being filled up; this will prevent
+			// useless copying of the buffer to remove slack
+			if ((YYLIMIT - YYCURSOR) < 2) {
+				YYFILL(1);
+			}
 			c = *(++buffer->Current);
 			
 		}
@@ -74,17 +79,24 @@ int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 			end = true;
 			return T_ERROR_UNTERMINATED_STRING;
 		}
+		bool hasEndingSemicolon = true;
 		if (!line.endsWith(UNICODE_STRING(";", 1))) {
 			line.append(UNICODE_STRING(";", 1));
+			hasEndingSemicolon = false;
 		}
 		if (line.compare(identifier) == 0) {
 			end = true;
 			
 			// semicolons and newlines are NOT part of the nowdoc; the parser will look for semicolons
-			buffer->Current--;
+			// semicolon is OPTIONAL for heredoc / nowdoc
+			if (hasEndingSemicolon) {
+				buffer->Current--;
+			}
 		}
 		else {
-			YYFILL(1);
+			if ((YYLIMIT - YYCURSOR) < 2) {
+				YYFILL(1);
+			}
 			c = *(++buffer->Current);
 		}
 	}
@@ -113,7 +125,9 @@ int mvceditor::HandleHeredoc(BufferClass *buffer) {
 	if (identifier.endsWith(UNICODE_STRING("\"", 1))) {
 		identifier.remove(identifier.length() - 1, 1);
 	}
-	YYFILL(1);
+	if ((YYLIMIT - YYCURSOR) < 2) {
+		YYFILL(1);
+	}
 	int failed = mvceditor::SkipToIdentifier(buffer, identifier);
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
@@ -139,7 +153,9 @@ int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	// remove the single quotes
 	identifier.remove(0, 1);
 	identifier.remove(identifier.length() - 1, 1);
-	YYFILL(1);
+	if ((YYLIMIT - YYCURSOR) < 2) {
+		YYFILL(1);
+	}
 	int failed = mvceditor::SkipToIdentifier(buffer, identifier);
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
@@ -222,7 +238,6 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SCRIPT> 'global' { return T_GLOBAL; }
 <SCRIPT> 'list' { return T_LIST; }
 <SCRIPT> 'new' { return T_NEW; }
-<SCRIPT> 'not' { return '!'; }
 <SCRIPT> 'or' { return T_LOGICAL_OR; }
 <SCRIPT> 'print' { return T_PRINT; }
 <SCRIPT> 'require' { return T_REQUIRE; }

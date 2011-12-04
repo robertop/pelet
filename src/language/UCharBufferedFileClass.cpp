@@ -120,6 +120,7 @@ void mvceditor::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	int newCapacity = minCapacity < (2 * BufferCapacity) ? (2 * BufferCapacity) : minCapacity;
 	UChar* newBuffer = new UChar[newCapacity];
 	u_memcpy(newBuffer, Buffer, BufferCapacity);
+	u_memset(newBuffer + BufferCapacity, 'i', newCapacity / 2);
 	
 	
 	// change all of the pointers
@@ -133,6 +134,8 @@ void mvceditor::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	delete[] Buffer;
 	Buffer = newBuffer;
 	BufferCapacity = newCapacity;
+
+	UnicodeString lexeme(Buffer, BufferCapacity);
 }
 
 void mvceditor::UCharBufferedFileClass::MarkTokenStart() {
@@ -140,9 +143,10 @@ void mvceditor::UCharBufferedFileClass::MarkTokenStart() {
 	Marker = Current;
 }
 
-void mvceditor::UCharBufferedFileClass::AppendToLexeme(int charsdToFill) {
+void mvceditor::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 	if (NULL != File) {
 
+		
 		// since Limit already points PAST the string, we don't do +1 
 		int validContentsCount = Limit - TokenStart; 
 		int charsToGet;
@@ -154,18 +158,18 @@ void mvceditor::UCharBufferedFileClass::AppendToLexeme(int charsdToFill) {
 		}
 		
 		// if, after we removed the slack; we are still close to the edge; grow the buffer
-		if (validContentsCount >= (BufferCapacity - 5)) {
+		// choosing 20 because the longest PHP keywords is about this long
+		if (validContentsCount >= (BufferCapacity - 20)) {
 			int oldCapacity = BufferCapacity;
 			GrowBuffer(2 * oldCapacity);
-			startOfFreeSpace = Buffer + oldCapacity;
-			charsToGet = oldCapacity;
+			startOfFreeSpace = Buffer + validContentsCount;
+			charsToGet = oldCapacity + (oldCapacity - validContentsCount);
 		}
-		
+
 		// should read charsToGet bytes from file; not charsToFill
 		// we want to get as much from the file as possible without re-allocation
 		int read = u_file_read(startOfFreeSpace, charsToGet, File);
-		Limit = Buffer + BufferCapacity;
-		
+		Limit = Buffer + BufferCapacity;		
 		if (read < charsToGet) {
 			HasReachedEof = true;
 			
@@ -190,7 +194,7 @@ bool mvceditor::UCharBufferedFileClass::HasReachedEnd() const {
 
 void  mvceditor::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 	CharacterPos += TokenStart - Buffer;
-	
+
 	// copy any good content to the beginning of the buffer
 	// since Limit already points PAST the string, we don't do +1 
 	int goodCount = Limit - TokenStart;
