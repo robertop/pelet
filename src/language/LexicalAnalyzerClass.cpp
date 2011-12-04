@@ -82,7 +82,6 @@ int mvceditor::LexicalAnalyzerClass::NextToken() {
 }
 
 bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
-	// TODO: escape sequences \x41 to 'A' for double quoted strings and heredoc
 	if (!Buffer) {
 		return false;
 	}
@@ -120,6 +119,8 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 			if (i < (len - 1)) {
 				next = start[i + 1];
 			}
+
+			// for now, don't bother with escape sequences like \x41 => 'A' for double quoted strings and heredoc
 			if (isSingleQuoteString && c == '\\' && next == '\'') {
 
 				// a literal single quote

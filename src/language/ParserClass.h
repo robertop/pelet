@@ -207,6 +207,13 @@ public:
 private:
 
 	/**
+	 * Clean up any resources after parsing a file. This is also very important if the 
+	 * parser opens a string; without closing the string will not be released (if it's a
+	 * long string).
+	 */
+	void Close();
+
+	/**
 	 * Loops through all of the lexer's tokens, notifying the different observers when classes, methods, functions 
 	 * are found.
 	 */

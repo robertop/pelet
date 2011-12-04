@@ -38,7 +38,7 @@ mvceditor::LanguageDiscoveryClass::LanguageDiscoveryClass()
 	, Code() {
 }
 
-mvceditor::LanguageDiscoveryClass::~LanguageDiscoveryClass() {
+void mvceditor::LanguageDiscoveryClass::Close() {
 	Buffer.Close();
 }
 

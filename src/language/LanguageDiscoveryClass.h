@@ -66,8 +66,6 @@ public:
 	};
 
 	LanguageDiscoveryClass();
-	
-	~LanguageDiscoveryClass();
 
 	/**
 	 * Initialize with the given code
@@ -75,6 +73,12 @@ public:
 	 * @return bool TRUE if code is not empty.
 	 */
 	bool Open(const UnicodeString& code);
+
+	/**
+	 * Clean up any resources after lexing. This should be done so that
+	 * the string given in the Open() call can be released.
+	 */
+	void Close();
 
 	/**
 	 * Figure out what language is

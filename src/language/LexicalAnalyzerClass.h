@@ -83,7 +83,6 @@ class LexicalAnalyzerClass {
 	/**
 	 * Clean up any resources after lexing
 	 */
-	 // TODO: this needs to get called by the Parsers
 	void Close();
 
 	/**

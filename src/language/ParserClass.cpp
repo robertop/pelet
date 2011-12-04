@@ -44,6 +44,7 @@ mvceditor::ParserClass::ParserClass()
 bool mvceditor::ParserClass::ScanFile(const wxString& file) {
 	if (Lexer.OpenFile(file)) {
 		Scan();
+		Close();
 		return true;
 	}
 	return false;
@@ -52,6 +53,7 @@ bool mvceditor::ParserClass::ScanFile(const wxString& file) {
 bool mvceditor::ParserClass::ScanString(const UnicodeString& code) {
 	if (Lexer.OpenString(code)) {
 		Scan();
+		Close();
 		return true;
 	}
 	return false;
@@ -455,6 +457,7 @@ bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& re
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
+		Lexer.Close();
 	}
 	return ret;
 }
@@ -467,8 +470,13 @@ bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsCl
 		results.File = wxEmptyString;
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
+		Lexer.Close();
 	}
 	return ret;
+}
+
+void mvceditor::ParserClass::Close() {
+	Lexer.Close();
 }
 
 mvceditor::LintResultsClass::LintResultsClass()
