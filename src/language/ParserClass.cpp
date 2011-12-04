@@ -442,6 +442,8 @@ void mvceditor::ParserClass::ScanDefineDeclaration(const UnicodeString& phpDocCo
 
 bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results) {
 	
+	// TODO: lint check fails on some Symfony files that the PHP linter shows as correct
+
 	// set to 1 and the parser will dump stuff to std out. useful for debugging only
 	extern int php53debug;
 	php53debug = 0;
