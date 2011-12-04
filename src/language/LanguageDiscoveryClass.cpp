@@ -85,6 +85,7 @@ discovery_next_char:
 		case SYNTAX_HTML_ATTRIBUTE: goto discovery_HTML_ATTRIBUTE;
 		case SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE: goto discovery_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE;
 		case SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE: goto discovery_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE;
+		case SYNTAX_HTML_COMMENT: goto discovery_HTML_COMMENT;
 		case SYNTAX_HTML_ENTITY: goto discovery_HTML_ENTITY;
 		case SYNTAX_HTML_TAG: goto discovery_HTML_TAG;
 		case SYNTAX_PHP_BACKTICK: goto discovery_PHP_BACKTICK;
@@ -113,9 +114,11 @@ discovery_2:
 		++Buffer.Current;
 		{ return syntax; }
 discovery_4:
-		++Buffer.Current;
-		switch ((yych = *Buffer.Current)) {
-		case '?':	goto discovery_14;
+		yyaccept = 0;
+		yych = *(Buffer.Marker = ++Buffer.Current);
+		switch (yych) {
+		case '!':	goto discovery_14;
+		case '?':	goto discovery_16;
 		default:	goto discovery_5;
 		}
 discovery_5:
@@ -140,81 +143,99 @@ discovery_13:
 		yych = *++Buffer.Current;
 		goto discovery_7;
 discovery_14:
-		yyaccept = 0;
-		yych = *(Buffer.Marker = ++Buffer.Current);
+		yych = *++Buffer.Current;
 		switch (yych) {
-		case '=':	goto discovery_18;
-		case 'P':
-		case 'p':	goto discovery_16;
+		case '-':	goto discovery_26;
 		default:	goto discovery_15;
 		}
 discovery_15:
-		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+		Buffer.Current = Buffer.Marker;
+		switch (yyaccept) {
+		case 0: 	goto discovery_5;
+		case 1: 	goto discovery_17;
+		}
 discovery_16:
-		yych = *++Buffer.Current;
+		yyaccept = 1;
+		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case 'H':
-		case 'h':	goto discovery_20;
+		case '=':	goto discovery_19;
+		case 'P':
+		case 'p':	goto discovery_18;
 		default:	goto discovery_17;
 		}
 discovery_17:
-		Buffer.Current = Buffer.Marker;
-		goto discovery_15;
+		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 discovery_18:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto discovery_21;
+		default:	goto discovery_15;
+		}
+discovery_19:
 		++Buffer.Current;
 		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_20:
+discovery_21:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case 'P':
-		case 'p':	goto discovery_21;
-		default:	goto discovery_17;
+		case 'p':	goto discovery_22;
+		default:	goto discovery_15;
 		}
-discovery_21:
+discovery_22:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_22;
-		case '\r':	goto discovery_24;
-		default:	goto discovery_17;
+		case ' ':	goto discovery_23;
+		case '\r':	goto discovery_25;
+		default:	goto discovery_15;
 		}
-discovery_22:
-		++Buffer.Current;
 discovery_23:
-		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_24:
 		++Buffer.Current;
-		switch ((yych = *Buffer.Current)) {
-		case '\n':	goto discovery_22;
-		default:	goto discovery_23;
+discovery_24:
+		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+discovery_25:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case '\n':	goto discovery_23;
+		default:	goto discovery_24;
 		}
+discovery_26:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case '-':	goto discovery_27;
+		default:	goto discovery_15;
+		}
+discovery_27:
+		++Buffer.Current;
+		{ lastCondition = SYNTAX_HTML; syntax = SYNTAX_HTML_COMMENT; goto discovery_start; }
 /* *********************************** */
 discovery_HTML_ATTRIBUTE:
 		if ((Buffer.Limit - Buffer.Current) < 7) DISCOVERY_BUFFER_FILL(7);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_27;
-		case '/':	goto discovery_32;
-		case '<':	goto discovery_29;
-		case '=':	goto discovery_31;
-		case '>':	goto discovery_33;
-		default:	goto discovery_35;
+		case 0x00:	goto discovery_31;
+		case '/':	goto discovery_36;
+		case '<':	goto discovery_33;
+		case '=':	goto discovery_35;
+		case '>':	goto discovery_37;
+		default:	goto discovery_39;
 		}
-discovery_27:
+discovery_31:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_29:
+discovery_33:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '?':	goto discovery_47;
-		default:	goto discovery_30;
+		case '?':	goto discovery_51;
+		default:	goto discovery_34;
 		}
-discovery_30:
+discovery_34:
 		{ goto discovery_start; }
-discovery_31:
+discovery_35:
 		yyaccept = 0;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
@@ -225,47 +246,47 @@ discovery_31:
 		case '\r':
 		case ' ':
 		case '"':
-		case '\'':	goto discovery_39;
-		default:	goto discovery_30;
+		case '\'':	goto discovery_43;
+		default:	goto discovery_34;
 		}
-discovery_32:
+discovery_36:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '>':	goto discovery_36;
-		default:	goto discovery_30;
+		case '>':	goto discovery_40;
+		default:	goto discovery_34;
 		}
-discovery_33:
+discovery_37:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_35:
+discovery_39:
 		yych = *++Buffer.Current;
-		goto discovery_30;
-discovery_36:
+		goto discovery_34;
+discovery_40:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_38:
+discovery_42:
 		++Buffer.Current;
 		if (Buffer.Limit <= Buffer.Current) DISCOVERY_BUFFER_FILL(1);
 		yych = *Buffer.Current;
-discovery_39:
+discovery_43:
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_38;
-		case '\r':	goto discovery_41;
-		case '"':	goto discovery_45;
-		case '\'':	goto discovery_43;
-		default:	goto discovery_40;
+		case ' ':	goto discovery_42;
+		case '\r':	goto discovery_45;
+		case '"':	goto discovery_49;
+		case '\'':	goto discovery_47;
+		default:	goto discovery_44;
 		}
-discovery_40:
+discovery_44:
 		Buffer.Current = Buffer.Marker;
 		switch (yyaccept) {
-		case 0: 	goto discovery_30;
-		case 1: 	goto discovery_48;
+		case 0: 	goto discovery_34;
+		case 1: 	goto discovery_52;
 		}
-discovery_41:
+discovery_45:
 		++Buffer.Current;
 		if (Buffer.Limit <= Buffer.Current) DISCOVERY_BUFFER_FILL(1);
 		yych = *Buffer.Current;
@@ -274,481 +295,533 @@ discovery_41:
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_38;
-		case '\r':	goto discovery_41;
-		case '"':	goto discovery_45;
-		case '\'':	goto discovery_43;
-		default:	goto discovery_40;
+		case ' ':	goto discovery_42;
+		case '\r':	goto discovery_45;
+		case '"':	goto discovery_49;
+		case '\'':	goto discovery_47;
+		default:	goto discovery_44;
 		}
-discovery_43:
+discovery_47:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE; goto discovery_start; }
-discovery_45:
+discovery_49:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE; goto discovery_start; }
-discovery_47:
+discovery_51:
 		yyaccept = 1;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case '=':	goto discovery_50;
+		case '=':	goto discovery_54;
 		case 'P':
-		case 'p':	goto discovery_49;
-		default:	goto discovery_48;
+		case 'p':	goto discovery_53;
+		default:	goto discovery_52;
 		}
-discovery_48:
+discovery_52:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_49:
+discovery_53:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case 'H':
-		case 'h':	goto discovery_52;
-		default:	goto discovery_40;
+		case 'h':	goto discovery_56;
+		default:	goto discovery_44;
 		}
-discovery_50:
+discovery_54:
 		++Buffer.Current;
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_52:
+discovery_56:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case 'P':
-		case 'p':	goto discovery_53;
-		default:	goto discovery_40;
+		case 'p':	goto discovery_57;
+		default:	goto discovery_44;
 		}
-discovery_53:
+discovery_57:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_54;
-		case '\r':	goto discovery_56;
-		default:	goto discovery_40;
+		case ' ':	goto discovery_58;
+		case '\r':	goto discovery_60;
+		default:	goto discovery_44;
 		}
-discovery_54:
+discovery_58:
 		++Buffer.Current;
-discovery_55:
+discovery_59:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_56:
+discovery_60:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '\n':	goto discovery_54;
-		default:	goto discovery_55;
+		case '\n':	goto discovery_58;
+		default:	goto discovery_59;
 		}
 /* *********************************** */
 discovery_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE:
 		if ((Buffer.Limit - Buffer.Current) < 7) DISCOVERY_BUFFER_FILL(7);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_59;
-		case '"':	goto discovery_64;
-		case '<':	goto discovery_61;
-		case '\\':	goto discovery_63;
-		default:	goto discovery_66;
+		case 0x00:	goto discovery_63;
+		case '"':	goto discovery_68;
+		case '<':	goto discovery_65;
+		case '\\':	goto discovery_67;
+		default:	goto discovery_70;
 		}
-discovery_59:
+discovery_63:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_61:
+discovery_65:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '?':	goto discovery_69;
-		default:	goto discovery_62;
+		case '?':	goto discovery_73;
+		default:	goto discovery_66;
 		}
-discovery_62:
+discovery_66:
 		{ goto discovery_start; }
-discovery_63:
+discovery_67:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '"':	goto discovery_67;
-		default:	goto discovery_62;
+		case '"':	goto discovery_71;
+		default:	goto discovery_66;
 		}
-discovery_64:
+discovery_68:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML_ATTRIBUTE; goto discovery_start; }
-discovery_66:
+discovery_70:
 		yych = *++Buffer.Current;
-		goto discovery_62;
-discovery_67:
+		goto discovery_66;
+discovery_71:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_69:
+discovery_73:
 		yyaccept = 0;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case '=':	goto discovery_73;
+		case '=':	goto discovery_77;
 		case 'P':
-		case 'p':	goto discovery_71;
-		default:	goto discovery_70;
+		case 'p':	goto discovery_75;
+		default:	goto discovery_74;
 		}
-discovery_70:
-		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_71:
-		yych = *++Buffer.Current;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto discovery_75;
-		default:	goto discovery_72;
-		}
-discovery_72:
-		Buffer.Current = Buffer.Marker;
-		goto discovery_70;
-discovery_73:
-		++Buffer.Current;
+discovery_74:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 discovery_75:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto discovery_76;
-		default:	goto discovery_72;
+		case 'H':
+		case 'h':	goto discovery_79;
+		default:	goto discovery_76;
 		}
 discovery_76:
+		Buffer.Current = Buffer.Marker;
+		goto discovery_74;
+discovery_77:
+		++Buffer.Current;
+		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+discovery_79:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto discovery_80;
+		default:	goto discovery_76;
+		}
+discovery_80:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_77;
-		case '\r':	goto discovery_79;
-		default:	goto discovery_72;
+		case ' ':	goto discovery_81;
+		case '\r':	goto discovery_83;
+		default:	goto discovery_76;
 		}
-discovery_77:
+discovery_81:
 		++Buffer.Current;
-discovery_78:
+discovery_82:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_79:
+discovery_83:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '\n':	goto discovery_77;
-		default:	goto discovery_78;
+		case '\n':	goto discovery_81;
+		default:	goto discovery_82;
 		}
 /* *********************************** */
 discovery_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE:
 		if ((Buffer.Limit - Buffer.Current) < 7) DISCOVERY_BUFFER_FILL(7);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_82;
-		case '\'':	goto discovery_87;
-		case '<':	goto discovery_84;
-		case '\\':	goto discovery_86;
-		default:	goto discovery_89;
+		case 0x00:	goto discovery_86;
+		case '\'':	goto discovery_91;
+		case '<':	goto discovery_88;
+		case '\\':	goto discovery_90;
+		default:	goto discovery_93;
 		}
-discovery_82:
+discovery_86:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_84:
+discovery_88:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '?':	goto discovery_92;
-		default:	goto discovery_85;
+		case '?':	goto discovery_96;
+		default:	goto discovery_89;
 		}
-discovery_85:
+discovery_89:
 		{ goto discovery_start; }
-discovery_86:
+discovery_90:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\'':	goto discovery_90;
-		default:	goto discovery_85;
+		case '\'':	goto discovery_94;
+		default:	goto discovery_89;
 		}
-discovery_87:
+discovery_91:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML_ATTRIBUTE; goto discovery_start; }
-discovery_89:
+discovery_93:
 		yych = *++Buffer.Current;
-		goto discovery_85;
-discovery_90:
+		goto discovery_89;
+discovery_94:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_92:
+discovery_96:
 		yyaccept = 0;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case '=':	goto discovery_96;
+		case '=':	goto discovery_100;
 		case 'P':
-		case 'p':	goto discovery_94;
-		default:	goto discovery_93;
+		case 'p':	goto discovery_98;
+		default:	goto discovery_97;
 		}
-discovery_93:
-		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_94:
-		yych = *++Buffer.Current;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto discovery_98;
-		default:	goto discovery_95;
-		}
-discovery_95:
-		Buffer.Current = Buffer.Marker;
-		goto discovery_93;
-discovery_96:
-		++Buffer.Current;
+discovery_97:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 discovery_98:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto discovery_99;
-		default:	goto discovery_95;
+		case 'H':
+		case 'h':	goto discovery_102;
+		default:	goto discovery_99;
 		}
 discovery_99:
+		Buffer.Current = Buffer.Marker;
+		goto discovery_97;
+discovery_100:
+		++Buffer.Current;
+		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+discovery_102:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto discovery_103;
+		default:	goto discovery_99;
+		}
+discovery_103:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_100;
-		case '\r':	goto discovery_102;
-		default:	goto discovery_95;
+		case ' ':	goto discovery_104;
+		case '\r':	goto discovery_106;
+		default:	goto discovery_99;
 		}
-discovery_100:
+discovery_104:
 		++Buffer.Current;
-discovery_101:
+discovery_105:
 		{ lastCondition = SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_102:
+discovery_106:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '\n':	goto discovery_100;
-		default:	goto discovery_101;
+		case '\n':	goto discovery_104;
+		default:	goto discovery_105;
 		}
+/* *********************************** */
+discovery_HTML_COMMENT:
+		if ((Buffer.Limit - Buffer.Current) < 3) DISCOVERY_BUFFER_FILL(3);
+		yych = *Buffer.Current;
+		switch (yych) {
+		case 0x00:	goto discovery_109;
+		case '\n':	goto discovery_111;
+		case '\r':	goto discovery_113;
+		case '-':	goto discovery_114;
+		default:	goto discovery_116;
+		}
+discovery_109:
+		++Buffer.Current;
+		{ return syntax; }
+discovery_111:
+		++Buffer.Current;
+discovery_112:
+		{ Buffer.IncrementLine(); goto discovery_start; }
+discovery_113:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case '\n':	goto discovery_121;
+		default:	goto discovery_112;
+		}
+discovery_114:
+		yyaccept = 0;
+		yych = *(Buffer.Marker = ++Buffer.Current);
+		switch (yych) {
+		case '-':	goto discovery_117;
+		default:	goto discovery_115;
+		}
+discovery_115:
+		{ goto discovery_start; }
+discovery_116:
+		yych = *++Buffer.Current;
+		goto discovery_115;
+discovery_117:
+		yych = *++Buffer.Current;
+		switch (yych) {
+		case '>':	goto discovery_119;
+		default:	goto discovery_118;
+		}
+discovery_118:
+		Buffer.Current = Buffer.Marker;
+		goto discovery_115;
+discovery_119:
+		++Buffer.Current;
+		{  syntax = SYNTAX_HTML; goto discovery_start; }
+discovery_121:
+		++Buffer.Current;
+		yych = *Buffer.Current;
+		goto discovery_112;
 /* *********************************** */
 discovery_HTML_ENTITY:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_105;
+		case 0x00:	goto discovery_124;
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_107;
-		case '\r':	goto discovery_109;
-		default:	goto discovery_110;
+		case ' ':	goto discovery_126;
+		case '\r':	goto discovery_128;
+		default:	goto discovery_129;
 		}
-discovery_105:
+discovery_124:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_107:
+discovery_126:
 		++Buffer.Current;
-discovery_108:
+discovery_127:
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_109:
+discovery_128:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_112;
-		default:	goto discovery_108;
+		case '\n':	goto discovery_131;
+		default:	goto discovery_127;
 		}
-discovery_110:
+discovery_129:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_112:
+discovery_131:
 		++Buffer.Current;
 		yych = *Buffer.Current;
-		goto discovery_108;
+		goto discovery_127;
 /* *********************************** */
 discovery_HTML_TAG:
 		if ((Buffer.Limit - Buffer.Current) < 7) DISCOVERY_BUFFER_FILL(7);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_115;
+		case 0x00:	goto discovery_134;
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_119;
-		case '\n':	goto discovery_121;
-		case '\r':	goto discovery_123;
-		case '/':	goto discovery_124;
-		case '<':	goto discovery_117;
-		case '>':	goto discovery_125;
-		default:	goto discovery_127;
+		case ' ':	goto discovery_138;
+		case '\n':	goto discovery_140;
+		case '\r':	goto discovery_142;
+		case '/':	goto discovery_143;
+		case '<':	goto discovery_136;
+		case '>':	goto discovery_144;
+		default:	goto discovery_146;
 		}
-discovery_115:
+discovery_134:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_117:
+discovery_136:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '?':	goto discovery_131;
-		default:	goto discovery_118;
+		case '?':	goto discovery_150;
+		default:	goto discovery_137;
 		}
-discovery_118:
+discovery_137:
 		{ goto discovery_start; }
-discovery_119:
+discovery_138:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML_ATTRIBUTE; goto discovery_start; }
-discovery_121:
+discovery_140:
 		++Buffer.Current;
-discovery_122:
+discovery_141:
 		{ Buffer.IncrementLine(); syntax = SYNTAX_HTML_ATTRIBUTE; goto discovery_start; }
-discovery_123:
+discovery_142:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_130;
-		default:	goto discovery_122;
+		case '\n':	goto discovery_149;
+		default:	goto discovery_141;
 		}
-discovery_124:
+discovery_143:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '>':	goto discovery_128;
-		default:	goto discovery_118;
+		case '>':	goto discovery_147;
+		default:	goto discovery_137;
 		}
-discovery_125:
+discovery_144:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_127:
+discovery_146:
 		yych = *++Buffer.Current;
-		goto discovery_118;
-discovery_128:
+		goto discovery_137;
+discovery_147:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_130:
+discovery_149:
 		yych = *++Buffer.Current;
-		goto discovery_122;
-discovery_131:
+		goto discovery_141;
+discovery_150:
 		yyaccept = 0;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case '=':	goto discovery_135;
+		case '=':	goto discovery_154;
 		case 'P':
-		case 'p':	goto discovery_133;
-		default:	goto discovery_132;
+		case 'p':	goto discovery_152;
+		default:	goto discovery_151;
 		}
-discovery_132:
+discovery_151:
 		{ lastCondition = SYNTAX_HTML_TAG; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_133:
+discovery_152:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case 'H':
-		case 'h':	goto discovery_137;
-		default:	goto discovery_134;
+		case 'h':	goto discovery_156;
+		default:	goto discovery_153;
 		}
-discovery_134:
+discovery_153:
 		Buffer.Current = Buffer.Marker;
-		goto discovery_132;
-discovery_135:
+		goto discovery_151;
+discovery_154:
 		++Buffer.Current;
 		{ lastCondition = SYNTAX_HTML_TAG; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_137:
+discovery_156:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case 'P':
-		case 'p':	goto discovery_138;
-		default:	goto discovery_134;
+		case 'p':	goto discovery_157;
+		default:	goto discovery_153;
 		}
-discovery_138:
+discovery_157:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_139;
-		case '\r':	goto discovery_141;
-		default:	goto discovery_134;
+		case ' ':	goto discovery_158;
+		case '\r':	goto discovery_160;
+		default:	goto discovery_153;
 		}
-discovery_139:
+discovery_158:
 		++Buffer.Current;
-discovery_140:
+discovery_159:
 		{ lastCondition = SYNTAX_HTML_TAG; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_141:
+discovery_160:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '\n':	goto discovery_139;
-		default:	goto discovery_140;
+		case '\n':	goto discovery_158;
+		default:	goto discovery_159;
 		}
 /* *********************************** */
 discovery_PHP_BACKTICK:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_144;
-		case '\n':	goto discovery_148;
-		case '\r':	goto discovery_150;
-		case '`':	goto discovery_146;
-		default:	goto discovery_151;
+		case 0x00:	goto discovery_163;
+		case '\n':	goto discovery_167;
+		case '\r':	goto discovery_169;
+		case '`':	goto discovery_165;
+		default:	goto discovery_170;
 		}
-discovery_144:
+discovery_163:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_146:
+discovery_165:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_148:
+discovery_167:
 		++Buffer.Current;
-discovery_149:
+discovery_168:
 		{ Buffer.IncrementLine(); goto discovery_start; }
-discovery_150:
+discovery_169:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_153;
-		default:	goto discovery_149;
+		case '\n':	goto discovery_172;
+		default:	goto discovery_168;
 		}
-discovery_151:
+discovery_170:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_153:
+discovery_172:
 		++Buffer.Current;
 		yych = *Buffer.Current;
-		goto discovery_149;
+		goto discovery_168;
 /* *********************************** */
 discovery_PHP_DOUBLE_QUOTE_STRING:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_156;
-		case '\n':	goto discovery_162;
-		case '\r':	goto discovery_164;
-		case '"':	goto discovery_160;
-		case '\\':	goto discovery_158;
-		default:	goto discovery_165;
+		case 0x00:	goto discovery_175;
+		case '\n':	goto discovery_181;
+		case '\r':	goto discovery_183;
+		case '"':	goto discovery_179;
+		case '\\':	goto discovery_177;
+		default:	goto discovery_184;
 		}
-discovery_156:
+discovery_175:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_158:
+discovery_177:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '"':	goto discovery_169;
-		case '\\':	goto discovery_167;
-		default:	goto discovery_159;
+		case '"':	goto discovery_188;
+		case '\\':	goto discovery_186;
+		default:	goto discovery_178;
 		}
-discovery_159:
+discovery_178:
 		{ goto discovery_start; }
-discovery_160:
+discovery_179:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_SCRIPT; }
-discovery_162:
+discovery_181:
 		++Buffer.Current;
-discovery_163:
+discovery_182:
 		{ Buffer.IncrementLine(); goto discovery_start; }
-discovery_164:
+discovery_183:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_166;
-		default:	goto discovery_163;
+		case '\n':	goto discovery_185;
+		default:	goto discovery_182;
 		}
-discovery_165:
+discovery_184:
 		yych = *++Buffer.Current;
-		goto discovery_159;
-discovery_166:
+		goto discovery_178;
+discovery_185:
 		yych = *++Buffer.Current;
-		goto discovery_163;
-discovery_167:
+		goto discovery_182;
+discovery_186:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_169:
+discovery_188:
 		++Buffer.Current;
 		{ goto discovery_start; }
 /* *********************************** */
 discovery_PHP_HEREDOC:
 		if (Buffer.Limit <= Buffer.Current) DISCOVERY_BUFFER_FILL(1);
 		yych = *Buffer.Current;
-		if (yych >= 0x01) goto discovery_175;
+		if (yych >= 0x01) goto discovery_194;
 		++Buffer.Current;
 		{ return syntax; }
-discovery_175:
+discovery_194:
 		++Buffer.Current;
 		{ if (mvceditor::HandleHeredoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 /* *********************************** */
@@ -756,93 +829,93 @@ discovery_PHP_LINE_COMMENT:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_179;
-		case '\n':	goto discovery_181;
-		case '\r':	goto discovery_183;
-		case '?':	goto discovery_184;
-		default:	goto discovery_186;
+		case 0x00:	goto discovery_198;
+		case '\n':	goto discovery_200;
+		case '\r':	goto discovery_202;
+		case '?':	goto discovery_203;
+		default:	goto discovery_205;
 		}
-discovery_179:
+discovery_198:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_181:
+discovery_200:
 		++Buffer.Current;
-discovery_182:
+discovery_201:
 		{ Buffer.IncrementLine(); syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_183:
+discovery_202:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_189;
-		default:	goto discovery_182;
+		case '\n':	goto discovery_208;
+		default:	goto discovery_201;
 		}
-discovery_184:
+discovery_203:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '>':	goto discovery_187;
-		default:	goto discovery_185;
+		case '>':	goto discovery_206;
+		default:	goto discovery_204;
 		}
-discovery_185:
+discovery_204:
 		{ goto discovery_start; }
-discovery_186:
+discovery_205:
 		yych = *++Buffer.Current;
-		goto discovery_185;
-discovery_187:
+		goto discovery_204;
+discovery_206:
 		++Buffer.Current;
 		{ syntax = SYNTAX_HTML; goto discovery_start; }
-discovery_189:
+discovery_208:
 		++Buffer.Current;
 		yych = *Buffer.Current;
-		goto discovery_182;
+		goto discovery_201;
 /* *********************************** */
 discovery_PHP_MULTI_LINE_COMMENT:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_192;
-		case '\n':	goto discovery_194;
-		case '\r':	goto discovery_196;
-		case '*':	goto discovery_197;
-		default:	goto discovery_199;
+		case 0x00:	goto discovery_211;
+		case '\n':	goto discovery_213;
+		case '\r':	goto discovery_215;
+		case '*':	goto discovery_216;
+		default:	goto discovery_218;
 		}
-discovery_192:
+discovery_211:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_194:
+discovery_213:
 		++Buffer.Current;
-discovery_195:
+discovery_214:
 		{ Buffer.IncrementLine(); goto discovery_start; }
-discovery_196:
+discovery_215:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_202;
-		default:	goto discovery_195;
+		case '\n':	goto discovery_221;
+		default:	goto discovery_214;
 		}
-discovery_197:
+discovery_216:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '/':	goto discovery_200;
-		default:	goto discovery_198;
+		case '/':	goto discovery_219;
+		default:	goto discovery_217;
 		}
-discovery_198:
+discovery_217:
 		{ goto discovery_start; }
-discovery_199:
+discovery_218:
 		yych = *++Buffer.Current;
-		goto discovery_198;
-discovery_200:
+		goto discovery_217;
+discovery_219:
 		++Buffer.Current;
 		{  syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_202:
+discovery_221:
 		++Buffer.Current;
 		yych = *Buffer.Current;
-		goto discovery_195;
+		goto discovery_214;
 /* *********************************** */
 discovery_PHP_NOWDOC:
 		if (Buffer.Limit <= Buffer.Current) DISCOVERY_BUFFER_FILL(1);
 		yych = *Buffer.Current;
-		if (yych >= 0x01) goto discovery_207;
+		if (yych >= 0x01) goto discovery_226;
 		++Buffer.Current;
 		{ return syntax; }
-discovery_207:
+discovery_226:
 		++Buffer.Current;
 		{ if (mvceditor::HandleNowdoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 /* *********************************** */
@@ -850,66 +923,66 @@ discovery_PHP_SCRIPT:
 		if ((Buffer.Limit - Buffer.Current) < 3) DISCOVERY_BUFFER_FILL(3);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_211;
-		case '"':	goto discovery_220;
-		case '#':	goto discovery_216;
-		case '\'':	goto discovery_218;
-		case '/':	goto discovery_215;
-		case '<':	goto discovery_224;
-		case '?':	goto discovery_213;
-		case '`':	goto discovery_222;
-		default:	goto discovery_225;
+		case 0x00:	goto discovery_230;
+		case '"':	goto discovery_239;
+		case '#':	goto discovery_235;
+		case '\'':	goto discovery_237;
+		case '/':	goto discovery_234;
+		case '<':	goto discovery_243;
+		case '?':	goto discovery_232;
+		case '`':	goto discovery_241;
+		default:	goto discovery_244;
 		}
-discovery_211:
+discovery_230:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_213:
+discovery_232:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '>':	goto discovery_250;
-		default:	goto discovery_214;
+		case '>':	goto discovery_269;
+		default:	goto discovery_233;
 		}
-discovery_214:
+discovery_233:
 		{ goto discovery_start; }
-discovery_215:
+discovery_234:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '*':	goto discovery_246;
-		case '/':	goto discovery_248;
-		default:	goto discovery_214;
+		case '*':	goto discovery_265;
+		case '/':	goto discovery_267;
+		default:	goto discovery_233;
 		}
-discovery_216:
+discovery_235:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_LINE_COMMENT; goto discovery_start;}
-discovery_218:
+discovery_237:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_SINGLE_QUOTE_STRING; goto discovery_start;}
-discovery_220:
+discovery_239:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_DOUBLE_QUOTE_STRING; goto discovery_start;}
-discovery_222:
+discovery_241:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_BACKTICK; goto discovery_start;}
-discovery_224:
+discovery_243:
 		yyaccept = 0;
 		yych = *(Buffer.Marker = ++Buffer.Current);
 		switch (yych) {
-		case '<':	goto discovery_226;
-		default:	goto discovery_214;
+		case '<':	goto discovery_245;
+		default:	goto discovery_233;
 		}
-discovery_225:
+discovery_244:
 		yych = *++Buffer.Current;
-		goto discovery_214;
-discovery_226:
+		goto discovery_233;
+discovery_245:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '<':	goto discovery_228;
-		default:	goto discovery_227;
+		case '<':	goto discovery_247;
+		default:	goto discovery_246;
 		}
-discovery_227:
+discovery_246:
 		Buffer.Current = Buffer.Marker;
-		goto discovery_214;
-discovery_228:
+		goto discovery_233;
+discovery_247:
 		++Buffer.Current;
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
@@ -981,16 +1054,16 @@ discovery_228:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto discovery_227;
+		case '~':	goto discovery_246;
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto discovery_228;
-		case '"':	goto discovery_231;
-		case '\'':	goto discovery_230;
-		default:	goto discovery_232;
+		case ' ':	goto discovery_247;
+		case '"':	goto discovery_250;
+		case '\'':	goto discovery_249;
+		default:	goto discovery_251;
 		}
-discovery_230:
+discovery_249:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '\'':
@@ -1003,10 +1076,10 @@ discovery_230:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto discovery_227;
-		default:	goto discovery_241;
+		case '9':	goto discovery_246;
+		default:	goto discovery_260;
 		}
-discovery_231:
+discovery_250:
 		yych = *++Buffer.Current;
 		switch (yych) {
 		case '"':
@@ -1019,10 +1092,10 @@ discovery_231:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto discovery_227;
-		default:	goto discovery_238;
+		case '9':	goto discovery_246;
+		default:	goto discovery_257;
 		}
-discovery_232:
+discovery_251:
 		++Buffer.Current;
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
@@ -1088,26 +1161,26 @@ discovery_232:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto discovery_227;
-		case '\n':	goto discovery_234;
-		case '\r':	goto discovery_236;
-		default:	goto discovery_232;
+		case '~':	goto discovery_246;
+		case '\n':	goto discovery_253;
+		case '\r':	goto discovery_255;
+		default:	goto discovery_251;
 		}
-discovery_234:
+discovery_253:
 		++Buffer.Current;
-discovery_235:
+discovery_254:
 		{ Buffer.IncrementLine(); syntax = SYNTAX_PHP_HEREDOC; goto discovery_next_char; }
-discovery_236:
+discovery_255:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_234;
-		default:	goto discovery_235;
+		case '\n':	goto discovery_253;
+		default:	goto discovery_254;
 		}
-discovery_237:
+discovery_256:
 		++Buffer.Current;
 		if ((Buffer.Limit - Buffer.Current) < 3) DISCOVERY_BUFFER_FILL(3);
 		yych = *Buffer.Current;
-discovery_238:
+discovery_257:
 		switch (yych) {
 		case 0x00:
 		case 0x01:
@@ -1171,22 +1244,22 @@ discovery_238:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto discovery_227;
-		case '"':	goto discovery_239;
-		default:	goto discovery_237;
+		case '~':	goto discovery_246;
+		case '"':	goto discovery_258;
+		default:	goto discovery_256;
 		}
-discovery_239:
+discovery_258:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_234;
-		case '\r':	goto discovery_236;
-		default:	goto discovery_227;
+		case '\n':	goto discovery_253;
+		case '\r':	goto discovery_255;
+		default:	goto discovery_246;
 		}
-discovery_240:
+discovery_259:
 		++Buffer.Current;
 		if ((Buffer.Limit - Buffer.Current) < 3) DISCOVERY_BUFFER_FILL(3);
 		yych = *Buffer.Current;
-discovery_241:
+discovery_260:
 		switch (yych) {
 		case 0x00:
 		case 0x01:
@@ -1250,34 +1323,34 @@ discovery_241:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto discovery_227;
-		case '\'':	goto discovery_242;
-		default:	goto discovery_240;
+		case '~':	goto discovery_246;
+		case '\'':	goto discovery_261;
+		default:	goto discovery_259;
 		}
-discovery_242:
+discovery_261:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_243;
-		case '\r':	goto discovery_245;
-		default:	goto discovery_227;
+		case '\n':	goto discovery_262;
+		case '\r':	goto discovery_264;
+		default:	goto discovery_246;
 		}
-discovery_243:
+discovery_262:
 		++Buffer.Current;
-discovery_244:
+discovery_263:
 		{ Buffer.IncrementLine(); syntax = SYNTAX_PHP_NOWDOC; goto discovery_next_char; }
-discovery_245:
+discovery_264:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_243;
-		default:	goto discovery_244;
+		case '\n':	goto discovery_262;
+		default:	goto discovery_263;
 		}
-discovery_246:
+discovery_265:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_MULTI_LINE_COMMENT; goto discovery_start;}
-discovery_248:
+discovery_267:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_LINE_COMMENT; goto discovery_start;}
-discovery_250:
+discovery_269:
 		++Buffer.Current;
 		{ syntax = lastCondition; goto discovery_start; }
 /* *********************************** */
@@ -1285,48 +1358,48 @@ discovery_PHP_SINGLE_QUOTE_STRING:
 		if ((Buffer.Limit - Buffer.Current) < 2) DISCOVERY_BUFFER_FILL(2);
 		yych = *Buffer.Current;
 		switch (yych) {
-		case 0x00:	goto discovery_254;
-		case '\n':	goto discovery_260;
-		case '\r':	goto discovery_262;
-		case '\'':	goto discovery_258;
-		case '\\':	goto discovery_256;
-		default:	goto discovery_263;
+		case 0x00:	goto discovery_273;
+		case '\n':	goto discovery_279;
+		case '\r':	goto discovery_281;
+		case '\'':	goto discovery_277;
+		case '\\':	goto discovery_275;
+		default:	goto discovery_282;
 		}
-discovery_254:
+discovery_273:
 		++Buffer.Current;
 		{ return syntax; }
-discovery_256:
+discovery_275:
 		++Buffer.Current;
 		switch ((yych = *Buffer.Current)) {
-		case '\'':	goto discovery_267;
-		case '\\':	goto discovery_265;
-		default:	goto discovery_257;
+		case '\'':	goto discovery_286;
+		case '\\':	goto discovery_284;
+		default:	goto discovery_276;
 		}
-discovery_257:
+discovery_276:
 		{ goto discovery_start; }
-discovery_258:
+discovery_277:
 		++Buffer.Current;
 		{ syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-discovery_260:
+discovery_279:
 		++Buffer.Current;
-discovery_261:
+discovery_280:
 		{ Buffer.IncrementLine(); goto discovery_start; }
-discovery_262:
+discovery_281:
 		yych = *++Buffer.Current;
 		switch (yych) {
-		case '\n':	goto discovery_264;
-		default:	goto discovery_261;
+		case '\n':	goto discovery_283;
+		default:	goto discovery_280;
 		}
-discovery_263:
+discovery_282:
 		yych = *++Buffer.Current;
-		goto discovery_257;
-discovery_264:
+		goto discovery_276;
+discovery_283:
 		yych = *++Buffer.Current;
-		goto discovery_261;
-discovery_265:
+		goto discovery_280;
+discovery_284:
 		++Buffer.Current;
 		{ goto discovery_start; }
-discovery_267:
+discovery_286:
 		++Buffer.Current;
 		{ goto discovery_start; }
 	}

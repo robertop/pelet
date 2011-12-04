@@ -53,8 +53,8 @@ public:
 		SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE,
 		SYNTAX_HTML_ATTRIBUTE_DOUBLE_QUOTE_VALUE,
 		SYNTAX_HTML_ENTITY,
+		SYNTAX_HTML_COMMENT,
 		
-		// TODO: HTML_COMMENT ???
 		SYNTAX_PHP_SCRIPT,
 		SYNTAX_PHP_LINE_COMMENT,
 		SYNTAX_PHP_MULTI_LINE_COMMENT,
@@ -62,12 +62,7 @@ public:
 		SYNTAX_PHP_DOUBLE_QUOTE_STRING,
 		SYNTAX_PHP_HEREDOC,
 		SYNTAX_PHP_NOWDOC,
-		SYNTAX_PHP_BACKTICK,
-		
-		// TODO: add SQL
-		// TODO: add javascript
-		// TODO: HTML links to internal pages so that autocomplete can fill in internal links
-		// TODO: HTML classes from CSS so that autocomplete can fill in CSS class names
+		SYNTAX_PHP_BACKTICK
 	};
 
 	LanguageDiscoveryClass();

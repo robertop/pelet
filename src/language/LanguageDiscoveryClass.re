@@ -102,6 +102,7 @@ WHITESPACE = [ \t\v\f];
 <HTML> '<?php' (WHITESPACE | NEWLINE) { lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; } 
 <HTML> "<?=" { lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; } 
 <HTML> "<?" { lastCondition = SYNTAX_HTML; syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+<HTML> "<!--" { lastCondition = SYNTAX_HTML; syntax = SYNTAX_HTML_COMMENT; goto discovery_start; } 
 <HTML> NEWLINE { Buffer.IncrementLine(); goto discovery_start; }
 <HTML> "<" { syntax = SYNTAX_HTML_TAG; goto discovery_start; }
 <HTML> "&" { syntax = SYNTAX_HTML_ENTITY; goto discovery_start; }
@@ -156,6 +157,10 @@ WHITESPACE = [ \t\v\f];
 <HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE> [\\] ['] { goto discovery_start; }
 <HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE> ['] { syntax = SYNTAX_HTML_ATTRIBUTE; goto discovery_start; }
 <HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE> ANY { goto discovery_start; }
+
+<HTML_COMMENT> NEWLINE { Buffer.IncrementLine(); goto discovery_start; }
+<HTML_COMMENT> "-->" {  syntax = SYNTAX_HTML; goto discovery_start; }
+<HTML_COMMENT> ANY { goto discovery_start; }
 
 /*!ignore:re2c 
  * HTML entity as soon as a whitespace is entered get out of this condition
