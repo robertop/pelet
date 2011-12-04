@@ -113,14 +113,6 @@ class LexicalAnalyzerClass {
 	 * @return int line number
 	 */
 	int GetLineNumber() const;
-	
-	/**
-	 * The current column number (characters after the newline).
-	 * This number is 1-based (starts at 1)
-	 * 
-	 * 	@return int 
-	 */
-	int GetColumnNumber() const;
 
 	/**
 	 * Returns the position of Current in the context of this buffer

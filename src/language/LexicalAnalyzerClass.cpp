@@ -194,10 +194,6 @@ int mvceditor::LexicalAnalyzerClass::GetLineNumber() const {
 	return Buffer ? Buffer->GetLineNumber() : 0;
 }
 
-int mvceditor::LexicalAnalyzerClass::GetColumnNumber() const {
-	return Buffer ? Buffer->GetColumnNumber() : 0;
-}
-
 int mvceditor::LexicalAnalyzerClass::GetCharacterPosition() const {
 	return Buffer ? Buffer->GetCharacterPosition() : 0;
 }

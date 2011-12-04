@@ -290,10 +290,6 @@ int mvceditor::UCharBufferedFileClass::GetCharacterPosition() const {
 	return CharacterPos + (TokenStart - Buffer);
 }
 
-int mvceditor::UCharBufferedFileClass::GetColumnNumber() const {
-	return TokenStart - Buffer;
-}
-
 mvceditor::UCharBufferClass::UCharBufferClass() 
 	: BufferClass()
 	, Buffer(NULL) 
@@ -348,9 +344,5 @@ bool mvceditor::UCharBufferClass::HasReachedEnd() const {
 }
 
 int mvceditor::UCharBufferClass::GetCharacterPosition() const {
-	return TokenStart - Buffer;
-}
-
-int mvceditor::UCharBufferClass::GetColumnNumber() const {
 	return TokenStart - Buffer;
 }

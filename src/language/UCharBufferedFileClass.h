@@ -93,13 +93,6 @@ public:
 	 * 	@return int 
 	 */
 	int GetLineNumber() const;
-	
-	/**
-	 *  the current column number (characters after the newline)
-	 * 
-	 * 	@return int 
-	 */
-	virtual int GetColumnNumber() const = 0;
 
 	/**
 	 * Returns the position of Current in the context of this buffer
@@ -195,13 +188,6 @@ public:
 	 * @return TRUE if the Current pointer has reached the end of the input
 	 */
 	bool HasReachedEnd() const;
-	
-	/**
-	 *  the current column number (characters after the newline)
-	 * 
-	 * 	@return int 
-	 */
-	int GetColumnNumber() const;
 
 	/**
 	 * Returns the position of Current in the context of this buffer
@@ -319,14 +305,6 @@ public:
 	 * @return TRUE if the Current pointer has reached the end of the input
 	 */
 	bool HasReachedEnd() const;
-	
-	/**
-	 *  the current column number (characters after the newline)
-	 * 
-	 * 	@return int 
-	 */
-	 // TODO: the comment does not line up with what the code does
-	int GetColumnNumber() const;
 
 	/**
 	 * Returns the position of Current in the context of this buffer
