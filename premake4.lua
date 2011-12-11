@@ -273,7 +273,8 @@ solution "mvc_editor"
 			"src/search/ResourceFinderClass.cpp",
 			"src/widgets/ResourceUpdateThreadClass.cpp",
 			"src/widgets/ThreadWithHeartbeatClass.cpp",
-			"src/windows/StringHelperClass.cpp"
+			"src/windows/StringHelperClass.cpp",
+			"src/MvcEditorErrors.cpp"
 		}
 		includedirs { "src/", "lib/UnitTest++/src/", "tests/" }
 		links { "unit_test++" }
@@ -319,7 +320,8 @@ solution "mvc_editor"
 			"src/search/FindInFilesClass.cpp",
 			"src/search/DirectorySearchClass.cpp",
 			"src/search/FinderClass.cpp",
-			"src/windows/StringHelperClass.cpp"
+			"src/windows/StringHelperClass.cpp",
+			"src/MvcEditorErrors.cpp"
 		}
 		includedirs { "src/" }
 		configuration "Debug"
@@ -348,7 +350,8 @@ solution "mvc_editor"
 			"src/language/*.cpp",
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
-			"src/search/ResourceFinderClass.cpp"
+			"src/search/ResourceFinderClass.cpp",
+			"src/MvcEditorErrors.cpp"
 		}
 		includedirs { "src/" }
 		sociconfiguration()
