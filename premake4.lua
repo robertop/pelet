@@ -141,8 +141,9 @@ end
 
 function sociconfiguration()
 
-	-- TODO this section needs to be cleaned up, it's a little confusing because the SOCI headers and
-	-- libraries do not end up in the same place (is there an INSTALL for SOCI windows?)
+	-- ATTN the SOCI action tries to build SOCI to the same directory on Win32 and linux
+	-- but the generated solution file does not seem to honor the CMAKE_INSTALL_PREFIX
+	-- for now windows output directory is different than the linux one
 	if os.is "windows" then
 		includedirs { 
 			"lib/soci/src/core",
