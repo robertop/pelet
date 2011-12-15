@@ -71,8 +71,10 @@ void mvceditor::BufferClass::Close() {
  * --------------------------------------------
  *
  *
- * As AppendLexeme() is called, buffer is filled with contents from the file
- * Example: AppendLexeme(7)
+ * The client code will increment the current position (Current++); it is required that the
+ * client perform bounds checking by making sure that Current did not go past the
+ * end of the buffer ((Limit - Current) > 0)
+ * Example: After 4 increments (Current++ 4 times)
  *
  *               ------------------------------
  *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
@@ -84,29 +86,55 @@ void mvceditor::BufferClass::Close() {
  *  TokenStart    ^ |   |   |   |  |   |    |
  * --------------------------------------------
  *
- * The caller will kepp incrementing the Current Pointer until it decides
+ * The caller will keep incrementing the Current Pointer until it decides
  * that it has found a token.  A token can then be retrieved with by reading
- * the string that starts at TokenStart and is of length (Current - TokenStart).
- * The caller then calls MarkTokenStart() to start the reading of the next token. Resetting 
- * the buffer will copy any unread contents (that have been read from the file but have
- * not been given out) to the start of the buffer.
- * This copying makes the lexing process less efficient; there was an attempt to remove the 
- * copy for speed purposes  however this proved difficult because it is very easy to run 
- * into out of bounds errors. (Notice index 0, 1, and 2 are overwritten).
+ * the string that starts at TokenStart and is of length (Current - TokenStart). When
+ * the client wants to start reading the next token, the client will call
+ * MarkTokenStart(); this method will align TokenStart to the Current, essentially
+ * 'erasing' the previous content.
+ * 
+ *
+ * At some point the client code will get to the end of the buffer. The client code
+ * will then call AppendToLexeme() method; this method will fetch new data from the 
+ * backing file. Getting new data from the file involves 3 things:
+ * (1) Copying the current token (anything from TokenStart onwards) to the 
+ *     beginning of the buffer
+ * (2) If, the current token is close to taking up the entire buffer, then the buffer
+ *     is expanded.
+ * (3) New content from the file is pulled and placed at the end of the current 
+ *     token.
+ *
+ * For example, here Current is at the end of the buffer (Limit - Current == 1)
+ * When AppendToLexeme() is called, Buffer[5 ... ] will be copied to the
+ * beginning of the buffer, and 
  *
  *               ------------------------------
  *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
  * --------------------------------------------
- *  contents      ' | h | e | o | ' | h | e |
+ *  contents      e | c | h | o | ' | h | e |
+ * --------------------------------------------
+ *  Current         |   |   |   |   |   | ^ |
+ * --------------------------------------------
+ *  TokenStart      |   |   |   | ^ |   |   |
+ * --------------------------------------------
+ *  Limit           |   |   |   |   |   |   | ^
+ * --------------------------------------------
+ *
+ * Notice that TokenStart and Current point to new positions
+ * within the buffer, but the content of the token is till the 
+ * same.  After the AppendToLexeme() call, Buffer[3 ...]
+ * contains the new content read from the file.
+ *
+ *               ------------------------------
+ *  index         0 | 1 | 2 | 3 | 4 | 5 | 6 |
+ * --------------------------------------------
+ *  contents      ' | h | e | N | N | N | N |
  * --------------------------------------------
  *  Current       ^ |   |   |   |   |   |   |
  * --------------------------------------------
  *  TokenStart    ^ |   |   |   |  |   |    |
  * --------------------------------------------
  *
- * At some point, Current will reach the end of the buffer (Current - Buffer) == BufferCapacity. In this
- * case, the token is bigger than the buffer; we will need to allocate more space
- * for the buffer (GrowBuffer() does this).
  */
 void mvceditor::UCharBufferedFileClass::CleanupBuffer() {
 	if (Buffer) {
