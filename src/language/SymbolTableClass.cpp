@@ -30,7 +30,19 @@
 mvceditor::SymbolClass::SymbolClass() 
 	: Lexeme()
 	, TypeLexeme() 
-	, Type(PRIMITIVE) {
+	, SourceSignature()
+	, Type(PRIMITIVE)
+	, Pos(0)
+	, IsStatic(false) {
+}
+
+void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
+	Lexeme = src.Lexeme;
+	TypeLexeme = src.TypeLexeme;
+	SourceSignature = src.SourceSignature;
+	Type = src.Type;
+	Pos = src.Pos;
+	IsStatic = src.IsStatic;	
 }
 
 mvceditor::SymbolTableClass::SymbolTableClass() 
@@ -408,8 +420,8 @@ void mvceditor::SymbolTableClass::Print() {
 		u_fprintf(out, "Symbol Table For %S\n", s.getTerminatedBuffer());
 		for (size_t j = 0; j < scopedSymbols.size(); ++j) {
 			SymbolClass symbol = scopedSymbols[j];
-			u_fprintf(out, "%d\t%S\t%S\t%d\t%d\t%S\n", 
-				(int)j, symbol.Lexeme.getTerminatedBuffer(), 
+			u_fprintf(out, "%d\t%S\t%d\t%S\t%d\t%d\t%S\n", 
+				(int)j, symbol.Lexeme.getTerminatedBuffer(), symbol.Pos,
 				symbol.TypeLexeme.getTerminatedBuffer(), symbol.Type, 
 				symbol.IsStatic, symbol.SourceSignature.getTerminatedBuffer()); 
 		}
@@ -548,4 +560,14 @@ void mvceditor::SymbolTableClass::CreatePredefinedVariables(std::vector<SymbolCl
 		variableSymbol.Type = SymbolClass::PRIMITIVE;
 		scope.push_back(variableSymbol);
 	}
+}
+
+void mvceditor::SymbolTableClass::Push(mvceditor::SymbolClass* symbol) {
+	SymbolClass variableSymbol;
+	variableSymbol.Copy(*symbol);
+	GetScope(UNICODE_STRING_SIMPLE(""), UNICODE_STRING_SIMPLE("")).push_back(variableSymbol);
+}
+
+int mvceditor::SymbolTableClass::GetSymbolCount() {
+	return GetScope(UNICODE_STRING_SIMPLE(""), UNICODE_STRING_SIMPLE("")).size();
 }

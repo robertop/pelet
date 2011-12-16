@@ -32,6 +32,8 @@
 
 namespace mvceditor {
 
+class SymbolTableClass;
+
 /**
  * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
  * given code and make calls to the different registered observers.  There are observers for classes, functions, and 
@@ -190,7 +192,7 @@ public:
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if file was found and had no syntax errors.
 	 */
-	bool LintFile(const wxString& file, LintResultsClass& results);
+	bool LintFile(const wxString& file, LintResultsClass& results, mvceditor::SymbolTableClass* symbolTable);
 	
 	/**
 	 * Perform a syntax check on the given source code. Source code is assumed to be
@@ -202,7 +204,7 @@ public:
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if the code has no syntax errors.
 	 */
-	bool LintString(const UnicodeString& code, LintResultsClass& results);
+	bool LintString(const UnicodeString& code, LintResultsClass& results, mvceditor::SymbolTableClass* symbolTable);
 	
 private:
 

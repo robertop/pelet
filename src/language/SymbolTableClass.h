@@ -99,6 +99,8 @@ public:
 	 * The symbol type
 	 */
 	Types Type;
+
+	int Pos;
 	
 	/**
 	 * If TRUE, this symbol uses static access ("::")
@@ -106,6 +108,8 @@ public:
 	bool IsStatic;
 	
 	SymbolClass();
+
+	void Copy(const SymbolClass& src);
 	
 };
 
@@ -139,6 +143,10 @@ public:
 	 * @param UnicodeString code the code to analyze
 	 */
 	void CreateSymbols(const UnicodeString& code);
+
+	void Push(SymbolClass* symbol);
+
+	int GetSymbolCount();
 	
 	/**
 	 * Calculates the type information for the variable at the given position. For example, if sourceCode represented this string:

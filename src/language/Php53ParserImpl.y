@@ -8,7 +8,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * furnished to do so, subject to th	`e following conditions:
  * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -26,21 +26,44 @@
  */	
  #include <language/UCharBufferedFileClass.h>
  #include <language/LexicalAnalyzerClass.h>
+ #include <language/SymbolTableClass.h>
  #include <unicode/unistr.h>
  #include <string>
+ #include <stack>
  
  #if defined(_MSC_VER)
     #pragma warning(disable:4065) // Bison generates a switch statement without a case
  #endif
  
- #define YYSTYPE int
+ typedef struct SymbolStruct {
+	int Token;
+	mvceditor::SymbolClass* Symbol;
+ } Symbol_t;
  
- int php53lex(YYSTYPE* semanticValue, mvceditor::LexicalAnalyzerClass &analyzer);
- void php53error(mvceditor::LexicalAnalyzerClass &analyzer, std::string msg);
+ static void FreeSymbol(Symbol_t& value);
+ 
+ static void CopySymbol(Symbol_t& from, Symbol_t& to);
+ 
+ static void SetSymbolType(Symbol_t& value, mvceditor::SymbolClass::Types type);
+ 
+ static void MakeVariable(Symbol_t& value, mvceditor::SymbolClass::Types type, mvceditor::SymbolTableClass& symbolTable);
+ 
+ static void MakeTempVariable(Symbol_t& value, mvceditor::SymbolTableClass& symbolTable);
+ 
+ static void MakeTempVariableAndStack(const UnicodeString& object, Symbol_t& property, Symbol_t& lookahead, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString>& variableStack);
+
+ 
+  #define YYSTYPE Symbol_t
+ 
+ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer);
+ void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString> variableStack, std::string msg);
 %}
 
 %parse-param { mvceditor::LexicalAnalyzerClass &analyzer }
+%parse-param { mvceditor::SymbolTableClass& symbolTable }
+%parse-param { std::stack<UnicodeString>& variableStack }
 %lex-param  { mvceditor::LexicalAnalyzerClass &analyzer }
+%destructor { FreeSymbol($$); } <*>
 
 /**
  * This parser was ripped from the PHP source. All credit goes to them.
@@ -50,7 +73,6 @@
 %error-verbose
 %expect 2
 %name-prefix "php53"
-
 %debug
 
 %left T_INCLUDE T_INCLUDE_ONCE T_EVAL T_REQUIRE T_REQUIRE_ONCE
@@ -604,10 +626,22 @@ non_empty_for_expr:
 
 expr_without_variable:
 		T_LIST '(' {} assignment_list ')' '=' expr {}
-	|	variable '=' expr	 {}
+	|	variable '=' expr	 
+		{ 
+			SetSymbolType($1, $3.Symbol ? $3.Symbol->Type : mvceditor::SymbolClass::PRIMITIVE);  
+			if ($3.Symbol) {
+				$1.Symbol->TypeLexeme = $3.Symbol->TypeLexeme;
+			}
+			MakeVariable($1, $1.Symbol->Type, symbolTable);
+		}
 	|	variable '=' '&' variable {}
 	|	variable '=' '&' T_NEW class_name_reference {} ctor_arguments {}
-	|	T_NEW class_name_reference {} ctor_arguments {}
+	|	T_NEW class_name_reference {} ctor_arguments 
+		{ 
+			CopySymbol($$, $2); 
+			SetSymbolType($$, mvceditor::SymbolClass::OBJECT);  
+			$$.Symbol->TypeLexeme = $2.Symbol->Lexeme;
+		}
 	|	T_CLONE expr {}
 	|	variable T_PLUS_EQUAL expr  {}
 	|	variable T_MINUS_EQUAL expr {}
@@ -663,14 +697,14 @@ expr_without_variable:
 	|	T_INT_CAST expr  {}
 	|	T_DOUBLE_CAST expr  {}
 	|	T_STRING_CAST expr {}
-	|	T_ARRAY_CAST expr  {}
-	|	T_OBJECT_CAST expr  {}
+	|	T_ARRAY_CAST expr  { SetSymbolType($$, mvceditor::SymbolClass::ARRAY); }
+	|	T_OBJECT_CAST expr  { SetSymbolType($$, mvceditor::SymbolClass::OBJECT); }
 	|	T_BOOL_CAST expr {}
 	|	T_UNSET_CAST expr {}
 	|	T_EXIT exit_expr {}
 	|	'@' {} expr {}
 	|	scalar			 {}
-	|	T_ARRAY '(' array_pair_list ')' {}
+	|	T_ARRAY '(' array_pair_list ')' { SetSymbolType($$, mvceditor::SymbolClass::ARRAY); }
 	|	'`' backticks_expr '`' {}
 	|	T_PRINT expr  {}
 	|	function is_reference '(' {}
@@ -696,7 +730,11 @@ lexical_var_list:
 function_call:
 		namespace_name '(' {}
 				function_call_parameter_list
-				')' {}
+				')' 
+		{
+			CopySymbol($$, $1); 
+			SetSymbolType($$, mvceditor::SymbolClass::FUNCTION);
+		}
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name '(' {}
 				function_call_parameter_list
 				')' {}
@@ -717,7 +755,7 @@ function_call:
 			')' {}
 	|	variable_without_objects  '(' {}
 			function_call_parameter_list ')'
-		 {}
+		 { }
 ;
 
 class_name:
@@ -858,27 +896,53 @@ rw_variable:
 ;
 
 variable:
-		base_variable_with_function_calls T_OBJECT_OPERATOR {}
-			object_property {} method_or_not variable_properties
-		 {}
-	|	base_variable_with_function_calls {}
+		base_variable_with_function_calls 
+		T_OBJECT_OPERATOR
+		object_property 
+		method_or_not 
+			{ 
+				if ($1.Symbol->Type == mvceditor::SymbolClass::FUNCTION) {
+					$4.Token = '(';
+				}
+				MakeTempVariableAndStack($1.Symbol->Lexeme, $3, $4, symbolTable, variableStack);
+			} 
+		variable_properties 
+			{ 
+				variableStack.pop();
+				SetSymbolType($$, mvceditor::SymbolClass::OBJECT);
+			}
+	|	base_variable_with_function_calls 
+			{
+				if ($1.Symbol && $1.Symbol->Type == mvceditor::SymbolClass::FUNCTION) {
+					CopySymbol($$, $1);
+					MakeTempVariable($$, symbolTable);
+				}
+				else {
+					CopySymbol($$, $1);
+				}
+			}
 ;
 
 variable_properties:
-		variable_properties variable_property {}
+		variable_properties variable_property { variableStack.pop(); }
 	|	/* empty */ {}
 ;
 
 
 variable_property:
-		T_OBJECT_OPERATOR object_property {} method_or_not {}
+		T_OBJECT_OPERATOR 
+		object_property 
+		method_or_not 
+		{
+			MakeTempVariableAndStack(variableStack.top(), $2, $3, symbolTable, variableStack);
+		}
 ;
 
 method_or_not:
 		'(' {}
 				function_call_parameter_list ')'
-		 {}
-	|	/* empty */ {}
+		 { }
+	|	/* empty */ { }
 ;
 
 variable_without_objects:
@@ -986,7 +1050,7 @@ encaps_list:
 
 
 encaps_var:
-		T_VARIABLE {}
+		T_VARIABLE { }
 	|	T_VARIABLE '[' {} encaps_var_offset ']' {}
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING {}
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}' {}
@@ -1025,32 +1089,119 @@ class_constant:
 
 %%
 
-int php53lex(YYSTYPE* semanticValue, mvceditor::LexicalAnalyzerClass &analyzer) {
+int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 	int ret = analyzer.NextToken();
-	*semanticValue = ret;
-
+	
 	// ignore these token; there are no parse rules for them
 	if (T_OPEN_TAG == ret) {
-		ret = analyzer.NextToken();
-		*semanticValue = ret;
+		ret = analyzer.NextToken();	
 	}
 	if (T_DOC_COMMENT == ret) {
 		
 		// advance past all DOC comments (there can be more than one consecutive)
 		while (T_DOC_COMMENT == ret) {
 			ret = analyzer.NextToken();
-			*semanticValue = ret;
 		}
 	}
 	if (T_CLOSE_TAG == ret) {
 		ret = ';';
-		*semanticValue = ret;
+	}
+	
+	value->Token = ret;
+	value->Symbol = NULL;
+	switch (ret) {
+	case T_VARIABLE:
+		value->Symbol = new mvceditor::SymbolClass();	
+		analyzer.GetLexeme(value->Symbol->Lexeme);
+		value->Symbol->Pos = analyzer.GetCharacterPosition();
+		break;
+	case T_STRING:
+		value->Symbol = new mvceditor::SymbolClass();
+		analyzer.GetLexeme(value->Symbol->Lexeme);
+		value->Symbol->Pos = analyzer.GetCharacterPosition();
+		break;
+	case T_CONSTANT_ENCAPSED_STRING:
+		value->Symbol = new mvceditor::SymbolClass();
+		value->Symbol->Type = mvceditor::SymbolClass::PRIMITIVE;
+		analyzer.GetLexeme(value->Symbol->Lexeme);
+		value->Symbol->Pos = analyzer.GetCharacterPosition();
+		break;
+	case T_LNUMBER:
+	case T_DNUMBER:
+		value->Symbol = new mvceditor::SymbolClass();
+		value->Symbol->Type = mvceditor::SymbolClass::PRIMITIVE;
+		analyzer.GetLexeme(value->Symbol->Lexeme);
+		value->Symbol->Pos = analyzer.GetCharacterPosition();
+		break;
+	default:	
+		break;
 	}
 	return ret;
 }
 
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, std::string msg) {
+void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString> variableStack, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);
+}
+
+void FreeSymbol(Symbol_t& value) {
+	if (value.Symbol) {
+		delete value.Symbol;
+		value.Symbol = NULL;
+	}	
+}
+
+void CopySymbol(Symbol_t& from, Symbol_t& to) {
+	if (!to.Symbol && from.Symbol) {
+	to.Symbol = new mvceditor::SymbolClass();
+		to.Symbol->Copy(*from.Symbol);
+	}
+}
+
+void SetSymbolType(Symbol_t& value, mvceditor::SymbolClass::Types type) {
+	if (!value.Symbol) {
+		value.Symbol = new mvceditor::SymbolClass();
+	}
+	value.Symbol->Type = type;
+}
+
+void MakeVariable(Symbol_t& value, mvceditor::SymbolClass::Types type, mvceditor::SymbolTableClass& symbolTable) {
+	SetSymbolType(value, type);
+	symbolTable.Push(value.Symbol);
+}
+
+void MakeTempVariable(Symbol_t& value, mvceditor::SymbolTableClass& symbolTable) {
+	UnicodeString newVarName;
+	int capacity = 10;
+	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", symbolTable.GetSymbolCount());
+	newVarName.releaseBuffer(written);
+	value.Symbol->SourceSignature = value.Symbol->Lexeme;
+	value.Symbol->Lexeme = newVarName;
+	
+	symbolTable.Push(value.Symbol);
+} 
+
+void MakeTempVariableAndStack(const UnicodeString& object, Symbol_t& property, Symbol_t& lookahead, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString>& variableStack) {
+	UnicodeString newVarName;
+	int capacity = 10;
+	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", symbolTable.GetSymbolCount());
+	newVarName.releaseBuffer(written);
+	if ('(' == lookahead.Token && object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
+		property.Symbol->Type = mvceditor::SymbolClass::METHOD;
+		property.Symbol->SourceSignature = object + UNICODE_STRING_SIMPLE("->") + property.Symbol->Lexeme;
+		property.Symbol->Lexeme = newVarName;
+	}
+	else if ('(' == lookahead.Token && !object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
+		property.Symbol->Type = mvceditor::SymbolClass::PRIMITIVE; // dont know the function return type yet
+		property.Symbol->SourceSignature = object;
+		property.Symbol->Lexeme = newVarName;
+	}
+	else {
+		property.Symbol->Type = mvceditor::SymbolClass::PROPERTY;
+		property.Symbol->SourceSignature = object + UNICODE_STRING_SIMPLE("->") + property.Symbol->Lexeme;
+		property.Symbol->Lexeme = newVarName;
+	}
+	symbolTable.Push(property.Symbol);
+	variableStack.push(newVarName);
 }
