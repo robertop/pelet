@@ -24,7 +24,6 @@
  */
 #include <language/ParserClass.h>
 #include <language/TokenClass.h>
-#include <unicode/uchar.h>
 #include <stack>
 
 /* 
@@ -32,7 +31,7 @@
  * Bison won't put this declaration in the header file so we must
  * manually make it available here by using "extern"
  */
-extern int php53parse (mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString>& variableStack);
+extern int php53parse(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
 
 mvceditor::ParserClass::ParserClass()
 	: Lexer()
@@ -43,17 +42,25 @@ mvceditor::ParserClass::ParserClass()
 }
 
 bool mvceditor::ParserClass::ScanFile(const wxString& file) {
+	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		Scan();
+		
+		// set to 1 and the parser will dump stuff to std out. useful for debugging only
+		extern int php53debug;
+		php53debug = 0;
+
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		ret = php53parse(Lexer, observers) == 0;
 		Close();
-		return true;
 	}
-	return false;
+	return ret;
 }
 
 bool mvceditor::ParserClass::ScanString(const UnicodeString& code) {
+	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		Scan();
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		ret = php53parse(Lexer, observers) == 0;
 		Close();
 		return true;
 	}
@@ -76,6 +83,7 @@ void mvceditor::ParserClass::SetVariableObserver(VariableObserverClass* observer
 	VariableObserver = observer;
 }
 
+/*
 void mvceditor::ParserClass::Scan() {
 	Token = Lexer.NextToken();
 	Lexer.GetLexeme(Lexeme);
@@ -342,10 +350,7 @@ void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& class
 			//  $var = new Foo
 			Advance();
 			if (mvceditor::TokenClass::IDENTIFIER == Token) {
-				if (VariableObserver) {
-					VariableObserver->VariableCreatedWithNewFound(className, functionName, variableName, Lexeme, 
-						UNICODE_STRING_SIMPLE(""));
-				}
+				
 			}
 		}
 		else if (mvceditor::TokenClass::IDENTIFIER == Token) {
@@ -354,10 +359,7 @@ void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& class
 			UnicodeString functionCalledName = Lexeme;
 			Advance();
 			if (mvceditor::TokenClass::OPENPARENTHESIS == Token) {
-				if (VariableObserver) {
-					VariableObserver->VariableCreatedWithFunctionFound(className, functionName, variableName, 
-						functionCalledName, UNICODE_STRING_SIMPLE(""));	
-				}
+				
 			}
 		}
 		else if (mvceditor::TokenClass::VARIABLE == Token) {
@@ -372,13 +374,11 @@ void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& class
 					Advance();
 					if (mvceditor::TokenClass::OPENPARENTHESIS == Token) {
 						if (VariableObserver && isThis) {
-							VariableObserver->VariableCreatedWithThisMethodFound(className, functionName, 
-								variableName, objectMethodName, UNICODE_STRING_SIMPLE(""));	
+							
 						}
 						else if (VariableObserver) {
 							object.remove(0, 1);
-							VariableObserver->VariableCreatedWithObjectMethodFound(className, functionName, 
-								variableName, object, objectMethodName, UNICODE_STRING_SIMPLE(""));	
+							
 						}
 					}
 				}
@@ -388,8 +388,7 @@ void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& class
 				// $var = $anotherVar
 				if (VariableObserver) {
 					object.remove(0, 1);
-					VariableObserver->VariableCreatedWithAnotherVariableFound(className, functionName, 
-						variableName, object, UNICODE_STRING_SIMPLE(""));	
+				
 				}
 			}
 		}
@@ -397,8 +396,7 @@ void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& class
 			
 			// $var = 'hello' or $var =  123
 			if (VariableObserver) {
-				VariableObserver->VariableConstantFound(className, functionName, variableName, Lexeme, 
-					UNICODE_STRING_SIMPLE(""));	
+				
 			}
 		}
 	}
@@ -442,8 +440,9 @@ void mvceditor::ParserClass::ScanDefineDeclaration(const UnicodeString& phpDocCo
 		}
 	}
 }
+*/
 
-bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results, mvceditor::SymbolTableClass* symbolTable) {
+bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results) {
 
 	// set to 1 and the parser will dump stuff to std out. useful for debugging only
 	extern int php53debug;
@@ -451,8 +450,8 @@ bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& re
 	
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		std::stack<UnicodeString> variableStack;
-		ret = php53parse(Lexer, *symbolTable, variableStack) == 0;
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -462,11 +461,11 @@ bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& re
 	return ret;
 }
 
-bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results, mvceditor::SymbolTableClass* symbolTable) {
+bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		std::stack<UnicodeString> variableStack;
-		ret = php53parse(Lexer, *symbolTable, variableStack) == 0;
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = wxEmptyString;
 		results.LineNumber = Lexer.GetLineNumber();

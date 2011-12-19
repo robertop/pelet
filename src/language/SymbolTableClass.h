@@ -34,86 +34,6 @@
 namespace mvceditor {
 
 /**
- * The SymbolClass represents one symbol.  A symbol is represents a variable in the code, along with the type
- * information associated with that variable.
- * 
- */
-class SymbolClass {
-
-public:
-	
-	/**
-	 * All the types that are currently being captured.
-	 */
-	enum Types {
-		PRIMITIVE, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
-		ARRAY,
-		OBJECT, // this symbol is an object
-		FUNCTION,
-		CLASS,  
-		METHOD, // this symbol is a method call  // 5 
-		PROPERTY,
-		PARENT // this symbol is a call to a parent method
-	};
-	
-	/**
-	 * The symbol's name. In the case of a variable: the variable name 
-	 * (minus the siguil '$').
-	 * Examples
-	 * 
-	 * this
-	 * self
-	 * parent
-	 * aVariable
-	 * 
-	 * @var UnicodeString
-	 */
-	UnicodeString Lexeme;
-	
-	/**
-	 * If this a symbol is an object, TypeLexeme is the class name that the variable
-	 * belongs to.  
-	 * Note that this may be the empty string (in the case of primitives). 
-	 * 
-	 * @var UnicodeString
-	 */
-	UnicodeString TypeLexeme;
-	
-	/**
-	 * If this symbol is a variable; the SourceSignature will contain the function (or method)
-	 * signature that was used to create the variable.  For example for the line
-	 * 
-	 *   class Action {
-	 *     // ...
-	 *     function func() {
-	 *       $name = $this->getName();
-	 *     }
-	 *   }
-	 * 
-	 * then  for the symbol name the SourceSignature will be Action::getName
-	 * For types PRIMITIVE, ARRAY, FUNCTION, and CLASS this property will hold the empty string,
-	 */
-	UnicodeString SourceSignature;
-	
-	/**
-	 * The symbol type
-	 */
-	Types Type;
-
-	int Pos;
-	
-	/**
-	 * If TRUE, this symbol uses static access ("::")
-	 */
-	bool IsStatic;
-	
-	SymbolClass();
-
-	void Copy(const SymbolClass& src);
-	
-};
-
-/**
  * Case-sensitive string comparator for use as STL Predicate
  */
 class UnicodeStringComparatorClass {
@@ -231,26 +151,8 @@ public:
 	virtual void FunctionFound(const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment);
 		
-	virtual void VariableCreatedWithNewFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& returnType, const UnicodeString& comment);
-		
-	virtual void VariableCreatedWithFunctionFound(const UnicodeString& className, const UnicodeString& methodName,
-		const UnicodeString& variableName, const UnicodeString& functionCalledName, const UnicodeString& comment);	
-
-	virtual void VariableCreatedWithThisMethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& methodCalledName, const UnicodeString& comment);	
-		
-	virtual void VariableCreatedWithObjectMethodFound(const UnicodeString& className, const UnicodeString& methodName,
-		const UnicodeString& variableName,  const UnicodeString& objectName, const UnicodeString& objectMethod, 
-		const UnicodeString& comment);
-		
-	virtual void VariableCreatedWithAnotherVariableFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& sourceVariable, 
-		const UnicodeString& comment);
-		
-	virtual void VariableConstantFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& constant, const UnicodeString& comment);
-
+	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+		const SymbolClass& symbol, const UnicodeString& comment);
 private:
 
 	/**

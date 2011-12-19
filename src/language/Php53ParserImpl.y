@@ -24,46 +24,28 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
- #include <language/UCharBufferedFileClass.h>
- #include <language/LexicalAnalyzerClass.h>
- #include <language/SymbolTableClass.h>
- #include <unicode/unistr.h>
- #include <string>
- #include <stack>
- 
- #if defined(_MSC_VER)
-    #pragma warning(disable:4065) // Bison generates a switch statement without a case
- #endif
- 
- typedef struct SymbolStruct {
-	int Token;
-	mvceditor::SymbolClass* Symbol;
- } Symbol_t;
- 
- static void FreeSymbol(Symbol_t& value);
- 
- static void CopySymbol(Symbol_t& from, Symbol_t& to);
- 
- static void SetSymbolType(Symbol_t& value, mvceditor::SymbolClass::Types type);
- 
- static void MakeVariable(Symbol_t& value, mvceditor::SymbolClass::Types type, mvceditor::SymbolTableClass& symbolTable);
- 
- static void MakeTempVariable(Symbol_t& value, mvceditor::SymbolTableClass& symbolTable);
- 
- static void MakeTempVariableAndStack(const UnicodeString& object, Symbol_t& property, Symbol_t& lookahead, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString>& variableStack);
+#include <language/UCharBufferedFileClass.h>
+#include <language/LexicalAnalyzerClass.h>
+#include <language/ParserObserverClass.h>
+#include <unicode/unistr.h>
+#include <string>
 
+#if defined(_MSC_VER)
+	#pragma warning(disable:4065) // Bison generates a switch statement without a case
+#endif
+
+
+#define YYSTYPE mvceditor::SemanticValueClass
  
-  #define YYSTYPE Symbol_t
- 
- int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer);
- void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString> variableStack, std::string msg);
+int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer);
+void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg);
+
 %}
 
 %parse-param { mvceditor::LexicalAnalyzerClass &analyzer }
-%parse-param { mvceditor::SymbolTableClass& symbolTable }
-%parse-param { std::stack<UnicodeString>& variableStack }
+%parse-param { mvceditor::ObserverQuadClass& observers }
 %lex-param  { mvceditor::LexicalAnalyzerClass &analyzer }
-%destructor { FreeSymbol($$); } <*>
+%destructor { $$.Free(); } <*>
 
 /**
  * This parser was ripped from the PHP source. All credit goes to them.
@@ -209,8 +191,8 @@ top_statement_list:
 ;
 
 namespace_name:
-		T_STRING {}
-	|	namespace_name T_NS_SEPARATOR T_STRING {}
+		T_STRING { observers.CurrentQualifiedName.AddName($1); observers.CurrentQualifiedName.GrabComment($1); }
+	|	namespace_name T_NS_SEPARATOR T_STRING { observers.CurrentQualifiedName.AddName($3); }
 ;
 
 top_statement:
@@ -354,54 +336,127 @@ is_reference:
 
 
 unticked_function_declaration_statement:
-		function is_reference T_STRING {}
-			'(' parameter_list ')' '{' inner_statement_list '}' {}
+		function is_reference T_STRING 
+		{
+			if ('&' == $2.Token) {
+				observers.CurrentMember.AppendToSignature($2);
+			}
+			observers.CurrentMember.GrabMemberName($3);
+			observers.CurrentMember.AppendToSignature($3);
+			observers.CurrentParametersList.Clear();
+		}
+		'('
+		parameter_list 
+		')' 
+		{
+			observers.CurrentMember.AppendToSignature(observers.CurrentParametersList.ToSignature());
+			observers.FunctionFound(observers.CurrentMember);		
+		}
+		'{' inner_statement_list '}' 
+		{
+			observers.CurrentMember.Clear();
+		}
 ;
 
 unticked_class_declaration_statement:
-		class_entry_type T_STRING extends_from
-		 {}
-			implements_list
-			'{'
-				class_statement_list
-			'}' {}
-	|	interface_entry T_STRING
-		 {}
-			interface_extends_list
-			'{'
-				class_statement_list
-			'}' {}
+		class_entry_type
+		T_STRING 
+		{
+			observers.CurrentClass.GrabClassName($2);
+			observers.CurrentClass.AppendToSignature($2);
+		}
+		extends_from 
+		{
+		}
+		implements_list 
+		{
+			observers.ClassFound(observers.CurrentClass);
+			observers.CurrentMember.Clear();
+		}
+		'{' class_statement_list '}' 
+		{
+			observers.ClassEnd();
+		}
+		
+	|	interface_entry T_STRING 
+		{
+			observers.CurrentClass.GrabClassName($2);
+			observers.CurrentClass.AppendToSignature($2);
+		}
+		interface_extends_list 
+		{
+			
+			observers.ClassFound(observers.CurrentClass);
+			observers.CurrentMember.Clear();
+		}
+		'{' class_statement_list '}' 
+		{
+			observers.ClassEnd();
+		}
 ;
 
 
 class_entry_type:
-		T_CLASS		 {}
-	|	T_ABSTRACT T_CLASS {}
-	|	T_FINAL T_CLASS {}
+		T_CLASS		 { observers.CurrentClass.AppendToSignature($1); observers.CurrentClass.AppendToComment($1); }
+	|	T_ABSTRACT T_CLASS { observers.CurrentClass.AppendToSignature($1, $2); observers.CurrentClass.AppendToComment($1); }
+	|	T_FINAL T_CLASS { observers.CurrentClass.AppendToSignature($1, $2); observers.CurrentClass.AppendToComment($1); }
 ;
 
 extends_from:
 		/* empty */				 {}
-	|	T_EXTENDS fully_qualified_class_name {}
+	|	T_EXTENDS 
+		{
+			observers.CurrentQualifiedName.Clear();
+		}
+		fully_qualified_class_name 
+		{ 
+			observers.CurrentClass.AppendToSignature($1);
+			observers.CurrentClass.AppendToSignature(observers.CurrentQualifiedName.ToSignature());
+		}
 ;
 
 interface_entry:
-	T_INTERFACE	 {}
+	T_INTERFACE	 { observers.CurrentClass.AppendToSignature($1); }
 ;
 
 interface_extends_list:
 		/* empty */
-	|	T_EXTENDS interface_list
+	|	T_EXTENDS 
+		{
+			observers.CurrentClass.AppendToSignature($1);
+			observers.CurrentQualifiedName.Clear();
+			
+		}
+		interface_list
+		{
+		}
 ;
 
 implements_list:
 		/* empty */
-	|	T_IMPLEMENTS interface_list
+	|	T_IMPLEMENTS 
+		{
+			observers.CurrentClass.AppendToSignature($1);
+			observers.CurrentQualifiedName.Clear();
+		}
+		interface_list 
+		{
+		}
 ;
 
 interface_list:
-		fully_qualified_class_name		 {}
-	|	interface_list ',' fully_qualified_class_name {}
+		fully_qualified_class_name		 
+		{
+			observers.CurrentClass.AppendToSignature(observers.CurrentQualifiedName.ToSignature());
+			observers.CurrentQualifiedName.Clear();
+		}
+	|	interface_list ',' 
+		{
+			observers.CurrentClass.AppendToSignature(UNICODE_STRING_SIMPLE(","));
+		}
+		fully_qualified_class_name 
+		{
+		}
 ;
 
 foreach_optional_arg:
@@ -498,21 +553,32 @@ parameter_list:
 
 
 non_empty_parameter_list:
-		optional_class_type T_VARIABLE			 {}
-	|	optional_class_type '&' T_VARIABLE		 {}
-	|	optional_class_type '&' T_VARIABLE '=' static_scalar		 {}
-	|	optional_class_type T_VARIABLE '=' static_scalar			 {}
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE  {}
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE {}
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	 '=' static_scalar {}
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar  {}
+		optional_class_type T_VARIABLE			 { observers.CurrentParametersList.SetName($2, false); }
+	|	optional_class_type '&' T_VARIABLE		 { observers.CurrentParametersList.SetName($3, true); }
+	|	optional_class_type '&' T_VARIABLE '=' static_scalar		 { observers.CurrentParametersList.SetName($3, true);}
+	|	optional_class_type T_VARIABLE '=' static_scalar			 { observers.CurrentParametersList.SetName($2, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE { observers.CurrentParametersList.SetName($4, false); } 
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE  { observers.CurrentParametersList.SetName($5, true); }
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar { observers.CurrentParametersList.SetName($5, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar   { observers.CurrentParametersList.SetName($4, false); }
 ;
 
 
 optional_class_type:
-		/* empty */				 {}
-	|	fully_qualified_class_name {}
-	|	T_ARRAY					 {}
+		/* empty */				 
+		{ 
+			observers.CurrentParametersList.Create(); 
+		}
+	|	fully_qualified_class_name 
+		{ 
+			observers.CurrentParametersList.Create(); 
+			observers.CurrentParametersList.SetOptionalType(observers.CurrentQualifiedName.ToSignature()); 
+		}
+	|	T_ARRAY
+		{ 
+			observers.CurrentParametersList.Create(); 
+			observers.CurrentParametersList.SetOptionalType($1); 
+		}
 ;
 
 
@@ -560,10 +626,37 @@ class_statement_list:
 
 
 class_statement:
-		variable_modifiers {} class_variable_declaration ';'
+		variable_modifiers class_variable_declaration ';'
+		{
+			observers.CurrentMember.Clear();
+		}
 	|	class_constant_declaration ';'
-	|	method_modifiers function is_reference T_STRING {} '('
-			parameter_list ')' method_body {}
+		{
+			observers.CurrentMember.Clear();
+		}
+	|	method_modifiers function is_reference T_STRING 
+		{
+			if ('&' == $3.Token) {
+				observers.CurrentMember.AppendToSignature($3);
+			}
+			observers.CurrentMember.GrabMemberName($4);
+			observers.CurrentMember.AppendToSignature($4);
+			observers.CurrentParametersList.Clear();
+		} 
+		'('
+		{
+			observers.CurrentParametersList.Clear();
+		}
+		parameter_list 
+		')' 
+		{
+			observers.CurrentMember.AppendToSignature(observers.CurrentParametersList.ToSignature());
+			observers.ClassMemberFound(observers.CurrentMember, false);
+		}
+		method_body 
+		{
+			observers.CurrentMember.Clear();
+		}
 ;
 
 
@@ -573,8 +666,8 @@ method_body:
 ;
 
 variable_modifiers:
-		non_empty_member_modifiers	 {}
-	|	T_VAR						 {}
+		non_empty_member_modifiers	 { }
+	|	T_VAR						 { observers.CurrentMember.AppendToSignature($1); }
 ;
 
 method_modifiers:
@@ -583,29 +676,72 @@ method_modifiers:
 ;
 
 non_empty_member_modifiers:
-		member_modifier					 {}
-	|	non_empty_member_modifiers member_modifier {}
+		member_modifier					 { }
+	|	non_empty_member_modifiers member_modifier {  }
 ;
 
 member_modifier:
-		T_PUBLIC			 {}
-	|	T_PROTECTED			 {}
-	|	T_PRIVATE			 {}
-	|	T_STATIC			 {}
-	|	T_ABSTRACT			 {}
-	|	T_FINAL				 {}
+		T_PUBLIC			 { observers.CurrentMember.IsPublicMember = true; observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
+	|	T_PROTECTED			 { observers.CurrentMember.IsProtectedMember = true; observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
+	|	T_PRIVATE			 { observers.CurrentMember.IsPrivateMember = true; observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1);}
+	|	T_STATIC			 { observers.CurrentMember.IsStaticMember = true; observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
+	|	T_ABSTRACT			 { observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
+	|	T_FINAL				 { observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
 ;
 
 class_variable_declaration:
-		class_variable_declaration ',' T_VARIABLE				 {}
-	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar {}
-	|	T_VARIABLE					 {}
-	|	T_VARIABLE '=' static_scalar {}
+		class_variable_declaration ',' T_VARIABLE				 
+		{
+			observers.CurrentMember.GrabMemberName($3);
+			observers.ClassMemberFound(observers.CurrentMember, true);
+		}
+	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar 
+		{
+			observers.CurrentMember.GrabMemberName($3);
+			observers.ClassMemberFound(observers.CurrentMember, true);
+		}
+	|	T_VARIABLE					 
+		{
+			observers.CurrentMember.GrabMemberName($1);
+			UnicodeString oldSignature = observers.CurrentMember.Signature;
+			observers.CurrentMember.AppendToSignature($1);			
+			observers.ClassMemberFound(observers.CurrentMember, true);
+			observers.CurrentMember.Signature = oldSignature;
+			
+		}
+	|	T_VARIABLE '=' static_scalar 
+		{
+			observers.CurrentMember.GrabMemberName($1);
+			UnicodeString oldSignature = observers.CurrentMember.Signature;
+			observers.CurrentMember.AppendToSignature($1);
+			observers.ClassMemberFound(observers.CurrentMember, true);
+			observers.CurrentMember.Signature = oldSignature;
+		}
 ;
 
 class_constant_declaration:
-		class_constant_declaration ',' T_STRING '=' static_scalar {}
-	|	T_CONST T_STRING '=' static_scalar {}
+		class_constant_declaration ',' T_STRING '=' static_scalar 
+		{
+			observers.CurrentMember.GrabMemberName($3);
+			observers.CurrentMember.AppendToSignature($3);
+			observers.CurrentMember.IsPublicMember = true;
+			observers.CurrentMember.IsConstMember = true;
+			observers.CurrentMember.IsStaticMember = true; 
+			observers.ClassMemberFound(observers.CurrentMember, true);
+		}
+	|	T_CONST T_STRING '=' static_scalar 
+		{
+			observers.CurrentMember.AppendToComment($1);
+			observers.CurrentMember.GrabMemberName($2);
+			observers.CurrentMember.AppendToSignature($1, $2);
+			observers.CurrentMember.IsPublicMember = true;
+			observers.CurrentMember.IsConstMember = true;
+			observers.CurrentMember.IsStaticMember = true; 
+			observers.ClassMemberFound(observers.CurrentMember, true);
+			
+			// leave the "const" in the signature for any other constants
+			observers.CurrentMember.Signature = *$1.Lexeme;
+		}
 ;
 
 echo_expr_list:
@@ -625,94 +761,85 @@ non_empty_for_expr:
 ;
 
 expr_without_variable:
-		T_LIST '(' {} assignment_list ')' '=' expr {}
-	|	variable '=' expr	 
-		{ 
-			SetSymbolType($1, $3.Symbol ? $3.Symbol->Type : mvceditor::SymbolClass::PRIMITIVE);  
-			if ($3.Symbol) {
-				$1.Symbol->TypeLexeme = $3.Symbol->TypeLexeme;
-			}
-			MakeVariable($1, $1.Symbol->Type, symbolTable);
-		}
-	|	variable '=' '&' variable {}
-	|	variable '=' '&' T_NEW class_name_reference {} ctor_arguments {}
+		T_LIST '(' {} assignment_list ')' '=' expr { observers.CreateUnknown(); }
+	|	variable '=' expr	 { observers.CreateUnknown(); }
+	|	variable '=' '&' variable { observers.CreateUnknown(); }
+	|	variable '=' '&' T_NEW class_name_reference {} ctor_arguments { observers.CreateUnknown(); }
 	|	T_NEW class_name_reference {} ctor_arguments 
 		{ 
-			CopySymbol($$, $2); 
-			SetSymbolType($$, mvceditor::SymbolClass::OBJECT);  
-			$$.Symbol->TypeLexeme = $2.Symbol->Lexeme;
+			observers.CreateUnknown();
 		}
-	|	T_CLONE expr {}
-	|	variable T_PLUS_EQUAL expr  {}
-	|	variable T_MINUS_EQUAL expr {}
-	|	variable T_MUL_EQUAL expr	 {}
-	|	variable T_DIV_EQUAL expr	 {}
-	|	variable T_CONCAT_EQUAL expr {}
-	|	variable T_MOD_EQUAL expr	 {}
-	|	variable T_AND_EQUAL expr	 {}
-	|	variable T_OR_EQUAL expr 	 {}
-	|	variable T_XOR_EQUAL expr 	 {}
-	|	variable T_SL_EQUAL expr {}
-	|	variable T_SR_EQUAL expr {}
-	|	rw_variable T_INC {}
-	|	T_INC rw_variable {}
-	|	rw_variable T_DEC {}
-	|	T_DEC rw_variable {}
-	|	expr T_BOOLEAN_OR {} expr {}
-	|	expr T_BOOLEAN_AND {} expr {}
-	|	expr T_LOGICAL_OR {} expr {}
-	|	expr T_LOGICAL_AND {} expr {}
-	|	expr T_LOGICAL_XOR expr {}
-	|	expr '|' expr {}
-	|	expr '&' expr {}
-	|	expr '^' expr {}
-	|	expr '.' expr  {}
-	|	expr '+' expr  {}
-	|	expr '-' expr  {}
-	|	expr '*' expr {}
-	|	expr '/' expr {}
-	|	expr '%' expr  {}
-	| 	expr T_SL expr {}
-	|	expr T_SR expr {}
-	|	'+' expr %prec T_INC { }
-	|	'-' expr %prec T_INC { }
-	|	'!' expr {}
-	|	'~' expr {}
-	|	expr T_IS_IDENTICAL expr	 {}
-	|	expr T_IS_NOT_IDENTICAL expr {}
-	|	expr T_IS_EQUAL expr		 {}
-	|	expr T_IS_NOT_EQUAL expr 	 {}
-	|	expr '<' expr 				 {}
-	|	expr T_IS_SMALLER_OR_EQUAL expr {}
-	|	expr '>' expr 				 {}
-	|	expr T_IS_GREATER_OR_EQUAL expr {}
-	|	expr T_INSTANCEOF class_name_reference {}
-	|	'(' expr ')'  {}
-	|	expr '?' {}
-		expr ':' {}
-		expr	 {}
-	|	expr '?' ':' {}
-		expr     {}
-	|	internal_functions_in_yacc {}
-	|	T_INT_CAST expr  {}
-	|	T_DOUBLE_CAST expr  {}
-	|	T_STRING_CAST expr {}
-	|	T_ARRAY_CAST expr  { SetSymbolType($$, mvceditor::SymbolClass::ARRAY); }
-	|	T_OBJECT_CAST expr  { SetSymbolType($$, mvceditor::SymbolClass::OBJECT); }
-	|	T_BOOL_CAST expr {}
-	|	T_UNSET_CAST expr {}
-	|	T_EXIT exit_expr {}
-	|	'@' {} expr {}
-	|	scalar			 {}
-	|	T_ARRAY '(' array_pair_list ')' { SetSymbolType($$, mvceditor::SymbolClass::ARRAY); }
-	|	'`' backticks_expr '`' {}
-	|	T_PRINT expr  {}
-	|	function is_reference '(' {}
-			parameter_list ')' lexical_vars '{' inner_statement_list '}' {}
+	|	T_CLONE expr  { observers.CreateObject($1); }
+	|	variable T_PLUS_EQUAL expr  { observers.CreateUnknown(); }
+	|	variable T_MINUS_EQUAL expr { observers.CreateUnknown(); }
+	|	variable T_MUL_EQUAL expr	 { observers.CreateUnknown(); }
+	|	variable T_DIV_EQUAL expr	 { observers.CreateUnknown(); }
+	|	variable T_CONCAT_EQUAL expr { observers.CreateUnknown(); }
+	|	variable T_MOD_EQUAL expr	 { observers.CreateUnknown(); }
+	|	variable T_AND_EQUAL expr	 { observers.CreateUnknown(); }
+	|	variable T_OR_EQUAL expr 	 { observers.CreateUnknown(); }
+	|	variable T_XOR_EQUAL expr 	 { observers.CreateUnknown(); }
+	|	variable T_SL_EQUAL expr { observers.CreateUnknown(); }
+	|	variable T_SR_EQUAL expr { observers.CreateUnknown(); }
+	|	rw_variable T_INC { observers.CreateUnknown(); }
+	|	T_INC rw_variable { observers.CreateUnknown(); }
+	|	rw_variable T_DEC {observers.CreateUnknown(); }
+	|	T_DEC rw_variable {observers.CreateUnknown(); }
+	|	expr T_BOOLEAN_OR {} expr { observers.CreateUnknown(); }
+	|	expr T_BOOLEAN_AND {} expr { observers.CreateUnknown(); }
+	|	expr T_LOGICAL_OR {} expr { observers.CreateUnknown(); }
+	|	expr T_LOGICAL_AND {} expr {observers.CreateUnknown(); }
+	|	expr T_LOGICAL_XOR expr { observers.CreateUnknown(); }
+	|	expr '|' expr { observers.CreateUnknown(); }
+	|	expr '&' expr { observers.CreateUnknown(); }
+	|	expr '^' expr { observers.CreateUnknown(); }
+	|	expr '.' expr  { observers.CreateUnknown(); }
+	|	expr '+' expr  { observers.CreateUnknown(); }
+	|	expr '-' expr  { observers.CreateUnknown(); }
+	|	expr '*' expr { observers.CreateUnknown(); }
+	|	expr '/' expr { observers.CreateUnknown(); }
+	|	expr '%' expr  { observers.CreateUnknown(); }
+	| 	expr T_SL expr { observers.CreateUnknown(); }
+	|	expr T_SR expr { observers.CreateUnknown(); }
+	|	'+' expr %prec T_INC { observers.CreateUnknown(); }
+	|	'-' expr %prec T_INC { observers.CreateUnknown(); }
+	|	'!' expr { observers.CreateUnknown(); }
+	|	'~' expr { observers.CreateUnknown(); }
+	|	expr T_IS_IDENTICAL expr	 { observers.CreateUnknown(); }
+	|	expr T_IS_NOT_IDENTICAL expr { observers.CreateUnknown(); }
+	|	expr T_IS_EQUAL expr		 { observers.CreateUnknown(); }
+	|	expr T_IS_NOT_EQUAL expr 	 { observers.CreateUnknown(); }
+	|	expr '<' expr 				 { observers.CreateUnknown(); }
+	|	expr T_IS_SMALLER_OR_EQUAL expr { observers.CreateUnknown(); }
+	|	expr '>' expr 				 {observers.CreateUnknown(); }
+	|	expr T_IS_GREATER_OR_EQUAL expr { observers.CreateUnknown(); }
+	|	expr T_INSTANCEOF class_name_reference { observers.CreateUnknown(); }
+	|	'(' expr ')'  { observers.CreateUnknown(); }
+	|	expr '?' {  }
+		expr ':' { }
+		expr	 { observers.CreateUnknown(); }
+	|	expr '?' ':' {  }
+		expr     { observers.CreateUnknown(); }
+	|	internal_functions_in_yacc { observers.CreateUnknown(); }
+	|	T_INT_CAST expr  { observers.CreatePrimitive(); }
+	|	T_DOUBLE_CAST expr  { observers.CreatePrimitive(); }
+	|	T_STRING_CAST expr { observers.CreatePrimitive(); }
+	|	T_ARRAY_CAST expr  { observers.CreateArray(); }
+	|	T_OBJECT_CAST expr  { observers.CreateObject(); }
+	|	T_BOOL_CAST expr { observers.CreatePrimitive(); }
+	|	T_UNSET_CAST expr { }
+	|	T_EXIT exit_expr { }
+	|	'@' {} expr { }
+	|	scalar			 {  }
+	|	T_ARRAY '(' array_pair_list ')' { observers.CreateArray(); }
+	|	'`' backticks_expr '`' { observers.CreatePrimitive(); /* results of backtick operator is a string */ }
+	|	T_PRINT expr  { }
+	|	function is_reference '(' 
+			parameter_list ')' lexical_vars '{' inner_statement_list '}' { observers.CreateUnknown(); }
 ;
 
 function:
-	T_FUNCTION {}
+	T_FUNCTION { observers.CurrentMember.AppendToSignature($1); observers.CurrentMember.AppendToComment($1); }
 ;
 
 lexical_vars:
@@ -728,12 +855,19 @@ lexical_var_list:
 ;
 
 function_call:
-		namespace_name '(' {}
-				function_call_parameter_list
-				')' 
+		namespace_name '(' 
 		{
-			CopySymbol($$, $1); 
-			SetSymbolType($$, mvceditor::SymbolClass::FUNCTION);
+			observers.CurrentVariablesList.Clear();
+		}
+		function_call_parameter_list	')' 
+		{
+			if (observers.CurrentVariablesList.Variables.size() == (size_t)2) {
+				if (observers.CurrentQualifiedName.ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+					observers.DefineFound(observers.CurrentVariablesList.Variables[0], 
+						observers.CurrentVariablesList.Variables[1], 
+						observers.CurrentQualifiedName.Comment);
+				}
+			}
 		}
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name '(' {}
 				function_call_parameter_list
@@ -766,9 +900,9 @@ class_name:
 ;
 
 fully_qualified_class_name:
-		namespace_name {}
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name {}
-	|	T_NS_SEPARATOR namespace_name {}
+		namespace_name { }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name { }
+	|	T_NS_SEPARATOR namespace_name  { }
 ;
 
 
@@ -817,18 +951,18 @@ ctor_arguments:
 
 
 common_scalar:
-		T_LNUMBER 				 {}
-	|	T_DNUMBER 				 {}
-	|	T_CONSTANT_ENCAPSED_STRING {}
-	|	T_LINE 					 {}
-	|	T_FILE 					 {}
-	|	T_DIR   				 {}
-	|	T_CLASS_C				 {}
-	|	T_METHOD_C				 {}
-	|	T_FUNC_C				 {}
-	|	T_NS_C					 {}
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC {}
-	|	T_START_HEREDOC T_END_HEREDOC {}
+		T_LNUMBER 				 { observers.CreatePrimitive($1); }
+	|	T_DNUMBER 				 { observers.CreatePrimitive($1); }
+	|	T_CONSTANT_ENCAPSED_STRING { observers.CreatePrimitive($1); }
+	|	T_LINE 					 { observers.CreatePrimitive($1); }
+	|	T_FILE 					 { observers.CreatePrimitive($1); }
+	|	T_DIR   				 { observers.CreatePrimitive($1); }
+	|	T_CLASS_C				 { observers.CreatePrimitive($1); }
+	|	T_METHOD_C				 { observers.CreatePrimitive($1); }
+	|	T_FUNC_C				 { observers.CreatePrimitive($1); }
+	|	T_NS_C					 { observers.CreatePrimitive($1); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { observers.CreatePrimitive($1); }
+	|	T_START_HEREDOC T_END_HEREDOC { observers.CreatePrimitive($1); }
 ;
 
 
@@ -901,30 +1035,19 @@ variable:
 		object_property 
 		method_or_not 
 			{ 
-				if ($1.Symbol->Type == mvceditor::SymbolClass::FUNCTION) {
-					$4.Token = '(';
-				}
-				MakeTempVariableAndStack($1.Symbol->Lexeme, $3, $4, symbolTable, variableStack);
+		
 			} 
 		variable_properties 
 			{ 
-				variableStack.pop();
-				SetSymbolType($$, mvceditor::SymbolClass::OBJECT);
+			
 			}
 	|	base_variable_with_function_calls 
 			{
-				if ($1.Symbol && $1.Symbol->Type == mvceditor::SymbolClass::FUNCTION) {
-					CopySymbol($$, $1);
-					MakeTempVariable($$, symbolTable);
-				}
-				else {
-					CopySymbol($$, $1);
-				}
 			}
 ;
 
 variable_properties:
-		variable_properties variable_property { variableStack.pop(); }
+		variable_properties variable_property { }
 	|	/* empty */ {}
 ;
 
@@ -934,7 +1057,7 @@ variable_property:
 		object_property 
 		method_or_not 
 		{
-			MakeTempVariableAndStack(variableStack.top(), $2, $3, symbolTable, variableStack);
+		
 		}
 ;
 
@@ -980,7 +1103,7 @@ reference_variable:
 
 
 compound_variable:
-		T_VARIABLE		 {}
+		T_VARIABLE		 { observers.CurrentSymbol.Fill($1); }
 	|	'$' '{' expr '}' {}
 ;
 
@@ -1091,15 +1214,18 @@ class_constant:
 
 int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 	int ret = analyzer.NextToken();
+	value->Init();
 	
 	// ignore these token; there are no parse rules for them
 	if (T_OPEN_TAG == ret) {
 		ret = analyzer.NextToken();	
 	}
 	if (T_DOC_COMMENT == ret) {
-		
+			
+		value->Comment = new UnicodeString();
 		// advance past all DOC comments (there can be more than one consecutive)
 		while (T_DOC_COMMENT == ret) {
+			analyzer.GetLexeme(*value->Comment);
 			ret = analyzer.NextToken();
 		}
 	}
@@ -1107,101 +1233,18 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 		ret = ';';
 	}
 	
-	value->Token = ret;
-	value->Symbol = NULL;
-	switch (ret) {
-	case T_VARIABLE:
-		value->Symbol = new mvceditor::SymbolClass();	
-		analyzer.GetLexeme(value->Symbol->Lexeme);
-		value->Symbol->Pos = analyzer.GetCharacterPosition();
-		break;
-	case T_STRING:
-		value->Symbol = new mvceditor::SymbolClass();
-		analyzer.GetLexeme(value->Symbol->Lexeme);
-		value->Symbol->Pos = analyzer.GetCharacterPosition();
-		break;
-	case T_CONSTANT_ENCAPSED_STRING:
-		value->Symbol = new mvceditor::SymbolClass();
-		value->Symbol->Type = mvceditor::SymbolClass::PRIMITIVE;
-		analyzer.GetLexeme(value->Symbol->Lexeme);
-		value->Symbol->Pos = analyzer.GetCharacterPosition();
-		break;
-	case T_LNUMBER:
-	case T_DNUMBER:
-		value->Symbol = new mvceditor::SymbolClass();
-		value->Symbol->Type = mvceditor::SymbolClass::PRIMITIVE;
-		analyzer.GetLexeme(value->Symbol->Lexeme);
-		value->Symbol->Pos = analyzer.GetCharacterPosition();
-		break;
-	default:	
-		break;
-	}
+	value->Lexeme = new UnicodeString();
+	analyzer.GetLexeme(*value->Lexeme);	
+	value->Pos = analyzer.GetCharacterPosition();
+		
+	//UFILE* f = u_finit(stdout, NULL, NULL);
+	//u_fprintf(f, "lex=%S\n", value->Lexeme->getTerminatedBuffer());
+	//u_fclose(f);
 	return ret;
 }
 
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString> variableStack, std::string msg) {
+void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);
-}
-
-void FreeSymbol(Symbol_t& value) {
-	if (value.Symbol) {
-		delete value.Symbol;
-		value.Symbol = NULL;
-	}	
-}
-
-void CopySymbol(Symbol_t& from, Symbol_t& to) {
-	if (!to.Symbol && from.Symbol) {
-	to.Symbol = new mvceditor::SymbolClass();
-		to.Symbol->Copy(*from.Symbol);
-	}
-}
-
-void SetSymbolType(Symbol_t& value, mvceditor::SymbolClass::Types type) {
-	if (!value.Symbol) {
-		value.Symbol = new mvceditor::SymbolClass();
-	}
-	value.Symbol->Type = type;
-}
-
-void MakeVariable(Symbol_t& value, mvceditor::SymbolClass::Types type, mvceditor::SymbolTableClass& symbolTable) {
-	SetSymbolType(value, type);
-	symbolTable.Push(value.Symbol);
-}
-
-void MakeTempVariable(Symbol_t& value, mvceditor::SymbolTableClass& symbolTable) {
-	UnicodeString newVarName;
-	int capacity = 10;
-	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", symbolTable.GetSymbolCount());
-	newVarName.releaseBuffer(written);
-	value.Symbol->SourceSignature = value.Symbol->Lexeme;
-	value.Symbol->Lexeme = newVarName;
-	
-	symbolTable.Push(value.Symbol);
-} 
-
-void MakeTempVariableAndStack(const UnicodeString& object, Symbol_t& property, Symbol_t& lookahead, mvceditor::SymbolTableClass& symbolTable, std::stack<UnicodeString>& variableStack) {
-	UnicodeString newVarName;
-	int capacity = 10;
-	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", symbolTable.GetSymbolCount());
-	newVarName.releaseBuffer(written);
-	if ('(' == lookahead.Token && object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
-		property.Symbol->Type = mvceditor::SymbolClass::METHOD;
-		property.Symbol->SourceSignature = object + UNICODE_STRING_SIMPLE("->") + property.Symbol->Lexeme;
-		property.Symbol->Lexeme = newVarName;
-	}
-	else if ('(' == lookahead.Token && !object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
-		property.Symbol->Type = mvceditor::SymbolClass::PRIMITIVE; // dont know the function return type yet
-		property.Symbol->SourceSignature = object;
-		property.Symbol->Lexeme = newVarName;
-	}
-	else {
-		property.Symbol->Type = mvceditor::SymbolClass::PROPERTY;
-		property.Symbol->SourceSignature = object + UNICODE_STRING_SIMPLE("->") + property.Symbol->Lexeme;
-		property.Symbol->Lexeme = newVarName;
-	}
-	symbolTable.Push(property.Symbol);
-	variableStack.push(newVarName);
 }

@@ -23,6 +23,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
+#include <language/ParserObserverClass.h>
 #include <language/ParserClass.h>
 #include <FileTestFixtureClass.h>
 #include <wx/filefn.h> 
@@ -162,60 +163,13 @@ public:
 		FunctionComment.push_back(comment);
 	}
 	
-	virtual void VariableCreatedWithNewFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& variableName, const UnicodeString& returnType, const UnicodeString& comment) {
+	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+		const mvceditor::SymbolClass& symbol, const UnicodeString& comment) {
 		VariableClassName.push_back(className);
 		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableType.push_back(returnType);
+		VariableName.push_back(symbol.Lexeme);
+		VariableType.push_back(symbol.TypeLexeme);
 		VariableComment.push_back(comment);
-	}
-	
-	virtual void VariableCreatedWithFunctionFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& variableName, const UnicodeString& functionCalledName, const UnicodeString& comment) {
-		VariableClassName.push_back(className);
-		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableFunctionCalledName.push_back(functionCalledName);
-		VariableComment.push_back(comment);
-	}
-		
-	virtual void VariableCreatedWithThisMethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& variableName, const UnicodeString& methodCalledName, const UnicodeString& comment) {
-		VariableClassName.push_back(className);
-		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableMethodCalledName.push_back(methodCalledName);
-		VariableComment.push_back(comment);
-	}	
-		
-	virtual void VariableCreatedWithObjectMethodFound(const UnicodeString& className, const UnicodeString& methodName,
-			const UnicodeString& variableName,  const UnicodeString& objectName, const UnicodeString& objectMethod, 
-			const UnicodeString& comment) {
-		VariableClassName.push_back(className);
-		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableObjectName.push_back(objectName);	
-		VariableMethodCalledName.push_back(objectMethod);	
-		VariableComment.push_back(comment);
-	}
-	
-	virtual void VariableCreatedWithAnotherVariableFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& variableName, const UnicodeString& sourceVariable, const UnicodeString& comment) {
-		VariableClassName.push_back(className);
-		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableSourceVariable.push_back(sourceVariable);
-		VariableComment.push_back(comment);
-	}
-		
-	virtual void VariableConstantFound(const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& variableName, const UnicodeString& constant, const UnicodeString& comment) {
-		VariableClassName.push_back(className);
-		VariableMethodName.push_back(methodName);
-		VariableName.push_back(variableName);
-		VariableConstant.push_back(constant);
-		VariableComment.push_back(comment);	
 	}
 	
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -237,10 +191,15 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 	if (!observer.ClassName.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.ClassName[0]);
 	}
+	CHECK_EQUAL((size_t)1, observer.ClassSignature.size());
+	if (!observer.ClassSignature.empty()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class UserClass"), observer.ClassSignature[0]);
+	}
 	CHECK_EQUAL((size_t)1, observer.ClassComment.size());
 	if(!observer.ClassComment.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a class comment\n */"), observer.ClassComment[0]);		
 	}
+	
 	CHECK_EQUAL((size_t)1, observer.DefinedName.size());
 	if(!observer.DefinedName.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MAX_TIME"), observer.DefinedName[0]);		
@@ -299,6 +258,13 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 		CHECK_EQUAL(false, observer.MethodIsStatic[0]);
 		CHECK_EQUAL(true, observer.MethodIsStatic[3]);
 	}
+	CHECK_EQUAL((size_t)4, observer.MethodSignature.size());
+	if (observer.MethodSignature.size() == 4) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function __construct ()"), observer.MethodSignature[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract function work ()"), observer.MethodSignature[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function getName ()"), observer.MethodSignature[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("private static function setName ($name)"), observer.MethodSignature[3]);
+	}
 	CHECK_EQUAL((size_t)2, observer.PropertyClassName.size());
 	if (observer.PropertyClassName.size() == 2) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.PropertyClassName[0]);
@@ -308,7 +274,6 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	if (observer.PropertyName.size() == 2) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), observer.PropertyName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("DEFAULT_NAME"), observer.PropertyName[1]);
-		
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyComment.size());
 	if (observer.PropertyComment.size() == 2) {
@@ -353,6 +318,11 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 	if (!observer.FunctionComment.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a function comment\n * @return boolean\n */"), 
 			observer.FunctionComment[0]);
+	}
+	CHECK_EQUAL((size_t)1, observer.FunctionSignature.size());
+	if (!observer.FunctionSignature.empty()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function showUser ($user)"), 
+			observer.FunctionSignature[0]);
 	}
 	CHECK_EQUAL((size_t)1, observer.FunctionReturnType.size());
 	if (!observer.FunctionReturnType.empty()) {
@@ -415,6 +385,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	}
 }
 
+#if 0
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
 	wxString file = TestProjectDir + wxT("test.php");
 	mvceditor::LintResultsClass results;
@@ -476,5 +447,7 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK(results.Error.length() > 0);
 	CHECK(results.LineNumber > 0);
 }
+
+#endif
 
 }

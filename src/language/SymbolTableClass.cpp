@@ -27,24 +27,6 @@
 #include <language/TokenClass.h>
 #include<algorithm>
 
-mvceditor::SymbolClass::SymbolClass() 
-	: Lexeme()
-	, TypeLexeme() 
-	, SourceSignature()
-	, Type(PRIMITIVE)
-	, Pos(0)
-	, IsStatic(false) {
-}
-
-void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
-	Lexeme = src.Lexeme;
-	TypeLexeme = src.TypeLexeme;
-	SourceSignature = src.SourceSignature;
-	Type = src.Type;
-	Pos = src.Pos;
-	IsStatic = src.IsStatic;	
-}
-
 mvceditor::SymbolTableClass::SymbolTableClass() 
 	: Parser()
 	, Symbols() {
@@ -136,75 +118,8 @@ void mvceditor::SymbolTableClass::PropertyFound(const UnicodeString& className, 
 	GetScope(className, UNICODE_STRING_SIMPLE("")).push_back(symbol);
 }
 
-void mvceditor::SymbolTableClass::VariableCreatedWithNewFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& returnType, 
-		const UnicodeString& comment) {
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = UNICODE_STRING_SIMPLE("");
-	symbol.TypeLexeme = returnType;
-	symbol.Type = SymbolClass::OBJECT;
-	GetScope(className, methodName).push_back(symbol);
-}
-	
-void mvceditor::SymbolTableClass::VariableCreatedWithFunctionFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& functionCalledName, 
-		const UnicodeString& comment) {
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = functionCalledName;
-	symbol.TypeLexeme = UNICODE_STRING_SIMPLE("");
-	GetScope(className, methodName).push_back(symbol);
-}
-
-void mvceditor::SymbolTableClass::VariableCreatedWithThisMethodFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& methodCalledName, 
-		const UnicodeString& comment) {
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = className + UNICODE_STRING_SIMPLE("::") + methodCalledName;
-	symbol.TypeLexeme = UNICODE_STRING_SIMPLE("");
-	GetScope(className, methodName).push_back(symbol);		
-}
-	
-void mvceditor::SymbolTableClass::VariableCreatedWithObjectMethodFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& objectName, 
-		const UnicodeString& objectMethod, const UnicodeString& comment) {
-	
-	// get the object's type
-	UnicodeString objectType;
-	std::vector<SymbolClass> scope = GetScope(className, methodName);
-	for (size_t i = 0; i < scope.size(); ++i) {
-		if (scope[i].Lexeme == objectName) {
-			objectType = scope[i].TypeLexeme;
-			break;
-		}
-	}
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = objectType + UNICODE_STRING_SIMPLE("::") + objectMethod;
-	symbol.TypeLexeme = UNICODE_STRING_SIMPLE("");
-	GetScope(className, methodName).push_back(symbol);
-}
-
-void mvceditor::SymbolTableClass::VariableConstantFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& constant, const UnicodeString& comment) {
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = UNICODE_STRING_SIMPLE("");
-	symbol.TypeLexeme = "";
-	symbol.Type = SymbolClass::PRIMITIVE;
-	GetScope(className, methodName).push_back(symbol);
-}
-
-void mvceditor::SymbolTableClass::VariableCreatedWithAnotherVariableFound(const UnicodeString& className, 
-		const UnicodeString& methodName, const UnicodeString& variableName, const UnicodeString& sourceVariable, 
-		const UnicodeString& comment) {
-	SymbolClass symbol;
-	symbol.Lexeme = variableName;
-	symbol.SourceSignature = UNICODE_STRING_SIMPLE("");
-	symbol.TypeLexeme = "";
-	symbol.Type = SymbolClass::PRIMITIVE;
+void mvceditor::SymbolTableClass::VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+	const SymbolClass& symbol, const UnicodeString& comment) {
 	GetScope(className, methodName).push_back(symbol);
 }
 
