@@ -168,8 +168,13 @@ public:
 		VariableClassName.push_back(className);
 		VariableMethodName.push_back(methodName);
 		VariableName.push_back(symbol.Lexeme);
-		VariableType.push_back(symbol.TypeLexeme);
-		VariableComment.push_back(comment);
+		VariableComment.push_back(symbol.Comment);
+
+	UFILE* f = u_finit(stdout, NULL, NULL);
+	UnicodeString s(symbol.Lexeme);
+	u_fprintf(f, "var=%S\n", s.getTerminatedBuffer());
+	u_fclose(f);
+		
 	}
 	
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -260,10 +265,10 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	}
 	CHECK_EQUAL((size_t)4, observer.MethodSignature.size());
 	if (observer.MethodSignature.size() == 4) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function __construct ()"), observer.MethodSignature[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract function work ()"), observer.MethodSignature[1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function getName ()"), observer.MethodSignature[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("private static function setName ($name)"), observer.MethodSignature[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function __construct()"), observer.MethodSignature[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public abstract function work()"), observer.MethodSignature[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function getName()"), observer.MethodSignature[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("private static function setName($name)"), observer.MethodSignature[3]);
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyClassName.size());
 	if (observer.PropertyClassName.size() == 2) {
@@ -321,7 +326,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 	}
 	CHECK_EQUAL((size_t)1, observer.FunctionSignature.size());
 	if (!observer.FunctionSignature.empty()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function showUser ($user)"), 
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("function showUser($user)"), 
 			observer.FunctionSignature[0]);
 	}
 	CHECK_EQUAL((size_t)1, observer.FunctionReturnType.size());

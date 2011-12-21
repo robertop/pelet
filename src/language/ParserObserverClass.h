@@ -32,6 +32,10 @@
 
 namespace mvceditor {
 
+// this class is defined below.
+class SymbolClass;
+
+
 /**
  * Interface to inherit from when needing to be notified when a class structure is encountered.
  * An object of this type will be passed to the ParserClass; the parser will call the appropriate
@@ -171,19 +175,20 @@ class SemanticValueClass {
 public:
 
 	/**
-	 * The ID of the token
-	 */
-	int Token;
-
-	/**
-	 * The textual value; 
+	 * The textual value; can be NULL. This object will own the pointer.
 	 */
 	UnicodeString* Lexeme;
 
 	/**
 	 * This is the **PHPDoc** comment that was immediately before this token.
+	 * This can be NULL. This object will own the pointer.
 	 */
 	UnicodeString* Comment;
+
+	/**
+	 * The ID of the token
+	 */
+	int Token;
 
 	/**
 	 * The character position of this token 
@@ -204,55 +209,6 @@ public:
 };
 
 /**
- * Data structure that will hold the data points we can to keep track of
- * for PHP class structures.
- */
-class ClassSymbolClass {
-
-public:
-
-	UnicodeString ClassName, Signature, Comment;
-
-	ClassSymbolClass();
-
-	void GrabClassName(SemanticValueClass& value);
-	void AppendToSignature(SemanticValueClass& value);
-	void AppendToSignature(SemanticValueClass& value1, SemanticValueClass& value2);
-	void AppendToSignature(const UnicodeString& str);
-	void AppendToComment(SemanticValueClass& value);
-	void Clear();
-};
-
-/**
- * Data structure that will hold the data points we can to keep track of
- * for PHP class method & property structures.
- */
-class ClassMemberSymbolClass {
-
-public:
-
-	UnicodeString MemberName, Signature, Comment, TypeLexeme;
-
-	bool IsPublicMember;
-	
-	bool IsProtectedMember;
-	
-	bool IsPrivateMember;
-	
-	bool IsStaticMember;
-
-	bool IsConstMember;
-
-	ClassMemberSymbolClass();
-	void GrabMemberName(SemanticValueClass& value);
-	void AppendToSignature(SemanticValueClass& value);
-	void AppendToSignature(SemanticValueClass& value1, SemanticValueClass& value2);
-	void AppendToSignature(const UnicodeString& str);
-	void AppendToComment(SemanticValueClass& value);
-	void Clear();
-};
-
-/**
  * This represents a fully qualified name; it may have any number of namespaces attached to
  * it.
  */
@@ -264,15 +220,78 @@ public:
 
 	QualifiedNameClass();
 	void Clear();
-	void GrabComment(SemanticValueClass& value);
+	void GrabNameAndComment(SemanticValueClass& value);
 	void AddName(SemanticValueClass& value);
 
 	UnicodeString ToSignature() const;
 
 private:
 
-	std::vector<UnicodeString> Namespaces;
+	std::stack<UnicodeString> Namespaces;
+		
+};
+
+/**
+ * Data structure that will hold the data points we can to keep track of
+ * for PHP class structures.
+ */
+class ClassSymbolClass {
+
+public:
+
+	UnicodeString ClassName;
+	UnicodeString Comment;
+	QualifiedNameClass ExtendsFrom;
+	std::vector<QualifiedNameClass> ImplementsList; 
+	bool IsAbstract;
+	bool IsFinal;
+	bool IsInterface;
+
+	ClassSymbolClass();
+
+	void GrabClassName(SemanticValueClass& value);
+	void AppendToComment(SemanticValueClass& value);
+	void Clear();
+
+	UnicodeString ToSignature() const;
+};
+
+/**
+ * Data structure that will hold the data points we can to keep track of
+ * for PHP class method & property structures.
+ */
+class ClassMemberSymbolClass {
+
+public:
+
+	UnicodeString MemberName, Comment;
+
+	bool IsPublicMember;
 	
+	bool IsProtectedMember;
+	
+	bool IsPrivateMember;
+	
+	bool IsStaticMember;
+
+	bool IsConstMember;
+
+	bool IsAbstractMember;
+
+	bool IsFinalMember;
+
+	bool IsReturnReference;
+
+	ClassMemberSymbolClass();
+	void SetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& functionValue);
+	void SetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
+	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
+	void AppendToComment(SemanticValueClass& value);
+	
+	void SetAsPublic();
+	void SetAsProtected();
+	void SetAsPrivate();
+	void Clear();
 };
 
 /**
@@ -285,9 +304,9 @@ public:
 	ParametersListClass();
 
 	void Create();
-	void Clear();
-	void SetOptionalType(SemanticValueClass& value);
-	void SetOptionalType(UnicodeString str);
+	void CreateWithOptionalType(SemanticValueClass& value);
+	void CreateWithOptionalType(const UnicodeString& className);
+	void Clear();	
 	void SetName(SemanticValueClass& value, bool isReference);
 
 	/**
@@ -301,6 +320,66 @@ public:
 private:
 	std::vector<UnicodeString> Params;
 	std::vector<UnicodeString> OptionalTypes;
+};
+
+class ExpressionClass {
+	
+public:
+
+	enum Types {
+		SCALAR,
+		ARRAY,
+		VARIABLE,
+		FUNCTION_CALL,
+		NEW_CALL,
+		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
+	};
+
+	/**
+	 * In the case of a function call; this is the name of the function that
+	 * was called. In the case of a NEW_CALL, then name is the
+	 * name of the class that was instantiated. For all other types; this is empty.
+	 */
+	QualifiedNameClass Name;
+
+	/**
+	 * In the case of a scalar; this is the token text (actual string or
+	 * int value). In the case of a variable; this is the variable name.
+	 * In the case of a variable that chains object operations ($this->name->toString)
+	 * then the lexeme is the value of the first variable in the chain ("$this" in
+	 * the example above).
+	 */
+	UnicodeString Lexeme;
+
+	/**
+	 * The comment that is attached to the function call / variable.
+	 */
+	UnicodeString Comment;
+
+	/**
+	 * In the case of function calls; this is the arguments of the
+	 * function call (each of which could be the results of other
+	 * function calls).
+	 */
+	std::vector<ExpressionClass> CallArguments;
+
+	/**
+	 * In the case of a variable; this is the list of  properties / methods
+	 * that were successively invoked.
+	 * For example; the expression "$this->name->toString" will have 2 items in
+	 * the chain list "->name" and "->toString".
+	 */
+	std::vector<UnicodeString> ChainList;
+
+	Types Type;
+
+	ExpressionClass();
+	void StartChainFromVariable(SemanticValueClass& objectValue);
+	void StartChainFromFunctionCall(const ExpressionClass& functionCallExpression);
+	void AppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
+
+	void Clear();
+
 };
 
 /**
@@ -345,7 +424,7 @@ public:
 	/**
 	 * Any PHP doc comment that was attached to this variable (appeared immediately before).
 	 */
-	UnicodeSting Comment;
+	UnicodeString Comment;
 	
 	/**
 	 * The list of methods and properties that were called in order to create this variable. For instance,
@@ -393,10 +472,6 @@ public:
 	void SetToObject();
 	void SetToArray();
 	void SetToUnknown();
-
-	void StartChain(SemanticValueClass& objectValue, SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
-	void StartChain(SemanticValueClass& functionValue);
-	void AppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
 	void Clear();
 };
 
@@ -428,15 +503,34 @@ public:
 
 	ParametersListClass CurrentParametersList;
 
-	SymbolClass CurrentSymbol;
+	ExpressionClass CurrentFunctionCallExpression;
 
-	std::vector<SymbolClass> VariablesList;
+	ExpressionClass CurrentExpression;
+
+	std::vector<ExpressionClass> ExpressionVariables;
 
 	/**
 	 * Each observer may be NULL. This class will NOT own the pointers.
 	 */
 	ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
 		FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver);
+
+	/**
+	 * Initializes class info
+	 */
+	void ClassStart(SemanticValueClass& commentValue, bool isAbstract, bool isFinal, bool isInterface);
+
+	/**
+	 * Sets the name property of the class info
+	 */
+	void ClassSetName(SemanticValueClass& nameValue);
+
+	/**
+	 * Sets the base class name from the CurrentQualifiedName info.
+	 */
+	void ClassSetExtends();
+
+	void ClassAddToImplements();
 
 	/**
 	 * Notifies that a class was found. The CurrentClass variable should have been filled with the data.
@@ -449,6 +543,19 @@ public:
 	void ClassEnd();
 
 	/**
+	 * add a new Paramter to the CurrentParametersList 
+	 * using the CurrentQualifiedName as the type
+	 */
+	void CreateParameterWithOptionalClassName();
+
+	/**
+	 * Initializes the CurrentMember info.
+	 */
+	void ClassMemberStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
+
+	void ClassMethodStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
+
+	/**
 	 * Notifies that a class property / method has been found. The CurrentMember variable should have been filled with the data.
 	 */
 	void ClassMemberFound(bool isProperty);
@@ -456,12 +563,17 @@ public:
 	/**
 	 *  Notifites that a define (constant) has been found.
 	 */
-	void DefineFound(const SymbolClass& name, const SymbolClass& value, const UnicodeString& comment);
+	void DefineFound(const ExpressionClass& name, const ExpressionClass& value, const UnicodeString& comment);
+
+	/**
+	 * Initializes the CurrentMember info.
+	 */
+	void FunctionStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
 
 	/**
 	 * Notifies that a stand-alone function has been found.
 	 */
-	void FunctionFound(const ClassMemberSymbolClass& functionSymbol);
+	void FunctionFound();
 
 	/**
 	 * Will erase the current function info.
@@ -471,27 +583,42 @@ public:
 	/**
 	 * Notifies that a variable has been found.
 	 */
-	void VariableFound(const SymbolClass& variableSymbol);
+	void VariableFound();
 
 	/**
-	 * Add a new primitive symbol to the variables list
+	 * Set the current expression to be a scalar value
 	 */
-	void CreatePrimitive(SemanticValueClass& value);
+	void ExpressionScalar(SemanticValueClass& value);
+
+	/**
+	 * Set the current expression to be an array value
+	 */
+	void ExpressionArray(SemanticValueClass& value);
+
+	/**
+	 * Set the current expression to be a variable value
+	 */
+	void ExpressionVariable(SemanticValueClass& value);
+
+	/**
+	 * Set the current expression to be an unknown value
+	 */
+	void ExpressionUnknown(SemanticValueClass& value);
+
+	/**
+	 * Set the current expression to be the result of a new PHP object
+	 */
+	void ExpressionNewCall();
 	
 	/**
-	 * Add a new object symbol to the variables list
+	 * Adds the current expression to the function call arguments list
 	 */
-	void CreateObject(SemanticValueClass& value);
-	
-	/**
-	 * Add a new array symbol to the variables list
-	 */
-	void CreateArray(SemanticValueClass& value);
-	
-	/**
-	 * Add a new unknown symbol to the variables list
-	 */
-	void CreateUnknown(SemanticValueClass& value);
+	void ExpressionAsCallArgument();
+
+	void FunctionCallStart();
+	void FunctionCallEnd();
+
+	void CurrentExpressionAsFunctionCall();
 
 private:
 
