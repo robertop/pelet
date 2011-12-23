@@ -239,7 +239,7 @@ inner_statement:
 ;
 
 statement:
-		unticked_statement
+		unticked_statement		{ observers.ClearExpressions(); }
 	|	T_STRING ':'
 ;
 
@@ -577,76 +577,76 @@ expr_without_variable:
 		T_LIST '(' assignment_list ')' '=' expr						{  }
 	|	variable '=' expr											{ observers.VariableFound(); }
 	|	variable '=' '&' variable									{ observers.VariableFound(); }
-	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ observers.ExpressionNewCall(); }
-	|	T_NEW class_name_reference ctor_arguments					{ observers.ExpressionNewCall(); }
-	|	T_CLONE expr												{ observers.ExpressionVariable($1); }
-	|	variable T_PLUS_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_MINUS_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_MUL_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_DIV_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_CONCAT_EQUAL expr								{ observers.ExpressionScalar($1); }
-	|	variable T_MOD_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_AND_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_OR_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_XOR_EQUAL expr 									{ observers.ExpressionScalar($1); }
-	|	variable T_SL_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	variable T_SR_EQUAL expr									{ observers.ExpressionScalar($1); }
-	|	rw_variable T_INC 											{ observers.ExpressionScalar($1); }
-	|	T_INC rw_variable 											{ observers.ExpressionScalar($1); }
-	|	rw_variable T_DEC 											{ observers.ExpressionScalar($1); }
-	|	T_DEC rw_variable 											{ observers.ExpressionScalar($1); }
-	|	expr T_BOOLEAN_OR expr										{ observers.ExpressionScalar($1); }
-	|	expr T_BOOLEAN_AND expr										{ observers.ExpressionScalar($1); }
-	|	expr T_LOGICAL_OR expr 										{ observers.ExpressionScalar($1); }
-	|	expr T_LOGICAL_AND expr										{ observers.ExpressionScalar($1); }
-	|	expr T_LOGICAL_XOR expr										{ observers.ExpressionScalar($1); }
-	|	expr '|' expr												{ observers.ExpressionScalar($1); }
-	|	expr '&' expr												{ observers.ExpressionScalar($1); }
-	|	expr '^' expr 												{ observers.ExpressionScalar($1); }
-	|	expr '.' expr 												{ observers.ExpressionScalar($1); }
-	|	expr '+' expr												{ observers.ExpressionScalar($1); }
-	|	expr '-' expr												{ observers.ExpressionScalar($1); }
-	|	expr '*' expr												{ observers.ExpressionScalar($1); }
-	|	expr '/' expr												{ observers.ExpressionScalar($1); }
-	|	expr '%' expr 												{ observers.ExpressionScalar($1); }
-	| 	expr T_SL expr 												{ observers.ExpressionScalar($1); }
-	|	expr T_SR expr												{ observers.ExpressionScalar($1); }
-	|	'+' expr %prec T_INC										{ observers.ExpressionScalar($1); }
-	|	'-' expr %prec T_INC										{ observers.ExpressionScalar($1); }
-	|	'!' expr													{ observers.ExpressionScalar($1); }
-	|	'~' expr													{ observers.ExpressionScalar($1); }
-	|	expr T_IS_IDENTICAL expr									{ observers.ExpressionScalar($1); }
-	|	expr T_IS_NOT_IDENTICAL expr 								{ observers.ExpressionScalar($1); }
-	|	expr T_IS_EQUAL expr										{ observers.ExpressionScalar($1); }
-	|	expr T_IS_NOT_EQUAL expr 									{ observers.ExpressionScalar($1); }
-	|	expr '<' expr 												{ observers.ExpressionScalar($1); }
-	|	expr T_IS_SMALLER_OR_EQUAL expr								{ observers.ExpressionScalar($1); }
-	|	expr '>' expr 												{ observers.ExpressionScalar($1); }
-	|	expr T_IS_GREATER_OR_EQUAL expr								{ observers.ExpressionScalar($1); }
-	|	expr T_INSTANCEOF class_name_reference						{ observers.ExpressionScalar($1); }
-	|	'(' expr ')'  												{ observers.ExpressionScalar($1); }
+	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ observers.ExpressionNewInstanceCall(); observers.VariableFound(); }
+	|	T_NEW class_name_reference ctor_arguments					{ observers.ExpressionNewInstanceCall(); }
+	|	T_CLONE expr												{ observers.ExpressionNewVariable($1); }
+	|	variable T_PLUS_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_MINUS_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_MUL_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_DIV_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_CONCAT_EQUAL expr								{ observers.ExpressionNewScalar($1); }
+	|	variable T_MOD_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_AND_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_OR_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_XOR_EQUAL expr 									{ observers.ExpressionNewScalar($1); }
+	|	variable T_SL_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	variable T_SR_EQUAL expr									{ observers.ExpressionNewScalar($1); }
+	|	rw_variable T_INC 											{ observers.ExpressionNewScalar($1); }
+	|	T_INC rw_variable 											{ observers.ExpressionNewScalar($1); }
+	|	rw_variable T_DEC 											{ observers.ExpressionNewScalar($1); }
+	|	T_DEC rw_variable 											{ observers.ExpressionNewScalar($1); }
+	|	expr T_BOOLEAN_OR expr										{ observers.ExpressionNewScalar($1); }
+	|	expr T_BOOLEAN_AND expr										{ observers.ExpressionNewScalar($1); }
+	|	expr T_LOGICAL_OR expr 										{ observers.ExpressionNewScalar($1); }
+	|	expr T_LOGICAL_AND expr										{ observers.ExpressionNewScalar($1); }
+	|	expr T_LOGICAL_XOR expr										{ observers.ExpressionNewScalar($1); }
+	|	expr '|' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '&' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '^' expr 												{ observers.ExpressionNewScalar($1); }
+	|	expr '.' expr 												{ observers.ExpressionNewScalar($1); }
+	|	expr '+' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '-' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '*' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '/' expr												{ observers.ExpressionNewScalar($1); }
+	|	expr '%' expr 												{ observers.ExpressionNewScalar($1); }
+	| 	expr T_SL expr 												{ observers.ExpressionNewScalar($1); }
+	|	expr T_SR expr												{ observers.ExpressionNewScalar($1); }
+	|	'+' expr %prec T_INC										{ observers.ExpressionNewScalar($1); }
+	|	'-' expr %prec T_INC										{ observers.ExpressionNewScalar($1); }
+	|	'!' expr													{ observers.ExpressionNewScalar($1); }
+	|	'~' expr													{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_IDENTICAL expr									{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_NOT_IDENTICAL expr 								{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_EQUAL expr										{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_NOT_EQUAL expr 									{ observers.ExpressionNewScalar($1); }
+	|	expr '<' expr 												{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_SMALLER_OR_EQUAL expr								{ observers.ExpressionNewScalar($1); }
+	|	expr '>' expr 												{ observers.ExpressionNewScalar($1); }
+	|	expr T_IS_GREATER_OR_EQUAL expr								{ observers.ExpressionNewScalar($1); }
+	|	expr T_INSTANCEOF class_name_reference						{ observers.ExpressionNewScalar($1); }
+	|	'(' expr ')'  												{ observers.ExpressionNewScalar($1); }
 	|	expr '?' 
 		expr ':' 
-		expr														{ observers.ExpressionScalar($1); }
+		expr														{ observers.ExpressionNewScalar($1); }
 	|	expr '?' ':' 
-		expr     													{ observers.ExpressionScalar($1); }
-	|	internal_functions_in_yacc									{ observers.ExpressionScalar($1); }
-	|	T_INT_CAST expr 											{ observers.ExpressionScalar($1); }
-	|	T_DOUBLE_CAST expr  										{ observers.ExpressionScalar($1); }
-	|	T_STRING_CAST expr 											{ observers.ExpressionScalar($1); }
-	|	T_ARRAY_CAST expr  											{ observers.ExpressionArray($1); }
-	|	T_OBJECT_CAST expr  										{ observers.ExpressionVariable($1); }
-	|	T_BOOL_CAST expr											{ observers.ExpressionScalar($1); }
+		expr     													{ observers.ExpressionNewScalar($1); }
+	|	internal_functions_in_yacc									{ observers.ExpressionNewScalar($1); }
+	|	T_INT_CAST expr 											{ observers.ExpressionNewScalar($1); }
+	|	T_DOUBLE_CAST expr  										{ observers.ExpressionNewScalar($1); }
+	|	T_STRING_CAST expr 											{ observers.ExpressionNewScalar($1); }
+	|	T_ARRAY_CAST expr  											{ observers.ExpressionNewArray($1); }
+	|	T_OBJECT_CAST expr  										{ observers.ExpressionNewVariable($1); }
+	|	T_BOOL_CAST expr											{ observers.ExpressionNewScalar($1); }
 	|	T_UNSET_CAST expr
 	|	T_EXIT exit_expr
 	|	'@' expr
 	|	scalar
-	|	T_ARRAY '(' array_pair_list ')'								{ observers.ExpressionArray($1); }
-	|	'`' backticks_expr '`'										{ observers.ExpressionScalar($1); /* results of backtick operator is a string */ }
+	|	T_ARRAY '(' array_pair_list ')'								{ observers.ExpressionNewArray($1); }
+	|	'`' backticks_expr '`'										{ observers.ExpressionNewScalar($1); /* results of backtick operator is a string */ }
 	|	T_PRINT expr 
 	|	function is_reference 
 		'(' parameter_list ')' 
-		lexical_vars '{' inner_statement_list '}'					{ observers.ExpressionScalar($1); }
+		lexical_vars '{' inner_statement_list '}'					{ observers.ExpressionNewScalar($1); }
 ;
 
 function:
@@ -736,18 +736,18 @@ ctor_arguments:
 ;
 
 common_scalar:
-		T_LNUMBER 													{ observers.ExpressionScalar($1); }
-	|	T_DNUMBER 													{ observers.ExpressionScalar($1); }
-	|	T_CONSTANT_ENCAPSED_STRING									{ observers.ExpressionScalar($1); }
-	|	T_LINE 														{ observers.ExpressionScalar($1); }
-	|	T_FILE 														{ observers.ExpressionScalar($1); }
-	|	T_DIR   													{ observers.ExpressionScalar($1); }
-	|	T_CLASS_C													{ observers.ExpressionScalar($1); }
-	|	T_METHOD_C													{ observers.ExpressionScalar($1); }
-	|	T_FUNC_C													{ observers.ExpressionScalar($1); }
-	|	T_NS_C														{ observers.ExpressionScalar($1); }
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC		{ observers.ExpressionScalar($1); }
-	|	T_START_HEREDOC T_END_HEREDOC								{ observers.ExpressionScalar($1); }
+		T_LNUMBER 													{ observers.ExpressionNewScalar($1); }
+	|	T_DNUMBER 													{ observers.ExpressionNewScalar($1); }
+	|	T_CONSTANT_ENCAPSED_STRING									{ observers.ExpressionNewScalar($1); }
+	|	T_LINE 														{ observers.ExpressionNewScalar($1); }
+	|	T_FILE 														{ observers.ExpressionNewScalar($1); }
+	|	T_DIR   													{ observers.ExpressionNewScalar($1); }
+	|	T_CLASS_C													{ observers.ExpressionNewScalar($1); }
+	|	T_METHOD_C													{ observers.ExpressionNewScalar($1); }
+	|	T_FUNC_C													{ observers.ExpressionNewScalar($1); }
+	|	T_NS_C														{ observers.ExpressionNewScalar($1); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC		{ observers.ExpressionNewScalar($1); }
+	|	T_START_HEREDOC T_END_HEREDOC								{ observers.ExpressionNewScalar($1); }
 ;
 
 static_scalar: /* compile-time evaluated scalars */
@@ -814,8 +814,8 @@ variable:
 		base_variable_with_function_calls 
 		T_OBJECT_OPERATOR object_property 
 		method_or_not							{ observers.CurrentExpression.AppendToChain($2, $3, '(' == $4.Token); } 
-		variable_properties 					{ observers.ExpressionVariables.push_back(observers.CurrentExpression); }
-	|	base_variable_with_function_calls		{ observers.ExpressionVariables.push_back(observers.CurrentExpression); }
+		variable_properties 					{ observers.CurrentVariableComplete(); }
+	|	base_variable_with_function_calls		{ observers.CurrentVariableComplete(); }
 ;
 
 variable_properties:
@@ -859,13 +859,13 @@ base_variable:
 ;
 
 reference_variable:
-		reference_variable '[' dim_offset ']' 		{ observers.ExpressionUnknown($1); }
-	|	reference_variable '{' expr '}'				{ observers.ExpressionUnknown($1); }
+		reference_variable '[' dim_offset ']' 		{ }
+	|	reference_variable '{' expr '}'				{ }
 	|	compound_variable
 ;
 
 compound_variable:
-		T_VARIABLE			{ observers.ExpressionVariable($1); }
+		T_VARIABLE			{ observers.CurrentExpressionSetAsVariable($1); }
 	|	'$' '{' expr '}' 
 ;
 
@@ -987,7 +987,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 	if (T_CLOSE_TAG == ret) {
 		ret = ';';
 	}
-	
+	value->Token = ret;
 	value->Lexeme = new UnicodeString();
 	analyzer.GetLexeme(*value->Lexeme);	
 	value->Pos = analyzer.GetCharacterPosition();

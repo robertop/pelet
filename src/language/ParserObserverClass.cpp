@@ -348,22 +348,6 @@ void mvceditor::ExpressionClass::Clear() {
 	Type = mvceditor::ExpressionClass::SCALAR;
 }
 
-void mvceditor::ExpressionClass::StartChainFromVariable(mvceditor::SemanticValueClass& objectValue) {
-	Clear();
-	Type = mvceditor::ExpressionClass::VARIABLE;
-	if (objectValue.Lexeme) {
-		Lexeme = *objectValue.Lexeme;
-	}
-	if (objectValue.Comment) {
-		Comment = *objectValue.Comment;
-	}
-}
-
-void mvceditor::ExpressionClass::StartChainFromFunctionCall(const mvceditor::ExpressionClass& functionCallExpression) {
-	Clear();
-	Type = mvceditor::ExpressionClass::FUNCTION_CALL;
-	Name = functionCallExpression.Name;
-}
 
 void mvceditor::ExpressionClass::AppendToChain(mvceditor::SemanticValueClass& operatorValue, mvceditor::SemanticValueClass& propertyValue, bool isMethod) {
 	UnicodeString objectCall;
@@ -383,9 +367,9 @@ mvceditor::SymbolClass::SymbolClass()
 	: Lexeme()
 	, Comment() 
 	, ChainList()
-	, Type(PRIMITIVE)
-	, Pos(0)
-	, IsStatic(false) {
+	, Type(PRIMITIVE) {
+	///, Pos(0)
+	///, IsStatic(false) {
 }
 
 void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
@@ -393,8 +377,8 @@ void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
 	Comment = src.Comment;
 	ChainList = src.ChainList;
 	Type = src.Type;
-	Pos = src.Pos;
-	IsStatic = src.IsStatic;	
+	///Pos = src.Pos;
+	///IsStatic = src.IsStatic;	
 }
 
 void mvceditor::SymbolClass::AppendToComment(mvceditor::SemanticValueClass& value) {
@@ -424,8 +408,8 @@ void mvceditor::SymbolClass::Clear() {
 	Comment.remove();
 	ChainList.clear();
 	Type = mvceditor::SymbolClass::PRIMITIVE;
-	Pos = 0;
-	IsStatic = false;
+	///Pos = 0;
+	///IsStatic = false;
 }
 
 mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
@@ -573,36 +557,71 @@ void mvceditor::ObserverQuadClass::VariableFound() {
 		else if (mvceditor::ExpressionClass::VARIABLE == CurrentExpression.Type) {
 			symbol.SetToObject();
 		}
-		symbol.ChainList = CurrentExpression.ChainList;
-		symbol.Comment = CurrentExpression.Comment;
-		symbol.IsStatic = false;
-		symbol.Lexeme = CurrentExpression.Lexeme;
-		//symbol.Pos = CurrentExpression.Pos;
-		UnicodeString className = CurrentClass.ClassName;
-		UnicodeString functionName = CurrentMember.MemberName;
-		UnicodeString comment = symbol.Comment;
-	
-		Variable->VariableFound(className, functionName, symbol, comment);
+		if (ExpressionVariables.size() >= (size_t)2) {
+
+			// the first variable is the name of the variable
+			// the second variable has the value
+			mvceditor::ExpressionClass dest = ExpressionVariables[0];
+			mvceditor::ExpressionClass src = ExpressionVariables[1];
+			symbol.Comment = dest.Comment;
+			///symbol.IsStatic = false;
+			symbol.Lexeme = dest.Lexeme;
+			
+			symbol.ChainList.insert(symbol.ChainList.end(), src.ChainList.begin(), src.ChainList.end());
+
+			if (mvceditor::ExpressionClass::ARRAY == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::ARRAY;
+			}
+			else if (mvceditor::ExpressionClass::FUNCTION_CALL == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::OBJECT;
+			}
+			else if (mvceditor::ExpressionClass::NEW_CALL == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::OBJECT;
+			}
+			else if (mvceditor::ExpressionClass::SCALAR == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::PRIMITIVE;
+			}
+			else if (mvceditor::ExpressionClass::UNKNOWN == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::UNKNOWN;
+			}
+			else if (mvceditor::ExpressionClass::VARIABLE == src.Type) {
+				symbol.Type = mvceditor::SymbolClass::OBJECT;
+			}
+
+			//symbol.Pos = CurrentExpression.Pos;
+			UnicodeString className = CurrentClass.ClassName;
+			UnicodeString functionName = CurrentMember.MemberName;
+			UnicodeString comment = symbol.Comment;
+		
+			// no need to announce class members; they are already taken care of 
+			// by the ClassMember observer
+			if (symbol.Lexeme.caseCompare(UNICODE_STRING_SIMPLE("$this"), 0) != 0) {
+				Variable->VariableFound(className, functionName, symbol, comment);
+			}
+			ExpressionVariables.clear();
+		}
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionScalar(mvceditor::SemanticValueClass& value) {
+void mvceditor::ObserverQuadClass::ExpressionNewScalar(mvceditor::SemanticValueClass& value) {
 	CurrentExpression.Clear();
 	CurrentExpression.Type = mvceditor::ExpressionClass::SCALAR;
 	if (value.Lexeme) {
 		CurrentExpression.Lexeme = *value.Lexeme;
+		ExpressionVariables.push_back(CurrentExpression);
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionArray(mvceditor::SemanticValueClass& value) {
+void mvceditor::ObserverQuadClass::ExpressionNewArray(mvceditor::SemanticValueClass& value) {
 	CurrentExpression.Clear();
 	CurrentExpression.Type = mvceditor::ExpressionClass::ARRAY;
 	if (value.Lexeme) {
 		CurrentExpression.Lexeme = *value.Lexeme;
+		ExpressionVariables.push_back(CurrentExpression);
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionVariable(mvceditor::SemanticValueClass& value) {
+void mvceditor::ObserverQuadClass::ExpressionNewVariable(mvceditor::SemanticValueClass& value) {
 	CurrentExpression.Clear();
 	CurrentExpression.Type = mvceditor::ExpressionClass::VARIABLE;
 	if (value.Lexeme) {
@@ -611,15 +630,25 @@ void mvceditor::ObserverQuadClass::ExpressionVariable(mvceditor::SemanticValueCl
 	if (value.Comment) {
 		CurrentExpression.Comment = *value.Comment;
 	}
+	UnicodeString name = CurrentExpression.Lexeme;
+	if (!name.isEmpty()) {
+		CurrentExpression.ChainList.push_back(name);
+	}
+	ExpressionVariables.push_back(CurrentExpression);
 }
 
-void mvceditor::ObserverQuadClass::ExpressionNewCall() {
+void mvceditor::ObserverQuadClass::ExpressionNewInstanceCall() {
 	CurrentExpression.Clear();
 	CurrentExpression.Type = mvceditor::ExpressionClass::NEW_CALL;
 	CurrentExpression.Name = CurrentQualifiedName;
+	UnicodeString name = CurrentExpression.Name.ToSignature();
+	if (!name.isEmpty()) {
+		CurrentExpression.ChainList.push_back(name);
+	}
+	ExpressionVariables.push_back(CurrentExpression);
 }
 
-void mvceditor::ObserverQuadClass::ExpressionUnknown(mvceditor::SemanticValueClass& value) {
+void mvceditor::ObserverQuadClass::ExpressionNewUnknown(mvceditor::SemanticValueClass& value) {
 	CurrentExpression.Clear();
 	CurrentExpression.Type = mvceditor::ExpressionClass::UNKNOWN;
 	if (value.Lexeme) {
@@ -628,8 +657,28 @@ void mvceditor::ObserverQuadClass::ExpressionUnknown(mvceditor::SemanticValueCla
 	if (value.Comment) {
 		CurrentExpression.Comment = *value.Comment;
 	}
+	UnicodeString name = CurrentExpression.Lexeme;
+	if (!name.isEmpty()) {
+		CurrentExpression.ChainList.push_back(name);
+	}
+	ExpressionVariables.push_back(CurrentExpression);
 }
 
+void mvceditor::ObserverQuadClass::CurrentExpressionSetAsVariable(mvceditor::SemanticValueClass& value) {
+	CurrentExpression.Clear();
+	CurrentExpression.Type = mvceditor::ExpressionClass::VARIABLE;
+	if (value.Lexeme) {
+		CurrentExpression.Lexeme = *value.Lexeme;
+	}
+	if (value.Comment) {
+		CurrentExpression.Comment = *value.Comment;
+	}
+	UnicodeString name = CurrentExpression.Lexeme;
+	if (!name.isEmpty()) {
+		CurrentExpression.ChainList.push_back(name);
+	}
+	
+}
 
 void mvceditor::ObserverQuadClass::FunctionCallStart() {
 	CurrentFunctionCallExpression.Clear();
@@ -649,6 +698,16 @@ void mvceditor::ObserverQuadClass::FunctionCallEnd() {
 
 void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
 	CurrentFunctionCallExpression.CallArguments.push_back(CurrentExpression);
+
+	// remove from ExpressionVariables we wont place function arguments 
+	// as "regular" variables because we dont want function arguments to
+	// trigger VariableFound notifications.
+	// for example the expression
+	//
+	// $newUser = fix($user)
+	//
+	// should generate only 1 VariableFound notification for the $newUser variable
+	ExpressionVariables.pop_back();
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionAsFunctionCall() {
@@ -656,6 +715,23 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAsFunctionCall() {
 	CurrentExpression.Type = mvceditor::ExpressionClass::VARIABLE;
 	CurrentExpression.Name = CurrentFunctionCallExpression.Name;
 	CurrentExpression.Comment = CurrentFunctionCallExpression.Comment;
+
+	UnicodeString name = CurrentExpression.Name.ToSignature();
+	if (!name.isEmpty()) {
+		CurrentExpression.ChainList.push_back(name + UNICODE_STRING_SIMPLE("()"));
+	}
+}
+
+void mvceditor::ObserverQuadClass::CurrentVariableComplete() {
+	ExpressionVariables.push_back(CurrentExpression);
+	CurrentExpression.Clear();
+}
+
+void mvceditor::ObserverQuadClass::ClearExpressions() {
+	CurrentExpression.Clear();
+	CurrentFunctionCallExpression.Clear();
+	ExpressionVariables.clear();
+	CurrentQualifiedName.Clear();
 }
 
 UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
@@ -676,179 +752,3 @@ UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const Un
 	}
 	return returnType.trim();
 }
-
-/*
-
-void mvceditor::ObserverQuadClass::MakeTempVariable(mvceditor::SemanticValueClass& value) {
-	UnicodeString newVarName;
-	int capacity = 10;
-	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", VariableCount);
-	newVarName.releaseBuffer(written);
-	
-	mvceditor::SymbolClass symbol;
-	symbol.IsStatic = value.IsStaticMember;
-	symbol.Lexeme = newVarName;
-	symbol.Pos = value.Pos;
-	if (value.Lexeme) {
-		symbol.SourceSignature = *value.Signature;
-	}
-	symbol.Type = value.Type;
-	if (value.TypeLexeme) {
-		symbol.TypeLexeme = *value.TypeLexeme;
-	}
-	UnicodeString className = ClassStack.empty() ? UNICODE_STRING_SIMPLE("") : ClassStack.top();
-	UnicodeString functionName = FunctionStack.empty() ?  UNICODE_STRING_SIMPLE("") : FunctionStack.top();
-	UnicodeString comment = value.Comment ? *value.Comment : UNICODE_STRING_SIMPLE("");
-	if (Variable) {
-		Variable->VariableFound(className, functionName, symbol, comment);
-	}
-}
-
-void mvceditor::ObserverQuadClass::MakeTempVariableAndStack(const UnicodeString& object, SemanticValueClass& propertyValue, SemanticValueClass& lookahead) {
-	mvceditor::SymbolClass symbol;
-	UnicodeString newVarName;
-	int capacity = 10;
-	int written = u_sprintf(newVarName.getBuffer(capacity), "$tmp%d", VariableCount);
-	newVarName.releaseBuffer(written);
-	if ('(' == lookahead.Token && object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
-		symbol.Type = mvceditor::SymbolClass::METHOD;
-		if (propertyValue.Lexeme) {
-			symbol.SourceSignature = object + UNICODE_STRING_SIMPLE("->") + *propertyValue.Lexeme;
-		}
-		symbol.Lexeme = newVarName;
-	}
-	else if ('(' == lookahead.Token && !object.startsWith(UNICODE_STRING_SIMPLE("$"))) {
-		symbol.Type = mvceditor::SymbolClass::PRIMITIVE; // dont know the function return type yet
-		symbol.SourceSignature = object;
-		symbol.Lexeme = newVarName;
-	}
-	else {
-		symbol.Type = mvceditor::SymbolClass::PROPERTY;
-		if (propertyValue.Lexeme) {
-			symbol.SourceSignature = object + UNICODE_STRING_SIMPLE("->") + *propertyValue.Lexeme;
-		}
-		symbol.Lexeme = newVarName;
-	}
-	symbol.Pos = propertyValue.Pos;
-
-	UnicodeString className = ClassStack.empty() ? UNICODE_STRING_SIMPLE("") : ClassStack.top();
-	UnicodeString functionName = FunctionStack.empty() ?  UNICODE_STRING_SIMPLE("") : FunctionStack.top();
-	UnicodeString comment = propertyValue.Comment ? *propertyValue.Comment : UNICODE_STRING_SIMPLE("");
-	
-	if (Variable) {
-		Variable->VariableFound(ClassStack.top(), FunctionStack.top(), symbol, UNICODE_STRING_SIMPLE(""));
-	}
-	VariableStack.push(newVarName);
-}
-
-void mvceditor::ObserverQuadClass::VariableEnd() {
-	if (!VariableStack.empty()) {
-		VariableStack.pop();
-	}
-}
-
-void mvceditor::SemanticValueClass::Transfer(mvceditor::SemanticValueClass& src) {
-	if (!Lexeme) {
-		Lexeme = src.Lexeme;
-		src.Lexeme = NULL;
-	}
-	else {
-		Lexeme->setTo(*src.Lexeme);
-	}
-	if (!TypeLexeme) {
-		TypeLexeme = src.TypeLexeme;
-		src.TypeLexeme = NULL;
-	}
-	else {
-		TypeLexeme->setTo(*src.TypeLexeme);
-	}
-
-	if (!Signature) {
-		Signature = src.Signature;
-		src.Signature = NULL;
-	}
-	else {
-		Signature->setTo(*src.Signature);
-	}
-	if (!Comment) {
-		Comment = src.Comment;
-		src.Comment = NULL;
-	}
-	else {
-		Comment->setTo(*src.Comment);
-	}
-	IsPublicMember = src.IsPublicMember;
-	IsProtectedMember = src.IsProtectedMember;
-	IsPrivateMember = src.IsPrivateMember;
-	IsStaticMember = src.IsStaticMember;
-	IsConstMember = src.IsConstMember;
-}
-
-void mvceditor::SemanticValueClass::AppendSignature(mvceditor::SemanticValueClass& src) {
-	if (src.Signature) {
-		bool isNew = false;
-		if (!Signature) {
-			Signature = new UnicodeString();
-			isNew = true;
-		}
-		if (!isNew) {
-			Signature->append(UNICODE_STRING_SIMPLE(" "));
-		}
-		Signature->append(*src.Signature);
-	}
-}
-
-void mvceditor::SemanticValueClass::SetSymbolType(mvceditor::SymbolClass::Types type) {
-	Type = type;
-}
-
-void mvceditor::SemanticValueClass::TransferComment(mvceditor::SemanticValueClass& src) {
-	if (src.Comment) {
-		if (!Comment) {
-			Comment = src.Comment;
-			src.Comment = NULL;
-		}
-		else {
-			Comment->setTo(*src.Comment);
-		}
-	}
-}
-
-void mvceditor::SemanticValueClass::AppendSignatureFromLexeme(mvceditor::SemanticValueClass& src) {
-	if (src.Lexeme) {
-		bool isNew = false;
-		if (!Signature) {
-			Signature = new UnicodeString();
-			isNew = true;
-		}
-		if (!isNew) {
-			Signature->append(UNICODE_STRING_SIMPLE(" "));
-		}
-		Signature->append(*src.Lexeme);
-		
-	}
-}
-
-mvceditor::VariableListClass::VariableListClass() 
-	: Variables() {
-
-}
-
-void mvceditor::VariableListClass::Clear() {
-	Variables.clear();
-}
-
-void mvceditor::VariableListClass::CreateExpression() {
-	mvceditor::SymbolClass expr;
-	expr.Type = mvceditor::SymbolClass::EXPRESSION;
-	Variables.push_back(expr);
-}
-
-void mvceditor::VariableListClass::CreatePrimitive(SemanticValueClass& value) {
-	mvceditor::SymbolClass constant;
-	constant.Lexeme.setTo(*value.Lexeme);
-	constant.Type = mvceditor::SymbolClass::PRIMITIVE;
-	Variables.push_back(constant);
-}
-
-*/

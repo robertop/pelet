@@ -117,12 +117,12 @@ public:
 						MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
 						PropertyClassName, PropertyName, PropertyType, PropertyComment,
 						FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
-						VariableClassName, VariableMethodName, VariableName, VariableType, VariableComment,
-						VariableMethodCalledName, VariableFunctionCalledName, VariableObjectName, 
-						VariableSourceVariable, VariableConstant,
+						VariableClassName, VariableMethodName, VariableName, VariableComment,
+						VariableChainList,
 						DefinedName, DefinedValue, DefinedComment;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<mvceditor::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
+	std::vector<mvceditor::SymbolClass::Types> VariableTypes;
 	
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment) {
@@ -169,12 +169,12 @@ public:
 		VariableMethodName.push_back(methodName);
 		VariableName.push_back(symbol.Lexeme);
 		VariableComment.push_back(symbol.Comment);
-
-	UFILE* f = u_finit(stdout, NULL, NULL);
-	UnicodeString s(symbol.Lexeme);
-	u_fprintf(f, "var=%S\n", s.getTerminatedBuffer());
-	u_fclose(f);
-		
+		VariableTypes.push_back(symbol.Type);
+		UnicodeString typeString;
+		for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
+			typeString.append(symbol.ChainList[i]);
+		}
+		VariableChainList.push_back(typeString);		
 	}
 	
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -342,11 +342,11 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	CHECK(Parser->ScanFile(file));
 	CHECK_EQUAL((size_t)5, observer.VariableName.size());
 	if (observer.VariableName.size() == 5) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("blog"), observer.VariableName[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("msg"), observer.VariableName[1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("anotherMsg"), observer.VariableName[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("newUser"), observer.VariableName[3]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), observer.VariableName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$blog"), observer.VariableName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$msg"), observer.VariableName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherMsg"), observer.VariableName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$newUser"), observer.VariableName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$name"), observer.VariableName[4]);
 	}
 	CHECK_EQUAL((size_t)5, observer.VariableClassName.size());
 	if (observer.VariableClassName.size() == 5) {
@@ -364,29 +364,23 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[3]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[4]);
 	}
-	CHECK_EQUAL((size_t)1, observer.VariableType.size());
-	if (observer.VariableType.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Blog"), observer.VariableType[0]);
+	CHECK_EQUAL((size_t)5, observer.VariableTypes.size());
+	if (observer.VariableTypes.size() == 5) {
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[0]);
+		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[1]);
+
+		// cannot resolve variables that are assigned 
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[2]);
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[3]);
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[4]);
 	}
-	CHECK_EQUAL((size_t)1, observer.VariableFunctionCalledName.size());
-	if (observer.VariableFunctionCalledName.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factory"), observer.VariableFunctionCalledName[0]);
-	}
-	CHECK_EQUAL((size_t)1, observer.VariableObjectName.size());
-	if (observer.VariableObjectName.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("user"), observer.VariableObjectName[0]);
-	}
-	CHECK_EQUAL((size_t)1, observer.VariableMethodCalledName.size());
-	if (observer.VariableMethodCalledName.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("getName"), observer.VariableMethodCalledName[0]);
-	}
-	CHECK_EQUAL((size_t)1, observer.VariableConstant.size());
-	if (observer.VariableConstant.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("created a new blog"), observer.VariableConstant[0]);
-	}
-	CHECK_EQUAL((size_t)1, observer.VariableSourceVariable.size());
-	if (observer.VariableSourceVariable.size() == 1) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("msg"), observer.VariableSourceVariable[0]);
+	CHECK_EQUAL((size_t)5, observer.VariableChainList.size());
+	if (observer.VariableChainList.size() == 5) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Blog"), observer.VariableChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$msg"), observer.VariableChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factory()"), observer.VariableChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user->getName()"), observer.VariableChainList[4]);
 	}
 }
 

@@ -343,10 +343,9 @@ void mvceditor::SymbolTableClass::Print() {
 		u_fprintf(out, "Symbol Table For %S\n", s.getTerminatedBuffer());
 		for (size_t j = 0; j < scopedSymbols.size(); ++j) {
 			SymbolClass symbol = scopedSymbols[j];
-			u_fprintf(out, "%d\t%S\t%d\t%d\t%d\n", 
-				(int)j, symbol.Lexeme.getTerminatedBuffer(), symbol.Pos,
-				symbol.Type, 
-				symbol.IsStatic); 
+			u_fprintf(out, "%d\t%S\t%d\n", 
+				(int)j, symbol.Lexeme.getTerminatedBuffer(),
+				symbol.Type); 
 		}
 	}
 	u_fclose(out);
@@ -450,7 +449,7 @@ void mvceditor::SymbolTableClass::CreateScopeArgumentsFromSignature(const Unicod
 		variableSymbol.Lexeme = variableName;
 		///variableSymbol.SourceSignature = UNICODE_STRING_SIMPLE("");
 		///variableSymbol.TypeLexeme = type;
-		variableSymbol.IsStatic = false;
+		///variableSymbol.IsStatic = false;
 		variableSymbol.Type = type.isEmpty() ? SymbolClass::PRIMITIVE : SymbolClass::OBJECT;
 		scope.push_back(variableSymbol);
 		startPos = endPos + 1;
@@ -478,7 +477,7 @@ void mvceditor::SymbolTableClass::CreatePredefinedVariables(std::vector<SymbolCl
 		SymbolClass variableSymbol;
 		variableSymbol.Lexeme = variables[i];
 		///variableSymbol.SourceSignature = UNICODE_STRING_SIMPLE("");
-		variableSymbol.IsStatic = false;
+		///variableSymbol.IsStatic = false;
 		///variableSymbol.TypeLexeme = UNICODE_STRING_SIMPLE("");
 		variableSymbol.Type = SymbolClass::PRIMITIVE;
 		scope.push_back(variableSymbol);

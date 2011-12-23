@@ -322,6 +322,17 @@ private:
 	std::vector<UnicodeString> OptionalTypes;
 };
 
+/**
+ * This class will represent one PHP Expression. An expression is either
+ * - a variable ($abc)
+ * - a scalar (constant)
+ * - an operation between 2 variables  (arithmetic, boolean, bitwise)
+ * - an operation between 1 variables  and another expression
+ * - an operation of 1 variable (increment, decrement, cast, error suppression, clone)
+ * - a "new" object construction
+ * - a function call
+ * - a variable assignment of one variable to an expression
+ */
 class ExpressionClass {
 	
 public:
@@ -366,16 +377,21 @@ public:
 	/**
 	 * In the case of a variable; this is the list of  properties / methods
 	 * that were successively invoked.
-	 * For example; the expression "$this->name->toString" will have 2 items in
-	 * the chain list "->name" and "->toString".
+	 * For example; the expression "$this->name->toString()" will have 3 items in
+	 * the chain list "$this" "->name" and "->toString()".
 	 */
 	std::vector<UnicodeString> ChainList;
 
 	Types Type;
 
 	ExpressionClass();
-	void StartChainFromVariable(SemanticValueClass& objectValue);
-	void StartChainFromFunctionCall(const ExpressionClass& functionCallExpression);
+
+	/**
+	 * Add a property name to the variable chain list
+	 * @param operatorValue the token of the operation
+	 * @param propertyValue the token of the property/method to chain
+	 * @param isMethod TRUE if the property is a method
+	 */
 	void AppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
 
 	void Clear();
@@ -431,7 +447,8 @@ public:
 	 * for the expression 
 	 *   "$name = $this->myFunc()->name->fix() "
 	 * the ChainList will be
-	 *   0)  $this->myFunc
+	 *   0)  $this
+	 *   1)  ->myFunct()
 	 *   1)  ->name
 	 *   2)  ->fix
 	 *
@@ -441,7 +458,7 @@ public:
 	 * "fix" property of item 1's type ]
 	 *
 	 * Any arguments to any of the calling functions will be ignored (since they do not contribute to the type info).
-	 * Note that this may be empty in the case of primitives. 
+	 * Note that the ChainList may be empty in the case of primitives or 'simple' variables. 
 	 * 
 	 * @var std::vector<UnicodeString>
 	 */
@@ -455,15 +472,18 @@ public:
 	/**
 	 * location in the original source where the variable starts.
 	 */
-	int Pos;
+	///int Pos;
 	
 	/**
 	 * If TRUE, this symbol uses static access ("::")
 	 */
-	bool IsStatic;
+	///bool IsStatic;
 	
 	SymbolClass();
 
+	/**
+	 * Copies all symbol properties from src to this object.
+	 */
 	void Copy(const SymbolClass& src);
 
 	void AppendToComment(SemanticValueClass& value);
@@ -494,19 +514,58 @@ public:
 
 	VariableObserverClass* Variable;
 
-
+	/**
+	 * the class that is currently being parsed.
+	 */
 	ClassSymbolClass CurrentClass;
 
+	/**
+	 * the class method or property that is currently being parsed. Also, this will hold
+	 * the current stand-alone function that is being parsed as well
+	 */
 	ClassMemberSymbolClass CurrentMember;
 
+	/**
+	 * The current qualified name (namespaces + name) that is being parsed.
+	 */
 	QualifiedNameClass CurrentQualifiedName;
 
+	/**
+	 * This is a list of all the parameters of a function declaration. For example at the
+	 * end of this line
+	 *
+	 *  function work($one, $two)
+	 *
+	 * the CurrentParametersList will have $one and $two as its members
+	 */
 	ParametersListClass CurrentParametersList;
 
+	/**
+	 * The current function CALL (not declaration).
+	 *
+	 * The reason for keeping this is for finding define() calls so that we can notify
+	 * the class observer.
+	 */
 	ExpressionClass CurrentFunctionCallExpression;
 
+	/**
+	 * The current expression that is being parsed. This is a bit tricky since this
+	 *
+	 *  $myString = $another->func()
+	 *
+	 * Is actually 2 parsd as 2 expressions.  
+	 */
 	ExpressionClass CurrentExpression;
 
+	/**
+	 * Since we want to notify on variable assigments, we need to keep track of previous
+	 * expressions, since an assignment expression is recursively defined as a variable
+	 * followed by an '=' followed by an expression. By having this list, we can store
+	 * the right side of the assignment (the source expression) and then parse the
+	 * left side of the assignment while still having access to the source expression.
+	 * @see CurrentVariableComplete() method; after a variable is parsed the 
+	 * CurrentVariableComplete method will 'save' it into this vector.
+	 */
 	std::vector<ExpressionClass> ExpressionVariables;
 
 	/**
@@ -530,6 +589,9 @@ public:
 	 */
 	void ClassSetExtends();
 
+	/**
+	 * Add the current name as an interface that is implemented by the current class.
+	 */
 	void ClassAddToImplements();
 
 	/**
@@ -547,13 +609,6 @@ public:
 	 * using the CurrentQualifiedName as the type
 	 */
 	void CreateParameterWithOptionalClassName();
-
-	/**
-	 * Initializes the CurrentMember info.
-	 */
-	void ClassMemberStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
-
-	void ClassMethodStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
 
 	/**
 	 * Notifies that a class property / method has been found. The CurrentMember variable should have been filled with the data.
@@ -586,39 +641,81 @@ public:
 	void VariableFound();
 
 	/**
-	 * Set the current expression to be a scalar value
+	 * Set the current expression to be a scalar value and pushes the 
+	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionScalar(SemanticValueClass& value);
+	void ExpressionNewScalar(SemanticValueClass& value);
 
 	/**
-	 * Set the current expression to be an array value
+	 * Set the current expression to be an array value and pushes the 
+	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionArray(SemanticValueClass& value);
+	void ExpressionNewArray(SemanticValueClass& value);
 
 	/**
-	 * Set the current expression to be a variable value
+	 * Set the current expression to be a variable value and pushes the 
+	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionVariable(SemanticValueClass& value);
+	void ExpressionNewVariable(SemanticValueClass& value);
 
 	/**
-	 * Set the current expression to be an unknown value
+	 * Set the current expression to be an unknown value and pushes the 
+	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionUnknown(SemanticValueClass& value);
+	void ExpressionNewUnknown(SemanticValueClass& value);
 
 	/**
-	 * Set the current expression to be the result of a new PHP object
+	 * Set the current expression to be the result of a new PHP object and pushes the 
+	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewCall();
+	void ExpressionNewInstanceCall();
 	
 	/**
-	 * Adds the current expression to the function call arguments list
+	 * Adds the current expression to the function call arguments list. This function should
+	 * be called when the parser has encountered a function call argument (ie for the 
+	 * expression "myFunct($a, $b)" once "$a" has been parsed this function should be
+	 * called, then once "$b" has been parsed this function should be called.
 	 */
 	void ExpressionAsCallArgument();
 
+	/**
+	 * Copies the current qualified name to the FunctionCall expression
+	 */
 	void FunctionCallStart();
+
+	/**
+	 * Checks the current function call that was parsed; will notify the class observer when 
+	 * the define() function was called
+	 */
 	void FunctionCallEnd();
 
+	/**
+	 * Saves the current function call to expression to the CurrentExpression.
+	 * Will NOT push the expression to the ExpressionVariables list; it will instead
+	 * push the current expression into the CurrentFunctionCall expression. This function
+	 * should be called when the parser encounters a function call (ie.  "myFunc();".
+	 */
 	void CurrentExpressionAsFunctionCall();
+	
+	/**
+	 * Sets the current expression to be a variable. This function should be called
+	 * when parser encounters a variable at the right side of an assignment 
+	 * expression. Will NOT push the expression to the ExpressionVariablesList
+	 */
+	void CurrentExpressionSetAsVariable(mvceditor::SemanticValueClass& value);
+
+	/**
+	 * Adds the current expression to the ExpressionVariables list. This function
+	 * should be called once a variable chain has completed (ie after 
+	 * "$this->prop1->method1()" 
+	 */
+	void CurrentVariableComplete();
+
+	/**
+	 * Resets the current expression.
+	 * This function should be called after the end of every statement.
+	 */
+	void ClearExpressions();
 
 private:
 
