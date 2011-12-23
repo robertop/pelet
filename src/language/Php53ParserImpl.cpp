@@ -3751,6 +3751,13 @@ yyreduce:
     { observers.ClassAddToImplements(); ;}
     break;
 
+  case 95:
+
+/* Line 1455 of yacc.c  */
+#line 374 "src/language/Php53ParserImpl.y"
+    { observers.ClassAddToImplements(); ;}
+    break;
+
   case 129:
 
 /* Line 1455 of yacc.c  */
@@ -4608,7 +4615,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 4612 "src/language/Php53ParserImpl.cpp"
+#line 4619 "src/language/Php53ParserImpl.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

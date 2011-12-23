@@ -92,15 +92,20 @@ UnicodeString mvceditor::ClassSymbolClass::ToSignature() const {
 	sig.append(ClassName);
 	UnicodeString extends = ExtendsFrom.ToSignature();
 	if (!extends.isEmpty()) {
-		sig.append(UNICODE_STRING_SIMPLE(" "));
+		sig.append(UNICODE_STRING_SIMPLE(" extends "));
 		sig.append(extends);
 	}
 	if (!ImplementsList.empty()) {
-		sig.append(UNICODE_STRING_SIMPLE(" implements "));
+		if (IsInterface) {
+			sig.append(UNICODE_STRING_SIMPLE(" extends "));
+		}
+		else {
+			sig.append(UNICODE_STRING_SIMPLE(" implements "));
+		}
 		for (size_t i = 0; i < ImplementsList.size(); ++i) {
 			sig.append(ImplementsList[i].ToSignature());
 			if (i < (ImplementsList.size() - 1)) {
-				sig.append(UNICODE_STRING_SIMPLE(" "));
+				sig.append(UNICODE_STRING_SIMPLE(", "));
 			}
 		}
 	}
@@ -479,10 +484,6 @@ void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 	bool isConst = CurrentMember.IsConstMember;
 	bool isStatic = CurrentMember.IsStaticMember;
 
-	// for members; remove the leading '$'
-	if (isProperty && !isConst && propName.length() > 1) {
-		propName = propName.remove(0, 1);
-	}
 	if (Member && isProperty) {
 		UnicodeString propType = ReturnTypeFromPhpDocComment(comment, true);
 		Member->PropertyFound(className, propName, propType, comment, visibility, isConst, isStatic);

@@ -371,7 +371,7 @@ implements_list:
 
 interface_list:
 		fully_qualified_class_name							{ observers.ClassAddToImplements(); }
-	|	interface_list ','	fully_qualified_class_name
+	|	interface_list ','	fully_qualified_class_name		{ observers.ClassAddToImplements(); }
 ;
 
 foreach_optional_arg:

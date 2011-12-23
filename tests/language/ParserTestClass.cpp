@@ -25,6 +25,7 @@
 #include <UnitTest++.h>
 #include <language/ParserObserverClass.h>
 #include <language/ParserClass.h>
+#include <windows/StringHelperClass.h>
 #include <FileTestFixtureClass.h>
 #include <wx/filefn.h> 
 #include <vector>
@@ -41,6 +42,9 @@ public:
 		if (wxDirExists(TestProjectDir)) {
 			RecursiveRmDir(TestProjectDir);
 		}
+
+		// this file was carefully crafted to hit all the observers
+		// class, method, function, and variable observers
 		CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
 			"<?php\n"
 			"/**\n"
@@ -277,7 +281,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyName.size());
 	if (observer.PropertyName.size() == 2) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), observer.PropertyName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$name"), observer.PropertyName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("DEFAULT_NAME"), observer.PropertyName[1]);
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyComment.size());
@@ -381,6 +385,94 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$msg"), observer.VariableChainList[2]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factory()"), observer.VariableChainList[3]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user->getName()"), observer.VariableChainList[4]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"interface Runnable {}\n"
+		"interface MyRunnable extends Runnable {} \n"
+		"abstract class AbstractRunnable implements Runnable, ArrayAccess {}\n"
+		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
+	);
+	CHECK(Parser->ScanString(code));
+	CHECK_EQUAL((size_t)4, observer.ClassName.size());
+	if ((size_t)4 == observer.ClassName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Runnable"), observer.ClassName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.ClassName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("AbstractRunnable"), observer.ClassName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("TrueRunnable"), observer.ClassName[3]);
+	}
+	CHECK_EQUAL((size_t)4, observer.ClassSignature.size());
+	if ((size_t)4 == observer.ClassSignature.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("interface Runnable"), observer.ClassSignature[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("interface MyRunnable extends Runnable"), observer.ClassSignature[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements Runnable, ArrayAccess"), observer.ClassSignature[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("class TrueRunnable extends AbstractRunnable implements MyRunnable"), observer.ClassSignature[3]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
+	TestClassObserverClass observer;
+	Parser->SetClassMemberObserver(&observer);
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"interface Runnable { const MSG = 'const'; abstract function run();}\n"
+		"abstract class MyRunnable implements Runnable { \n"
+		"	function run() {} \n"
+
+		// test the reference return
+		"	private function & myPrivate() {}\n"
+		"	private $myProp;\n"
+		"	private static $myStaticProp; \n"
+		"	protected $protectedVar; \n"
+		"	final private $constFinal = 44;\n"
+		"	var $publicVar;\n"
+		"} \n"
+	);
+	CHECK(Parser->ScanString(code));
+	CHECK_EQUAL((size_t)3, observer.MethodClassName.size());
+	if ((size_t)3 == observer.ClassSignature.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Runnable"), observer.MethodClassName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.MethodClassName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.MethodClassName[2]);
+	}
+	if ((size_t)3 == observer.MethodName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("run"), observer.MethodName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("run"), observer.MethodName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("myPrivate"), observer.MethodName[2]);
+	}
+	CHECK_EQUAL((size_t)3, observer.MethodSignature.size());
+	if ((size_t)3 == observer.ClassSignature.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract function run()"), observer.MethodSignature[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function& run()"), observer.MethodSignature[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("private function myPrivate()"), observer.MethodSignature[2]);
+	}
+	CHECK_EQUAL((size_t)6, observer.PropertyClassName.size());
+	if ((size_t)6 == observer.PropertyClassName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Runnable"), observer.PropertyClassName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.PropertyClassName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.PropertyClassName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.PropertyClassName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.PropertyClassName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyRunnable"), observer.PropertyClassName[5]);
+	}
+	CHECK_EQUAL((size_t)6, observer.PropertyName.size());
+	if ((size_t)6 == observer.PropertyName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MSG"), observer.PropertyName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$myProp"), observer.PropertyName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$myStaticProp"), observer.PropertyName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$protectedVar"), observer.PropertyName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$constFinal"), observer.PropertyName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$publicVar"), observer.PropertyName[5]);
+	}
+	if ((size_t)5 == observer.PropertyConsts.size()) {
+		CHECK(observer.PropertyConsts[0]);
+	}
+	if ((size_t)5 == observer.PropertyIsStatic.size()) {
+		CHECK(observer.PropertyConsts[0]);
+		CHECK(observer.PropertyConsts[2]);
 	}
 }
 

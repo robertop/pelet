@@ -264,6 +264,10 @@ class ClassMemberSymbolClass {
 
 public:
 
+	/**
+	 * If this is a property, the MemberName will
+	 * have the siguil ('$')
+	 */
 	UnicodeString MemberName, Comment;
 
 	bool IsPublicMember;
