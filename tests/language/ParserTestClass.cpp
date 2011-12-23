@@ -84,7 +84,6 @@ public:
 			"\t\treturn $this->name;\n"
 			"\t}\n"
 			"\tprivate static function setName($name) {\n"
-			"\t\t$this->name = $name;\n"
 			"\t}\n"
 			"}\n"
 			"\n\n"
@@ -344,47 +343,57 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	TestClassObserverClass observer;
 	Parser->SetVariableObserver(&observer);
 	CHECK(Parser->ScanFile(file));
-	CHECK_EQUAL((size_t)5, observer.VariableName.size());
-	if (observer.VariableName.size() == 5) {
+	CHECK_EQUAL((size_t)7, observer.VariableName.size());
+	if (observer.VariableName.size() == 7) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$blog"), observer.VariableName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$msg"), observer.VariableName[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherMsg"), observer.VariableName[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$newUser"), observer.VariableName[3]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$name"), observer.VariableName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$name"), observer.VariableName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user"), observer.VariableName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$newUser"), observer.VariableName[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$name"), observer.VariableName[6]);
 	}
-	CHECK_EQUAL((size_t)5, observer.VariableClassName.size());
-	if (observer.VariableClassName.size() == 5) {
+	CHECK_EQUAL((size_t)7, observer.VariableClassName.size());
+	if (observer.VariableClassName.size() == 7) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.VariableClassName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.VariableClassName[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.VariableClassName[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableClassName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.VariableClassName[3]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableClassName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableClassName[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableClassName[6]);
 	}
-	CHECK_EQUAL((size_t)5, observer.VariableMethodName.size());
-	if (observer.VariableClassName.size() == 5) {
+	CHECK_EQUAL((size_t)7, observer.VariableMethodName.size());
+	if (observer.VariableClassName.size() == 7) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("__construct"), observer.VariableMethodName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("__construct"), observer.VariableMethodName[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("__construct"), observer.VariableMethodName[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("setName"), observer.VariableMethodName[3]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.VariableMethodName[6]);
 	}
-	CHECK_EQUAL((size_t)5, observer.VariableTypes.size());
-	if (observer.VariableTypes.size() == 5) {
+	CHECK_EQUAL((size_t)7, observer.VariableTypes.size());
+	if (observer.VariableTypes.size() == 7) {
 		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[0]);
 		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[1]);
 
 		// cannot resolve variables that are assigned 
 		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[2]);
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[3]);
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[4]);
+		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[3]);
+		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[4]);
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[5]);
+		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[6]);
 	}
-	CHECK_EQUAL((size_t)5, observer.VariableChainList.size());
-	if (observer.VariableChainList.size() == 5) {
+	CHECK_EQUAL((size_t)7, observer.VariableChainList.size());
+	if (observer.VariableChainList.size() == 7) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Blog"), observer.VariableChainList[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$msg"), observer.VariableChainList[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factory()"), observer.VariableChainList[3]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user->getName()"), observer.VariableChainList[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factory()"), observer.VariableChainList[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user->getName()"), observer.VariableChainList[6]);
 	}
 }
 
@@ -476,7 +485,45 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	}
 }
 
-#if 0
+TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
+	TestClassObserverClass observer;
+	Parser->SetVariableObserver(&observer);
+
+	// test a global variable
+	// a function parameter with a type hint
+	// a variable in a function 
+	// a variable with a long method chain
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"$glob = new Globals();\n"
+		"function workFunc(Globals $srcGlobal) {\n"
+		"	$local = $srcGlobal;\n"
+		"	$localName = $srcGlobal->name;\n"
+		"}"
+	);
+	CHECK(Parser->ScanString(code));
+	CHECK_EQUAL((size_t)4, observer.VariableMethodName.size());
+	if ((size_t)4 == observer.VariableMethodName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableMethodName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[3]);
+	}
+	CHECK_EQUAL((size_t)4, observer.VariableName.size());
+	if ((size_t)4 == observer.VariableName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$glob"), observer.VariableName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal"), observer.VariableName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$local"), observer.VariableName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$localName"), observer.VariableName[3]);
+	}
+	CHECK_EQUAL((size_t)4, observer.VariableChainList.size());
+	if ((size_t)4 == observer.VariableChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Globals"), observer.VariableChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Globals"), observer.VariableChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal"), observer.VariableChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal->name"), observer.VariableChainList[3]);
+	}
+}
+
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
 	wxString file = TestProjectDir + wxT("test.php");
 	mvceditor::LintResultsClass results;
@@ -538,7 +585,5 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK(results.Error.length() > 0);
 	CHECK(results.LineNumber > 0);
 }
-
-#endif
 
 }

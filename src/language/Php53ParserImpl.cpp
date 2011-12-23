@@ -4855,9 +4855,9 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 	analyzer.GetLexeme(*value->Lexeme);	
 	value->Pos = analyzer.GetCharacterPosition();
 		
-	//UFILE* f = u_finit(stdout, NULL, NULL);
-	//u_fprintf(f, "lex=%S\n", value->Lexeme->getTerminatedBuffer());
-	//u_fclose(f);
+	///UFILE* f = u_finit(stdout, NULL, NULL);
+	///u_fprintf(f, "lex=%S\n", value->Lexeme->getTerminatedBuffer());
+	///u_fclose(f);
 	return ret;
 }
 

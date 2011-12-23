@@ -321,6 +321,18 @@ public:
 	 */
 	UnicodeString ToSignature() const;
 
+	/**
+	 * @return the number of parameters that have been created
+	 */
+	size_t GetCount() const;
+
+	/**
+	 * @param index the parameter to get
+	 * @param the parameter name will be set in this variable
+	 * @param optionalType the parameter's type will be set in this variable
+	 */
+	void Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const;
+
 private:
 	std::vector<UnicodeString> Params;
 	std::vector<UnicodeString> OptionalTypes;
@@ -720,6 +732,13 @@ public:
 	 * This function should be called after the end of every statement.
 	 */
 	void ClearExpressions();
+
+	/**
+	 * Loop through the current parameters list and notify the variable observer
+	 * of those variables.  This, in essence, allows the creation of parameters as 
+	 * local variables.
+	 */
+	void NotifyVariablesFromParameterList();
 
 private:
 

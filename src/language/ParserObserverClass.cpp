@@ -331,8 +331,21 @@ UnicodeString mvceditor::ParametersListClass::ToSignature() const {
 			signature.append(UNICODE_STRING_SIMPLE(","));
 		}
 	}
-	signature.append( UNICODE_STRING_SIMPLE(")"));
+	signature.append(UNICODE_STRING_SIMPLE(")"));
 	return signature;
+}
+
+size_t mvceditor::ParametersListClass::GetCount() const {
+	return Params.size();
+}
+
+void mvceditor::ParametersListClass::Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const {
+	if (index < Params.size()) {
+		param.setTo(Params[index]);
+	}
+	if (index < OptionalTypes.size()) {
+		optionalType.setTo(OptionalTypes[index]);
+	}
 }
 
 mvceditor::ExpressionClass::ExpressionClass()
@@ -493,6 +506,9 @@ void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 		UnicodeString signature = CurrentMember.ToMethodSignature(CurrentParametersList.ToSignature());
 		Member->MethodFound(className, propName, signature, propType, comment, visibility, isStatic); 
 	}
+	if (!isProperty) {
+		NotifyVariablesFromParameterList();
+	}
 }
 
 void mvceditor::ObserverQuadClass::DefineFound(const mvceditor::ExpressionClass& nameSymbol, const mvceditor::ExpressionClass& valueSymbol, const UnicodeString& comment) {
@@ -526,6 +542,7 @@ void mvceditor::ObserverQuadClass::FunctionFound() {
 	if (Function) {
 		Function->FunctionFound(functionName, signature, returnType, comment);
 	}
+	NotifyVariablesFromParameterList();
 }
 
 void mvceditor::ObserverQuadClass::CreateParameterWithOptionalClassName() {
@@ -733,6 +750,25 @@ void mvceditor::ObserverQuadClass::ClearExpressions() {
 	CurrentFunctionCallExpression.Clear();
 	ExpressionVariables.clear();
 	CurrentQualifiedName.Clear();
+}
+
+void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
+	size_t paramCount = CurrentParametersList.GetCount();
+		if (paramCount > 0 && Variable) {
+			UnicodeString paramName,
+				paramType;
+			mvceditor::SymbolClass symbol;
+			UnicodeString comment; // no comment it is lost in the variables
+			for (size_t i = 0; i < paramCount; ++i) {
+				CurrentParametersList.Param(i, paramName, paramType);
+				if (!paramType.isEmpty()) {
+					symbol.ChainList.push_back(paramType);
+					symbol.Type = mvceditor::SymbolClass::OBJECT;
+				}
+				symbol.Lexeme = paramName;
+				Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, comment);
+			}
+		}
 }
 
 UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {

@@ -62,9 +62,8 @@ bool mvceditor::ParserClass::ScanString(const UnicodeString& code) {
 		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
 		ret = php53parse(Lexer, observers) == 0;
 		Close();
-		return true;
 	}
-	return false;
+	return ret;
 }
 
 void mvceditor::ParserClass::SetClassMemberObserver(ClassMemberObserverClass* observer) {
