@@ -37,7 +37,7 @@
  
 #define YYSTYPE mvceditor::SemanticValueClass
  
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer);
+int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
 void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg);
 
 %}
@@ -45,6 +45,7 @@ void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQu
 %parse-param { mvceditor::LexicalAnalyzerClass &analyzer }
 %parse-param { mvceditor::ObserverQuadClass& observers }
 %lex-param  { mvceditor::LexicalAnalyzerClass &analyzer }
+%lex-param { mvceditor::ObserverQuadClass& observers }
 %destructor { $$.Free(); } <*>
 
 /**
@@ -280,10 +281,8 @@ unticked_statement:
 		foreach_statement
 	|	T_DECLARE '(' declare_list ')' declare_statement
 	|	';'		/* empty statement */
-	|	T_TRY {} '{' inner_statement_list '}'
-		T_CATCH '('
-		fully_qualified_class_name
-		T_VARIABLE ')'
+	|	T_TRY '{' inner_statement_list '}'
+		T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'			{ observers.ExceptionCatchFound($8); }
 		'{' inner_statement_list '}'
 		additional_catches
 	|	T_THROW expr ';'
@@ -301,7 +300,8 @@ non_empty_additional_catches:
 ;
 
 additional_catch:
-	T_CATCH '(' fully_qualified_class_name T_VARIABLE ')' '{' inner_statement_list '}'
+	T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'				{ observers.ExceptionCatchFound($4); }
+	'{' inner_statement_list '}'
 ;
 
 unset_variables:
@@ -380,8 +380,8 @@ foreach_optional_arg:
 ;
 
 foreach_variable:
-		variable
-	|	'&' variable
+		variable									{ observers.ForeachVariableFound(); }
+	|	'&' variable								{ observers.ForeachVariableFound(); }
 ;
 
 for_statement:
@@ -491,16 +491,16 @@ global_var_list:
 ;
 
 global_var:
-		T_VARIABLE
+		T_VARIABLE				{ observers.GlobalVariableFound($1); }
 	|	'$' r_variable
 	|	'$' '{' expr '}'
 ;
 
 static_var_list:
-		static_var_list ',' T_VARIABLE
-	|	static_var_list ',' T_VARIABLE '=' static_scalar
-	|	T_VARIABLE
-	|	T_VARIABLE '=' static_scalar
+		static_var_list ',' T_VARIABLE							{ observers.StaticVariableFound($3); }
+	|	static_var_list ',' T_VARIABLE '=' static_scalar		{ observers.StaticVariableFound($3); }
+	|	T_VARIABLE												{ observers.StaticVariableFound($1); }
+	|	T_VARIABLE '=' static_scalar							{ observers.StaticVariableFound($1); }
 ;
 
 class_statement_list:
@@ -575,9 +575,9 @@ non_empty_for_expr:
 
 expr_without_variable:
 		T_LIST '(' assignment_list ')' '=' expr						{  }
-	|	variable '=' expr											{ observers.VariableFound(); }
-	|	variable '=' '&' variable									{ observers.VariableFound(); }
-	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ observers.ExpressionNewInstanceCall(); observers.VariableFound(); }
+	|	variable '=' expr											{ observers.AssignmentExpressionFound(); }
+	|	variable '=' '&' variable									{ observers.AssignmentExpressionFound(); }
+	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ observers.ExpressionNewInstanceCall(); observers.AssignmentExpressionFound(); }
 	|	T_NEW class_name_reference ctor_arguments					{ observers.ExpressionNewInstanceCall(); }
 	|	T_CLONE expr												{ observers.ExpressionNewVariable($1); }
 	|	variable T_PLUS_EQUAL expr									{ observers.ExpressionNewScalar($1); }
@@ -901,7 +901,7 @@ assignment_list:
 ;
 
 assignment_list_element:
-		variable
+		variable										{ observers.ForeachVariableFound(); }
 	|	T_LIST '(' {} assignment_list ')'
 	|	/* empty */
 ;
@@ -967,7 +967,7 @@ class_constant:
 
 %%
 
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
+int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers) {
 	int ret = analyzer.NextToken();
 	value->Init();
 
@@ -975,14 +975,26 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer) {
 	if (T_OPEN_TAG == ret) {
 		ret = analyzer.NextToken();
 	}
-	if (T_DOC_COMMENT == ret) {
+	UnicodeString regularComments;
+	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
 		
 		value->Comment = new UnicodeString();
-		// advance past all DOC comments (there can be more than one consecutive)
-		while (T_DOC_COMMENT == ret) {
-			analyzer.GetLexeme(*value->Comment);
+		
+		// advance past all comments (there can be more than one consecutive)
+		// keep /** and /* comments separate; we only want /* comments to 
+		// get type hints for local varibles
+		while (T_DOC_COMMENT == ret || T_COMMENT == ret) {
+			if (T_DOC_COMMENT == ret) {
+				analyzer.GetLexeme(*value->Comment);
+			}
+			else {
+				analyzer.GetLexeme(regularComments);
+			}
 			ret = analyzer.NextToken();
 		}
+	}
+	if (!regularComments.isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(regularComments);
 	}
 	if (T_CLOSE_TAG == ret) {
 		ret = ';';

@@ -121,7 +121,7 @@ public:
 						PropertyClassName, PropertyName, PropertyType, PropertyComment,
 						FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
 						VariableClassName, VariableMethodName, VariableName, VariableComment,
-						VariableChainList,
+						VariableChainList, VariablePhpDocType,
 						DefinedName, DefinedValue, DefinedComment;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<mvceditor::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
@@ -177,7 +177,8 @@ public:
 		for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
 			typeString.append(symbol.ChainList[i]);
 		}
-		VariableChainList.push_back(typeString);		
+		VariableChainList.push_back(typeString);
+		VariablePhpDocType.push_back(symbol.PhpDocType);
 	}
 	
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -493,34 +494,157 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
 	// a function parameter with a type hint
 	// a variable in a function 
 	// a variable with a long method chain
+	// a foreach($arr as $k => $v) loop
+	// a list($var1, $var2, $var3) call
+	// a catch block
+	// a global declaration
+	// a static declaration
 	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
 		"$glob = new Globals();\n"
 		"function workFunc(Globals $srcGlobal) {\n"
 		"	$local = $srcGlobal;\n"
 		"	$localName = $srcGlobal->name;\n"
+		"   foreach($local as $k => $v) {}\n"
+		"   list($item1, $item2, $item3) = $local;\n"
+		"   try { \n"
+		"     $glob = new Globals(); \n"
+		"   } catch (SpecificException $specificException) {\n"
+		"		echo 'exception';\n"
+		"   } catch (Exception $baseException) {\n"
+		"		echo 'exception';\n"
+		"   }\n"
+		"   global $glob; \n"
+		"   static $stat = 1; \n"
 		"}"
 	);
 	CHECK(Parser->ScanString(code));
-	CHECK_EQUAL((size_t)4, observer.VariableMethodName.size());
-	if ((size_t)4 == observer.VariableMethodName.size()) {
+	CHECK_EQUAL((size_t)14, observer.VariableMethodName.size());
+	if ((size_t)14 == observer.VariableMethodName.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableMethodName[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[2]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[3]);
+		for (size_t i = 1; i < 14; ++i) {
+			CHECK_EQUAL(UNICODE_STRING_SIMPLE("workFunc"), observer.VariableMethodName[i]);
+		}
 	}
-	CHECK_EQUAL((size_t)4, observer.VariableName.size());
-	if ((size_t)4 == observer.VariableName.size()) {
+	CHECK_EQUAL((size_t)14, observer.VariableName.size());
+	if ((size_t)14 == observer.VariableName.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$glob"), observer.VariableName[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal"), observer.VariableName[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$local"), observer.VariableName[2]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$localName"), observer.VariableName[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$k"), observer.VariableName[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$v"), observer.VariableName[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$item1"), observer.VariableName[6]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$item2"), observer.VariableName[7]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$item3"), observer.VariableName[8]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$glob"), observer.VariableName[9]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$specificException"), observer.VariableName[10]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$baseException"), observer.VariableName[11]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$glob"), observer.VariableName[12]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$stat"), observer.VariableName[13]);
 	}
-	CHECK_EQUAL((size_t)4, observer.VariableChainList.size());
-	if ((size_t)4 == observer.VariableChainList.size()) {
+	CHECK_EQUAL((size_t)14, observer.VariableChainList.size());
+	if ((size_t)14 == observer.VariableChainList.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Globals"), observer.VariableChainList[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Globals"), observer.VariableChainList[1]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal"), observer.VariableChainList[2]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$srcGlobal->name"), observer.VariableChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[4]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[5]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[6]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[7]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[8]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Globals"), observer.VariableChainList[9]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("SpecificException"), observer.VariableChainList[10]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Exception"), observer.VariableChainList[11]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[12]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableChainList[13]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
+	TestClassObserverClass observer;
+	Parser->SetClassMemberObserver(&observer);
+	Parser->SetVariableObserver(&observer);
+
+	// test all the PHPDoc stuff
+	// @property, @property-read, @property-write, @method, and @var
+	// also @param and @return
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"/**\n"
+		" * This is a class that implements the 'magic' methods\n"
+		" *\n"
+		" * @property string $nameString a string version of a name\n"
+		" * @property-read NameClass $Name the name in a object form\n"
+		" * @property-write NameClass $WritableName version of the name that can be set\n"
+		" * @method Integer getAge() getAge(int $int1, int $int2) returns the person's age\n"
+		" */\n"
+		"class Person {\n"
+		"\n"
+		"	/** @var CName */\n"
+		"	private $FullName;\n"
+		"\n"
+		"	/**\n"
+		"	 * @param string $name \n"
+		"	 * @param Integer $arg1 \n"
+		"	 * @param Integer $arg2 \n"
+		"	 * @return string\n"
+		"	 */\n"
+		"	function __call($name, $arg1, $arg2) {\n"
+		"		/* @var $newName NameClass */\n"
+		"		$newName = factoryName();\n"
+		"		return $newName->toString();\n"
+		"	}\n"
+		"}"
+	);
+	CHECK(Parser->ScanString(code));
+	CHECK_EQUAL((size_t)2, observer.MethodClassName.size());
+	if ((size_t)2 == observer.MethodClassName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.MethodClassName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.MethodClassName[1]);
+	}
+	if ((size_t)2 == observer.MethodName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("getAge"), observer.MethodName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("__call"), observer.MethodName[1]);
+	}
+	if ((size_t)2 == observer.MethodReturnType.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Integer"), observer.MethodReturnType[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), observer.MethodReturnType[1]);
+	}
+	if ((size_t)2 == observer.MethodSignature.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function getAge(int $int1, int $int2)"), observer.MethodSignature[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function __call($name, $arg1, $arg2)"), observer.MethodSignature[1]);
+	}
+	CHECK_EQUAL((size_t)4, observer.PropertyClassName.size());
+	if ((size_t)4 == observer.PropertyClassName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.PropertyClassName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.PropertyClassName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.PropertyClassName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.PropertyClassName[3]);
+	}
+	if ((size_t)4 == observer.PropertyName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$nameString"), observer.PropertyName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$Name"), observer.PropertyName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$WritableName"), observer.PropertyName[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$FullName"), observer.PropertyName[3]);
+	}
+	if ((size_t)4 == observer.PropertyType.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("string"), observer.PropertyType[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("NameClass"), observer.PropertyType[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("NameClass"), observer.PropertyType[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("CName"), observer.PropertyType[3]);
+	}
+	if ((size_t)3 == observer.VariableName.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$arg1"), observer.VariableName[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$arg2"), observer.VariableName[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$newName"), observer.VariableName[2]);
+	}
+	if ((size_t)3 == observer.VariableChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("factoryName()"), observer.VariableChainList[2]);
+	}
+	if ((size_t)3 == observer.VariablePhpDocType.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Integer"), observer.VariablePhpDocType[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Integer"), observer.VariablePhpDocType[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("NameClass"), observer.VariablePhpDocType[2]);
 	}
 }
 

@@ -25,6 +25,7 @@
 #include <language/ParserObserverClass.h>
 #include <unicode/ustdio.h>
 #include <unicode/uchar.h>
+#include <unicode/ustring.h>
 
 void mvceditor::SemanticValueClass::Init() {
 	Token = 0;
@@ -328,7 +329,7 @@ UnicodeString mvceditor::ParametersListClass::ToSignature() const {
 		}
 		signature.append(Params[i]);
 		if (i < (Params.size() - 1)) {
-			signature.append(UNICODE_STRING_SIMPLE(","));
+			signature.append(UNICODE_STRING_SIMPLE(", "));
 		}
 	}
 	signature.append(UNICODE_STRING_SIMPLE(")"));
@@ -383,7 +384,8 @@ void mvceditor::ExpressionClass::AppendToChain(mvceditor::SemanticValueClass& op
 
 mvceditor::SymbolClass::SymbolClass() 
 	: Lexeme()
-	, Comment() 
+	, Comment()
+	, PhpDocType()
 	, ChainList()
 	, Type(PRIMITIVE) {
 	///, Pos(0)
@@ -393,6 +395,7 @@ mvceditor::SymbolClass::SymbolClass()
 void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
 	Lexeme = src.Lexeme;
 	Comment = src.Comment;
+	PhpDocType = src.PhpDocType;
 	ChainList = src.ChainList;
 	Type = src.Type;
 	///Pos = src.Pos;
@@ -424,6 +427,7 @@ void mvceditor::SymbolClass::SetToUnknown() {
 void mvceditor::SymbolClass::Clear() {
 	Lexeme.remove();
 	Comment.remove();
+	PhpDocType.remove();
 	ChainList.clear();
 	Type = mvceditor::SymbolClass::PRIMITIVE;
 	///Pos = 0;
@@ -475,6 +479,9 @@ void mvceditor::ObserverQuadClass::ClassAddToImplements() {
 void mvceditor::ObserverQuadClass::ClassFound() {
 	if (Class) {
 		Class->ClassFound(CurrentClass.ClassName, CurrentClass.ToSignature(), CurrentClass.Comment);
+	}
+	if (Member) {
+		NotifyMagicMethodsAndProperties(CurrentClass.Comment);
 	}
 	CurrentMember.Clear();
 }
@@ -554,7 +561,7 @@ void mvceditor::ObserverQuadClass::FunctionEnd() {
 	CurrentParametersList.Clear();
 }
 
-void mvceditor::ObserverQuadClass::VariableFound() {
+void mvceditor::ObserverQuadClass::AssignmentExpressionFound() {
 	if (Variable) {
 		mvceditor::SymbolClass symbol;
 		if (mvceditor::ExpressionClass::ARRAY == CurrentExpression.Type) {
@@ -618,6 +625,61 @@ void mvceditor::ObserverQuadClass::VariableFound() {
 			}
 			ExpressionVariables.clear();
 		}
+	}
+}
+
+void mvceditor::ObserverQuadClass::ExceptionCatchFound(mvceditor::SemanticValueClass& variableValue) {
+	if (Variable) {
+		CurrentExpression.Name = CurrentQualifiedName;
+		if (variableValue.Lexeme) {
+			CurrentExpression.Lexeme = *variableValue.Lexeme;
+		}
+		mvceditor::SymbolClass symbol;
+		symbol.SetToObject();
+		symbol.Lexeme = CurrentExpression.Lexeme;
+		symbol.Comment = CurrentExpression.Comment;
+		UnicodeString name = CurrentExpression.Name.ToSignature();
+		if (!name.isEmpty()) {
+			symbol.ChainList.push_back(name);
+		}
+		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+	}
+}
+
+void mvceditor::ObserverQuadClass::GlobalVariableFound(mvceditor::SemanticValueClass& variableValue) {
+	if (Variable) {
+		if (variableValue.Lexeme) {
+			CurrentExpression.Lexeme = *variableValue.Lexeme;
+		}
+		mvceditor::SymbolClass symbol;
+		symbol.SetToObject();
+		symbol.Lexeme = CurrentExpression.Lexeme;
+		symbol.Comment = CurrentExpression.Comment;
+		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+	}
+}
+
+void mvceditor::ObserverQuadClass::ForeachVariableFound() {
+	if (Variable && !ExpressionVariables.empty()) {
+		mvceditor::ExpressionClass expr = ExpressionVariables.back();
+		mvceditor::SymbolClass symbol;
+		symbol.SetToObject();
+		symbol.Lexeme = expr.Lexeme;
+		symbol.Comment = expr.Comment;
+		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+	}
+}
+
+void mvceditor::ObserverQuadClass::StaticVariableFound(mvceditor::SemanticValueClass& variableValue) {
+	if (Variable) {
+		if (variableValue.Lexeme) {
+			CurrentExpression.Lexeme = *variableValue.Lexeme;
+		}
+		mvceditor::SymbolClass symbol;
+		symbol.SetToObject();
+		symbol.Lexeme = CurrentExpression.Lexeme;
+		symbol.Comment = CurrentExpression.Comment;
+		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
 	}
 }
 
@@ -771,6 +833,12 @@ void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
 		}
 }
 
+void mvceditor::ObserverQuadClass::NotifyLocalVariableTypeHint(const UnicodeString& comment) {
+	if (Variable) {
+		NotifyLocalVariableFromPhpDoc(comment);
+	}
+}
+
 UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
 	UnicodeString returnType;
 	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
@@ -788,4 +856,148 @@ UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const Un
 		}
 	}
 	return returnType.trim();
+}
+
+/**
+ * sets either varName or varType depending on whether text contents are a variable name or not.
+ */
+static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& varType) {
+	if (text && '$' == text[0]) {
+		varName.setTo(text);
+	}
+	else if (text) {
+		varType.setTo(text);
+	}
+}
+
+void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment) {
+	if (phpDocComment.isEmpty()) {
+		return;
+	}
+
+	// assuming that PHPDoc for local variables look like this
+	// /* @var $dog Dog */
+	// people got used to doing it this way
+	// http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
+	// there could be multiple hints in a single comment
+
+	UChar* buf = new UChar[phpDocComment.length() + 1];
+	u_strncpy(buf, phpDocComment.getBuffer(), phpDocComment.length() + 1);
+	UChar* saveState = 0;
+	UnicodeString delims = UNICODE_STRING_SIMPLE(" \t\v\f\r\n");
+	UChar* next = u_strtok_r(buf, delims.getBuffer(), &saveState);
+	UnicodeString varName;
+	UnicodeString varType;
+	bool found = false;
+	mvceditor::SymbolClass symbol;
+	while (next) {
+		if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@var").getBuffer(), 0) == 0) {
+			symbol.Clear();
+			symbol.SetToObject();
+
+			// example line: @var string $nameString a string version of a name
+			// will be lenient and allow the reverse var then type
+			// @var $nameString string 
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
+			if (next) {
+				next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+				FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
+				if (!symbol.Lexeme.isEmpty() && !symbol.PhpDocType.isEmpty()) {					
+					Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, phpDocComment);
+					next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+				}
+			}
+			if (!next) {
+				break;
+			}
+		}
+		else {
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+		}
+	}
+	delete[] buf;
+}
+
+void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment) {
+	if (phpDocComment.isEmpty()) {
+		return;
+	}
+	
+	UnicodeString memberName;
+	UnicodeString memberType;
+	UChar* buf = new UChar[phpDocComment.length() + 1];
+	u_strncpy(buf, phpDocComment.getBuffer(), phpDocComment.length() + 1);
+
+	UChar* saveState = 0;
+	UnicodeString delims = UNICODE_STRING_SIMPLE(" \t\n\v\f");
+	UChar* next = u_strtok_r(buf, delims.getBuffer(), &saveState);
+	
+	while (next) {
+		if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property").getBuffer(), 0) == 0 ||
+			u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property-read").getBuffer(), 0) == 0 ||
+			u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property-write").getBuffer(), 0) == 0) {
+
+			// example line: @property string $nameString a string version of a name
+			// will be lenient and allow the reverse var then type
+			// @property $nameString string 
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			FillNameOrType(next, memberName, memberType);
+			if (!next) {
+				break;
+			}
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			FillNameOrType(next, memberName, memberType);
+			if (!memberName.isEmpty() && !memberType.isEmpty()) {
+				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), mvceditor::TokenClass::PUBLIC, false, false);
+				memberName.remove();
+				memberType.remove();
+			}
+			if (!next) {
+				break;
+			}
+		}
+		else if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@method").getBuffer(), 0) == 0) {
+
+			// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			if (!next) {
+				break;
+			}
+			memberType.setTo(next);
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			if (!next) {
+				break;
+			}
+			memberName.setTo(next);
+
+			// add the 'function' to keep the sig consistent with the other notify method
+			UnicodeString signature = UNICODE_STRING_SIMPLE("public function ");
+
+			// keep reading next tokens for the signature; stop when we encounter a closing parenthesis
+			while (next = u_strtok_r(NULL, delims.getBuffer(), &saveState)) {
+				signature.append(next);
+				size_t len = u_strlen(next);
+				if (')' == next[len - 1]) {
+					break;
+				}
+
+				// put this after the break so that we dont put a space at the end of the sig
+				signature.append(UNICODE_STRING_SIMPLE(" "));
+			}
+			if (!memberName.isEmpty() && !memberType.isEmpty()) {
+				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
+					memberName.remove(memberName.length() - 2, 2);
+				}
+				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), mvceditor::TokenClass::PUBLIC, false);
+			}
+			if (!next) {
+				break;
+			}
+		}
+		else {
+			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+		}
+	}
+	delete[] buf;
 }

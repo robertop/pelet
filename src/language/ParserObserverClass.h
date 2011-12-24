@@ -440,14 +440,14 @@ public:
 	};
 	
 	/**
-	 * The variable's name. The variable name will NOT have the siguil ('$').
+	 * The variable's name. The variable name WILL have the siguil ('$').
 	 *
 	 * Examples:
 	 * 
-	 * this
+	 * $this
 	 * self
 	 * parent
-	 * aVariable
+	 * $aVariable
 	 * 
 	 * @var UnicodeString
 	 */
@@ -457,6 +457,12 @@ public:
 	 * Any PHP doc comment that was attached to this variable (appeared immediately before).
 	 */
 	UnicodeString Comment;
+
+	/**
+	 * The name of the "type" of this variable that was parsed out of the PHPDoc. For example
+	 * when a variable is decorated with "/* @var $var TypeClass * /" comments
+	 */
+	UnicodeString PhpDocType;
 	
 	/**
 	 * The list of methods and properties that were called in order to create this variable. For instance,
@@ -652,9 +658,36 @@ public:
 	void FunctionEnd();
 
 	/**
-	 * Notifies that a variable has been found.
+	 * Notifies that a variable has been found. This method should be called when an assignment expression has
+	 * been parsed.
 	 */
-	void VariableFound();
+	void AssignmentExpressionFound();
+
+	/**
+	 * When a catch block is parsed; notify that a new variable has been found (the exception that
+	 * is catched)
+	 * @param variableValue the catch variable value
+	 */
+	void ExceptionCatchFound(SemanticValueClass& variableValue);
+	
+	/**
+	 * When a global variable is found.
+	 * @param variableValue the global variable value
+	 */
+	void GlobalVariableFound(SemanticValueClass& variableValue);
+
+	/**
+	 * When a static variable is found.
+	 * @param variableValue the global variable value
+	 */
+	void StaticVariableFound(SemanticValueClass& variableValue);
+	
+	/**
+	 * When a variable in a foreach loop is found.
+	 * The most recently parsed variable will be used. This is the one that has 
+	 * been popped into the expression variables list (after a call to CurrentVariableComplete())
+	 */
+	void ForeachVariableFound();
 
 	/**
 	 * Set the current expression to be a scalar value and pushes the 
@@ -734,13 +767,23 @@ public:
 	void ClearExpressions();
 
 	/**
+	 * Will check the given comment for @var annotations FOR LOCAL VARIABLES ONLY
+	 * and notify the observer.
+	 * assuming that comment for local variables look like this
+	 *  /* @var $dog Dog * /
+	 * people got used to doing it this way
+	 * http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
+	 */
+	void NotifyLocalVariableTypeHint(const UnicodeString& comment);
+
+private:
+
+	/**
 	 * Loop through the current parameters list and notify the variable observer
 	 * of those variables.  This, in essence, allows the creation of parameters as 
 	 * local variables.
 	 */
 	void NotifyVariablesFromParameterList();
-
-private:
 
 	/**
 	 * Get the return type from the '@return' / '@var' annotation
@@ -750,6 +793,23 @@ private:
 	 * @return UnicodeString
 	 */
 	UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation);
+
+	/**
+	 * Parses any variable type hints from the given PHPDoc and notifies the variable observer. In this case, the annotation will
+	 * contain the variable name AND the variable type as in:
+	 *   /* @var $myvar VarTypeClass * /
+	 *
+	 * The comment may contain more than on name-type pair
+	 * @param phpDocComment the entire comment
+	 */
+	void NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment);
+
+	/**
+	 * parses out the given PHPDoc comment and notifies the member observer of any
+	 * @property, @property-read, @property-write, and @method 
+	 * declarations.
+	 */
+	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment);
 };
 
 }

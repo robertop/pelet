@@ -372,15 +372,17 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <LINE_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
 
 /*!ignore:re2c
- * by going to next_token_start the lexeme is discarded; comments are treated like whitespace
+ * by going to next_char the lexeme is KEPT; multi line comments are treated special
+ * because they may have a "@var " annotation
  */
-<MULTI_LINE_COMMENT> EOF { buffer->TokenStart = buffer->Current; return T_ERROR_UNTERMINATED_COMMENT; }
-<MULTI_LINE_COMMENT> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
-<MULTI_LINE_COMMENT> "*/" {  condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
-<MULTI_LINE_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_token_start; }
+<MULTI_LINE_COMMENT> "*/" { condition = yycSCRIPT; return T_COMMENT; }
+<MULTI_LINE_COMMENT> EOF { buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
+<MULTI_LINE_COMMENT> NEWLINE { buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+<MULTI_LINE_COMMENT> ANY { goto php_5_3_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
- * by going to next_char the lexeme is KEPT; DOC comments are treated special
+ * by going to next_char the lexeme is KEPT; DOC comments are treated special because they
+ * contains hints on types of return values for methods or property types.
  */
 <DOC_COMMENT> "*/" { condition = yycSCRIPT; return T_DOC_COMMENT; }
 <DOC_COMMENT> EOF { buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
