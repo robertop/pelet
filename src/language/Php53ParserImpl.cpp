@@ -75,8 +75,6 @@
 
 /* Copy the first part of user declarations.  */
 
-/* Line 189 of yacc.c  */
-#line 1 "src/language/Php53ParserImpl.y"
 
 	
 /**
@@ -121,8 +119,6 @@ void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQu
 
 
 
-/* Line 189 of yacc.c  */
-#line 126 "src/language/Php53ParserImpl.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -292,8 +288,6 @@ typedef int YYSTYPE;
 /* Copy the second part of user declarations.  */
 
 
-/* Line 264 of yacc.c  */
-#line 297 "src/language/Php53ParserImpl.cpp"
 
 #ifdef short
 # undef short
@@ -3607,1086 +3601,786 @@ yyreduce:
     {
         case 5:
 
-/* Line 1455 of yacc.c  */
-#line 195 "src/language/Php53ParserImpl.y"
     { observers.CurrentQualifiedName.GrabNameAndComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 6:
 
-/* Line 1455 of yacc.c  */
-#line 196 "src/language/Php53ParserImpl.y"
     { observers.CurrentQualifiedName.AddName((yyvsp[(3) - (3)])); ;}
     break;
 
-  case 30:
+  case 7:
 
-/* Line 1455 of yacc.c  */
-#line 243 "src/language/Php53ParserImpl.y"
+    { observers.ClearExpressions(); ;}
+    break;
+
+  case 26:
+
     { observers.ClearExpressions(); ;}
     break;
 
   case 56:
 
-/* Line 1455 of yacc.c  */
-#line 285 "src/language/Php53ParserImpl.y"
     { observers.ExceptionCatchFound((yyvsp[(8) - (9)])); ;}
     break;
 
   case 64:
 
-/* Line 1455 of yacc.c  */
-#line 303 "src/language/Php53ParserImpl.y"
     { observers.ExceptionCatchFound((yyvsp[(4) - (5)])); ;}
     break;
 
   case 73:
 
-/* Line 1455 of yacc.c  */
-#line 330 "src/language/Php53ParserImpl.y"
     { observers.FunctionStart((yyvsp[(3) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(1) - (3)])); ;}
     break;
 
   case 74:
 
-/* Line 1455 of yacc.c  */
-#line 331 "src/language/Php53ParserImpl.y"
     { observers.FunctionFound(); ;}
     break;
 
   case 75:
 
-/* Line 1455 of yacc.c  */
-#line 332 "src/language/Php53ParserImpl.y"
     { observers.FunctionEnd(); ;}
     break;
 
   case 76:
 
-/* Line 1455 of yacc.c  */
-#line 336 "src/language/Php53ParserImpl.y"
     { observers.ClassSetName((yyvsp[(2) - (2)])); ;}
     break;
 
   case 77:
 
-/* Line 1455 of yacc.c  */
-#line 337 "src/language/Php53ParserImpl.y"
     { observers.ClassFound(); ;}
     break;
 
   case 78:
 
-/* Line 1455 of yacc.c  */
-#line 338 "src/language/Php53ParserImpl.y"
     { observers.ClassEnd(); ;}
     break;
 
   case 79:
 
-/* Line 1455 of yacc.c  */
-#line 339 "src/language/Php53ParserImpl.y"
     { observers.ClassSetName((yyvsp[(2) - (2)])); ;}
     break;
 
   case 80:
 
-/* Line 1455 of yacc.c  */
-#line 340 "src/language/Php53ParserImpl.y"
     { observers.ClassFound(); ;}
     break;
 
   case 81:
 
-/* Line 1455 of yacc.c  */
-#line 341 "src/language/Php53ParserImpl.y"
     { observers.ClassEnd(); ;}
     break;
 
   case 82:
 
-/* Line 1455 of yacc.c  */
-#line 345 "src/language/Php53ParserImpl.y"
     { observers.ClassStart((yyvsp[(1) - (1)]), false, false, false); ;}
     break;
 
   case 83:
 
-/* Line 1455 of yacc.c  */
-#line 346 "src/language/Php53ParserImpl.y"
     { observers.ClassStart((yyvsp[(1) - (2)]), true, false, false); ;}
     break;
 
   case 84:
 
-/* Line 1455 of yacc.c  */
-#line 347 "src/language/Php53ParserImpl.y"
     { observers.ClassStart((yyvsp[(1) - (2)]), false, true, false); ;}
     break;
 
   case 86:
 
-/* Line 1455 of yacc.c  */
-#line 352 "src/language/Php53ParserImpl.y"
     { observers.CurrentQualifiedName.Clear(); ;}
     break;
 
   case 87:
 
-/* Line 1455 of yacc.c  */
-#line 353 "src/language/Php53ParserImpl.y"
     { observers.ClassSetExtends(); ;}
     break;
 
   case 88:
 
-/* Line 1455 of yacc.c  */
-#line 357 "src/language/Php53ParserImpl.y"
     { observers.ClassStart((yyvsp[(1) - (1)]), false, false, true); ;}
     break;
 
   case 90:
 
-/* Line 1455 of yacc.c  */
-#line 362 "src/language/Php53ParserImpl.y"
     { observers.CurrentQualifiedName.Clear(); ;}
     break;
 
   case 93:
 
-/* Line 1455 of yacc.c  */
-#line 368 "src/language/Php53ParserImpl.y"
     { observers.CurrentQualifiedName.Clear(); ;}
     break;
 
   case 95:
 
-/* Line 1455 of yacc.c  */
-#line 373 "src/language/Php53ParserImpl.y"
     { observers.ClassAddToImplements(); ;}
     break;
 
   case 96:
 
-/* Line 1455 of yacc.c  */
-#line 374 "src/language/Php53ParserImpl.y"
     { observers.ClassAddToImplements(); ;}
     break;
 
   case 99:
 
-/* Line 1455 of yacc.c  */
-#line 383 "src/language/Php53ParserImpl.y"
     { observers.ForeachVariableFound(); ;}
     break;
 
   case 100:
 
-/* Line 1455 of yacc.c  */
-#line 384 "src/language/Php53ParserImpl.y"
     { observers.ForeachVariableFound(); ;}
     break;
 
   case 130:
 
-/* Line 1455 of yacc.c  */
-#line 457 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(2) - (2)]), false); ;}
     break;
 
   case 131:
 
-/* Line 1455 of yacc.c  */
-#line 458 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(3) - (3)]), true); ;}
     break;
 
   case 132:
 
-/* Line 1455 of yacc.c  */
-#line 459 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(3) - (5)]), true);;}
     break;
 
   case 133:
 
-/* Line 1455 of yacc.c  */
-#line 460 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(2) - (4)]), true); ;}
     break;
 
   case 134:
 
-/* Line 1455 of yacc.c  */
-#line 461 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(4) - (4)]), false); ;}
     break;
 
   case 135:
 
-/* Line 1455 of yacc.c  */
-#line 462 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(5) - (5)]), true); ;}
     break;
 
   case 136:
 
-/* Line 1455 of yacc.c  */
-#line 463 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(5) - (7)]), true); ;}
     break;
 
   case 137:
 
-/* Line 1455 of yacc.c  */
-#line 464 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.SetName((yyvsp[(4) - (6)]), false); ;}
     break;
 
   case 138:
 
-/* Line 1455 of yacc.c  */
-#line 469 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.Create(); ;}
     break;
 
   case 139:
 
-/* Line 1455 of yacc.c  */
-#line 470 "src/language/Php53ParserImpl.y"
     { observers.CreateParameterWithOptionalClassName(); ;}
     break;
 
   case 140:
 
-/* Line 1455 of yacc.c  */
-#line 471 "src/language/Php53ParserImpl.y"
     { observers.CurrentParametersList.CreateWithOptionalType((yyvsp[(1) - (1)])); ;}
     break;
 
   case 143:
 
-/* Line 1455 of yacc.c  */
-#line 480 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 144:
 
-/* Line 1455 of yacc.c  */
-#line 481 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 145:
 
-/* Line 1455 of yacc.c  */
-#line 482 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 146:
 
-/* Line 1455 of yacc.c  */
-#line 483 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 147:
 
-/* Line 1455 of yacc.c  */
-#line 484 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 148:
 
-/* Line 1455 of yacc.c  */
-#line 485 "src/language/Php53ParserImpl.y"
     { observers.ExpressionAsCallArgument(); ;}
     break;
 
   case 151:
 
-/* Line 1455 of yacc.c  */
-#line 494 "src/language/Php53ParserImpl.y"
     { observers.GlobalVariableFound((yyvsp[(1) - (1)])); ;}
     break;
 
   case 154:
 
-/* Line 1455 of yacc.c  */
-#line 500 "src/language/Php53ParserImpl.y"
     { observers.StaticVariableFound((yyvsp[(3) - (3)])); ;}
     break;
 
   case 155:
 
-/* Line 1455 of yacc.c  */
-#line 501 "src/language/Php53ParserImpl.y"
     { observers.StaticVariableFound((yyvsp[(3) - (5)])); ;}
     break;
 
   case 156:
 
-/* Line 1455 of yacc.c  */
-#line 502 "src/language/Php53ParserImpl.y"
     { observers.StaticVariableFound((yyvsp[(1) - (1)])); ;}
     break;
 
   case 157:
 
-/* Line 1455 of yacc.c  */
-#line 503 "src/language/Php53ParserImpl.y"
     { observers.StaticVariableFound((yyvsp[(1) - (3)])); ;}
     break;
 
   case 160:
 
-/* Line 1455 of yacc.c  */
-#line 512 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.Clear(); ;}
     break;
 
   case 161:
 
-/* Line 1455 of yacc.c  */
-#line 513 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.Clear(); ;}
     break;
 
   case 162:
 
-/* Line 1455 of yacc.c  */
-#line 514 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(4) - (4)]), (yyvsp[(3) - (4)]), (yyvsp[(2) - (4)])); ;}
     break;
 
   case 163:
 
-/* Line 1455 of yacc.c  */
-#line 515 "src/language/Php53ParserImpl.y"
     { observers.ClassMemberFound(false); ;}
     break;
 
   case 164:
 
-/* Line 1455 of yacc.c  */
-#line 516 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.Clear(); ;}
     break;
 
   case 168:
 
-/* Line 1455 of yacc.c  */
-#line 526 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetAsPublic();  observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 173:
 
-/* Line 1455 of yacc.c  */
-#line 540 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetAsPublic(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 174:
 
-/* Line 1455 of yacc.c  */
-#line 541 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetAsProtected(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 175:
 
-/* Line 1455 of yacc.c  */
-#line 542 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetAsPrivate(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)]));;}
     break;
 
   case 176:
 
-/* Line 1455 of yacc.c  */
-#line 543 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.IsStaticMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 177:
 
-/* Line 1455 of yacc.c  */
-#line 544 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.IsAbstractMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 178:
 
-/* Line 1455 of yacc.c  */
-#line 545 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.IsFinalMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 179:
 
-/* Line 1455 of yacc.c  */
-#line 549 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 180:
 
-/* Line 1455 of yacc.c  */
-#line 550 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 181:
 
-/* Line 1455 of yacc.c  */
-#line 551 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 182:
 
-/* Line 1455 of yacc.c  */
-#line 552 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 183:
 
-/* Line 1455 of yacc.c  */
-#line 557 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 184:
 
-/* Line 1455 of yacc.c  */
-#line 558 "src/language/Php53ParserImpl.y"
     { observers.CurrentMember.SetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 191:
 
-/* Line 1455 of yacc.c  */
-#line 577 "src/language/Php53ParserImpl.y"
     {  ;}
     break;
 
   case 192:
 
-/* Line 1455 of yacc.c  */
-#line 578 "src/language/Php53ParserImpl.y"
     { observers.AssignmentExpressionFound(); ;}
     break;
 
   case 193:
 
-/* Line 1455 of yacc.c  */
-#line 579 "src/language/Php53ParserImpl.y"
     { observers.AssignmentExpressionFound(); ;}
     break;
 
   case 194:
 
-/* Line 1455 of yacc.c  */
-#line 580 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewInstanceCall(); observers.AssignmentExpressionFound(); ;}
+    { observers.ExpressionPushNewInstanceCall(); observers.AssignmentExpressionFound(); ;}
     break;
 
   case 195:
 
-/* Line 1455 of yacc.c  */
-#line 581 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewInstanceCall(); ;}
+    { observers.ExpressionPushNewInstanceCall(); ;}
     break;
 
   case 196:
 
-/* Line 1455 of yacc.c  */
-#line 582 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewVariable((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewVariable((yyvsp[(1) - (2)])); ;}
     break;
 
   case 197:
 
-/* Line 1455 of yacc.c  */
-#line 583 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 198:
 
-/* Line 1455 of yacc.c  */
-#line 584 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 199:
 
-/* Line 1455 of yacc.c  */
-#line 585 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 200:
 
-/* Line 1455 of yacc.c  */
-#line 586 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 201:
 
-/* Line 1455 of yacc.c  */
-#line 587 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 202:
 
-/* Line 1455 of yacc.c  */
-#line 588 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 203:
 
-/* Line 1455 of yacc.c  */
-#line 589 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 204:
 
-/* Line 1455 of yacc.c  */
-#line 590 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 205:
 
-/* Line 1455 of yacc.c  */
-#line 591 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 206:
 
-/* Line 1455 of yacc.c  */
-#line 592 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 207:
 
-/* Line 1455 of yacc.c  */
-#line 593 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 208:
 
-/* Line 1455 of yacc.c  */
-#line 594 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 209:
 
-/* Line 1455 of yacc.c  */
-#line 595 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 210:
 
-/* Line 1455 of yacc.c  */
-#line 596 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 211:
 
-/* Line 1455 of yacc.c  */
-#line 597 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 212:
 
-/* Line 1455 of yacc.c  */
-#line 598 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 213:
 
-/* Line 1455 of yacc.c  */
-#line 599 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 214:
 
-/* Line 1455 of yacc.c  */
-#line 600 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 215:
 
-/* Line 1455 of yacc.c  */
-#line 601 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 216:
 
-/* Line 1455 of yacc.c  */
-#line 602 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 217:
 
-/* Line 1455 of yacc.c  */
-#line 603 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 218:
 
-/* Line 1455 of yacc.c  */
-#line 604 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 219:
 
-/* Line 1455 of yacc.c  */
-#line 605 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 220:
 
-/* Line 1455 of yacc.c  */
-#line 606 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 221:
 
-/* Line 1455 of yacc.c  */
-#line 607 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 222:
 
-/* Line 1455 of yacc.c  */
-#line 608 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 223:
 
-/* Line 1455 of yacc.c  */
-#line 609 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 224:
 
-/* Line 1455 of yacc.c  */
-#line 610 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 225:
 
-/* Line 1455 of yacc.c  */
-#line 611 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 226:
 
-/* Line 1455 of yacc.c  */
-#line 612 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 227:
 
-/* Line 1455 of yacc.c  */
-#line 613 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 228:
 
-/* Line 1455 of yacc.c  */
-#line 614 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 229:
 
-/* Line 1455 of yacc.c  */
-#line 615 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 230:
 
-/* Line 1455 of yacc.c  */
-#line 616 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 231:
 
-/* Line 1455 of yacc.c  */
-#line 617 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 232:
 
-/* Line 1455 of yacc.c  */
-#line 618 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 233:
 
-/* Line 1455 of yacc.c  */
-#line 619 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 234:
 
-/* Line 1455 of yacc.c  */
-#line 620 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 235:
 
-/* Line 1455 of yacc.c  */
-#line 621 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 236:
 
-/* Line 1455 of yacc.c  */
-#line 622 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 237:
 
-/* Line 1455 of yacc.c  */
-#line 623 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 238:
 
-/* Line 1455 of yacc.c  */
-#line 624 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 239:
 
-/* Line 1455 of yacc.c  */
-#line 625 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 240:
 
-/* Line 1455 of yacc.c  */
-#line 626 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 241:
 
-/* Line 1455 of yacc.c  */
-#line 627 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 242:
 
-/* Line 1455 of yacc.c  */
-#line 630 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (5)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (5)])); ;}
     break;
 
   case 243:
 
-/* Line 1455 of yacc.c  */
-#line 632 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (4)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (4)])); ;}
     break;
 
   case 244:
 
-/* Line 1455 of yacc.c  */
-#line 633 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 245:
 
-/* Line 1455 of yacc.c  */
-#line 634 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 246:
 
-/* Line 1455 of yacc.c  */
-#line 635 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 247:
 
-/* Line 1455 of yacc.c  */
-#line 636 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 248:
 
-/* Line 1455 of yacc.c  */
-#line 637 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewArray((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewArray((yyvsp[(1) - (2)])); ;}
     break;
 
   case 249:
 
-/* Line 1455 of yacc.c  */
-#line 638 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewVariable((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewVariable((yyvsp[(1) - (2)])); ;}
     break;
 
   case 250:
 
-/* Line 1455 of yacc.c  */
-#line 639 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
     break;
 
   case 255:
 
-/* Line 1455 of yacc.c  */
-#line 644 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewArray((yyvsp[(1) - (4)])); ;}
+    { observers.ExpressionPushNewArray((yyvsp[(1) - (4)])); ;}
     break;
 
   case 256:
 
-/* Line 1455 of yacc.c  */
-#line 645 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); /* results of backtick operator is a string */ ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); /* results of backtick operator is a string */ ;}
     break;
 
   case 258:
 
-/* Line 1455 of yacc.c  */
-#line 649 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (9)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (9)])); ;}
     break;
 
   case 266:
 
-/* Line 1455 of yacc.c  */
-#line 669 "src/language/Php53ParserImpl.y"
     { observers.FunctionCallStart(); ;}
     break;
 
   case 267:
 
-/* Line 1455 of yacc.c  */
-#line 670 "src/language/Php53ParserImpl.y"
     { observers.FunctionCallEnd(); ;}
     break;
 
   case 297:
 
-/* Line 1455 of yacc.c  */
-#line 739 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 298:
 
-/* Line 1455 of yacc.c  */
-#line 740 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 299:
 
-/* Line 1455 of yacc.c  */
-#line 741 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 300:
 
-/* Line 1455 of yacc.c  */
-#line 742 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 301:
 
-/* Line 1455 of yacc.c  */
-#line 743 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 302:
 
-/* Line 1455 of yacc.c  */
-#line 744 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 303:
 
-/* Line 1455 of yacc.c  */
-#line 745 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 304:
 
-/* Line 1455 of yacc.c  */
-#line 746 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 305:
 
-/* Line 1455 of yacc.c  */
-#line 747 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 306:
 
-/* Line 1455 of yacc.c  */
-#line 748 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (1)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
     break;
 
   case 307:
 
-/* Line 1455 of yacc.c  */
-#line 749 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (3)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
     break;
 
   case 308:
 
-/* Line 1455 of yacc.c  */
-#line 750 "src/language/Php53ParserImpl.y"
-    { observers.ExpressionNewScalar((yyvsp[(1) - (2)])); ;}
+    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    break;
+
+  case 334:
+
+    { observers.ExpressionFound(); ;}
+    break;
+
+  case 335:
+
+    { observers.ExpressionFound(); ;}
     break;
 
   case 339:
 
-/* Line 1455 of yacc.c  */
-#line 816 "src/language/Php53ParserImpl.y"
-    { observers.CurrentExpression.AppendToChain((yyvsp[(2) - (4)]), (yyvsp[(3) - (4)]), '(' == (yyvsp[(4) - (4)]).Token); ;}
+    { observers.CurrentExpressionAppendToChain((yyvsp[(2) - (4)]), (yyvsp[(3) - (4)]), '(' == (yyvsp[(4) - (4)]).Token); ;}
     break;
 
   case 340:
 
-/* Line 1455 of yacc.c  */
-#line 817 "src/language/Php53ParserImpl.y"
-    { observers.CurrentVariableComplete(); ;}
+    { /* observers.CurrentVariableComplete(); */ ;}
     break;
 
   case 341:
 
-/* Line 1455 of yacc.c  */
-#line 818 "src/language/Php53ParserImpl.y"
-    { observers.CurrentVariableComplete(); ;}
-    break;
-
-  case 343:
-
-/* Line 1455 of yacc.c  */
-#line 823 "src/language/Php53ParserImpl.y"
-    {;}
+    { /* observers.CurrentVariableComplete(); */ ;}
     break;
 
   case 344:
 
-/* Line 1455 of yacc.c  */
-#line 828 "src/language/Php53ParserImpl.y"
-    { observers.CurrentExpression.AppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token);  ;}
+    { observers.CurrentExpressionAppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token); (yyvsp[(3) - (3)]).Token = 0; ;}
+    break;
+
+  case 349:
+
+    { observers.CurrentExpressionAsStaticMember((yyvsp[(2) - (3)])); ;}
     break;
 
   case 353:
 
-/* Line 1455 of yacc.c  */
-#line 852 "src/language/Php53ParserImpl.y"
-    { observers.CurrentExpressionAsFunctionCall(); ;}
-    break;
-
-  case 357:
-
-/* Line 1455 of yacc.c  */
-#line 862 "src/language/Php53ParserImpl.y"
-    { ;}
-    break;
-
-  case 358:
-
-/* Line 1455 of yacc.c  */
-#line 863 "src/language/Php53ParserImpl.y"
-    { ;}
+    { observers.CurrentExpressionPushAsFunctionCall(); ;}
     break;
 
   case 360:
 
-/* Line 1455 of yacc.c  */
-#line 868 "src/language/Php53ParserImpl.y"
-    { observers.CurrentExpressionSetAsVariable((yyvsp[(1) - (1)])); ;}
+    { observers.CurrentExpressionPushAsVariable((yyvsp[(1) - (1)])); ;}
     break;
 
   case 375:
 
-/* Line 1455 of yacc.c  */
-#line 904 "src/language/Php53ParserImpl.y"
     { observers.ForeachVariableFound(); ;}
     break;
 
   case 376:
 
-/* Line 1455 of yacc.c  */
-#line 905 "src/language/Php53ParserImpl.y"
     {;}
+    break;
+
+  case 411:
+
+    { observers.CurrentExpressionPushAsClassConstant((yyvsp[(2) - (3)]), (yyvsp[(3) - (3)])); ;}
     break;
 
 
 
-/* Line 1455 of yacc.c  */
-#line 4690 "src/language/Php53ParserImpl.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -4897,8 +4591,6 @@ yyreturn:
 
 
 
-/* Line 1675 of yacc.c  */
-#line 968 "src/language/Php53ParserImpl.y"
 
 
 int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers) {
@@ -4937,10 +4629,6 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	value->Lexeme = new UnicodeString();
 	analyzer.GetLexeme(*value->Lexeme);	
 	value->Pos = analyzer.GetCharacterPosition();
-		
-	///UFILE* f = u_finit(stdout, NULL, NULL);
-	///u_fprintf(f, "lex=%S\n", value->Lexeme->getTerminatedBuffer());
-	///u_fclose(f);
 	return ret;
 }
 

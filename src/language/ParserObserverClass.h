@@ -32,8 +32,9 @@
 
 namespace mvceditor {
 
-// this class is defined below.
+// these classes are defined below.
 class SymbolClass;
+class ExpressionClass;
 
 
 /**
@@ -157,6 +158,25 @@ public:
 	 */
 	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const SymbolClass& symbol, const UnicodeString& comment) = 0;
+};
+
+/**
+ * Interface to inherit when needing to be notified of all expressions.  An object of 
+ * this type will be passed to the ParserClass; the parser will call the appropriate
+ * method when an expression has been parsed. This interface is most useful when needing to parse
+ * a single expression.
+ * The observer will get notified as the buffer is being parsed.
+ */
+class ExpressionObserverClass {
+
+public:
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a single expression.
+	 * 
+	 * @param expression the expression that was parsed.
+	 */
+	virtual void ExpressionFound(const ExpressionClass& expression) = 0;
 };
 
 
@@ -490,16 +510,6 @@ public:
 	 * The symbol type
 	 */
 	Types Type;
-
-	/**
-	 * location in the original source where the variable starts.
-	 */
-	///int Pos;
-	
-	/**
-	 * If TRUE, this symbol uses static access ("::")
-	 */
-	///bool IsStatic;
 	
 	SymbolClass();
 
@@ -527,14 +537,6 @@ public:
 class ObserverQuadClass {
 
 public:
-
-	ClassObserverClass* Class;
-
-	ClassMemberObserverClass* Member;
-
-	FunctionObserverClass* Function;
-
-	VariableObserverClass* Variable;
 
 	/**
 	 * the class that is currently being parsed.
@@ -571,30 +573,11 @@ public:
 	ExpressionClass CurrentFunctionCallExpression;
 
 	/**
-	 * The current expression that is being parsed. This is a bit tricky since this
-	 *
-	 *  $myString = $another->func()
-	 *
-	 * Is actually 2 parsd as 2 expressions.  
-	 */
-	ExpressionClass CurrentExpression;
-
-	/**
-	 * Since we want to notify on variable assigments, we need to keep track of previous
-	 * expressions, since an assignment expression is recursively defined as a variable
-	 * followed by an '=' followed by an expression. By having this list, we can store
-	 * the right side of the assignment (the source expression) and then parse the
-	 * left side of the assignment while still having access to the source expression.
-	 * @see CurrentVariableComplete() method; after a variable is parsed the 
-	 * CurrentVariableComplete method will 'save' it into this vector.
-	 */
-	std::vector<ExpressionClass> ExpressionVariables;
-
-	/**
 	 * Each observer may be NULL. This class will NOT own the pointers.
 	 */
 	ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
-		FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver);
+		FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
+		ExpressionObserverClass* expressionObserver);
 
 	/**
 	 * Initializes class info
@@ -664,6 +647,12 @@ public:
 	void AssignmentExpressionFound();
 
 	/**
+	 * Notifies than an expression has been parsed. This method should be called when an expression has
+	 * been parsed.
+	 */
+	void ExpressionFound();
+
+	/**
 	 * When a catch block is parsed; notify that a new variable has been found (the exception that
 	 * is catched)
 	 * @param variableValue the catch variable value
@@ -693,31 +682,31 @@ public:
 	 * Set the current expression to be a scalar value and pushes the 
 	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewScalar(SemanticValueClass& value);
+	void ExpressionPushNewScalar(SemanticValueClass& value);
 
 	/**
 	 * Set the current expression to be an array value and pushes the 
 	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewArray(SemanticValueClass& value);
+	void ExpressionPushNewArray(SemanticValueClass& value);
 
 	/**
 	 * Set the current expression to be a variable value and pushes the 
 	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewVariable(SemanticValueClass& value);
+	void ExpressionPushNewVariable(SemanticValueClass& value);
 
 	/**
 	 * Set the current expression to be an unknown value and pushes the 
 	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewUnknown(SemanticValueClass& value);
+	void ExpressionPushNewUnknown(SemanticValueClass& value);
 
 	/**
 	 * Set the current expression to be the result of a new PHP object and pushes the 
 	 * expression to the ExpressionVariables list.
 	 */
-	void ExpressionNewInstanceCall();
+	void ExpressionPushNewInstanceCall();
 	
 	/**
 	 * Adds the current expression to the function call arguments list. This function should
@@ -740,25 +729,47 @@ public:
 
 	/**
 	 * Saves the current function call to expression to the CurrentExpression.
-	 * Will NOT push the expression to the ExpressionVariables list; it will instead
+	 * Will push the expression to the ExpressionVariables list; it will instead
 	 * push the current expression into the CurrentFunctionCall expression. This function
 	 * should be called when the parser encounters a function call (ie.  "myFunc();".
 	 */
-	void CurrentExpressionAsFunctionCall();
+	void CurrentExpressionPushAsFunctionCall();
 	
 	/**
 	 * Sets the current expression to be a variable. This function should be called
 	 * when parser encounters a variable at the right side of an assignment 
+	 * expression. Will push the expression to the ExpressionVariablesList
+	 */
+	void CurrentExpressionPushAsVariable(mvceditor::SemanticValueClass& value);
+
+	/**
+	 * Add a property name to the current variable (the one that was last pushed) chain list
+	 * @param operatorValue the token of the operation
+	 * @param propertyValue the token of the property/method to chain
+	 * @param isMethod TRUE if the property is a method
+	 */
+	void CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
+
+	/**
+	 * Sets the current expression to be a static member. This function should be called
+	 * when parser encounters a variable at the right side of an assignment 
 	 * expression. Will NOT push the expression to the ExpressionVariablesList
 	 */
-	void CurrentExpressionSetAsVariable(mvceditor::SemanticValueClass& value);
+	void CurrentExpressionAsStaticMember(SemanticValueClass& scopeOperatorValue);
+
+	/**
+	 * Sets the current expression to be a class constant. This function should be called
+	 * when parser encounters a variable at the right side of an assignment 
+	 * expression. Will NOT push the expression to the ExpressionVariablesList
+	 */
+	void CurrentExpressionPushAsClassConstant(SemanticValueClass& scopeOperatorValue, SemanticValueClass& constantNameValue);
 
 	/**
 	 * Adds the current expression to the ExpressionVariables list. This function
 	 * should be called once a variable chain has completed (ie after 
 	 * "$this->prop1->method1()" 
 	 */
-	void CurrentVariableComplete();
+	//void CurrentVariableComplete();
 
 	/**
 	 * Resets the current expression.
@@ -810,6 +821,51 @@ private:
 	 * declarations.
 	 */
 	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment);
+
+	/**
+	 * This object will NOT own the pointer
+	 */
+	ClassObserverClass* Class;
+
+	/**
+	 * This object will NOT own the pointer
+	 */
+	ClassMemberObserverClass* Member;
+
+	/**
+	 * This object will NOT own the pointer
+	 */
+	FunctionObserverClass* Function;
+
+	/**
+	 * This object will NOT own the pointer
+	 */
+	VariableObserverClass* Variable;
+
+	/**
+	 * This object will NOT own the pointer
+	 */
+	ExpressionObserverClass* ExpressionObserver;
+
+	/**
+	 * The current expression that is being parsed. This is a bit tricky since this
+	 *
+	 *  $myString = $another->func()
+	 *
+	 * Is actually 2 parsed as 2 expression rules.  
+	 */
+	ExpressionClass CurrentExpression;
+
+	/**
+	 * Since we want to notify on variable assigments, we need to keep track of previous
+	 * expressions, since an assignment expression is recursively defined as a variable
+	 * followed by an '=' followed by an expression. By having this list, we can store
+	 * the right side of the assignment (the source expression) and then parse the
+	 * left side of the assignment while still having access to the source expression.
+	 * @see CurrentVariableComplete() method; after a variable is parsed the 
+	 * CurrentVariableComplete method will 'save' it into this vector.
+	 */
+	std::vector<ExpressionClass> ExpressionVariables;
 };
 
 }

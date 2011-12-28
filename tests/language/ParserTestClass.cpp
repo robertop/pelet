@@ -190,7 +190,7 @@ public:
 };
 
 SUITE(ParserTestClass) {
-	
+
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 	wxString file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
@@ -708,6 +708,152 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(false, Parser->LintString(code, results));
 	CHECK(results.Error.length() > 0);
 	CHECK(results.LineNumber > 0);
+}
+
+TEST_FIXTURE(ParserTestClass, ParseVariableExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("$variable");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
+}
+
+TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->prop");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
+	if ((size_t)2 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.ChainList[0]);	
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop"), symbol.ChainList[1]);	
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)1, symbol.ChainList.size());
+	if ((size_t)1 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.ChainList[0]);	
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)1, symbol.ChainList.size());
+	if ((size_t)1 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.ChainList[0]);	
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::$DEFAULT");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
+	if ((size_t)2 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.ChainList[0]);	
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
+	}
+}
+
+
+TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::PI;");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
+	if ((size_t)2 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.ChainList[0]);	
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::PI"), symbol.ChainList[1]);	
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->func1()->prop2->func3()->prop4");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
+	if ((size_t)5 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->func1()"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop2"), symbol.ChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->func3()"), symbol.ChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop4"), symbol.ChainList[4]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("func1()->prop2->prop4");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), symbol.Lexeme);
+	CHECK_EQUAL((size_t)3, symbol.ChainList.size());
+	if ((size_t)3 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("func1()"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop2"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop4"), symbol.ChainList[2]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
+
+	// function args $a, $b should be ignored here
+	UnicodeString code = UNICODE_STRING_SIMPLE("$this->propA->func1($a, $b)->prop2->prop4");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
+	if ((size_t)5 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->propA"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->func1()"), symbol.ChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop2"), symbol.ChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop4"), symbol.ChainList[4]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
+
+	// function args $a, $b should be ignored here
+	UnicodeString code = UNICODE_STRING_SIMPLE("$this->func1($a, $b)->propA->prop2->prop4");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
+	if ((size_t)5 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->func1()"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->propA"), symbol.ChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop2"), symbol.ChainList[3]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop4"), symbol.ChainList[4]);
+	}
+}
+
+TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
+
+	// function args $a, $b should be ignored here
+	UnicodeString code = UNICODE_STRING_SIMPLE("func1($a, $b)->propA->func2($c)->prop4");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+
+	// lexeme empty because function call is first in the chain
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), symbol.Lexeme);
+	CHECK_EQUAL((size_t)4, symbol.ChainList.size());
+	if ((size_t)4 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("func1()"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->propA"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->func2()"), symbol.ChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->prop4"), symbol.ChainList[3]);
+	}
 }
 
 }

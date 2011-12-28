@@ -37,7 +37,7 @@ namespace mvceditor {
  * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
  * given code and make calls to the different registered observers.  There are observers for classes, functions, and 
  * methods. Not all observers have to be set; for example if a FunctionObserverClass is never registered then the 
- * parse will not notify when a function has been found in a piece of code.
+ * parser will not notify when a function has been found in a piece of code.
  * 
  * @code
  *   class EchoAndObserverClass : public ClassObserverClass {
@@ -57,8 +57,8 @@ namespace mvceditor {
  *   }
  * @endcode
  * 
- * Observers are very lenient.  They are not meant to be used to check code for errors, it is only meant to scan files for 
- * specific resources (classes, methods, functions, ...)
+ * Observers follow the PHP parsing rules to the letter.  If source code is not valid; then observers may not
+ * get called.
  *
  * Lint functionality
  * 
@@ -125,8 +125,10 @@ public:
 	ParserClass();
 	
 	/**
-	 * Opens and scans the given file; calling the proper observers when it encounters
-	 * a class, function, or variable declaration.
+	 * Opens and scans the given file; This function will return once the entire
+	 * file has been parsed; it will call the proper observers when it encounters
+	 * a class, function, or variable declaration. This means that this
+	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const wxString& file the file to parse.  Must be a full path.
 	 * @return bool if file was found.
@@ -134,8 +136,10 @@ public:
 	bool ScanFile(const wxString& file);
 	
 	/**
-	 * Scans the given string; calling the proper observers when it encounters
-	 * a class, function, or variable declaration.
+	 * Scans the given string. This function will return once the entire
+	 * string has been parsed; it will call the proper observers when it encounters
+	 * a class, function, or variable declaration. This means that this
+	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const UnicodeString& code the code to parse.
 	 * @return bool alway true for now, just to give this method symmetry with ParseFile() method.
@@ -200,6 +204,80 @@ public:
 	 * @return bool true if the code has no syntax errors.
 	 */
 	bool LintString(const UnicodeString& code, LintResultsClass& results);
+
+	/**
+	 * @return the character position where the parser is currently parsing. This can be called
+	 * inside an observer callback; in which case the character position is right PAST the
+	 * current token.
+	 */
+	int GetCharacterPosition() const;
+
+	
+	/**
+	 * Parses a given PHP expression.  This method will parse the given expression into a list of
+	 * of "chained" calls.
+	 *
+	 * A PHP expression is  
+	 *  - a variable  ($obj)
+	 *  - a function call (myFunc())
+	 *  - an object operation ("$obj->prop")
+	 *  - a static object operation ("MyClass::Prop")
+	 * 
+	 * Object operations can be chained; like "$obj->prop->anotherFunc()". While indirect variables are allowed
+	 * in PHP (ie $this->$prop)  this method will not handle them as it is nearly impossible to resolve them at parse time.
+	 *
+	 * The most extreme example is this expression: "$obj->prop->anotherFunc()"
+	 * This method will parse the expression into
+	 * $obj
+	 * ->prop
+	 * ->anotherFunc()
+
+	 * For example, if sourceCode represented this string:
+	 * 
+	 *   @code
+	 *     UnicodeString sourceCode = UNICODE_STRING_SIMPLE("
+	 *       class UserClass {
+	 *         private $name;
+	 * 
+	 *         function getName() {
+	 *           return $this->
+	 *     ");
+	 *   @endcode
+	 *  then the following C++ code can be used to find a variable's type
+	 * 
+	 *   @code
+	 *     ParserClass parser;
+	 *     UnicodeString expression = UNICODE_STRING_SIMPLE("$this->");
+	 *     mvceditor::SymbolClass exprResult;
+	 *     if (parser.ParseExpression(expression, exprResult)) {
+	 *     	// if successful, symbol.Lexeme will be set to "$this"
+	 *     }
+	 *   @endcode
+	 * 
+	 * 
+	 * @param expression the code string of the expression to resolve. This must be the code for a single expression.
+	 *        Examples:
+	 *        $anObject
+	 *        $this->prop
+	 *        $this->work()->another
+	 *        $this->
+	 *		  work()->another
+	 *		  work()
+	 *        self::prop
+	 *        self::prop::
+	 *        self::func()->prop
+	 *        parent::prop
+	 *        parent::fun()->prop
+	 *        aFunction
+	 *        An expression can have whitespace like this
+	 *        $anObject
+	 *			->method1()
+	 *			->method2()
+	 *			->method3()
+	 *
+	 * @param symbol the expression's name and "chain" list. The  properties of this object will be reset every call.
+	 */
+	void ParseExpression(UnicodeString expression, SymbolClass& symbol);
 	
 private:
 

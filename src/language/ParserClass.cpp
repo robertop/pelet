@@ -49,7 +49,7 @@ bool mvceditor::ParserClass::ScanFile(const wxString& file) {
 		extern int php53debug;
 		php53debug = 0;
 
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		Close();
 	}
@@ -59,7 +59,7 @@ bool mvceditor::ParserClass::ScanFile(const wxString& file) {
 bool mvceditor::ParserClass::ScanString(const UnicodeString& code) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		Close();
 	}
@@ -82,364 +82,6 @@ void mvceditor::ParserClass::SetVariableObserver(VariableObserverClass* observer
 	VariableObserver = observer;
 }
 
-/*
-void mvceditor::ParserClass::Scan() {
-	Token = Lexer.NextToken();
-	Lexer.GetLexeme(Lexeme);
-	LookaheadToken = Lexer.NextToken();
-	Lexer.GetLexeme(LookaheadLexeme);
-	NextLookaheadToken = Lexer.NextToken();
-	Lexer.GetLexeme(NextLookaheadLexeme);
-	BraceDepth = 0;
-	
-	// skip over any HTML
-	while (MoreTokens() && mvceditor::TokenClass::PHPOPENTAG != Token) {
-		Advance();
-	}
-	UnicodeString className,
-		functionName,
-		phpDocComment;
-	bool isStatic = false;
-	mvceditor::TokenClass::TokenIds visibility  = mvceditor::TokenClass::PUBLIC;
-	while (MoreTokens()) {
-		if (mvceditor::TokenClass::PHPDOCCOMMENT == Token) {
-			phpDocComment = Lexeme;
-			Advance();
-		}
-		switch (Token) {
-			case mvceditor::TokenClass::CLASS:
-				className = ScanClass(phpDocComment);
-				phpDocComment = UNICODE_STRING_SIMPLE("");
-				break;
-			case mvceditor::TokenClass::STATIC:
-				isStatic = true;
-
-				// could just have the static w/out a visibility modifier "static $name;"
-				if (LookaheadToken == mvceditor::TokenClass::VARIABLE) {
-					ScanMemberVariable(className, phpDocComment, visibility, isStatic);
-					isStatic = false;
-					visibility = mvceditor::TokenClass::PUBLIC;
-				}
-				else {
-					Advance();
-				}
-				break;
-			case mvceditor::TokenClass::PRIVATE:
-			case mvceditor::TokenClass::PUBLIC:
-			case mvceditor::TokenClass::PROTECTED:
-				visibility = (mvceditor::TokenClass::TokenIds)Token;
-				if (LookaheadToken == mvceditor::TokenClass::VARIABLE) {
-
-					// could just have visibility modifier w/out static "private $name;"
-					ScanMemberVariable(className, phpDocComment, visibility, isStatic);
-					isStatic = false;
-					visibility = mvceditor::TokenClass::PUBLIC;
-				}
-				else {
-					Advance();
-				}
-				break;
-			case mvceditor::TokenClass::VAR:
-				ScanMemberVariable(className, phpDocComment, visibility, isStatic);
-				phpDocComment = UNICODE_STRING_SIMPLE("");
-				isStatic = false;
-				visibility = mvceditor::TokenClass::PUBLIC;
-				break;
-			case mvceditor::TokenClass::CONST_KEYWORD:
-				ScanConstantDeclaration(className, phpDocComment);
-				phpDocComment = UNICODE_STRING_SIMPLE("");
-				break;
-			case mvceditor::TokenClass::FUNCTION:
-				if (!className.isEmpty()) {
-					functionName = ScanMethod(className, phpDocComment, visibility, isStatic);
-				}
-				else {
-					functionName = ScanFunction(phpDocComment);
-				}
-				phpDocComment = UNICODE_STRING_SIMPLE("");
-				isStatic = false;
-				visibility = mvceditor::TokenClass::PUBLIC;
-				break;
-			case mvceditor::TokenClass::VARIABLE:
-				ScanVariableDeclarations(className, functionName);
-				break;
-			case mvceditor::TokenClass::IDENTIFIER:
-				if (Lexeme.caseCompare(UNICODE_STRING("define", 6), 0) == 0) {
-					ScanDefineDeclaration(phpDocComment);
-					phpDocComment = UNICODE_STRING_SIMPLE("");
-				}
-				else {
-					Advance();
-				}
-				break;
-			default:
-				Advance();
-				break;
-		}
-		if (BraceDepth < 2 && !className.isEmpty()) { //a method has ended
-			functionName = UNICODE_STRING_SIMPLE("");
-		}
-		if (BraceDepth < 1) { // a class or function has ended
-			className = UNICODE_STRING_SIMPLE("");
-			functionName = UNICODE_STRING_SIMPLE("");
-		}
-	}
-}
-
-UnicodeString mvceditor::ParserClass::ScanClass(const UnicodeString& phpDocComment) {
-	UnicodeString className;
-	if (mvceditor::TokenClass::CLASS == Token) {
-		Advance();
-		if (mvceditor::TokenClass::IDENTIFIER == Token) {
-			className = Lexeme;
-			Advance();
-			//eat the parent class, implements
-			UnicodeString signature = className;
-			while (MoreTokens() && mvceditor::TokenClass::OPENBRACE != Token) {
-				signature += UNICODE_STRING_SIMPLE(" ");
-				signature += Lexeme;
-				Advance();
-			}
-			Advance(); // eat the '{'
-			if (ClassObserver) {
-				ClassObserver->ClassFound(className, signature, phpDocComment);
-			}
-		}
-	}
-	return className;
-}
-
-void mvceditor::ParserClass::ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment, 
-												mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
-	Advance(); // eat the 'var'
-	if (Token == mvceditor::TokenClass::VARIABLE) {
-		UnicodeString memberName = Lexeme;
-		memberName.remove(0, 1); // member observer expects the name only; no '$'
-		if (ClassMemberObserver) {
-			ClassMemberObserver->PropertyFound(className, memberName,  
-				ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, visibility, false, isStatic);
-		}
-		while (MoreTokens() && mvceditor::TokenClass::SEMICOLON != Token) {
-			Advance();
-		}
-		Advance(); //eat the ';'
-	}
-}
-
-void mvceditor::ParserClass::ScanConstantDeclaration(const UnicodeString& className, 
-	const UnicodeString& phpDocComment) {
-	Advance(); // eat the 'const'
-	UnicodeString memberName = Lexeme;
-	if (Token != mvceditor::TokenClass::SEMICOLON) {
-		Advance(); // eat the '='
-		if (Token != mvceditor::TokenClass::SEMICOLON) {
-			Advance();
-			if (mvceditor::TokenClass::SINGLEQUOTESTRING == Token || 
-				mvceditor::TokenClass::DOUBLEQUOTESTRING == Token || 
-				mvceditor::TokenClass::DECIMALNUMBER == Token ||
-				(mvceditor::TokenClass::NEGATIVESIGN == Token && mvceditor::TokenClass::DECIMALNUMBER == LookaheadToken) ||
-				mvceditor::TokenClass::INTEGERNUMBER == Token ||
-				(mvceditor::TokenClass::NEGATIVESIGN == Token && mvceditor::TokenClass::INTEGERNUMBER == LookaheadToken)
-				) {
-				if (ClassMemberObserver) {
-					ClassMemberObserver->PropertyFound(className, memberName,  
-							ReturnTypeFromPhpDocComment(phpDocComment, true), phpDocComment, 
-							mvceditor::TokenClass::PUBLIC, true, true);
-				}
-			}
-			while (MoreTokens() && Token != mvceditor::TokenClass::SEMICOLON) {
-				Advance();
-			}
-		}
-	}
-}
-
-UnicodeString mvceditor::ParserClass::ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment,
-												 mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
-	UnicodeString methodName;
-	Advance(); // eat 'function'
-
-	// handle functions that return a reference ie. function &doWork() {}
-	if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
-		Advance();
-	}
-	if (mvceditor::TokenClass::IDENTIFIER == Token) {
-		methodName = Lexeme;
-		UnicodeString signature;
-		
-		// lookupo for abstract methods; they will not have a function body ({})
-		while (MoreTokens() && (mvceditor::TokenClass::OPENBRACE != Token && mvceditor::TokenClass::SEMICOLON != Token)) {
-			signature += Lexeme;
-			int previousToken = Token;
-			Advance();
-			// only put spaces when the function uses type hinting (identififer followed by '$')
-			if (previousToken == mvceditor::TokenClass::IDENTIFIER && Token == mvceditor::TokenClass::VARIABLE) {
-				signature += UNICODE_STRING_SIMPLE(" ");
-			}
-		}
-		Advance(); // eat the '{'
-		if (ClassMemberObserver) {
-			ClassMemberObserver->MethodFound(className, methodName, signature, 
-				 ReturnTypeFromPhpDocComment(phpDocComment), phpDocComment, visibility, isStatic);
-		}
-	}
-	return methodName;
-}
-
-UnicodeString mvceditor::ParserClass::ScanFunction(const UnicodeString& phpDocComment) {
-	UnicodeString functionName;
-	if (mvceditor::TokenClass::FUNCTION == Token) {
-		Advance();
-
-		// handle functions that return a reference ie. function &doWork() {}
-		if (mvceditor::TokenClass::REFERENCE_OPERATOR == Token) {
-			Advance();
-		}
-		if (mvceditor::TokenClass::IDENTIFIER == Token) {
-			functionName = Lexeme;
-			UnicodeString signature;
-			while (MoreTokens() && mvceditor::TokenClass::OPENBRACE != Token) {
-				signature += Lexeme;
-				int previousToken = Token;
-				Advance();
-				// only put spaces when the function uses type hinting (identififer followed by '$')
-				if (previousToken == mvceditor::TokenClass::IDENTIFIER && Token == mvceditor::TokenClass::VARIABLE) {
-					signature += UNICODE_STRING_SIMPLE(" ");
-				}
-			}
-			Advance(); // eat the '{'
-			if (FunctionObserver) {
-				FunctionObserver->FunctionFound(functionName, signature, 
-					 ReturnTypeFromPhpDocComment(phpDocComment), phpDocComment);
-			}
-		}
-	}
-	return functionName;
-}
-
-UnicodeString mvceditor::ParserClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
-	UnicodeString returnType;
-	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
-	int32_t pos = phpDocComment.indexOf(annotation);
-	if (pos >= 0) {
-		pos += annotation.length();
-		
-		// rudimentary tokenizer, skip all whitespace after annotation and get the word
-		while (u_isWhitespace(phpDocComment[pos])) {
-			++pos;
-		}
-		while (!u_isWhitespace(phpDocComment[pos]) && pos < phpDocComment.length()) {
-			returnType += phpDocComment[pos];
-			++pos;
-		}
-	}
-	return returnType.trim();
-}
-
-void mvceditor::ParserClass::ScanVariableDeclarations(const UnicodeString& className, const UnicodeString& functionName) {
-	
-	// look for instances of $var = ...
-	if (mvceditor::TokenClass::VARIABLE == Token && mvceditor::TokenClass::ASSIGNMENT == LookaheadToken) {
-		UnicodeString variableName = Lexeme; //when variable is found, identifier will be before assignment operator
-		variableName.remove(0, 1); // variable observer expects the name only; no '$'
-		Advance(); //eat the variable name
-		Advance(); //eat the '='
-		if (mvceditor::TokenClass::NEW == Token) {
-			
-			//  $var = new Foo
-			Advance();
-			if (mvceditor::TokenClass::IDENTIFIER == Token) {
-				
-			}
-		}
-		else if (mvceditor::TokenClass::IDENTIFIER == Token) {
-			
-			// $var = fooBar(... 
-			UnicodeString functionCalledName = Lexeme;
-			Advance();
-			if (mvceditor::TokenClass::OPENPARENTHESIS == Token) {
-				
-			}
-		}
-		else if (mvceditor::TokenClass::VARIABLE == Token) {
-			// $var = $this->foo( or $foo->bar(
-			UnicodeString object = Lexeme;
-			bool isThis = object.caseCompare(UNICODE_STRING("$this", 5), 0) == 0;
-			Advance();
-			if (mvceditor::TokenClass::METHODOPERATOR == Token) {
-				Advance();
-				if (mvceditor::TokenClass::IDENTIFIER == Token) {
-					UnicodeString objectMethodName = Lexeme;
-					Advance();
-					if (mvceditor::TokenClass::OPENPARENTHESIS == Token) {
-						if (VariableObserver && isThis) {
-							
-						}
-						else if (VariableObserver) {
-							object.remove(0, 1);
-							
-						}
-					}
-				}
-			}
-			else {
-				
-				// $var = $anotherVar
-				if (VariableObserver) {
-					object.remove(0, 1);
-				
-				}
-			}
-		}
-		else {
-			
-			// $var = 'hello' or $var =  123
-			if (VariableObserver) {
-				
-			}
-		}
-	}
-	else {
-		Advance();
-	}
-}
-
-bool mvceditor::ParserClass::Advance() {
-	Token = LookaheadToken;
-	Lexeme = LookaheadLexeme;
-	LookaheadToken = NextLookaheadToken;
-	LookaheadLexeme = NextLookaheadLexeme;
-	NextLookaheadToken = Lexer.NextToken();
-	Lexer.GetLexeme(NextLookaheadLexeme);
-	if (mvceditor::TokenClass::CLOSEBRACE == Token) {
-		--BraceDepth;
-	}
-	else if (mvceditor::TokenClass::OPENBRACE == Token) {
-		++BraceDepth;
-	}
-	return Token > 0 && Token != mvceditor::TokenClass::ENDOFFILE;
-}
-
-bool mvceditor::ParserClass::MoreTokens() {
-	return !mvceditor::TokenClass::IsTerminatingToken(Token);
-}
-
-void mvceditor::ParserClass::ScanDefineDeclaration(const UnicodeString& phpDocComment) {
-	Advance(); //eat 'define'
-	Advance(); //eat '('
-	if (mvceditor::TokenClass::SINGLEQUOTESTRING == Token || mvceditor::TokenClass::DOUBLEQUOTESTRING == Token) {
-		UnicodeString variable = Lexeme;
-		Advance(); //eat the string
-		Advance(); //eat ','
-		if (ClassObserver) {
-			ClassObserver->DefineDeclarationFound(variable, Lexeme, phpDocComment);
-		}
-		while (MoreTokens() && Token != mvceditor::TokenClass::SEMICOLON) {
-			Advance();
-		}
-	}
-}
-*/
 
 bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results) {
 
@@ -449,7 +91,7 @@ bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& re
 	
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = file;
@@ -463,7 +105,7 @@ bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& re
 bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver);
+		mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = wxEmptyString;
@@ -474,8 +116,93 @@ bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsCl
 	return ret;
 }
 
+int mvceditor::ParserClass::GetCharacterPosition() const {
+	return Lexer.GetCharacterPosition();
+}
+
 void mvceditor::ParserClass::Close() {
 	Lexer.Close();
+}
+
+
+namespace mvceditor {
+
+class ParserVariableObserverClass : public ExpressionObserverClass {
+
+public:
+
+	std::vector<ExpressionClass> Expressions;
+	
+	virtual void ExpressionFound(const ExpressionClass& expression) {
+		puts("expression found\n");
+		UFILE* uf = u_finit(stdout, 0, 0);
+		UnicodeString s(expression.Lexeme);
+		u_fprintf(uf, "lexeme=%S\n", s.getTerminatedBuffer());
+		u_fclose(uf);
+		Expressions.push_back(expression);
+	}
+};
+}
+
+void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor::SymbolClass& symbol) {
+	expression.trim();
+
+	// remove the operators if they are at the end; this prevents parse errors
+	if (expression.endsWith(UNICODE_STRING_SIMPLE("->"))) {
+		expression.remove(expression.length() - 2, 2);
+	}
+	if (expression.endsWith(UNICODE_STRING_SIMPLE("::"))) {
+		expression.remove(expression.length() - 2, 2);
+	}
+
+	// make it so that the expression observer is always called by terminating the expression
+	if (!expression.endsWith(UNICODE_STRING_SIMPLE(";"))) {
+		expression += UNICODE_STRING_SIMPLE(";");
+	}
+	symbol.Clear();
+
+	mvceditor::ParserVariableObserverClass localObserver;
+	mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, &localObserver);
+
+	// parse the given expression code snippet
+	// most of the time, the variable observer will NOT be called because 
+	// the variable observer is only called for assignment expressions
+	// but we want this method to be able to parse a single variable
+	if (Lexer.OpenString(expression)) {	
+  		php53parse(Lexer, observers);
+		Lexer.Close();
+	}
+	if (!localObserver.Expressions.empty()) {
+		mvceditor::ExpressionClass expr = localObserver.Expressions.back();
+		if (mvceditor::ExpressionClass::ARRAY == expr.Type) {
+			symbol.SetToArray();
+		}
+		else if (mvceditor::ExpressionClass::FUNCTION_CALL == expr.Type) {
+			symbol.SetToObject();
+		}
+		else if (mvceditor::ExpressionClass::NEW_CALL == expr.Type) {
+			symbol.SetToObject();
+		}
+		else if (mvceditor::ExpressionClass::SCALAR == expr.Type) {
+			symbol.SetToPrimitive();
+		}
+		else if (mvceditor::ExpressionClass::UNKNOWN == expr.Type) {
+			symbol.SetToUnknown();
+		}
+		else if (mvceditor::ExpressionClass::VARIABLE == expr.Type) {
+			symbol.SetToObject();
+		}
+		symbol.Comment = expr.Comment;
+		symbol.Lexeme = expr.Lexeme;
+		symbol.ChainList = expr.ChainList;
+		if (expr.Lexeme.isEmpty() && expr.ChainList.empty()) {
+			
+			 // when a static property; the "namespace_name" parser rule 
+			 // is triggered
+			symbol.Lexeme = expr.Name.ToSignature();
+			symbol.ChainList.insert(symbol.ChainList.begin(), symbol.Lexeme);
+		}
+	}
 }
 
 mvceditor::LintResultsClass::LintResultsClass()

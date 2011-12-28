@@ -26,6 +26,7 @@
 #define __symboltable__
 
 #include <language/ParserClass.h>
+#include <language/ParserObserverClass.h>
 #include <search/ResourceFinderClass.h>
 #include <unicode/unistr.h>
 #include <map>
@@ -58,76 +59,19 @@ public:
 	SymbolTableClass();
 	
 	/**
-	 * Builds symbols for the given source code.  
+	 * Builds symbols for the given source code. After symbols are created, lookups can be performed. 
 	 * 
 	 * @param UnicodeString code the code to analyze
 	 */
 	void CreateSymbols(const UnicodeString& code);
-
-	void Push(SymbolClass* symbol);
-
-	int GetSymbolCount();
-	
-	/**
-	 * Calculates the type information for the variable at the given position. For example, if sourceCode represented this string:
-	 * 
-	 *   <code>
-	 *     UnicodeString sourceCode = UNICODE_STRING_SIMPLE("
-	 *       class UserClass {
-	 *         private $name;
-	 * 
-	 *         function getName() {
-	 *           return $this->
-	 *     ");
-	 *   </code>
-	 *  then the following C++ code can be used to find a variable's type
-	 * 
-	 *   <code>
-	 *     ResourceFinderClass resourceFinder();
-	 *     SymbolTableClass symbolTable();
-	 *     // line 79 = line inside getName() method
-	 *     if (symbolTable.CreateSymbols(sourceCode)) {
-	 *       UnicodeString variableType, objectMember, variablePhpDocComment;
-	 *       SymbolClass symbol;
-	 *       if (symbolTable.Lookup(79, symbol)) {
-	 *       	puts(symbol.Lexeme); // prints out UserClass
-	 *       }
-	 *     }
-	 *   </code>
-	 * 
-	 * Type information can be calculated for variables, as well as function calls, method calls, and property getters.
-	 * 
-	 * @param int the position the symbol is located in; position is index into code string given to the CreateSymbols() method.
-	 * @param SymbolClass symbol the symbol's type and name. Note that since the SymbolTable uses information
-	 * from the source code only; it cannot verify the TypeLexeme for "parent"
-	 * The objects properties will be reset every call; even if symbol is not found.  In this case,
-	 * the properties will be set to the empty string.
-	 * 
-	 * Special Case: if a symbol references "parent::" then the symbol's TypeLexeme will be set
-	 * to the current class; and the caller will need to figure out what "parent" is by looking at
-	 * the inheritance chain of TypeLexeme.  For example:
-	 * 
-	 * class Action {
-	 * 
-	 *   function func() {
-	 *     parent::work();
-	 *   }
-	 * }
-	 * The symbol will be as follows:
-	 *   Lexeme: "work"
-	 *   TypeLexeme: "Action"
-	 *   Type: PARENT
-	 *   IsStatic: false
-	 */
-	bool Lookup(int pos, SymbolClass& symbol);
 	
 	/**
 	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
 	 * 
 	 * @param int position is index into code string given to the CreateSymbols() method.
-	 * @return std::vector<UnicodeString> the variables in scope.
+	 * @return std::vector<UnicodeString> the variables in scope. The variables will contain the siguil ('$')
 	 */
-	std::vector<UnicodeString> GetVariablesInScope(int pos);
+	std::vector<UnicodeString> GetVariablesInScope(int pos) const;
 	
 	/**
 	 * outout to stdout
@@ -156,48 +100,16 @@ public:
 private:
 
 	/**
-	 * The parser.
-	 * 
-	 * @var ParserClass
-	 */
-	ParserClass Parser;
-	
-	/**
-	 * Holds all symbols for the currently parsed piece of code. Each vector will represent its own scope.
-	 * The string will be the scope name.  The scope name is a combination of the class, method name. 
-	 * 
-	 * @var std::map<UnicodeString, vector<SymbolClass>>
-	 */
-	std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass> Symbols;
-	
-	/**
-	 * Last source code given. Note that this could cause performance problems.
-	 * 
-	 * @var UnicodeString
-	 */
-	UnicodeString SourceCode;
-	
-	/**
-	 * Get the vector of symbols for the given scope.
+	 * Get the vector of variables for the given scope.
 	 * 
 	 * @return std::vector<SymbolClass>
 	 */
 	std::vector<SymbolClass>& GetScope(const UnicodeString& className, const UnicodeString& functionName);
 
 	/**
-	 * Get the last 3 tokens at the given position.
+	 * Stores the given scope and relates it to the given position. 
 	 */
-	void GetTokensAtPos(int pos, int& token, int& lastToken, int& nextToLastToken, UnicodeString& lexeme, UnicodeString& lastLexeme, 
-		UnicodeString& nextToLastLexeme, UnicodeString& className, UnicodeString& functionName);
-		
-	/**
-	 * Add the arguments from the given signature into the given scope.  For example for the signature
-	 * "funct($a, $b)" a and b variables will be added to the scope for "funct"
-	 * 
-	 * @param UnicodeString signature method signature
-	 * @param vector<SymbolClass>& scope the scope list
-	 */
-	void CreateScopeArgumentsFromSignature(const UnicodeString& signature, std::vector<SymbolClass>& scope);
+	void PushStartPos(const UnicodeString& className, const UnicodeString& functionName, int startPos);
 	
 	/**
 	 * 	Add the super global PHP predefined variables into the given scope.  For example  $_GET, $_POST, ....
@@ -205,6 +117,36 @@ private:
 	 *  @param vector<SymbolClass>& scope the scope list
 	 */
 	void CreatePredefinedVariables(std::vector<SymbolClass>& scope);
+
+	/**
+	 * The parser.
+	 * 
+	 * @var ParserClass
+	 */
+	ParserClass Parser;
+	
+	/**
+	 * Holds all variables for the currently parsed piece of code. Each vector will represent its own scope.
+	 * The key will be the scope name.  The scope name is a combination of the class, method name. 
+	 * The global scope is keyed by "" (empty string)
+	 * A function scope is keyed by the function name "myFunc"
+	 * A method scope is keyed by the class & method name "ClassName::MyFunc"
+	 * The value is the parsed Symbol.
+	 * @var std::map<UnicodeString, vector<SymbolClass>>
+	 */
+	std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass> Variables;
+
+	/**
+	 * This will store the character positions where the scope started and ended.
+	 * The global scope is keyed by "" (empty string); it will always start at 0
+	 * A function scope is keyed by the function name "myFunc" it will start at the character position
+	 * A method scope is keyed by the class & method name "ClassName::MyFunc"
+	 * For purposes of this class; it is enough to know that the ranges will never overlap.
+	 * For exact meanings of where the the class, method, and function start positions, see the
+	 * ParserClass::GetCharacterPosition
+	 * @see ParserClass::GetCharacterPosition
+	 */
+	std::map<int, UnicodeString> ScopeStartPos;
 };
 
 }
