@@ -164,15 +164,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
 	
 	/*
 	 * test for single line, PHP Doc comments 
 	 */
-	
 	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
 		"<?php\n"
-		"//for fun, let's enable every predefined rules for every product group for this merchant\r"
+		"//for fun, let's enable every rule for every group for this client\r"
 		"# testing another comment\r" 
 		"/** this is a PHPDoc Comment */"
 		"require_once('globals.php');\n"
@@ -206,7 +206,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 	
 	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
 		"<?php\n"
-		"//for fun, let's enable every predefined rules for every product group for this merchant\r"
+		"//for fun, let's enable every rule for every group for this client\r"
 		"require_once('globals.php');\n"
 	));
 	file = TestProjectDir;
@@ -234,6 +234,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_CLASS, UNICODE_STRING_SIMPLE("class"));
 	CheckTokenLexeme(T_STRING, UNICODE_STRING_SIMPLE("ExtendedRecordSetForUnitTestDoesNotInitializeRcord"));
 	CheckTokenLexeme(T_EXTENDS, UNICODE_STRING_SIMPLE("extends"));
@@ -276,6 +278,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 	CheckTokenLexeme(T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("globals.php"));
 	CheckTokenLexeme(')', UNICODE_STRING_SIMPLE(")"));
 	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_CLASS, UNICODE_STRING_SIMPLE("class"));
 	CheckTokenLexeme(T_STRING, UNICODE_STRING_SIMPLE("UserClass"));
 	CheckTokenLexeme('{', UNICODE_STRING_SIMPLE("{"));
