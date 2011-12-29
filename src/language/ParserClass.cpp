@@ -134,11 +134,6 @@ public:
 	std::vector<ExpressionClass> Expressions;
 	
 	virtual void ExpressionFound(const ExpressionClass& expression) {
-		puts("expression found\n");
-		UFILE* uf = u_finit(stdout, 0, 0);
-		UnicodeString s(expression.Lexeme);
-		u_fprintf(uf, "lexeme=%S\n", s.getTerminatedBuffer());
-		u_fclose(uf);
 		Expressions.push_back(expression);
 	}
 };
