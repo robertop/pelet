@@ -3641,7 +3641,7 @@ yyreduce:
 
   case 75:
 
-    { observers.FunctionEnd(); ;}
+    { observers.FunctionEnd((yyvsp[(11) - (11)])); ;}
     break;
 
   case 76:
@@ -3867,6 +3867,16 @@ yyreduce:
   case 164:
 
     { observers.CurrentMember.Clear(); ;}
+    break;
+
+  case 165:
+
+    { observers.ClassMethodEnd((yyvsp[(1) - (1)])); ;}
+    break;
+
+  case 166:
+
+    { observers.ClassMethodEnd((yyvsp[(3) - (3)])); ;}
     break;
 
   case 168:

@@ -161,7 +161,7 @@ int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
 	}
-	return failed;
+	return failed;	
 }
 
 int mvceditor::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {

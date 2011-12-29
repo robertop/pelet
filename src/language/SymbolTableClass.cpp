@@ -30,7 +30,7 @@
 mvceditor::SymbolTableClass::SymbolTableClass() 
 	: Parser()
 	, Variables()
-	, ScopeStartPos() {
+	, ScopePositions() {
 	Parser.SetClassObserver(this);
 	Parser.SetClassMemberObserver(this);
 	Parser.SetFunctionObserver(this);
@@ -57,8 +57,11 @@ void mvceditor::SymbolTableClass::FunctionFound(const UnicodeString& functionNam
 	PushStartPos(UNICODE_STRING_SIMPLE(""), functionName, currentPos);
 	std::vector<SymbolClass>& functionScope = GetScope(UNICODE_STRING_SIMPLE(""), functionName);
 	CreatePredefinedVariables(functionScope);
+}
 
-	
+void mvceditor::SymbolTableClass::FunctionEnd(const UnicodeString& functionName, int pos) {
+	UnicodeString scopeString = ScopeString(UNICODE_STRING_SIMPLE(""), functionName);
+	ScopePositions[scopeString].second = pos;
 }
 
 void mvceditor::SymbolTableClass::MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
@@ -68,11 +71,24 @@ void mvceditor::SymbolTableClass::MethodFound(const UnicodeString& className, co
 	PushStartPos(className, methodName, currentPos);
 	std::vector<SymbolClass>& methodScope = GetScope(className, methodName);
 	CreatePredefinedVariables(methodScope);
+
+	// creat the $this variable
+	SymbolClass variableSymbol;
+	variableSymbol.Lexeme = UNICODE_STRING_SIMPLE("$this");
+	variableSymbol.Type = mvceditor::SymbolClass::OBJECT;
+	variableSymbol.ChainList.push_back(className);
+	methodScope.push_back(variableSymbol);
+}
+
+void mvceditor::SymbolTableClass::MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
+	UnicodeString scopeString = ScopeString(className, methodName);
+	ScopePositions[scopeString].second = pos;
 }
 
 void mvceditor::SymbolTableClass::PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 	const UnicodeString& propertyType, const UnicodeString& comment, 
 	TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
+
 	// do nothing; properties will be looked up using the ResourceFinder class
 }
 
@@ -83,15 +99,22 @@ void mvceditor::SymbolTableClass::VariableFound(const UnicodeString& className, 
 
 void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 	Variables.clear();
-	ScopeStartPos.clear();
+	ScopePositions.clear();
 	Parser.ScanString(code);
 }
 
 std::vector<UnicodeString> mvceditor::SymbolTableClass::GetVariablesInScope(int pos) const {
-	UnicodeString scopeString;
-	std::map<int, UnicodeString>::const_iterator itBegin = ScopeStartPos.lower_bound(pos);
-	if (itBegin != ScopeStartPos.end()) {
-		scopeString = itBegin->second;
+
+	// ScopePositions are ranges; we just need to check which range pos falls in
+	UnicodeString scopeString = ScopeString(UNICODE_STRING_SIMPLE(""), UNICODE_STRING_SIMPLE(""));
+	for (std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass>::const_iterator it = ScopePositions.begin(); it != ScopePositions.end(); ++it) {
+
+		// this is the scope IF pos is after this position but before the next one
+		// map values are pairs themselves, hence teh second.first and second.second
+		if (pos >= it->second.first && pos <= it->second.second) {
+			scopeString = it->first;
+			break;
+		}
 	}
 	std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass>::const_iterator itVar = Variables.find(scopeString);
 	std::vector<SymbolClass> scopeSymbols;
@@ -112,25 +135,28 @@ std::vector<UnicodeString> mvceditor::SymbolTableClass::GetVariablesInScope(int 
 
 std::vector<mvceditor::SymbolClass>& mvceditor::SymbolTableClass::GetScope(const UnicodeString& className, 
 		const UnicodeString& methodName) {
-	UnicodeString scopeString = className + UNICODE_STRING_SIMPLE("::") + methodName;
+	UnicodeString scopeString = ScopeString(className , methodName);
 	if (Variables[scopeString].empty()) {
 		CreatePredefinedVariables(Variables[scopeString]);
 	}
 	return Variables[scopeString];
 }
 
-void mvceditor::SymbolTableClass::Print() {
+void mvceditor::SymbolTableClass::Print() const {
 	UFILE *out = u_finit(stdout, NULL, NULL);
-	for(std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass>::iterator it = Variables.begin(); it != Variables.end(); ++it) {
+	for(std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass>::const_iterator it = Variables.begin(); it != Variables.end(); ++it) {
 		std::vector<mvceditor::SymbolClass> scopedSymbols = it->second;
 		UnicodeString s = it->first;
 		u_fprintf(out, "Symbol Table For %S\n", s.getTerminatedBuffer());
 		for (size_t j = 0; j < scopedSymbols.size(); ++j) {
 			SymbolClass symbol = scopedSymbols[j];
-			u_fprintf(out, "%d\t%S\t%d\n", 
-				(int)j, symbol.Lexeme.getTerminatedBuffer(),
-				symbol.Type); 
+			u_fprintf(out, "%d\t%S\t%d\n", (int)j, symbol.Lexeme.getTerminatedBuffer(), symbol.Type); 
 		}
+	}
+	u_fprintf(out,  "\n************************\n");
+	for (std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass>::const_iterator it = ScopePositions.begin(); it != ScopePositions.end(); ++it) {
+		UnicodeString s = it->first;
+		u_fprintf(out, "Scope:%S Start:%d End:%d\n", s.getTerminatedBuffer(), it->second.first, it->second.second);
 	}
 	u_fclose(out);
 }
@@ -161,6 +187,13 @@ void mvceditor::SymbolTableClass::CreatePredefinedVariables(std::vector<mvcedito
 }
 
 void mvceditor::SymbolTableClass::PushStartPos(const UnicodeString& className, const UnicodeString& functionName, int startPos) {
-	UnicodeString scopeString = className + UNICODE_STRING_SIMPLE("::") + functionName;
-	ScopeStartPos[startPos] = scopeString;
+	UnicodeString scopeString = ScopeString(className, functionName);
+	std::pair<int, int> pair;
+	pair.first = startPos;
+	pair.second = startPos;
+	ScopePositions[scopeString] = pair;
+}
+
+UnicodeString mvceditor::SymbolTableClass::ScopeString(const UnicodeString& className, const UnicodeString& functionName) const {
+	return className + UNICODE_STRING_SIMPLE("::") + functionName;
 }

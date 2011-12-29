@@ -29,7 +29,11 @@
 
 UnicodeString CURSOR = UNICODE_STRING_SIMPLE("{CURSOR}");
 
-static int PREDEFINED_VARIABLE_COUNT = 14;
+// The variables that are available in all scopes
+// $GLOBALS, $_SERVER, $_GET, $_POST, $_FILES,
+// $_REQUEST, $_SESSION, $_ENV, $_COOKIE, $php_errormsg,
+// $HTTP_RAW_POST_DATA, $http_response_header, $argc, $argv
+static size_t PREDEFINED_VARIABLE_COUNT = 14;
 
 class SymbolTableTestClass : public FileTestFixtureClass {
 public:	
@@ -79,282 +83,10 @@ public:
 
 SUITE(SymbolTableTestClass) {
 
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameForThisKeyword) {
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-	
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"\t/** @return void */\n"
-		"\tprivate function clearName() {\n"
-		"\t\t$this->"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	Expression = UNICODE_STRING_SIMPLE("$this->");
-	///SymbolTable->ParseExpression(Expression, Symbol);
-	///CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
-	///CHECK_EQUAL((size_t)1, Symbol.ChainList.size());
-	///if ((size_t)1 == Symbol.ChainList.size()) {
-	///	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), Symbol.ChainList[0]);
-	///}
-}
-#if 0
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForThisKeyword) {
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"\t/** @return void */\n"
-		"\tprivate function clearName() {\n"
-		"\t\t$this->name{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	///CHECK_EQUAL(mvceditor::SymbolClass::PROPERTY, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetClassNameAndMemberForLocalVariable) {
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"\t/** @return void */\n"
-		"\tprivate function copy($anotherUser) {\n"
-		"\t\t$user = new UserClass();\n"
-		"\t\t$user->{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetObjectNameAndMemberForLocalVariable) {
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"\t/** @return void */\n"
-		"\tprivate function copy($anotherUser) {\n"
-		"\t\t$user = new UserClass();\n"
-		"\t\t$user->getName{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getName"), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetCommentForLocalVariable) {
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"\t/** @return void */\n"
-		"\tprivate function copy($anotherUser) {\n"
-		"\t\t$user = new UserClass();\n"
-		"\t\t$user{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("user"), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldFillInSourceSignatureWhenMethodIsInAnotherFile) {
-	
-	/*
-	 * use the class in another file 
-	 */
-	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
-		"<?php\n"
-		"\t/** @return void */\n"
-		"\t function copy($aUser) {\n"
-		"\t\t$user = new UserClass();\n"
-		"\t\t$name = $user->getName();\n"
-		"\t\t$name{CURSOR}\n"
-		"\t}\n"
-	);
-	int pos;
-	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable->CreateSymbols(sourceCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("name"), Symbol.Lexeme);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass::getName"), Symbol.SourceSignature);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldSetParentType) {
-	wxString sourceCode = wxString::FromAscii(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"}\n"
-		"class AdminClass extends UserClass {\n"
-		"\tfunction getName() {"
-		"\treturn 'Admin:' + parent::{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
-	CreateFixtureFile(wxT("test.php"), sourceCode);
-	int pos;
-	uniCode = FindCursor(uniCode, pos);
-	SymbolTable->CreateSymbols(uniCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	///CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("AdminClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetParentMethod) {
-	wxString sourceCode = wxString::FromAscii(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"}\n"
-		"class AdminClass extends UserClass {\n"
-		"\tfunction getName() {"
-		"\treturn 'Admin:' + parent::getNam{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
-	int pos;
-	uniCode = FindCursor(uniCode, pos);
-	SymbolTable->CreateSymbols(uniCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	///CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("AdminClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), Symbol.Lexeme);
-}
-
-TEST_FIXTURE(SymbolTableTestClass, LookupShouldGetAncestorOnlyWhenMethodMatches) {
-	wxString sourceCode = wxString::FromAscii(
-		"<?php\n"
-		"/** This is the user class */\n"
-		"class UserClass {\n"
-		"\t/** @var string */\n"
-		"\tprivate $name;\n"
-		"\t/** @var string */\n"
-		"\tprivate $address;\n"
-		"\t/** @return string */\n"
-		"\tfunction getName() {\n"
-		"\t\treturn $this->name;\n"
-		"\t}\n"
-		"}\n"
-		"class AdminClass extends UserClass {\n"
-		"}\n"		
-		"class SuperAdminClass extends AdminClass {\n"
-		"\tfunction getName() {"
-		"\treturn 'SuperAdmin:' + parent::getNam{CURSOR}\n"
-		"\t}\n"
-		"}\n"
-		"?>\n"
-	);
-	
-	// even if a class overloads a method, using parent:: should return the correct
-	// Type (note that it will NOT fill in TypeLexeme because it might not be able
-	// to resolve it
-	UnicodeString uniCode = mvceditor::StringHelperClass::wxToIcu(sourceCode);
-	int pos;
-	uniCode = FindCursor(uniCode, pos);
-	SymbolTable->CreateSymbols(uniCode);
-	CHECK(SymbolTable->Lookup(pos, Symbol));
-	///CHECK_EQUAL(mvceditor::SymbolClass::PARENT, Symbol.Type);
-	///CHECK_EQUAL(UNICODE_STRING_SIMPLE("SuperAdminClass"), Symbol.TypeLexeme);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("getNam"), Symbol.Lexeme);
-}
-
 TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScope) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
+		"$globalVar = 34; \n"
 		"/** This is the user class */\n"
 		"class UserClass {\n"
 		"\t/** @var string */\n"
@@ -378,18 +110,21 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesI
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
 	std::vector<UnicodeString> variables = SymbolTable->GetVariablesInScope(pos);
-	// take the predefined varaibles into account
-	CHECK_EQUAL((size_t)PREDEFINED_VARIABLE_COUNT + 3, variables.size());
-	if ((size_t)(PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("this"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("anotherName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
+	
+	// take the predefined variables into account
+	// locals: $anotherName, $someName, $this
+	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 3, variables.size());
+	if ((PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), variables[PREDEFINED_VARIABLE_COUNT]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
 	}
 }
 
 TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScopeForFunctions) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
+		"$globalVar = 34; \n"
 		"function setName($anotherName, $defaultName = 'Guest') {\n"
 		"\t$someName = '';\n"
 		"\t{CURSOR}"
@@ -400,12 +135,13 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesI
 	sourceCode = FindCursor(sourceCode, pos);
 	SymbolTable->CreateSymbols(sourceCode);
 	std::vector<UnicodeString> variables = SymbolTable->GetVariablesInScope(pos);
+
 	// take the predefined varaibles into account
-	CHECK_EQUAL((size_t)PREDEFINED_VARIABLE_COUNT + 3, variables.size());
-	if ((size_t)(PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("anotherName"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("defaultName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
+	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 3, variables.size());
+	if ((PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherName"), variables[PREDEFINED_VARIABLE_COUNT]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$defaultName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
 	}
 }
 
@@ -423,11 +159,37 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldHandleTypeHinting) {
 	SymbolTable->CreateSymbols(sourceCode);
 	std::vector<UnicodeString> variables = SymbolTable->GetVariablesInScope(pos);
 	// take the predefined variables into account
-	CHECK_EQUAL((size_t)PREDEFINED_VARIABLE_COUNT + 2, variables.size());
-	if ((size_t)(PREDEFINED_VARIABLE_COUNT + 2) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("user"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("someName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
+	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 2, variables.size());
+	if ((PREDEFINED_VARIABLE_COUNT + 2) == variables.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user"), variables[PREDEFINED_VARIABLE_COUNT]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
 	}
 }
-#endif
+
+TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldHandleMultipleBlocks) {
+UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$globalOne = 1;\n"
+		"function printUser(User $user) {\n"
+		"\t$someName = '';\n"
+		"}\n"
+		"?>\n"
+		"<html><body><?php echo $globalOne; ?></body></html>\n"
+		"<?php\n"
+		"$globalTwo = 2;\n"
+		"{CURSOR}"
+	);
+	int pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	SymbolTable->CreateSymbols(sourceCode);
+	std::vector<UnicodeString> variables = SymbolTable->GetVariablesInScope(pos);
+
+	// take the predefined variables into account
+	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 2, variables.size());
+	if ((PREDEFINED_VARIABLE_COUNT + 2) == variables.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), variables[PREDEFINED_VARIABLE_COUNT]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalTwo"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
+	}
+}
+
 }

@@ -514,6 +514,14 @@ void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 	}
 }
 
+void mvceditor::ObserverQuadClass::ClassMethodEnd(mvceditor::SemanticValueClass& value) {
+	if (Member) {
+		Member->MethodEnd(CurrentClass.ClassName, CurrentMember.MemberName, value.Pos);
+	}
+	CurrentMember.Clear();
+	CurrentParametersList.Clear();
+}
+
 void mvceditor::ObserverQuadClass::DefineFound(const mvceditor::ExpressionClass& nameSymbol, const mvceditor::ExpressionClass& valueSymbol, const UnicodeString& comment) {
 	if (Class) {
 		Class->DefineDeclarationFound(nameSymbol.Lexeme, valueSymbol.Lexeme, comment);
@@ -552,7 +560,10 @@ void mvceditor::ObserverQuadClass::CreateParameterWithOptionalClassName() {
 	CurrentParametersList.CreateWithOptionalType(CurrentQualifiedName.ToSignature());
 }
 
-void mvceditor::ObserverQuadClass::FunctionEnd() {
+void mvceditor::ObserverQuadClass::FunctionEnd(mvceditor::SemanticValueClass& value) {
+	if (Function) {
+		Function->FunctionEnd(CurrentMember.MemberName, value.Pos);
+	}
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
 }
@@ -756,17 +767,19 @@ void mvceditor::ObserverQuadClass::FunctionCallEnd() {
 }
 
 void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
-	CurrentFunctionCallExpression.CallArguments.push_back(ExpressionVariables.back());
-	
-	// remove from ExpressionVariables we wont place function arguments 
-	// as "regular" variables because we dont want function arguments to
-	// trigger VariableFound notifications.
-	// for example the expression
-	//
-	// $newUser = fix($user)
-	//
-	// should generate only 1 VariableFound notification for the $newUser variable
-	ExpressionVariables.pop_back();
+	if (!ExpressionVariables.empty()) {
+		CurrentFunctionCallExpression.CallArguments.push_back(ExpressionVariables.back());
+		
+		// remove from ExpressionVariables we wont place function arguments 
+		// as "regular" variables because we dont want function arguments to
+		// trigger VariableFound notifications.
+		// for example the expression
+		//
+		// $newUser = fix($user)
+		//
+		// should generate only 1 VariableFound notification for the $newUser variable
+		ExpressionVariables.pop_back();
+	}
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
@@ -837,6 +850,10 @@ void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
 			Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, comment);
 		}
 	}
+
+	// remove any expressions that were created by the static scalar rules
+	// ie default argument values
+	ClearExpressions();
 }
 
 void mvceditor::ObserverQuadClass::ExpressionFound() {

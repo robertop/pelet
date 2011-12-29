@@ -76,7 +76,7 @@ public:
 	/**
 	 * outout to stdout
 	 */
-	void Print();
+	void Print() const;
 		
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment);
@@ -87,6 +87,8 @@ public:
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 		TokenClass::TokenIds visibility, bool isStatic);
+
+	void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
@@ -94,6 +96,8 @@ public:
 	
 	virtual void FunctionFound(const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment);
+
+	void FunctionEnd(const UnicodeString& functionName, int pos);
 		
 	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const SymbolClass& symbol, const UnicodeString& comment);
@@ -119,6 +123,11 @@ private:
 	void CreatePredefinedVariables(std::vector<SymbolClass>& scope);
 
 	/**
+	 * @return the "scope string" used throughout this class, in the Variables map and the ScopePositions map
+	 */
+	UnicodeString ScopeString(const UnicodeString& className, const UnicodeString& functionName) const;
+
+	/**
 	 * The parser.
 	 * 
 	 * @var ParserClass
@@ -128,9 +137,7 @@ private:
 	/**
 	 * Holds all variables for the currently parsed piece of code. Each vector will represent its own scope.
 	 * The key will be the scope name.  The scope name is a combination of the class, method name. 
-	 * The global scope is keyed by "" (empty string)
-	 * A function scope is keyed by the function name "myFunc"
-	 * A method scope is keyed by the class & method name "ClassName::MyFunc"
+	 * The scope string is that which is returned by ScopeString() method.
 	 * The value is the parsed Symbol.
 	 * @var std::map<UnicodeString, vector<SymbolClass>>
 	 */
@@ -138,15 +145,14 @@ private:
 
 	/**
 	 * This will store the character positions where the scope started and ended.
-	 * The global scope is keyed by "" (empty string); it will always start at 0
-	 * A function scope is keyed by the function name "myFunc" it will start at the character position
-	 * A method scope is keyed by the class & method name "ClassName::MyFunc"
+	 * The scope string is that which is returned by ScopeString() method.
+	 * The global scope will always start at 0
 	 * For purposes of this class; it is enough to know that the ranges will never overlap.
 	 * For exact meanings of where the the class, method, and function start positions, see the
 	 * ParserClass::GetCharacterPosition
 	 * @see ParserClass::GetCharacterPosition
 	 */
-	std::map<int, UnicodeString> ScopeStartPos;
+	std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass> ScopePositions;
 };
 
 }

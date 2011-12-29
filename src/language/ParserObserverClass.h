@@ -110,6 +110,15 @@ public:
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic) = 0;
+
+	/**
+	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
+	 *
+	 * @param const UnicodeString& className the name of the class that was found
+	 * @param const UnicodeString& methodName the name of the method that was found
+	 * @param pos the character position (of the closing brace '}' original source code)
+	 */
+	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) = 0;
 };
 
 /**
@@ -133,7 +142,13 @@ public:
 	 */
 	virtual void FunctionFound(const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) = 0;
-	
+
+	/**
+	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
+	 * @param const UnicodeString& functionName the name of the method that was found
+	 * @param pos the character position (of the closing brace '}' original source code)
+	 */
+	virtual void FunctionEnd(const UnicodeString& functionName, int pos) = 0;
 };
 
 /**
@@ -621,6 +636,11 @@ public:
 	void ClassMemberFound(bool isProperty);
 
 	/**
+	 * Will erase the current method info and notify the method observer
+	 */
+	void ClassMethodEnd(SemanticValueClass& value);
+
+	/**
 	 *  Notifites that a define (constant) has been found.
 	 */
 	void DefineFound(const ExpressionClass& name, const ExpressionClass& value, const UnicodeString& comment);
@@ -636,9 +656,9 @@ public:
 	void FunctionFound();
 
 	/**
-	 * Will erase the current function info.
+	 * Will erase the current function info and notify the function observer.
 	 */
-	void FunctionEnd();
+	void FunctionEnd(SemanticValueClass& value);
 
 	/**
 	 * Notifies that a variable has been found. This method should be called when an assignment expression has

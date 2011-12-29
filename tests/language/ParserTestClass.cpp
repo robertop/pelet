@@ -145,6 +145,10 @@ public:
 		MethodVisibility.push_back(visibility);
 		MethodIsStatic.push_back(isStatic);
 	}
+
+	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
+		// nothing for now
+	}
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
@@ -164,6 +168,10 @@ public:
 		FunctionSignature.push_back(signature);
 		FunctionReturnType.push_back(returnType);
 		FunctionComment.push_back(comment);
+	}
+
+	virtual void FunctionEnd(const UnicodeString& functionName, int pos) {
+		// nothing for now
 	}
 	
 	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 

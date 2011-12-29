@@ -329,7 +329,7 @@ is_reference:
 unticked_function_declaration_statement:
 		function is_reference T_STRING		{ observers.FunctionStart($3, $2, $1); }
 		'(' parameter_list ')'				{ observers.FunctionFound(); }
-		'{' inner_statement_list '}'		{ observers.FunctionEnd(); }
+		'{' inner_statement_list '}'		{ observers.FunctionEnd($11); }
 ;
 
 unticked_class_declaration_statement:
@@ -517,8 +517,8 @@ class_statement:
 ;
 
 method_body:
-		';' /* abstract method */
-	|	'{' inner_statement_list '}'
+		';' /* abstract method */			{ observers.ClassMethodEnd($1); }
+	|	'{' inner_statement_list '}'		{ observers.ClassMethodEnd($3); }
 ;
 
 variable_modifiers:
