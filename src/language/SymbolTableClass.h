@@ -64,6 +64,38 @@ public:
 	 * @param UnicodeString code the code to analyze
 	 */
 	void CreateSymbols(const UnicodeString& code);
+
+	/**
+	 * This is the entry point into the code completion functionality; it will take a parsed expression (symbol)
+	 * and will look up the each of the symbol's chain list items; resolve them against the given resource
+	 * finders; After all of the items are resolved; the final matches will be added to the autoCompleteList.
+	 * Example:
+	 * Say symbol look likes the following:
+	 * symbol.Lexeme = "$this"
+	 * symbol.ChainList[0] = "->func1()"
+	 * symbol.ChainList[1] = "->prop2"
+	 * 
+	 * This method will look at $this and resolve it based on the scope that is located at position pos. Then
+	 * it will look at the return value of $this->func1() (with the help of the given resource finders), say ClassA.  Once it 
+	 * knows that, it will lookup ClassA::prop2 in all resource finders. It will then place all matches 
+	 * into autoCompleteList. The end result is that autoCompleteList will have all resources 
+	 * from ClassA that start with prop2 (ClassA::prop2, ClassA::prop2once, ClassA::prop2twice,...)
+	 *
+	 * This method will also resolve calls to "$this", "self", and "parent".
+	 * Also, visibility rules will be taken into account; object properties that are accessed from the
+	 * same class (ie "$this") will have access to protected / private methods, but properties accessed
+	 * through from the outside will only have access to public members.
+	 * 
+	 * @param symbol the symbol to resolve. This is usually the result of the ParserClass::ParserExpression
+	 * @param pos the position where symbol is located.  The position is used to know the scope of 
+	 *        the variable. See GetVariablesInScope(int) method for more info.
+	 * @param resourceFinders the resource cache will be used to look up class methods and function return
+	 *        values.
+	 * @param autoCompleteList the results of the matches; these are the names of the items that
+	 *        match the symbol.
+	 */
+	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, int expressionPos, const std::vector<ResourceFinderClass*>& resourceFinders, 
+		std::vector<UnicodeString>& autoCompleteList);
 	
 	/**
 	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
@@ -104,11 +136,20 @@ public:
 private:
 
 	/**
-	 * Get the vector of variables for the given scope.
+	 * Get the vector of variables for the given scope. If scope does not exist it will
+	 * be created.
+	 * 
+	 * @return std::vector<SymbolClass>&
+	 */
+	std::vector<SymbolClass>& GetScope(const UnicodeString& className, const UnicodeString& functionName);
+
+	/**
+	 * Get the vector of variables for the scope that is at the given position. If scope
+	 * does not exist then an empty vector will be returned.
 	 * 
 	 * @return std::vector<SymbolClass>
 	 */
-	std::vector<SymbolClass>& GetScope(const UnicodeString& className, const UnicodeString& functionName);
+	std::vector<SymbolClass> GetScope(int pos) const;
 
 	/**
 	 * Stores the given scope and relates it to the given position. 

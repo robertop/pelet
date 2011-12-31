@@ -27,6 +27,86 @@
 #include <language/TokenClass.h>
 #include<algorithm>
 
+/*
+ * Checks that a resource matches visiblity rules.  
+ * @param resource the resource to check
+ * @param isStaticCall if TRUE, then resource is visible if the resource is also static
+ * @param isThisCall if TRUE, then resource is visible if the resource is private, protected, or public
+ * @param isParentCall if TRUE, then resource is visible if the resource is protected, or public
+ * @return bool true if resource is visible
+ */
+static bool IsResourceVisible(const mvceditor::ResourceClass& resource, bool isStaticCall, bool isThisCall, bool isParentCall) {
+	bool passesStaticCheck = isStaticCall == resource.IsStatic;
+
+	// $this => can access this resource's private, parent's protected/public, other public
+	// parent => can access parent's protected/public
+	// neither => can only access public
+	bool passesVisibilityCheck = !resource.IsPrivate && !resource.IsProtected;
+	if (!passesVisibilityCheck && isParentCall) {
+
+		// this check assumes that the resource finder has traversed the inheritance chain
+		// properly. then, by a process of elimination, if the resource class is not
+		// the symbol then we only show protected/public resources
+		passesVisibilityCheck = resource.IsProtected;
+	}
+	else if (!passesVisibilityCheck) {
+
+		//not checking isThisCalled
+		passesVisibilityCheck = isThisCall;
+	}
+	return passesStaticCheck && passesVisibilityCheck;
+}
+
+/*
+ * figure out a [local] variable's type by looking at the other variables at the symbol table.
+ * @param variable the variable's name.  This is a single token, ie "$this", "$aglob" no object
+ *        operations.
+ * @param scopySymbols the scope to look for the variable in
+ * @return the variable's type; could be empty string if type could not be determined 
+ */
+static UnicodeString ResolveVariableType(const UnicodeString& variable, const std::vector<mvceditor::SymbolClass>& scopeSymbols) {
+	UnicodeString type;
+	for (size_t i = 0; i < scopeSymbols.size(); ++i) {
+		if (variable == scopeSymbols[i].Lexeme) {
+			if (scopeSymbols[i].PhpDocType.isEmpty() && !scopeSymbols[i].ChainList.empty()) {
+				type = scopeSymbols[i].ChainList[0];
+			}
+			else if (!scopeSymbols[i].PhpDocType.isEmpty()) {
+				type = scopeSymbols[i].PhpDocType;
+			}
+			break;
+		}
+	}
+	return type;
+}
+
+/**
+ * Figure out a resource's type by looking at all of the given finders.
+ * @param resourceToLookup MUST BE fully qualified (class name  + method name,  or function name).  string can have the
+ *        object operator "->" that separates the class and method name.
+ * @param finders all of the finders to look in
+ * @return the resource's type; (for methods, it's the return type of the method) could be empty string if type could not be determined 
+ */
+static UnicodeString ResolveResourceType(UnicodeString resourceToLookup, const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders) {
+	UnicodeString type;
+
+	// need to get the type from the resource finders
+	// the resource finder query string needs to have '::' also remove the function markers "()" that
+	// are put there by the expression parser
+	resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("->"), UNICODE_STRING_SIMPLE("::"));
+	resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("()"), UNICODE_STRING_SIMPLE(""));
+	for (size_t j = 0; j < resourceFinders.size(); ++j) {
+		mvceditor::ResourceFinderClass* finder = resourceFinders[j];
+		type = finder->GetResourceReturnType(resourceToLookup);
+		if (!type.isEmpty()) {
+
+			// since we are doing exact lookups, only one should be found
+			break;
+		}
+	}
+	return type;
+}
+
 mvceditor::SymbolTableClass::SymbolTableClass() 
 	: Parser()
 	, Variables()
@@ -103,7 +183,137 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 	Parser.ScanString(code);
 }
 
+void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos, 
+															  const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders, 
+															  std::vector<UnicodeString>& autoCompleteList) {
+	UnicodeString start = parsedExpression.Lexeme;
+	std::vector<mvceditor::SymbolClass> scopeSymbols = GetScope(expressionPos);
+	UnicodeString typeToLookup;
+	bool isStaticCall = false;
+	bool isThisCall = false;
+	bool isParentCall = false;
+	if (start.startsWith(UNICODE_STRING_SIMPLE("$"))) {
+		
+		// a variable. look at the type from the symbol table
+		typeToLookup = ResolveVariableType(start, scopeSymbols);
+		if (UNICODE_STRING_SIMPLE("$this") == start) {
+			isThisCall = true;
+		}
+	}
+	else if (start.caseCompare(UNICODE_STRING_SIMPLE("self"), 0) == 0){
+		
+		// self is the static version of $this, need to look at the pseudo variable $this
+		// that is put into the symbol table during parsing
+		// and get the type from there
+		for (size_t i = 0; i < scopeSymbols.size(); ++i) {
+			if (UNICODE_STRING_SIMPLE("$this") == scopeSymbols[i].Lexeme && !scopeSymbols[i].ChainList.empty()) {
+				typeToLookup = scopeSymbols[i].ChainList[0];
+			}
+		}
+		isStaticCall = true;
+	}
+	else if (start.caseCompare(UNICODE_STRING_SIMPLE("parent"), 0) == 0){
+		
+		// look at the class signature of the current class that is in scope; that will tell us
+		// what class is the parent
+		// this code assumes that the resource finders have parsed the same exact code as the code that the
+		// symbol table has parsed.
+		for (size_t i = 0; i < resourceFinders.size(); ++i) {
+			typeToLookup = resourceFinders[i]->GetResourceParentClassName(start, UNICODE_STRING_SIMPLE(""));
+			if (!typeToLookup.isEmpty()) {
+				break;
+			}
+		}
+		isParentCall = true;
+	}
+	else if (parsedExpression.ChainList.size() > 1) {
+
+		// a function or a class. need to get the type from the resource finders
+		// when ChainList has only one item, the item may be a partial function/class name
+		// so we may not find it. 
+		isStaticCall = FALSE != parsedExpression.ChainList[1].startsWith(UNICODE_STRING_SIMPLE("::"));
+		if (isStaticCall) {
+			typeToLookup = start;
+		}
+		else {
+			typeToLookup = ResolveResourceType(start, resourceFinders);
+		}
+	}
+
+	// continue to the next item in the chain up until the second to last one
+	// if we can't resolve a type then just exit
+	for (size_t i = 1; i < (parsedExpression.ChainList.size() - 1) && !typeToLookup.isEmpty(); ++i) {
+		UnicodeString nextResource = typeToLookup + parsedExpression.ChainList[i];
+		typeToLookup = ResolveResourceType(nextResource, resourceFinders);
+	}
+	UnicodeString resourceToLookup;
+	if (!typeToLookup.isEmpty() && parsedExpression.ChainList.size() > 1) {
+		resourceToLookup = typeToLookup + parsedExpression.ChainList.back();
+		resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("->"), UNICODE_STRING_SIMPLE("::")); 
+	}
+	else {
+
+		// when symbol's chain list has one item, it is from an expression that 
+		// contains a partial function.  In this case, there is not need to catenate
+		// ChainList items; doing so will result in a bad lookup 
+		resourceToLookup = start;
+	}
+
+	// for the final lookup we need to do near matches. we need to get all
+	// matches from all finders
+	if (resourceToLookup.startsWith(UNICODE_STRING_SIMPLE("$"))) {
+		
+		// this is just SymbolTable search. since the code above converted method operations to
+		// resource names, we will only hit this part of the code when completion a simple
+		// variable
+		for (size_t i = 0; i < scopeSymbols.size(); ++i) {
+			if (scopeSymbols[i].Lexeme.startsWith(resourceToLookup)) {
+				autoCompleteList.push_back(scopeSymbols[i].Lexeme);
+			}
+		}
+	}
+	else {
+		wxString wxResource = mvceditor::StringHelperClass::IcuToWx(resourceToLookup);
+		for (size_t j = 0; j < resourceFinders.size(); ++j) {
+			mvceditor::ResourceFinderClass* finder = resourceFinders[j];
+			if (finder->Prepare(wxResource) && finder->CollectNearMatchResources()) {
+
+				// now we loop through the possbile matches and remove stuff that does not 
+				// make sense because of visibility rules
+				for (size_t k = 0; k < finder->GetResourceMatchCount(); ++k) {
+					mvceditor::ResourceClass resource = finder->GetResourceMatch(k);
+					if (IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
+						autoCompleteList.push_back(resource.Identifier);
+					}
+				}
+			}
+		}
+	}
+}
+
 std::vector<UnicodeString> mvceditor::SymbolTableClass::GetVariablesInScope(int pos) const {
+	std::vector<mvceditor::SymbolClass> symbols = GetScope(pos);
+	std::vector<UnicodeString> variables;
+	for (size_t i = 0; i < symbols.size(); ++i) {
+		if (find(variables.begin(), variables.end(), symbols[i].Lexeme) == variables.end()) {
+			
+			//dont return duplicates
+			variables.push_back(symbols[i].Lexeme);
+		}
+	}
+	return variables;
+}
+
+std::vector<mvceditor::SymbolClass>& mvceditor::SymbolTableClass::GetScope(const UnicodeString& className, 
+		const UnicodeString& methodName) {
+	UnicodeString scopeString = ScopeString(className , methodName);
+	if (Variables[scopeString].empty()) {
+		CreatePredefinedVariables(Variables[scopeString]);
+	}
+	return Variables[scopeString];
+}
+
+std::vector<mvceditor::SymbolClass> mvceditor::SymbolTableClass::GetScope(int pos) const {
 
 	// ScopePositions are ranges; we just need to check which range pos falls in
 	UnicodeString scopeString = ScopeString(UNICODE_STRING_SIMPLE(""), UNICODE_STRING_SIMPLE(""));
@@ -121,25 +331,7 @@ std::vector<UnicodeString> mvceditor::SymbolTableClass::GetVariablesInScope(int 
 	if (itVar != Variables.end()) {
 		scopeSymbols = itVar->second;
 	}
-	std::vector<UnicodeString> variables;
-	for (size_t i = 0; i < scopeSymbols.size(); ++i) {
-		if (find(variables.begin(), variables.end(), scopeSymbols[i].Lexeme) == variables.end()) {
-			
-			//dont return duplicates
-			variables.push_back(scopeSymbols[i].Lexeme);
-		}
-		
-	}
-	return variables;
-}
-
-std::vector<mvceditor::SymbolClass>& mvceditor::SymbolTableClass::GetScope(const UnicodeString& className, 
-		const UnicodeString& methodName) {
-	UnicodeString scopeString = ScopeString(className , methodName);
-	if (Variables[scopeString].empty()) {
-		CreatePredefinedVariables(Variables[scopeString]);
-	}
-	return Variables[scopeString];
+	return scopeSymbols;
 }
 
 void mvceditor::SymbolTableClass::Print() const {
