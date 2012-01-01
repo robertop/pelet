@@ -162,7 +162,8 @@ class VariableObserverClass {
 public:
 
 	/**
-	 * Override this method to perform any custom logic when a 'new' variable declaration is found.
+	 * Override this method to perform any custom logic when a variable assignment is found. Note that the same 
+	 * variable may be assigned different values at different times within the same function.
 	 * 
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.

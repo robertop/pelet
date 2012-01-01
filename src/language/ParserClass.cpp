@@ -143,11 +143,15 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 	expression.trim();
 
 	// remove the operators if they are at the end; this prevents parse errors
+	bool endsWithObject = false;
+	bool endsWithStatic = false;
 	if (expression.endsWith(UNICODE_STRING_SIMPLE("->"))) {
 		expression.remove(expression.length() - 2, 2);
+		endsWithObject = true;
 	}
 	if (expression.endsWith(UNICODE_STRING_SIMPLE("::"))) {
 		expression.remove(expression.length() - 2, 2);
+		endsWithStatic = true;
 	}
 
 	// make it so that the expression observer is always called by terminating the expression
@@ -197,6 +201,12 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 			symbol.Lexeme = expr.Name.ToSignature();
 			symbol.ChainList.insert(symbol.ChainList.begin(), symbol.Lexeme);
 		}
+	}
+	if (endsWithObject) {
+		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
+	}
+	if (endsWithStatic) {
+		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
 	}
 }
 

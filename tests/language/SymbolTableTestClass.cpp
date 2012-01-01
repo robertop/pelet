@@ -180,6 +180,27 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalVariableOnly) {
 	}
 }
 
+TEST_FIXTURE(SymbolTableCompletionTestClass, ManyVariableAssignments) {
+
+	// completion matches should never return duplicates
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$globalOne = 1;\n"
+		" function work() { $globalTwo = 2; } \n"
+		"$globalOne = 2;\n"
+		"$global{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToVariable(UNICODE_STRING_SIMPLE("$global"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CHECK_EQUAL((size_t)1, Matches.size());
+	if ((size_t)1 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
+	}
+}
+
 TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPredefinedVariable) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
@@ -208,6 +229,25 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCall) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CHECK_EQUAL((size_t)2, Matches.size());
+	if ((size_t)2 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithObjectWithoutMethodCall) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class MyClass { function workA() {} function workB() {} } \n"
+		"$my = new MyClass;\n"
+		"$my->{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE(""), false);
 	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
@@ -251,7 +291,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPrivateMethodCall) {
 	}
 }
 
-
 TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodChain) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
@@ -269,6 +308,49 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodChain) {
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), Matches[0]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongPropertyChain) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class MyClass { /** @return OtherClass */ function workA() {} } \n"
+		"class OtherClass { /** @var OtherClass */ var $parent; function toString() {} }\n"
+		"$my = new MyClass;\n"
+		"$my->workA()->parent->pare{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->pare"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CHECK_EQUAL((size_t)1, Matches.size());
+	if ((size_t)1 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongMethodChain) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class MyClass { /** @return OtherClass */ function workA() {} } \n"
+		"class OtherClass { /** @return OtherClass */ function parent() {} }\n"
+		"$my = new MyClass;\n"
+		"$my->workA()->parent()->parent()->p{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->p"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CHECK_EQUAL((size_t)1, Matches.size());
+	if ((size_t)1 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
 	}
 }
 
@@ -292,6 +374,29 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), Matches[0]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, ResourceMatchesWithMethodCall) {
+
+	// only doing light testing on ResourceMatches because the Matches* tests
+	// cover it already
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class MyClass { function workA() {} function workB() {} } \n"
+		"$my = new MyClass;\n"
+		"$my->work{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
+	std::vector<mvceditor::ResourceClass> resources;
+	CompletionSymbolTable.ResourceMatches(ParsedExpression, pos, Finders, resources);
+	CHECK_EQUAL((size_t)2, resources.size());
+	if ((size_t)2 == resources.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::workA"), resources[0].Resource);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::workB"), resources[1].Resource);
 	}
 }
 

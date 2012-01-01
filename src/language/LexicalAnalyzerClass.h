@@ -129,6 +129,35 @@ class LexicalAnalyzerClass {
 	 * is used; will never be NULL
 	 */
 	wxString GetFileName() const;
+
+	/**
+	 * Get the last expression from the give code (the string that is to be 'completed'). 
+	 * Since an expression is a recursive rule (ie. expression = expression1 + expression2) this
+	 * method will only return the very last one (expression2). The exception here is function
+	 * calls; for the function calls this method will return the entire function call itself. See 
+	 * example 7 below.
+	 *
+	 * Example expressions
+	 *  1. a partial variable name                               $myVar
+	 *  2. a partial function / define / class / keyword name    myFunctio
+	 *  3. a partial property name                               $myVar->myPr
+	 *  4. a static property name                                MyClass::$myPr
+	 *  5. a static function name                                MyClass::myFunc
+	 *  6. a function call "chain"                               $this->myFunc()->prop
+	 *  7. a function call "chain" with args                     $this->myFunc($one, $two)->prop
+	 *
+	 *  Expressions that we cannot complete
+	 *  1. variable variables                                   $$myDynamic
+	 *  2. variable properties                                  $myObk->$myDynamic
+	 *  3. object arrays                                        $myArr[$i]->prop
+	 *
+	 * 
+	 * @param a piece of PHP code
+	 * @return the last expression in that piece of code. This could be the empty string
+	 *         if the the last expression has been terminated (ie the last non-whitespace
+	 *         character is ";")
+	 */
+	UnicodeString LastExpression(const UnicodeString& code) const;
 	
 private:	
 	

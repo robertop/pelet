@@ -201,3 +201,147 @@ int mvceditor::LexicalAnalyzerClass::GetCharacterPosition() const {
 wxString mvceditor::LexicalAnalyzerClass::GetFileName() const {
 	return FileName;
 }
+
+/**
+ * @return TRUE if c is a character that can be in a PHP identifier
+ */
+static bool IsPhpIdentifierChar(UChar c) {
+	return u_isalnum(c) || '_' == c || (c >= 0x7f && c <= 0xff);
+}
+
+UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeString& code) const {
+	bool done = false;
+
+	// keep iterating backwards; if we used re2c lexer then we would have to iterate through the entire
+	// string
+	int32_t index = code.length() - 1;
+
+	// the resulting string will only keep non-space characters
+	// we need to keep remove spacing because expression can have whitepace
+	// like this  "$this->\nprop->\nprop"
+	UnicodeString expr;
+	while (!done && index >= 0) {
+		UChar32 c = code[index];
+		if (IsPhpIdentifierChar(c)) {
+
+			// get the entire token
+			while (IsPhpIdentifierChar(c) && index > 0) {
+
+				// since we are iterating backwards, put char in the beginning
+				expr.insert(0, c);
+				index--;
+				c = code[index];
+			}
+		}
+		else  if (u_isspace(c) && index > 0) {
+			
+			// skip whitespace entirely
+			while(u_isspace(c) && index > 0) {
+				index--;
+				c = code[index];
+			}
+
+			// if we encounter an object operator then we can continue grabbing the expression
+			// otherwise it means that we are done
+			if (index > 1 && ':' == code[index] && ':' == code[index - 1]) {
+				expr.insert(0, code[index]);
+				expr.insert(0, code[index - 1]);
+				index -= 2;
+			}
+			else if (index > 1 && '>' == code[index] && '-' == code[index - 1]) {
+				expr.insert(0, code[index]);
+				expr.insert(0, code[index - 1]);
+				index -= 2;
+			}
+			else {
+				done = true;
+			}
+		}
+		else if ('$' == c) {
+			expr.insert(0, c);
+			index--;
+
+			// indirect variables means we are done ("$$expr")
+			if (index >= 0 && '$' == code[index]) {
+				done = true;
+			}
+
+			// indirect properties means we are done ("$this->$expr")
+			if (index >= 1 && '>' == code[index] && '-' == code[index - 1]) {
+				done = true;
+			}
+		}
+		else if (':' == c && index > 0) {
+
+			// check for a possible static object operator; if not an object operator then we are done
+			index--;
+			UChar32 n = code[index];
+			if (':' == n) {
+				index--;
+				expr.insert(0, c);
+				expr.insert(0, n);
+			}
+			else {
+				done = true;
+			}
+		}
+		else if (')' == c) {
+
+			// skip all the way past the beginning '(', taking care to look for nested function calls
+			int nestCount = 1;
+			expr.insert(0, c);
+			while (index > 0 && nestCount > 0) {
+				index--;
+				c = code[index];
+				if (')' == c) {
+					nestCount++;
+				}
+				else if ('(' == c) {
+					nestCount--;
+				}
+				expr.insert(0, c);
+			}
+			index--;
+		}
+		else if (']' == c) {
+
+			// skip all the way past the beginning '[', taking care to look for 2-D arrays
+			int nestCount = 1;
+			expr.insert(0, c);
+			while (index > 0 && nestCount > 0) {
+				index--;
+				c = code[index];
+				if (']' == c) {
+					nestCount++;
+				}
+				else if ('[' == c) {
+					nestCount--;
+				}
+				expr.insert(0, c);
+			}
+			index--;
+		
+		}
+		else if ('>' == c && index > 0) {
+			
+			// check for a possible object operator; if not an object operator then we are done
+			index--;
+			UChar32 n = code[index];
+			if ('-' == n) {
+				index--;
+				expr.insert(0, c);
+				expr.insert(0, n);
+			}
+			else {
+				done = true;
+			}		
+		}
+		else {
+
+			// anything else ignore
+			// like semicolons or commas or other operators; these signal a new expression
+			done = true;
+		}
+	}
+	return expr;
+}

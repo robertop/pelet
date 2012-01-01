@@ -738,24 +738,34 @@ TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->");
+
+	// if an expression ends with the operator, still want to add it to the
+	// chain list so that during code completion we can trigger lookup
+	// of class members
+	UnicodeString code = UNICODE_STRING_SIMPLE("$obj->");
 	mvceditor::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
-	CHECK_EQUAL((size_t)1, symbol.ChainList.size());
-	if ((size_t)1 == symbol.ChainList.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$obj"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
+	if ((size_t)2 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$obj"), symbol.ChainList[0]);	
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->"), symbol.ChainList[1]);	
 	}
 }
 
 TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
+
+	// if an expression ends with the operator, still want to add it to the
+	// chain list so that during code completion we can trigger lookup
+	// of class members
 	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::");
 	mvceditor::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
-	CHECK_EQUAL((size_t)1, symbol.ChainList.size());
-	if ((size_t)1 == symbol.ChainList.size()) {
+	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
+	if ((size_t)2 == symbol.ChainList.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.ChainList[0]);	
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), symbol.ChainList[1]);	
 	}
 }
 
@@ -770,7 +780,6 @@ TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
 	}
 }
-
 
 TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::PI;");

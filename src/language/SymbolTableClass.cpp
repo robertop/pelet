@@ -174,7 +174,20 @@ void mvceditor::SymbolTableClass::PropertyFound(const UnicodeString& className, 
 
 void mvceditor::SymbolTableClass::VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 	const SymbolClass& symbol, const UnicodeString& comment) {
-	GetScope(className, methodName).push_back(symbol);
+
+	// ATTN: a single variable may have many assignments
+	// for now just take the first one
+	std::vector<mvceditor::SymbolClass>& symbols = GetScope(className, methodName);
+	bool found = false;
+	for (size_t i = 0; i < symbols.size(); ++i) {
+		if (symbols[i].Lexeme == symbol.Lexeme) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		symbols.push_back(symbol);
+	}
 }
 
 void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
@@ -186,6 +199,33 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos, 
 															  const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders, 
 															  std::vector<UnicodeString>& autoCompleteList) {
+	if (parsedExpression.ChainList.size() == 1 && parsedExpression.Lexeme.startsWith(UNICODE_STRING_SIMPLE("$"))) {
+
+		// if expression does not have more than one chained called AND it starts with a '$' then we want to match (local)
+		// variables. This is just a SymbolTable search.
+		std::vector<mvceditor::SymbolClass> scopeSymbols = GetScope(expressionPos);
+		for (size_t i = 0; i < scopeSymbols.size(); ++i) {
+			if (scopeSymbols[i].Lexeme.startsWith(parsedExpression.Lexeme)) {
+				autoCompleteList.push_back(scopeSymbols[i].Lexeme);
+			}
+		}
+	}
+	else {
+
+		// some kind of function call / method chain call
+		std::vector<mvceditor::ResourceClass> resourceMatches;
+		ResourceMatches(parsedExpression, expressionPos, resourceFinders, resourceMatches);
+
+		// now we loop through the possbile matches and get the identifiers only
+		for (size_t i = 0; i < resourceMatches.size(); ++i) {
+			autoCompleteList.push_back(resourceMatches[i].Identifier);
+		}
+	}	
+}
+
+void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos, 
+												  const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders, 
+												  std::vector<mvceditor::ResourceClass>& resourceMatches) {
 	UnicodeString start = parsedExpression.Lexeme;
 	std::vector<mvceditor::SymbolClass> scopeSymbols = GetScope(expressionPos);
 	UnicodeString typeToLookup;
@@ -239,6 +279,13 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 			typeToLookup = ResolveResourceType(start, resourceFinders);
 		}
 	}
+	else {
+
+		// when symbol's chain list has one item, it is from an expression that 
+		// contains a partial function.  In this case, there is not need to catenate
+		// ChainList items; doing so will result in a bad lookup 
+		typeToLookup = start;
+	}
 
 	// continue to the next item in the chain up until the second to last one
 	// if we can't resolve a type then just exit
@@ -246,45 +293,26 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 		UnicodeString nextResource = typeToLookup + parsedExpression.ChainList[i];
 		typeToLookup = ResolveResourceType(nextResource, resourceFinders);
 	}
+
 	UnicodeString resourceToLookup;
 	if (!typeToLookup.isEmpty() && parsedExpression.ChainList.size() > 1) {
 		resourceToLookup = typeToLookup + parsedExpression.ChainList.back();
 		resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("->"), UNICODE_STRING_SIMPLE("::")); 
 	}
 	else {
-
-		// when symbol's chain list has one item, it is from an expression that 
-		// contains a partial function.  In this case, there is not need to catenate
-		// ChainList items; doing so will result in a bad lookup 
-		resourceToLookup = start;
+		resourceToLookup = typeToLookup;
 	}
+	wxString wxResource = mvceditor::StringHelperClass::IcuToWx(resourceToLookup);
+	for (size_t j = 0; j < resourceFinders.size(); ++j) {
+		mvceditor::ResourceFinderClass* finder = resourceFinders[j];
+		if (finder->Prepare(wxResource) && finder->CollectNearMatchResources()) {
 
-	// for the final lookup we need to do near matches. we need to get all
-	// matches from all finders
-	if (resourceToLookup.startsWith(UNICODE_STRING_SIMPLE("$"))) {
-		
-		// this is just SymbolTable search. since the code above converted method operations to
-		// resource names, we will only hit this part of the code when completion a simple
-		// variable
-		for (size_t i = 0; i < scopeSymbols.size(); ++i) {
-			if (scopeSymbols[i].Lexeme.startsWith(resourceToLookup)) {
-				autoCompleteList.push_back(scopeSymbols[i].Lexeme);
-			}
-		}
-	}
-	else {
-		wxString wxResource = mvceditor::StringHelperClass::IcuToWx(resourceToLookup);
-		for (size_t j = 0; j < resourceFinders.size(); ++j) {
-			mvceditor::ResourceFinderClass* finder = resourceFinders[j];
-			if (finder->Prepare(wxResource) && finder->CollectNearMatchResources()) {
-
-				// now we loop through the possbile matches and remove stuff that does not 
-				// make sense because of visibility rules
-				for (size_t k = 0; k < finder->GetResourceMatchCount(); ++k) {
-					mvceditor::ResourceClass resource = finder->GetResourceMatch(k);
-					if (IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
-						autoCompleteList.push_back(resource.Identifier);
-					}
+			// now we loop through the possbile matches and remove stuff that does not 
+			// make sense because of visibility rules
+			for (size_t k = 0; k < finder->GetResourceMatchCount(); ++k) {
+				mvceditor::ResourceClass resource = finder->GetResourceMatch(k);
+				if (IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
+					resourceMatches.push_back(resource);
 				}
 			}
 		}

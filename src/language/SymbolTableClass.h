@@ -71,9 +71,9 @@ public:
 	 * finders; After all of the items are resolved; the final matches will be added to the autoCompleteList.
 	 * Example:
 	 * Say symbol look likes the following:
-	 * symbol.Lexeme = "$this"
-	 * symbol.ChainList[0] = "->func1()"
-	 * symbol.ChainList[1] = "->prop2"
+	 * parsedExpression.Lexeme = "$this"
+	 * parsedExpression.ChainList[0] = "->func1()"
+	 * parsedExpression.ChainList[1] = "->prop2"
 	 * 
 	 * This method will look at $this and resolve it based on the scope that is located at position pos. Then
 	 * it will look at the return value of $this->func1() (with the help of the given resource finders), say ClassA.  Once it 
@@ -86,16 +86,40 @@ public:
 	 * same class (ie "$this") will have access to protected / private methods, but properties accessed
 	 * through from the outside will only have access to public members.
 	 * 
-	 * @param symbol the symbol to resolve. This is usually the result of the ParserClass::ParserExpression
-	 * @param pos the position where symbol is located.  The position is used to know the scope of 
+	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
+	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
 	 *        the variable. See GetVariablesInScope(int) method for more info.
 	 * @param resourceFinders the resource cache will be used to look up class methods and function return
 	 *        values.
 	 * @param autoCompleteList the results of the matches; these are the names of the items that
-	 *        match the symbol.
+	 *        are "near matches" to the parsed expression.
 	 */
 	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, int expressionPos, const std::vector<ResourceFinderClass*>& resourceFinders, 
 		std::vector<UnicodeString>& autoCompleteList);
+
+	/**
+	 * This method will resolve the given parsed expression and will figure out the type of a resource. It will resolve
+	 * each item in the parsed expression's chain list just like ExpressionCompletionMatches(), but this method will return
+	 * resource objects.
+	 *
+	 * For example, let parsed expression be
+	 * parsedExpression.Lexeme = "$this"
+	 * parsedExpression.ChainList[0] = "->func1()"
+	 * parsedExpression.ChainList[1] = "->prop2"
+	 * 
+	 * This method will return The resource that represents the "prop2" property of ClassA, wher ClassA is the return type of func1() method.
+	 * In this case, the resource object for "ClassA::prop2" will be matched.
+	 *
+	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
+	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
+	 *        the variable. See GetVariablesInScope(int) method for more info.
+	 * @param resourceFinders the resource cache will be used to look up class methods and function return
+	 *        values.
+	 * @param resourceMatches the resource matches; these are the names of the items that
+	 *        are "near matches" to the parsed expression.
+	 */
+	void ResourceMatches(const SymbolClass& parsedExpression, int expressionPos, const std::vector<ResourceFinderClass*>& resourceFinders, 
+		std::vector<ResourceClass>& resourceMatches);
 	
 	/**
 	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
