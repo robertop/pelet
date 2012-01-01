@@ -271,7 +271,7 @@ UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeStrin
 				done = true;
 			}
 		}
-		else if (':' == c && index > 0) {
+		else if (':' == c && index > 1) {
 
 			// check for a possible static object operator; if not an object operator then we are done
 			index--;
@@ -280,6 +280,13 @@ UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeStrin
 				index--;
 				expr.insert(0, c);
 				expr.insert(0, n);
+
+				// skip whitespace before the operator entirely
+				c = code[index];
+				while(u_isspace(c) && index > 0) {
+					index--;
+					c = code[index];
+				}
 			}
 			else {
 				done = true;
@@ -322,7 +329,7 @@ UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeStrin
 			index--;
 		
 		}
-		else if ('>' == c && index > 0) {
+		else if ('>' == c && index > 1) {
 			
 			// check for a possible object operator; if not an object operator then we are done
 			index--;
@@ -331,6 +338,13 @@ UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeStrin
 				index--;
 				expr.insert(0, c);
 				expr.insert(0, n);
+
+				// skip whitespace before the operator entirely
+				c = code[index];
+				while(u_isspace(c) && index > 0) {
+					index--;
+					c = code[index];
+				}
 			}
 			else {
 				done = true;

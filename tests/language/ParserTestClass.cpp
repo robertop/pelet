@@ -873,4 +873,20 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctio
 	}
 }
 
+TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithWhitespace) {
+	UnicodeString code = UNICODE_STRING_SIMPLE("$propA->time->time\n->");
+	mvceditor::SymbolClass symbol;
+	Parser->ParseExpression(code, symbol);
+
+	// lexeme empty because function call is first in the chain
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$propA"), symbol.Lexeme);
+	CHECK_EQUAL((size_t)4, symbol.ChainList.size());
+	if ((size_t)4 == symbol.ChainList.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$propA"), symbol.ChainList[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->time"), symbol.ChainList[1]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->time"), symbol.ChainList[2]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("->"), symbol.ChainList[3]);
+	}
+}
+
 }

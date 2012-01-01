@@ -676,4 +676,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::"), last);
 }
 
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperatorWithWhitespace) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = new MyClass;\n"
+		"$expr2\n"
+		"->"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
+}
+
 }
