@@ -46,7 +46,7 @@ void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQu
 %parse-param { mvceditor::ObserverQuadClass& observers }
 %lex-param  { mvceditor::LexicalAnalyzerClass &analyzer }
 %lex-param { mvceditor::ObserverQuadClass& observers }
-%destructor { $$.Free(); } <*>
+%destructor { observers.SemanticValueFree($$); } <*>
 
 /**
  * This parser was ripped from the PHP source. All credit goes to them.
@@ -969,7 +969,7 @@ class_constant:
 
 int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers) {
 	int ret = analyzer.NextToken();
-	value->Init();
+	observers.SemanticValueInit(*value);
 
 	// ignore these token; there are no parse rules for them
 	if (T_OPEN_TAG == ret) {
@@ -977,9 +977,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	}
 	UnicodeString regularComments;
 	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
-		
-		value->Comment = new UnicodeString();
-		
+				
 		// advance past all comments (there can be more than one consecutive)
 		// keep /** and /* comments separate; we only want /* comments to 
 		// get type hints for local varibles
@@ -1000,7 +998,6 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 		ret = ';';
 	}
 	value->Token = ret;
-	value->Lexeme = new UnicodeString();
 	analyzer.GetLexeme(*value->Lexeme);	
 	value->Pos = analyzer.GetCharacterPosition();
 	return ret;
@@ -1010,4 +1007,5 @@ void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQu
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);
+	observers.SemanticValueFree();
 }

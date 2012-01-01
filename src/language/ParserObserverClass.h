@@ -205,6 +205,8 @@ public:
  * and unions values have to be Plain Old Data types (which UnicodeString is not).
  * Also, this cannot have a non-trival constructor; Init() should be called right
  * after object construction.
+ * Be sure to init and free with the ParserObserverClas; that way memory can be 
+ * cleaned up correctly.
  */
 class SemanticValueClass {
 
@@ -231,17 +233,6 @@ public:
 	 * @see LexicalAnalyzerClass::GetCharacterPosition()
 	 */
 	int Pos;
-
-	/**
-	 * sets all pointers to NULL
-	 */
-	void Init();
-
-	/**
-	 * deletes all pointers that are set
-	 */
-	void Free();
-
 };
 
 /**
@@ -595,6 +586,26 @@ public:
 		FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
 		ExpressionObserverClass* expressionObserver);
 
+	~ObserverQuadClass();
+
+	/**
+	 * This method will allocate new string pointers for the Lexeme and Comment;
+	 * It will also keep track of the memory and will delete it SematicValueFree is called.
+	 */
+	void SemanticValueInit(SemanticValueClass& value);
+
+	/**
+	 * Frees all of the memory allocated by SemanticValueInit().  This method will be called once 
+	 * parsing completes
+	 */
+	void SemanticValueFree();
+
+	/**
+	 * Frees the memory allocated by SemanticValueInit() for this single value.  This method is here
+	 * because sometimes we want to cleanup single values (if the parser performs error recovery)
+	 */
+	void SemanticValueFree(SemanticValueClass& value);
+
 	/**
 	 * Initializes class info
 	 */
@@ -887,6 +898,14 @@ private:
 	 * CurrentVariableComplete method will 'save' it into this vector.
 	 */
 	std::vector<ExpressionClass> ExpressionVariables;
+
+	/**
+	 * Keep track of all allocated strings; we do it here because
+	 * we cannot put a constructor/destructor in the SemanticValue class because
+	 * bison will generate a union type and unions cannot have non-POD types or types with
+	 * constructor/destructors
+	 */
+	std::vector<UnicodeString*> AllValues;
 };
 
 }

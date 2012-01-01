@@ -27,24 +27,6 @@
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
-void mvceditor::SemanticValueClass::Init() {
-	Token = 0;
-	Lexeme = NULL;
-	Comment = NULL;
-	Pos = 0;
-}
-
-void mvceditor::SemanticValueClass::Free() {
-	if (Lexeme) {
-		delete Lexeme;
-		Lexeme = NULL;
-	}
-	if (Comment) {
-		delete Comment;
-		Comment = NULL;
-	}
-}
-
 mvceditor::ClassSymbolClass::ClassSymbolClass() 
 	: ClassName()
 	, Comment()
@@ -442,7 +424,12 @@ mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserve
 	, CurrentParametersList()
 	, CurrentFunctionCallExpression() 
 	, CurrentExpression()
-	, ExpressionVariables() {
+	, ExpressionVariables()
+	, AllValues() {
+}
+
+mvceditor::ObserverQuadClass::~ObserverQuadClass() {
+	SemanticValueFree();
 }
 
 void mvceditor::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, bool isAbstract, 
@@ -1043,4 +1030,41 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 		}
 	}
 	delete[] buf;
+}
+
+void mvceditor::ObserverQuadClass::SemanticValueInit(mvceditor::SemanticValueClass& value) {
+	UnicodeString* lexeme = new UnicodeString();
+	UnicodeString* comment = new UnicodeString();
+	value.Token = 0;
+	value.Lexeme = lexeme;
+	value.Comment = comment;
+	value.Pos = 0;
+	AllValues.push_back(lexeme);
+	AllValues.push_back(comment);
+}
+
+void mvceditor::ObserverQuadClass::SemanticValueFree() {
+	for (size_t i = 0; i < AllValues.size(); ++i) {
+		delete AllValues[i];
+	}
+	AllValues.clear();
+}
+
+void mvceditor::ObserverQuadClass::SemanticValueFree(mvceditor::SemanticValueClass& value) {
+	std::vector<UnicodeString*>::iterator it = AllValues.begin();
+	while (it != AllValues.end()) {
+		if (*it == value.Comment) {
+			delete *it;
+			it = AllValues.erase(it);
+		}
+		else if (*it == value.Lexeme) {
+			delete *it;
+			it = AllValues.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+	value.Lexeme = NULL;
+	value.Comment = NULL;
 }
