@@ -81,24 +81,24 @@ public:
 
 	mvceditor::SymbolTableClass CompletionSymbolTable;
 	mvceditor::SymbolClass ParsedExpression;
-	std::vector<mvceditor::ResourceFinderClass*> Finders;
+	std::map<wxString, mvceditor::ResourceFinderClass*> OpenedFinders;
 	mvceditor::ResourceFinderClass Finder1;
-	mvceditor::ResourceFinderClass Finder2;
+	mvceditor::ResourceFinderClass GlobalFinder;
 	std::vector<UnicodeString> Matches;
 
 	SymbolTableCompletionTestClass()
 		: CompletionSymbolTable()
 		, ParsedExpression()
-		, Finders()
+		, OpenedFinders()
 		, Finder1()
-		, Finder2()
+		, GlobalFinder()
 		, Matches() {
 
 	}
 
 	void Init(const UnicodeString& sourceCode) {
 		Finder1.BuildResourceCacheForFile(wxT("untitled"), sourceCode, true);
-		Finders.push_back(&Finder1);
+		OpenedFinders[wxT("untitled")] = &Finder1;
 		CompletionSymbolTable.CreateSymbols(sourceCode);
 	}
 
@@ -136,7 +136,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionName) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToFunction(UNICODE_STRING_SIMPLE("wo"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK(!Matches.empty());
 	if (!Matches.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("work"), Matches[0]);
@@ -154,7 +154,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableName) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -173,7 +173,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalVariableOnly) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -194,7 +194,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ManyVariableAssignments) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -211,7 +211,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPredefinedVariable) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$_POS"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$_POST"), Matches[0]);
@@ -229,11 +229,65 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCall) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCallFromGlobalFinder) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$my = new MyClass;\n"
+		"$my->work{CURSOR}"
+	);
+	UnicodeString sourceCodeGlobal = mvceditor::StringHelperClass::charToIcu(
+		"<?php class MyClass { function workA() {} function workB() {} } \n"	
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);
+	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CHECK_EQUAL((size_t)2, Matches.size());
+	if ((size_t)2 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalFinderOverridesGlobalFinder) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$my = new MyClass;\n"
+		"$my->work{CURSOR}"
+	);
+
+	// in this test, simulate method workA() being deleted; it should not show
+	// as a match
+	UnicodeString sourceCodeGlobal = mvceditor::StringHelperClass::charToIcu(
+		"<?php class MyClass { function workA() {} function workB() {} } \n"	
+	);
+	UnicodeString sourceCodeOpened = mvceditor::StringHelperClass::charToIcu(
+		"<?php class MyClass { function workB() {} } \n"	
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);
+	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
+	mvceditor::ResourceFinderClass localFinder;
+	localFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeOpened, true);
+	OpenedFinders[wxT("MyClass.php")] = &localFinder;
+
+	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
+	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CHECK_EQUAL((size_t)1, Matches.size());
+	if ((size_t)1 == Matches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
 	}
 }
 
@@ -248,7 +302,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithObjectWithoutMethodCall)
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE(""), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -266,7 +320,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithStaticMethodCall) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("MyClass"), UNICODE_STRING_SIMPLE("work"), true);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
@@ -284,7 +338,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPrivateMethodCall) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -304,7 +358,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodChain) {
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->ti"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), Matches[0]);
@@ -325,7 +379,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongPropertyChain) {
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->pare"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
@@ -347,7 +401,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongMethodChain) {
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->p"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
@@ -370,7 +424,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 	ToFunction(UNICODE_STRING_SIMPLE("workA()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->toString()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->stat"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, Finders, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), Matches[0]);
@@ -392,7 +446,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ResourceMatchesWithMethodCall) {
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
 	std::vector<mvceditor::ResourceClass> resources;
-	CompletionSymbolTable.ResourceMatches(ParsedExpression, pos, Finders, resources);
+	CompletionSymbolTable.ResourceMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, resources);
 	CHECK_EQUAL((size_t)2, resources.size());
 	if ((size_t)2 == resources.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::workA"), resources[0].Resource);

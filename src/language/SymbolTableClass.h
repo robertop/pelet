@@ -85,16 +85,21 @@ public:
 	 * Also, visibility rules will be taken into account; object properties that are accessed from the
 	 * same class (ie "$this") will have access to protected / private methods, but properties accessed
 	 * through from the outside will only have access to public members.
+	 * None of the given resourc finders pointers will be owned by this class.
 	 * 
 	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
 	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
 	 *        the variable. See GetVariablesInScope(int) method for more info.
-	 * @param resourceFinders the resource cache will be used to look up class methods and function return
-	 *        values.
+	 * @param openedResourceFinders the resource cache will be used to look up class methods and function return
+	 *        values. This map should contain only cache for files that are currently being edited.  The key
+	 *        of the map is the file's full path, the value is the cache itself.
+	 * @param globalResourceFinder the 'global' cache of resources for files that are NOT being edited
 	 * @param autoCompleteList the results of the matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
 	 */
-	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, int expressionPos, const std::vector<ResourceFinderClass*>& resourceFinders, 
+	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, int expressionPos, 
+		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+		mvceditor::ResourceFinderClass* globalResourceFinder,
 		std::vector<UnicodeString>& autoCompleteList);
 
 	/**
@@ -109,16 +114,21 @@ public:
 	 * 
 	 * This method will return The resource that represents the "prop2" property of ClassA, wher ClassA is the return type of func1() method.
 	 * In this case, the resource object for "ClassA::prop2" will be matched.
+	 * None of the given resourc finders pointers will be owned by this class.
 	 *
 	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
 	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
 	 *        the variable. See GetVariablesInScope(int) method for more info.
-	 * @param resourceFinders the resource cache will be used to look up class methods and function return
-	 *        values.
+	 * @param openedResourceFinders the resource cache will be used to look up class methods and function return
+	 *        values. This map should contain only cache for files that are currently being edited.  The key
+	 *        of the map is the file's full path, the value is the cache itself
+	 * @param globalResourceFinder the 'global' cache of resources for files that are NOT being edited
 	 * @param resourceMatches the resource matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
 	 */
-	void ResourceMatches(const SymbolClass& parsedExpression, int expressionPos, const std::vector<ResourceFinderClass*>& resourceFinders, 
+	void ResourceMatches(const SymbolClass& parsedExpression, int expressionPos, 
+		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+		mvceditor::ResourceFinderClass* globalResourceFinder,
 		std::vector<ResourceClass>& resourceMatches);
 	
 	/**
@@ -219,6 +229,22 @@ private:
 	 */
 	std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass> ScopePositions;
 };
+
+/**
+ * Check to see if the given resource comes from one of the registered (opened
+ * files).  If this returns true, it means that the resource may be stale.
+ * None of the given resourc finders pointers will be owned by this class.
+ *
+ * @param finder a collection of finders that have cached a single file; the key of the map is filename 
+ *        and the value is the cache for that file.
+ * @param resource the resource to check
+ * @param resourceFinder the finder that collected the resource; it may be
+ *        one of the finders in the map or it may be another stand-alone one.
+ * @return bool TRUE if resource is stale (should not be shown to the user)
+ */
+bool IsResourceDirty(const std::map<wxString, ResourceFinderClass*>& finders, 
+											 const ResourceClass& resource, 
+											 mvceditor::ResourceFinderClass* resourceFinder);
 
 }
 

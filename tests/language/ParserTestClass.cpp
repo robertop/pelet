@@ -122,10 +122,12 @@ public:
 						FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
 						VariableClassName, VariableMethodName, VariableName, VariableComment,
 						VariableChainList, VariablePhpDocType,
-						DefinedName, DefinedValue, DefinedComment;
+						DefinedName, DefinedValue, DefinedComment,
+						MethodEndClassName, MethodEndMethodName;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<mvceditor::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
 	std::vector<mvceditor::SymbolClass::Types> VariableTypes;
+	std::vector<int> MethodEndPos;
 	
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment) {
@@ -147,7 +149,9 @@ public:
 	}
 
 	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
-		// nothing for now
+		//MethodEndClassName.push_back(className);
+		//MethodEndMethodName.push_back(methodName);
+		MethodEndPos.push_back(pos);
 	}
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
@@ -655,6 +659,27 @@ TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("NameClass"), observer.VariablePhpDocType[2]);
 	}
 }
+
+TEST_FIXTURE(ParserTestClass, MethodEndPos) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	Parser->SetClassMemberObserver(&observer);
+	Parser->SetFunctionObserver(&observer);
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"class MyClass {\n"     //16
+		"\n"                    // 1
+		"function work() {\n"   //18
+		"   \n"                 // 4
+		"}\n"
+		"}"
+	);
+	CHECK(Parser->ScanString(code));
+	CHECK(!observer.MethodEndPos.empty());
+	if (!observer.MethodEndPos.empty()) {
+		CHECK_EQUAL((16 + 1 + 18 + 4), observer.MethodEndPos[0]);
+	}
+}
+
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
 	wxString file = TestProjectDir + wxT("test.php");

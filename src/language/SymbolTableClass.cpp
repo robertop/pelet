@@ -196,8 +196,9 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 	Parser.ScanString(code);
 }
 
-void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos, 
-															  const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders, 
+void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos,
+															  const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+															  mvceditor::ResourceFinderClass* globalResourceFinder,
 															  std::vector<UnicodeString>& autoCompleteList) {
 	if (parsedExpression.ChainList.size() == 1 && parsedExpression.Lexeme.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 
@@ -214,7 +215,7 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 
 		// some kind of function call / method chain call
 		std::vector<mvceditor::ResourceClass> resourceMatches;
-		ResourceMatches(parsedExpression, expressionPos, resourceFinders, resourceMatches);
+		ResourceMatches(parsedExpression, expressionPos, openedResourceFinders, globalResourceFinder, resourceMatches);
 
 		// now we loop through the possbile matches and get the identifiers only
 		for (size_t i = 0; i < resourceMatches.size(); ++i) {
@@ -224,7 +225,8 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 }
 
 void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& parsedExpression, int expressionPos, 
-												  const std::vector<mvceditor::ResourceFinderClass*>& resourceFinders, 
+												  const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+												  mvceditor::ResourceFinderClass* globalResourceFinder,
 												  std::vector<mvceditor::ResourceClass>& resourceMatches) {
 	UnicodeString start = parsedExpression.Lexeme;
 	std::vector<mvceditor::SymbolClass> scopeSymbols = GetScope(expressionPos);
@@ -232,6 +234,12 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 	bool isStaticCall = false;
 	bool isThisCall = false;
 	bool isParentCall = false;
+	std::vector<mvceditor::ResourceFinderClass*> allResourceFinders;
+	allResourceFinders.push_back(globalResourceFinder);
+	for (std::map<wxString, mvceditor::ResourceFinderClass*>::const_iterator it =  openedResourceFinders.begin(); it != openedResourceFinders.end(); ++it) {
+		allResourceFinders.push_back(it->second);
+	}
+
 	if (start.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 		
 		// a variable. look at the type from the symbol table
@@ -258,8 +266,8 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 		// what class is the parent
 		// this code assumes that the resource finders have parsed the same exact code as the code that the
 		// symbol table has parsed.
-		for (size_t i = 0; i < resourceFinders.size(); ++i) {
-			typeToLookup = resourceFinders[i]->GetResourceParentClassName(start, UNICODE_STRING_SIMPLE(""));
+		for (size_t i = 0; i < allResourceFinders.size(); ++i) {
+			typeToLookup = allResourceFinders[i]->GetResourceParentClassName(start, UNICODE_STRING_SIMPLE(""));
 			if (!typeToLookup.isEmpty()) {
 				break;
 			}
@@ -276,7 +284,7 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 			typeToLookup = start;
 		}
 		else {
-			typeToLookup = ResolveResourceType(start, resourceFinders);
+			typeToLookup = ResolveResourceType(start, allResourceFinders);
 		}
 	}
 	else {
@@ -291,7 +299,7 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 	// if we can't resolve a type then just exit
 	for (size_t i = 1; i < (parsedExpression.ChainList.size() - 1) && !typeToLookup.isEmpty(); ++i) {
 		UnicodeString nextResource = typeToLookup + parsedExpression.ChainList[i];
-		typeToLookup = ResolveResourceType(nextResource, resourceFinders);
+		typeToLookup = ResolveResourceType(nextResource, allResourceFinders);
 	}
 
 	UnicodeString resourceToLookup;
@@ -303,15 +311,16 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 		resourceToLookup = typeToLookup;
 	}
 	wxString wxResource = mvceditor::StringHelperClass::IcuToWx(resourceToLookup);
-	for (size_t j = 0; j < resourceFinders.size(); ++j) {
-		mvceditor::ResourceFinderClass* finder = resourceFinders[j];
+	for (size_t j = 0; j < allResourceFinders.size(); ++j) {
+		mvceditor::ResourceFinderClass* finder = allResourceFinders[j];
 		if (finder->Prepare(wxResource) && finder->CollectNearMatchResources()) {
 
 			// now we loop through the possbile matches and remove stuff that does not 
 			// make sense because of visibility rules
 			for (size_t k = 0; k < finder->GetResourceMatchCount(); ++k) {
 				mvceditor::ResourceClass resource = finder->GetResourceMatch(k);
-				if (IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
+				if (!mvceditor::IsResourceDirty(openedResourceFinders, resource, finder) &&
+						IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
 					resourceMatches.push_back(resource);
 				}
 			}
@@ -416,4 +425,22 @@ void mvceditor::SymbolTableClass::PushStartPos(const UnicodeString& className, c
 
 UnicodeString mvceditor::SymbolTableClass::ScopeString(const UnicodeString& className, const UnicodeString& functionName) const {
 	return className + UNICODE_STRING_SIMPLE("::") + functionName;
+}
+
+bool mvceditor::IsResourceDirty(const std::map<wxString, mvceditor::ResourceFinderClass*>& finders, 
+								const ResourceClass& resource, mvceditor::ResourceFinderClass* resourceFinder) {
+	bool ret = false;
+	wxString matchFullName = resourceFinder->GetResourceMatchFullPathFromResource(resource);
+	std::map<wxString, mvceditor::ResourceFinderClass*>::const_iterator it = finders.begin();
+	while (it != finders.end()) {
+
+		// a match from one of the opened resource finders can never be 'dirty' because the resource cache 
+		// has been updated by the Update() method
+		if (it->first.CompareTo(matchFullName) == 0 && it->second != resourceFinder) {
+			ret = true;
+			break;
+		}
+		++it;
+	}
+	return ret;
 }
