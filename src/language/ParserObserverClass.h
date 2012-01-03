@@ -546,40 +546,6 @@ class ObserverQuadClass {
 public:
 
 	/**
-	 * the class that is currently being parsed.
-	 */
-	ClassSymbolClass CurrentClass;
-
-	/**
-	 * the class method or property that is currently being parsed. Also, this will hold
-	 * the current stand-alone function that is being parsed as well
-	 */
-	ClassMemberSymbolClass CurrentMember;
-
-	/**
-	 * The current qualified name (namespaces + name) that is being parsed.
-	 */
-	QualifiedNameClass CurrentQualifiedName;
-
-	/**
-	 * This is a list of all the parameters of a function declaration. For example at the
-	 * end of this line
-	 *
-	 *  function work($one, $two)
-	 *
-	 * the CurrentParametersList will have $one and $two as its members
-	 */
-	ParametersListClass CurrentParametersList;
-
-	/**
-	 * The current function CALL (not declaration).
-	 *
-	 * The reason for keeping this is for finding define() calls so that we can notify
-	 * the class observer.
-	 */
-	ExpressionClass CurrentFunctionCallExpression;
-
-	/**
 	 * Each observer may be NULL. This class will NOT own the pointers.
 	 */
 	ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
@@ -635,6 +601,39 @@ public:
 	 * Will erase the current class info.
 	 */
 	void ClassEnd();
+
+	void QualifiedNameClear();
+	
+	void QualifiedNameGrabNameAndComment(SemanticValueClass& nameValue);
+
+	void QualifiedNameAddName(SemanticValueClass& nameValue);
+
+	void ParametersListSetName(SemanticValueClass& nameValue, bool isReference);
+
+	void ParametersListCreate();
+
+	void ParametersListCreateWithOptionalType(SemanticValueClass& typeValue);
+
+	void ClassMemberClear();
+
+	void ClassMemberSetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& functionValue);
+
+	void ClassMemberSetAsPublic();
+
+	void ClassMemberSetAsProtected();
+
+	void ClassMemberSetAsPrivate();
+
+	void ClassMemberSetAsStatic();
+
+	void ClassMemberSetAsAbstract();
+
+	void ClassMemberSetAsFinal();
+
+	void ClassMemberSetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
+
+	void ClassMemberAppendToComment(SemanticValueClass& commentValue);
+
 
 	/**
 	 * add a new Paramter to the CurrentParametersList 
@@ -853,6 +852,41 @@ private:
 	 * declarations.
 	 */
 	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment);
+
+	/**
+	 * the class that is currently being parsed.
+	 */
+	ClassSymbolClass CurrentClass;
+
+	/**
+	 * the class method or property that is currently being parsed. Also, this will hold
+	 * the current stand-alone function that is being parsed as well
+	 */
+	ClassMemberSymbolClass CurrentMember;
+
+	/**
+	 * The current qualified name (namespaces + name) that is being parsed.
+	 */
+	QualifiedNameClass CurrentQualifiedName;
+
+	/**
+	 * This is a list of all the parameters of a function declaration. For example at the
+	 * end of this line
+	 *
+	 *  function work($one, $two)
+	 *
+	 * the CurrentParametersList will have $one and $two as its members
+	 */
+	ParametersListClass CurrentParametersList;
+
+	/**
+	 * The current function CALL (not declaration).
+	 *
+	 * The reason for keeping this is for finding define() calls so that we can notify
+	 * the class observer.
+	 */
+	ExpressionClass CurrentFunctionCallExpression;
+
 
 	/**
 	 * This object will NOT own the pointer

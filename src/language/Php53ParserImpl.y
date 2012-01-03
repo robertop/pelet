@@ -192,8 +192,8 @@ top_statement_list:
 ;
 
 namespace_name:
-		T_STRING								{ observers.CurrentQualifiedName.GrabNameAndComment($1); }
-	|	namespace_name T_NS_SEPARATOR T_STRING	{ observers.CurrentQualifiedName.AddName($3); }
+		T_STRING								{ observers.QualifiedNameGrabNameAndComment($1); }
+	|	namespace_name T_NS_SEPARATOR T_STRING	{ observers.QualifiedNameAddName($3); }
 ;
 
 top_statement:
@@ -349,7 +349,7 @@ class_entry_type:
 
 extends_from:
 		/* empty */
-	|	T_EXTENDS						{ observers.CurrentQualifiedName.Clear(); }
+	|	T_EXTENDS						{ observers.QualifiedNameClear(); }
 		fully_qualified_class_name 		{ observers.ClassSetExtends(); }
 ;
 
@@ -359,13 +359,13 @@ interface_entry:
 
 interface_extends_list:
 		/* empty */
-	|	T_EXTENDS			{ observers.CurrentQualifiedName.Clear(); }
+	|	T_EXTENDS			{ observers.QualifiedNameClear(); }
 		interface_list
 ;
 
 implements_list:
 		/* empty */
-	|	T_IMPLEMENTS		{ observers.CurrentQualifiedName.Clear(); }
+	|	T_IMPLEMENTS		{ observers.QualifiedNameClear(); }
 		interface_list
 ;
 
@@ -454,21 +454,21 @@ parameter_list:
 
 
 non_empty_parameter_list:
-		optional_class_type T_VARIABLE														{ observers.CurrentParametersList.SetName($2, false); }
-	|	optional_class_type '&' T_VARIABLE													{ observers.CurrentParametersList.SetName($3, true); }
-	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ observers.CurrentParametersList.SetName($3, true);}
-	|	optional_class_type T_VARIABLE '=' static_scalar									{ observers.CurrentParametersList.SetName($2, true); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ observers.CurrentParametersList.SetName($4, false); } 
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ observers.CurrentParametersList.SetName($5, true); }
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ observers.CurrentParametersList.SetName($5, true); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ observers.CurrentParametersList.SetName($4, false); }
+		optional_class_type T_VARIABLE														{ observers.ParametersListSetName($2, false); }
+	|	optional_class_type '&' T_VARIABLE													{ observers.ParametersListSetName($3, true); }
+	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ observers.ParametersListSetName($3, true);}
+	|	optional_class_type T_VARIABLE '=' static_scalar									{ observers.ParametersListSetName($2, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ observers.ParametersListSetName($4, false); } 
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ observers.ParametersListSetName($5, true); }
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ observers.ParametersListSetName($5, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ observers.ParametersListSetName($4, false); }
 ;
 
 
 optional_class_type:
-		/* empty */						{ observers.CurrentParametersList.Create(); }
+		/* empty */						{ observers.ParametersListCreate(); }
 	|	fully_qualified_class_name		{ observers.CreateParameterWithOptionalClassName(); }
-	|	T_ARRAY							{ observers.CurrentParametersList.CreateWithOptionalType($1); }
+	|	T_ARRAY							{ observers.ParametersListCreateWithOptionalType($1); }
 ;
 
 function_call_parameter_list:
@@ -509,11 +509,11 @@ class_statement_list:
 ;
 
 class_statement:
-		variable_modifiers class_variable_declaration ';'	{ observers.CurrentMember.Clear(); }
-	|	class_constant_declaration ';'						{ observers.CurrentMember.Clear(); }
-	|	method_modifiers function is_reference T_STRING		{ observers.CurrentMember.SetNameAndReturnReference($4, $3, $2); }
+		variable_modifiers class_variable_declaration ';'	{ observers.ClassMemberClear(); }
+	|	class_constant_declaration ';'						{ observers.ClassMemberClear(); }
+	|	method_modifiers function is_reference T_STRING		{ observers.ClassMemberSetNameAndReturnReference($4, $3, $2); }
 		'('	parameter_list  ')'								{ observers.ClassMemberFound(false); }
-		method_body											{ observers.CurrentMember.Clear(); }
+		method_body											{ observers.ClassMemberClear(); }
 ;
 
 method_body:
@@ -523,7 +523,7 @@ method_body:
 
 variable_modifiers:
 		non_empty_member_modifiers
-	|	T_VAR						 { observers.CurrentMember.SetAsPublic();  observers.CurrentMember.AppendToComment($1); }
+	|	T_VAR						 { observers.ClassMemberSetAsPublic();  observers.ClassMemberAppendToComment($1); }
 ;
 
 method_modifiers:
@@ -537,25 +537,25 @@ non_empty_member_modifiers:
 ;
 
 member_modifier:
-		T_PUBLIC	 { observers.CurrentMember.SetAsPublic(); observers.CurrentMember.AppendToComment($1); }
-	|	T_PROTECTED	 { observers.CurrentMember.SetAsProtected(); observers.CurrentMember.AppendToComment($1); }
-	|	T_PRIVATE	 { observers.CurrentMember.SetAsPrivate(); observers.CurrentMember.AppendToComment($1);}
-	|	T_STATIC	 { observers.CurrentMember.IsStaticMember = true; observers.CurrentMember.AppendToComment($1); }
-	|	T_ABSTRACT	 { observers.CurrentMember.IsAbstractMember = true; observers.CurrentMember.AppendToComment($1); }
-	|	T_FINAL		 { observers.CurrentMember.IsFinalMember = true; observers.CurrentMember.AppendToComment($1); }
+		T_PUBLIC	 { observers.ClassMemberSetAsPublic(); observers.ClassMemberAppendToComment($1); }
+	|	T_PROTECTED	 { observers.ClassMemberSetAsProtected(); observers.ClassMemberAppendToComment($1); }
+	|	T_PRIVATE	 { observers.ClassMemberSetAsPrivate(); observers.ClassMemberAppendToComment($1);}
+	|	T_STATIC	 { observers.ClassMemberSetAsStatic(); observers.ClassMemberAppendToComment($1); }
+	|	T_ABSTRACT	 { observers.ClassMemberSetAsAbstract(); observers.ClassMemberAppendToComment($1); }
+	|	T_FINAL		 { observers.ClassMemberSetAsFinal(); observers.ClassMemberAppendToComment($1); }
 ;
 
 class_variable_declaration:
-		class_variable_declaration ',' T_VARIABLE						{ observers.CurrentMember.SetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ observers.CurrentMember.SetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	T_VARIABLE														{ observers.CurrentMember.SetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
-	|	T_VARIABLE '=' static_scalar									{ observers.CurrentMember.SetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
+		class_variable_declaration ',' T_VARIABLE						{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
+	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
+	|	T_VARIABLE														{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
+	|	T_VARIABLE '=' static_scalar									{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
 ;
 
 class_constant_declaration:
 		class_constant_declaration ',' 
-		T_STRING '=' static_scalar			{ observers.CurrentMember.SetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	T_CONST T_STRING '=' static_scalar  { observers.CurrentMember.SetAsConst($2, $1); observers.ClassMemberFound(true); }
+		T_STRING '=' static_scalar			{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
+	|	T_CONST T_STRING '=' static_scalar  { observers.ClassMemberSetAsConst($2, $1); observers.ClassMemberFound(true); }
 ;
 
 echo_expr_list:
@@ -814,8 +814,8 @@ variable:
 		base_variable_with_function_calls 
 		T_OBJECT_OPERATOR object_property 
 		method_or_not							{ observers.CurrentExpressionAppendToChain($2, $3, '(' == $4.Token); } 
-		variable_properties 					{ /* observers.CurrentVariableComplete(); */ }
-	|	base_variable_with_function_calls		{ /* observers.CurrentVariableComplete(); */ }
+		variable_properties
+	|	base_variable_with_function_calls		
 ;
 
 variable_properties:
@@ -824,13 +824,13 @@ variable_properties:
 ;
 
 variable_property:
-		T_OBJECT_OPERATOR object_property		/* zero out the token; it seems to be persisted and it makes property chains not correct "$this->prop2->func3()->prop4" */
+		T_OBJECT_OPERATOR object_property
 		method_or_not						{ observers.CurrentExpressionAppendToChain($1, $2, '(' == $3.Token);  }
 ;
 
 method_or_not:
 		'(' function_call_parameter_list ')'			{ $$ = $1; } 
-	|	/* empty */										{ $$.Token = 0; } 
+	|	/* empty */										{ $$.Token = 0; } /* zero out the token; it seems to be persisted and it makes property chains not correct "$this->prop2->func3()->prop4" */
 ;
 
 variable_without_objects:
@@ -982,7 +982,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 		// keep /** and /* comments separate; we only want /* comments to 
 		// get type hints for local varibles
 		while (T_DOC_COMMENT == ret || T_COMMENT == ret) {
-			if (T_DOC_COMMENT == ret) {
+			if (T_DOC_COMMENT == ret && value->Comment) {
 				analyzer.GetLexeme(*value->Comment);
 			}
 			else {
@@ -998,7 +998,9 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 		ret = ';';
 	}
 	value->Token = ret;
-	analyzer.GetLexeme(*value->Lexeme);	
+	if (value->Lexeme) {
+		analyzer.GetLexeme(*value->Lexeme);	
+	}
 	value->Pos = analyzer.GetCharacterPosition();
 	return ret;
 }

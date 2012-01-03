@@ -3601,12 +3601,12 @@ yyreduce:
     {
         case 5:
 
-    { observers.CurrentQualifiedName.GrabNameAndComment((yyvsp[(1) - (1)])); ;}
+    { observers.QualifiedNameGrabNameAndComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 6:
 
-    { observers.CurrentQualifiedName.AddName((yyvsp[(3) - (3)])); ;}
+    { observers.QualifiedNameAddName((yyvsp[(3) - (3)])); ;}
     break;
 
   case 7:
@@ -3701,7 +3701,7 @@ yyreduce:
 
   case 86:
 
-    { observers.CurrentQualifiedName.Clear(); ;}
+    { observers.QualifiedNameClear(); ;}
     break;
 
   case 87:
@@ -3716,12 +3716,12 @@ yyreduce:
 
   case 90:
 
-    { observers.CurrentQualifiedName.Clear(); ;}
+    { observers.QualifiedNameClear(); ;}
     break;
 
   case 93:
 
-    { observers.CurrentQualifiedName.Clear(); ;}
+    { observers.QualifiedNameClear(); ;}
     break;
 
   case 95:
@@ -3746,47 +3746,47 @@ yyreduce:
 
   case 130:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(2) - (2)]), false); ;}
+    { observers.ParametersListSetName((yyvsp[(2) - (2)]), false); ;}
     break;
 
   case 131:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(3) - (3)]), true); ;}
+    { observers.ParametersListSetName((yyvsp[(3) - (3)]), true); ;}
     break;
 
   case 132:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(3) - (5)]), true);;}
+    { observers.ParametersListSetName((yyvsp[(3) - (5)]), true);;}
     break;
 
   case 133:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(2) - (4)]), true); ;}
+    { observers.ParametersListSetName((yyvsp[(2) - (4)]), true); ;}
     break;
 
   case 134:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(4) - (4)]), false); ;}
+    { observers.ParametersListSetName((yyvsp[(4) - (4)]), false); ;}
     break;
 
   case 135:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(5) - (5)]), true); ;}
+    { observers.ParametersListSetName((yyvsp[(5) - (5)]), true); ;}
     break;
 
   case 136:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(5) - (7)]), true); ;}
+    { observers.ParametersListSetName((yyvsp[(5) - (7)]), true); ;}
     break;
 
   case 137:
 
-    { observers.CurrentParametersList.SetName((yyvsp[(4) - (6)]), false); ;}
+    { observers.ParametersListSetName((yyvsp[(4) - (6)]), false); ;}
     break;
 
   case 138:
 
-    { observers.CurrentParametersList.Create(); ;}
+    { observers.ParametersListCreate(); ;}
     break;
 
   case 139:
@@ -3796,7 +3796,7 @@ yyreduce:
 
   case 140:
 
-    { observers.CurrentParametersList.CreateWithOptionalType((yyvsp[(1) - (1)])); ;}
+    { observers.ParametersListCreateWithOptionalType((yyvsp[(1) - (1)])); ;}
     break;
 
   case 143:
@@ -3856,17 +3856,17 @@ yyreduce:
 
   case 160:
 
-    { observers.CurrentMember.Clear(); ;}
+    { observers.ClassMemberClear(); ;}
     break;
 
   case 161:
 
-    { observers.CurrentMember.Clear(); ;}
+    { observers.ClassMemberClear(); ;}
     break;
 
   case 162:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(4) - (4)]), (yyvsp[(3) - (4)]), (yyvsp[(2) - (4)])); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(4) - (4)]), (yyvsp[(3) - (4)]), (yyvsp[(2) - (4)])); ;}
     break;
 
   case 163:
@@ -3876,7 +3876,7 @@ yyreduce:
 
   case 164:
 
-    { observers.CurrentMember.Clear(); ;}
+    { observers.ClassMemberClear(); ;}
     break;
 
   case 165:
@@ -3891,67 +3891,67 @@ yyreduce:
 
   case 168:
 
-    { observers.CurrentMember.SetAsPublic();  observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsPublic();  observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 173:
 
-    { observers.CurrentMember.SetAsPublic(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsPublic(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 174:
 
-    { observers.CurrentMember.SetAsProtected(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsProtected(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 175:
 
-    { observers.CurrentMember.SetAsPrivate(); observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)]));;}
+    { observers.ClassMemberSetAsPrivate(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)]));;}
     break;
 
   case 176:
 
-    { observers.CurrentMember.IsStaticMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsStatic(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 177:
 
-    { observers.CurrentMember.IsAbstractMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsAbstract(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 178:
 
-    { observers.CurrentMember.IsFinalMember = true; observers.CurrentMember.AppendToComment((yyvsp[(1) - (1)])); ;}
+    { observers.ClassMemberSetAsFinal(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
     break;
 
   case 179:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 180:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 181:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 182:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 183:
 
-    { observers.CurrentMember.SetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 184:
 
-    { observers.CurrentMember.SetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true); ;}
     break;
 
   case 191:
@@ -4354,16 +4354,6 @@ yyreduce:
     { observers.CurrentExpressionAppendToChain((yyvsp[(2) - (4)]), (yyvsp[(3) - (4)]), '(' == (yyvsp[(4) - (4)]).Token); ;}
     break;
 
-  case 340:
-
-    { /* observers.CurrentVariableComplete(); */ ;}
-    break;
-
-  case 341:
-
-    { /* observers.CurrentVariableComplete(); */ ;}
-    break;
-
   case 344:
 
     { observers.CurrentExpressionAppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token);  ;}
@@ -4638,7 +4628,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 		// keep /** and /* comments separate; we only want /* comments to 
 		// get type hints for local varibles
 		while (T_DOC_COMMENT == ret || T_COMMENT == ret) {
-			if (T_DOC_COMMENT == ret) {
+			if (T_DOC_COMMENT == ret && value->Comment) {
 				analyzer.GetLexeme(*value->Comment);
 			}
 			else {
@@ -4654,7 +4644,9 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 		ret = ';';
 	}
 	value->Token = ret;
-	analyzer.GetLexeme(*value->Lexeme);	
+	if (value->Lexeme) {
+		analyzer.GetLexeme(*value->Lexeme);	
+	}
 	value->Pos = analyzer.GetCharacterPosition();
 	return ret;
 }
