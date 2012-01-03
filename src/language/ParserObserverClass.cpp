@@ -413,16 +413,16 @@ void mvceditor::SymbolClass::Clear() {
 mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
 				  FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
 				  ExpressionObserverClass* expressionObserver)
-	: Class(classObserver)
-	, Member(memberObserver) 
-	, Function(functionObserver) 
-	, Variable(variableObserver)
-	, ExpressionObserver(expressionObserver)
-	, CurrentClass()
+	: CurrentClass()
 	, CurrentMember()
 	, CurrentQualifiedName()
 	, CurrentParametersList()
 	, CurrentFunctionCallExpression() 
+	, Class(classObserver)
+	, Member(memberObserver) 
+	, Function(functionObserver) 
+	, Variable(variableObserver)
+	, ExpressionObserver(expressionObserver)
 	, CurrentExpression()
 	, ExpressionVariables()
 	, AllValues() {
@@ -911,31 +911,39 @@ void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeSt
 	// http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	// there could be multiple hints in a single comment
 
+	// not using getTerminatedBuffer() because that method triggers valgrind warnings
 	UChar* buf = new UChar[phpDocComment.length() + 1];
-	u_strncpy(buf, phpDocComment.getBuffer(), phpDocComment.length() + 1);
+	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
+	buf[phpDocComment.length()] = '\0';
+	
 	UChar* saveState = 0;
-	UnicodeString delims = UNICODE_STRING_SIMPLE(" \t\v\f\r\n");
-	UChar* next = u_strtok_r(buf, delims.getBuffer(), &saveState);
+	
+	// not using getTerminatedBuffer() because that method triggers valgrind warnings
+	UnicodeString delimiters = UNICODE_STRING_SIMPLE(" \t\v\f\r\n");
+	UChar* delimsBuffer = new UChar[delimiters.length() + 1];
+	u_memmove(delimsBuffer, delimiters.getBuffer(), delimiters.length());
+	delimsBuffer[delimiters.length()] = '\0';
+	
+	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
 	UnicodeString varName;
 	UnicodeString varType;
-	bool found = false;
 	mvceditor::SymbolClass symbol;
 	while (next) {
-		if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@var").getBuffer(), 0) == 0) {
+		if (UNICODE_STRING_SIMPLE("@var").caseCompare(next, 0) == 0) {
 			symbol.Clear();
 			symbol.SetToObject();
 
 			// example line: @var string $nameString a string version of a name
 			// will be lenient and allow the reverse var then type
 			// @var $nameString string 
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
 			if (next) {
-				next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+				next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
 				if (!symbol.Lexeme.isEmpty() && !symbol.PhpDocType.isEmpty()) {					
 					Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, phpDocComment);
-					next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+					next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				}
 			}
 			if (!next) {
@@ -943,10 +951,11 @@ void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeSt
 			}
 		}
 		else {
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 		}
 	}
 	delete[] buf;
+	delete[] delimsBuffer;
 }
 
 void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment) {
@@ -956,27 +965,34 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 	
 	UnicodeString memberName;
 	UnicodeString memberType;
+	
+	// not using getTerminatedBuffer() because that method triggers valgrind warnings
 	UChar* buf = new UChar[phpDocComment.length() + 1];
-	u_strncpy(buf, phpDocComment.getBuffer(), phpDocComment.length() + 1);
+	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
+	buf[phpDocComment.length()] = '\0';
 
 	UChar* saveState = 0;
-	UnicodeString delims = UNICODE_STRING_SIMPLE(" \t\n\v\f");
-	UChar* next = u_strtok_r(buf, delims.getBuffer(), &saveState);
+	// not using getTerminatedBuffer() because that method triggers valgrind warnings
+	UnicodeString delimiters = UNICODE_STRING_SIMPLE(" \t\n\v\f");
+	UChar* delimsBuffer = new UChar[delimiters.length() + 1];
+	u_memmove(delimsBuffer, delimiters.getBuffer(), delimiters.length());
+	delimsBuffer[delimiters.length()] = '\0';
 	
+	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
 	while (next) {
-		if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property").getBuffer(), 0) == 0 ||
-			u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property-read").getBuffer(), 0) == 0 ||
-			u_strcasecmp(next, UNICODE_STRING_SIMPLE("@property-write").getBuffer(), 0) == 0) {
+		if (UNICODE_STRING_SIMPLE("@property").caseCompare(next, 0) == 0 ||
+			UNICODE_STRING_SIMPLE("@property-read").caseCompare(next, 0) == 0 ||
+			UNICODE_STRING_SIMPLE("@property-write").caseCompare(next, 0) == 0) {
 
 			// example line: @property string $nameString a string version of a name
 			// will be lenient and allow the reverse var then type
 			// @property $nameString string 
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!next) {
 				break;
 			}
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
 				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), mvceditor::TokenClass::PUBLIC, false, false);
@@ -987,15 +1003,15 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 				break;
 			}
 		}
-		else if (u_strcasecmp(next, UNICODE_STRING_SIMPLE("@method").getBuffer(), 0) == 0) {
+		else if (UNICODE_STRING_SIMPLE("@method").caseCompare(next, 0) == 0) {
 
 			// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			if (!next) {
 				break;
 			}
 			memberType.setTo(next);
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			if (!next) {
 				break;
 			}
@@ -1005,7 +1021,8 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 			UnicodeString signature = UNICODE_STRING_SIMPLE("public function ");
 
 			// keep reading next tokens for the signature; stop when we encounter a closing parenthesis
-			while (next = u_strtok_r(NULL, delims.getBuffer(), &saveState)) {
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
+			while (next) {
 				signature.append(next);
 				size_t len = u_strlen(next);
 				if (')' == next[len - 1]) {
@@ -1014,6 +1031,7 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 
 				// put this after the break so that we dont put a space at the end of the sig
 				signature.append(UNICODE_STRING_SIMPLE(" "));
+				next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			}
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
@@ -1026,10 +1044,11 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 			}
 		}
 		else {
-			next = u_strtok_r(NULL, delims.getBuffer(), &saveState);
+			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 		}
 	}
 	delete[] buf;
+	delete[] delimsBuffer;
 }
 
 void mvceditor::ObserverQuadClass::SemanticValueInit(mvceditor::SemanticValueClass& value) {

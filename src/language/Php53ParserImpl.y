@@ -322,8 +322,8 @@ class_declaration_statement:
 ;
 
 is_reference:
-		/* empty */
-	|	'&'
+		/* empty */  						{ $$.Token = 0; }
+	|	'&'									{ $$ = $1; }
 ;
 
 unticked_function_declaration_statement:
@@ -825,12 +825,12 @@ variable_properties:
 
 variable_property:
 		T_OBJECT_OPERATOR object_property		/* zero out the token; it seems to be persisted and it makes property chains not correct "$this->prop2->func3()->prop4" */
-		method_or_not						{ observers.CurrentExpressionAppendToChain($1, $2, '(' == $3.Token); $3.Token = 0; }
+		method_or_not						{ observers.CurrentExpressionAppendToChain($1, $2, '(' == $3.Token);  }
 ;
 
 method_or_not:
-		'(' function_call_parameter_list ')'
-	|	/* empty */
+		'(' function_call_parameter_list ')'			{ $$ = $1; } 
+	|	/* empty */										{ $$.Token = 0; } 
 ;
 
 variable_without_objects:

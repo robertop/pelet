@@ -770,7 +770,7 @@ static const yytype_uint16 yyrline[] =
      264,   265,   266,   267,   268,   269,   270,   271,   272,   273,
      274,   275,   276,   279,   282,   283,   285,   284,   288,   289,
      293,   294,   298,   299,   303,   303,   308,   309,   313,   317,
-     321,   324,   326,   330,   331,   330,   336,   337,   336,   339,
+     321,   325,   326,   330,   331,   330,   336,   337,   336,   339,
      340,   339,   345,   346,   347,   350,   352,   352,   357,   360,
      362,   362,   366,   368,   368,   373,   374,   377,   379,   383,
      384,   388,   389,   393,   394,   398,   399,   403,   404,   408,
@@ -3629,6 +3629,16 @@ yyreduce:
     { observers.ExceptionCatchFound((yyvsp[(4) - (5)])); ;}
     break;
 
+  case 71:
+
+    { (yyval).Token = 0; ;}
+    break;
+
+  case 72:
+
+    { (yyval) = (yyvsp[(1) - (1)]); ;}
+    break;
+
   case 73:
 
     { observers.FunctionStart((yyvsp[(3) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(1) - (3)])); ;}
@@ -4356,7 +4366,17 @@ yyreduce:
 
   case 344:
 
-    { observers.CurrentExpressionAppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token); (yyvsp[(3) - (3)]).Token = 0; ;}
+    { observers.CurrentExpressionAppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token);  ;}
+    break;
+
+  case 345:
+
+    { (yyval) = (yyvsp[(1) - (3)]); ;}
+    break;
+
+  case 346:
+
+    { (yyval).Token = 0; ;}
     break;
 
   case 349:

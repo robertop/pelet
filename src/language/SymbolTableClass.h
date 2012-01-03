@@ -52,8 +52,7 @@ public:
  *     PHP casts transparently.
  * 
  */
-class SymbolTableClass : public FunctionObserverClass, public ClassMemberObserverClass, public ClassObserverClass, 
-	public VariableObserverClass {
+class SymbolTableClass : public ClassObserverClass, ClassMemberObserverClass, FunctionObserverClass, VariableObserverClass {
 
 public:
 	SymbolTableClass();
@@ -88,8 +87,8 @@ public:
 	 * None of the given resourc finders pointers will be owned by this class.
 	 * 
 	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
-	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
-	 *        the variable. See GetVariablesInScope(int) method for more info.
+	 * @param expressionScope the scope where parsed expression is located.  The scope let's us know which variables are
+	 *        available. See ScopeFinderClass for more info.
 	 * @param openedResourceFinders the resource cache will be used to look up class methods and function return
 	 *        values. This map should contain only cache for files that are currently being edited.  The key
 	 *        of the map is the file's full path, the value is the cache itself.
@@ -97,10 +96,10 @@ public:
 	 * @param autoCompleteList the results of the matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
 	 */
-	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, int expressionPos, 
+	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
-		std::vector<UnicodeString>& autoCompleteList);
+		std::vector<UnicodeString>& autoCompleteList) const;
 
 	/**
 	 * This method will resolve the given parsed expression and will figure out the type of a resource. It will resolve
@@ -117,8 +116,8 @@ public:
 	 * None of the given resourc finders pointers will be owned by this class.
 	 *
 	 * @param parsedExpression the expression to resolve. This is usually the result of the ParserClass::ParserExpression
-	 * @param expressionPos the position where symbol is located.  The position is used to know the scope of 
-	 *        the variable. See GetVariablesInScope(int) method for more info.
+	 * @param expressionScope the scope where parsed expression is located.  The scope let's us know which variables are
+	 *        available. See ScopeFinderClass for more info.
 	 * @param openedResourceFinders the resource cache will be used to look up class methods and function return
 	 *        values. This map should contain only cache for files that are currently being edited.  The key
 	 *        of the map is the file's full path, the value is the cache itself
@@ -126,37 +125,29 @@ public:
 	 * @param resourceMatches the resource matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
 	 */
-	void ResourceMatches(const SymbolClass& parsedExpression, int expressionPos, 
+	void ResourceMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
-		std::vector<ResourceClass>& resourceMatches);
-	
-	/**
-	 * Returns the variables that are inside the scope at the given position i.e. what class/function is at position.
-	 * 
-	 * @param int position is index into code string given to the CreateSymbols() method.
-	 * @return std::vector<UnicodeString> the variables in scope. The variables will contain the siguil ('$')
-	 */
-	std::vector<UnicodeString> GetVariablesInScope(int pos) const;
+		std::vector<ResourceClass>& resourceMatches) const;
 	
 	/**
 	 * outout to stdout
 	 */
 	void Print() const;
 		
-	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+	void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment);
 
-	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
 			const UnicodeString& comment);
 	
-	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 		TokenClass::TokenIds visibility, bool isStatic);
 
 	void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
 	
-	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+	void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic);
 	
@@ -165,7 +156,7 @@ public:
 
 	void FunctionEnd(const UnicodeString& functionName, int pos);
 		
-	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const SymbolClass& symbol, const UnicodeString& comment);
 private:
 
@@ -178,29 +169,11 @@ private:
 	std::vector<SymbolClass>& GetScope(const UnicodeString& className, const UnicodeString& functionName);
 
 	/**
-	 * Get the vector of variables for the scope that is at the given position. If scope
-	 * does not exist then an empty vector will be returned.
-	 * 
-	 * @return std::vector<SymbolClass>
-	 */
-	std::vector<SymbolClass> GetScope(int pos) const;
-
-	/**
-	 * Stores the given scope and relates it to the given position. 
-	 */
-	void PushStartPos(const UnicodeString& className, const UnicodeString& functionName, int startPos);
-	
-	/**
 	 * 	Add the super global PHP predefined variables into the given scope.  For example  $_GET, $_POST, ....
 	 * 
 	 *  @param vector<SymbolClass>& scope the scope list
 	 */
 	void CreatePredefinedVariables(std::vector<SymbolClass>& scope);
-
-	/**
-	 * @return the "scope string" used throughout this class, in the Variables map and the ScopePositions map
-	 */
-	UnicodeString ScopeString(const UnicodeString& className, const UnicodeString& functionName) const;
 
 	/**
 	 * The parser.
@@ -218,16 +191,6 @@ private:
 	 */
 	std::map<UnicodeString, std::vector<SymbolClass>, UnicodeStringComparatorClass> Variables;
 
-	/**
-	 * This will store the character positions where the scope started and ended.
-	 * The scope string is that which is returned by ScopeString() method.
-	 * The global scope will always start at 0
-	 * For purposes of this class; it is enough to know that the ranges will never overlap.
-	 * For exact meanings of where the the class, method, and function start positions, see the
-	 * ParserClass::GetCharacterPosition
-	 * @see ParserClass::GetCharacterPosition
-	 */
-	std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass> ScopePositions;
 };
 
 /**
@@ -246,6 +209,70 @@ bool IsResourceDirty(const std::map<wxString, ResourceFinderClass*>& finders,
 											 const ResourceClass& resource, 
 											 mvceditor::ResourceFinderClass* resourceFinder);
 
+class ScopeFinderClass : public ClassObserverClass, ClassMemberObserverClass, FunctionObserverClass {
+	
+public:
+
+
+	ScopeFinderClass();
+	
+	/**
+	 * Returns the scope that is located at the given position i.e. what class/function is at position.
+	 * 
+	 * @param int position is index into code string given to the CreateSymbols() method.
+	 * @return std::vector<UnicodeString> the variables in scope. The variables will contain the siguil ('$')
+	 */
+	UnicodeString GetScopeString(const UnicodeString& code, int pos);
+		
+	void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+		const UnicodeString& comment);
+
+	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+			const UnicodeString& comment);
+	
+	void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+		TokenClass::TokenIds visibility, bool isStatic);
+	
+	void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
+	
+	void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+		const UnicodeString& propertyType, const UnicodeString& comment, 
+		TokenClass::TokenIds visibility, bool isConst, bool isStatic);
+	
+	void FunctionFound(const UnicodeString& functionName, 
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment);
+		
+	void FunctionEnd(const UnicodeString& functionName, int pos);
+		
+private:
+
+	/**
+	 * Stores the given scope and relates it to the given position. 
+	 */
+	void PushStartPos(const UnicodeString& className, const UnicodeString& functionName, int startPos);
+	
+
+	/**
+	 * This will store the character positions where the scope started and ended.
+	 * The scope string is that which is returned by ScopeString() method.
+	 * The global scope will always start at 0
+	 * For purposes of this class; it is enough to know that the ranges will never overlap.
+	 * For exact meanings of where the the class, method, and function start positions, see the
+	 * ParserClass::GetCharacterPosition
+	 * @see ParserClass::GetCharacterPosition
+	 */
+	std::map<UnicodeString, std::pair<int, int>, UnicodeStringComparatorClass> ScopePositions;
+	
+	/**
+	 * The parser.
+	 * 
+	 * @var ParserClass
+	 */
+	ParserClass Parser;
+};
+
 }
+
 
 #endif // __symboltable__

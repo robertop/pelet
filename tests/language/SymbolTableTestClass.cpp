@@ -124,19 +124,27 @@ public:
 	}
 };
 
+class ScopeFinderTestClass {
+
+public:
+
+	mvceditor::ScopeFinderClass ScopeFinder;
+
+	ScopeFinderTestClass() 
+		: ScopeFinder() {
+	}
+};
+
 SUITE(SymbolTableTestClass) {
 
 TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionName) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"function work() {}\n"
-		"wo{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToFunction(UNICODE_STRING_SIMPLE("wo"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK(!Matches.empty());
 	if (!Matches.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("work"), Matches[0]);
@@ -148,13 +156,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableName) {
 		"<?php\n"
 		"$globalOne = 1;\n"
 		"$globalTwo = 2;\n"
-		"$global"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -167,13 +172,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalVariableOnly) {
 		"<?php\n"
 		"$globalOne = 1;\n"
 		" function work() { $globalTwo = 2; } \n"
-		"$global{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -188,13 +190,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ManyVariableAssignments) {
 		"$globalOne = 1;\n"
 		" function work() { $globalTwo = 2; } \n"
 		"$globalOne = 2;\n"
-		"$global{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
@@ -205,13 +204,11 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPredefinedVariable) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalOne = 1;\n"
-		" function work() { $_POS{CURSOR} } \n"
+		" function work() {  } \n"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$_POS"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::work"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$_POST"), Matches[0]);
@@ -223,13 +220,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCall) {
 		"<?php\n"
 		"class MyClass { function workA() {} function workB() {} } \n"
 		"$my = new MyClass;\n"
-		"$my->work{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -241,17 +235,14 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCallFromGlobalFind
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$my = new MyClass;\n"
-		"$my->work{CURSOR}"
 	);
 	UnicodeString sourceCodeGlobal = mvceditor::StringHelperClass::charToIcu(
 		"<?php class MyClass { function workA() {} function workB() {} } \n"	
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);
 	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -263,7 +254,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalFinderOverridesGlob
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$my = new MyClass;\n"
-		"$my->work{CURSOR}"
 	);
 
 	// in this test, simulate method workA() being deleted; it should not show
@@ -274,8 +264,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalFinderOverridesGlob
 	UnicodeString sourceCodeOpened = mvceditor::StringHelperClass::charToIcu(
 		"<?php class MyClass { function workB() {} } \n"	
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);
 	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
 	mvceditor::ResourceFinderClass localFinder;
@@ -284,7 +272,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalFinderOverridesGlob
 
 	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
@@ -296,13 +284,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithObjectWithoutMethodCall)
 		"<?php\n"
 		"class MyClass { function workA() {} function workB() {} } \n"
 		"$my = new MyClass;\n"
-		"$my->{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE(""), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)2, Matches.size());
 	if ((size_t)2 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -314,13 +299,12 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithStaticMethodCall) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"class MyClass { function workA() {} static function workB() {} } \n"
-		"MyClass::work{CURSOR}"
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("MyClass"), UNICODE_STRING_SIMPLE("work"), true);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
@@ -332,13 +316,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPrivateMethodCall) {
 		"<?php\n"
 		"class MyClass { function workA() {} private function workB() {} } \n"
 		"$my = new MyClass;\n"
-		"$my->work{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
@@ -351,14 +332,11 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodChain) {
 		"class MyClass { /** @return OtherClass */ function workA() {} } \n"
 		"class OtherClass { var $time; function toString() {} }\n"
 		"$my = new MyClass;\n"
-		"$my->workA()->ti{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->ti"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), Matches[0]);
@@ -371,7 +349,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongPropertyChain) {
 		"class MyClass { /** @return OtherClass */ function workA() {} } \n"
 		"class OtherClass { /** @var OtherClass */ var $parent; function toString() {} }\n"
 		"$my = new MyClass;\n"
-		"$my->workA()->parent->pare{CURSOR}"
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
@@ -379,7 +356,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongPropertyChain) {
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->pare"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
@@ -392,16 +369,13 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongMethodChain) {
 		"class MyClass { /** @return OtherClass */ function workA() {} } \n"
 		"class OtherClass { /** @return OtherClass */ function parent() {} }\n"
 		"$my = new MyClass;\n"
-		"$my->workA()->parent()->parent()->p{CURSOR}"
 	);
-	int32_t pos;
-	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->p"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
@@ -416,7 +390,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 		"class FirstClass { /** @return OtherClass */ function status() {} } \n"
 		"class OtherClass { var $time;  /** @return FirstClass */ function toString() {} }\n"
 		"$my = new MyClass;\n"
-		"workA()->toString()->stat{CURSOR}"
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
@@ -424,7 +397,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 	ToFunction(UNICODE_STRING_SIMPLE("workA()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->toString()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->stat"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, Matches);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
 	CHECK_EQUAL((size_t)1, Matches.size());
 	if ((size_t)1 == Matches.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), Matches[0]);
@@ -439,14 +412,13 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ResourceMatchesWithMethodCall) {
 		"<?php\n"
 		"class MyClass { function workA() {} function workB() {} } \n"
 		"$my = new MyClass;\n"
-		"$my->work{CURSOR}"
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
 	std::vector<mvceditor::ResourceClass> resources;
-	CompletionSymbolTable.ResourceMatches(ParsedExpression, pos, OpenedFinders, &GlobalFinder, resources);
+	CompletionSymbolTable.ResourceMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, resources);
 	CHECK_EQUAL((size_t)2, resources.size());
 	if ((size_t)2 == resources.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::workA"), resources[0].Resource);
@@ -454,7 +426,7 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ResourceMatchesWithMethodCall) {
 	}
 }
 
-TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScope) {
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldFindMethodScope) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalVar = 34; \n"
@@ -479,20 +451,11 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesI
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable.CreateSymbols(sourceCode);
-	std::vector<UnicodeString> variables = SymbolTable.GetVariablesInScope(pos);
-	
-	// take the predefined variables into account
-	// locals: $anotherName, $someName, $this
-	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 3, variables.size());
-	if ((PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
-	}
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass::setName"), scope);
 }
 
-TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesInScopeForFunctions) {
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldFindFunctionScope) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalVar = 34; \n"
@@ -504,19 +467,11 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldOnlyReturnVariablesI
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable.CreateSymbols(sourceCode);
-	std::vector<UnicodeString> variables = SymbolTable.GetVariablesInScope(pos);
-
-	// take the predefined varaibles into account
-	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 3, variables.size());
-	if ((PREDEFINED_VARIABLE_COUNT + 3) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$anotherName"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$defaultName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 2]);
-	}
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::setName"), scope);
 }
 
-TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldHandleTypeHinting) {
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldHandleTypeHinting) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"function printUser(User $user) {\n"
@@ -527,18 +482,12 @@ TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldHandleTypeHinting) {
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable.CreateSymbols(sourceCode);
-	std::vector<UnicodeString> variables = SymbolTable.GetVariablesInScope(pos);
-	// take the predefined variables into account
-	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 2, variables.size());
-	if ((PREDEFINED_VARIABLE_COUNT + 2) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$user"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$someName"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-	}
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::printUser"), scope);
 }
 
-TEST_FIXTURE(SymbolTableTestClass, GetVariablesInScopeShouldHandleMultipleBlocks) {
-UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldHandleMultipleBlocks) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalOne = 1;\n"
 		"function printUser(User $user) {\n"
@@ -552,15 +501,37 @@ UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 	);
 	int32_t pos;
 	sourceCode = FindCursor(sourceCode, pos);
-	SymbolTable.CreateSymbols(sourceCode);
-	std::vector<UnicodeString> variables = SymbolTable.GetVariablesInScope(pos);
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), scope);
+}
 
-	// take the predefined variables into account
-	CHECK_EQUAL(PREDEFINED_VARIABLE_COUNT + 2, variables.size());
-	if ((PREDEFINED_VARIABLE_COUNT + 2) == variables.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), variables[PREDEFINED_VARIABLE_COUNT]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalTwo"), variables[PREDEFINED_VARIABLE_COUNT + 1]);
-	}
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldHandleUnfinishedBlock) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$globalOne = 1;\n"
+		"function printUser(User $user) {\n"
+		"\t$someName = '';\n"
+		"{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::printUser"), scope);
+}
+
+TEST_FIXTURE(ScopeFinderTestClass, GetScopeStringShouldHandleUnfinishedClassMethod) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$globalOne = 1;\n"
+		"class MyClass {\n"
+		"function printUser(User $user) {\n"
+		"\t$someName = '';\n"
+		"{CURSOR}"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	UnicodeString scope = ScopeFinder.GetScopeString(sourceCode, pos);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::printUser"), scope);
 }
 
 }
