@@ -4621,7 +4621,10 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	if (T_OPEN_TAG == ret) {
 		ret = analyzer.NextToken();
 	}
-	UnicodeString regularComments;
+	UnicodeString* regularComments = NULL;
+	if (value->Comment) {
+		regularComments = new UnicodeString();
+	}
 	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
 				
 		// advance past all comments (there can be more than one consecutive)
@@ -4631,17 +4634,20 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 			if (T_DOC_COMMENT == ret && value->Comment) {
 				analyzer.GetLexeme(*value->Comment);
 			}
-			else {
-				analyzer.GetLexeme(regularComments);
+			else if (T_COMMENT == ret && regularComments) {
+				analyzer.GetLexeme(*regularComments);
 			}
 			ret = analyzer.NextToken();
 		}
 	}
-	if (!regularComments.isEmpty()) {
-		observers.NotifyLocalVariableTypeHint(regularComments);
+	if (regularComments  && !regularComments->isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(*regularComments);
 	}
 	if (T_CLOSE_TAG == ret) {
 		ret = ';';
+	}
+	if (regularComments) {
+		delete regularComments;
 	}
 	value->Token = ret;
 	if (value->Lexeme) {

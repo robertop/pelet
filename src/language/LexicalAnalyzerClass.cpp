@@ -113,6 +113,7 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 			end--;
 		}
 		int len = (end - start);
+		int added = 0;
 		for (int i = 0; i < len; i++) {
 			UChar c = start[i];
 			UChar next = 0;
@@ -126,32 +127,37 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 				// a literal single quote
 				lexeme.append(next);
 				i++;
+				added++;
 			}
 			else if (isSingleQuoteString && c == '\\' && next == '\\') {
 
 				// a literal backslash
 				lexeme.append(c);
 				i++;
+				added++;
 			}
 			else if (isDoubleQuoteString && c == '\\' && next == '"') {
 
 				// a literal double quote
 				lexeme.append(next);
 				i++;
+				added++;
 			}
 			else if (isDoubleQuoteString && c == '\\' && next == '\\') {
 
 				// a literal backslash
 				lexeme.append(c);
 				i++;
+				added++;
 			}
 			else {
 
 				// any other token (identifier, keyword, symbol) just goes in as is
 				lexeme.append(c);
+				added++;
 			}
 		}
-		if (lexeme.length() > 3 && start[0] == '<' && start[1] == '<' && start[2] == '<') {
+		if (added > 3 && start[0] == '<' && start[1] == '<' && start[2] == '<') {
 			if (start[3] == '\'') {
 				isNowdoc = true;
 			}

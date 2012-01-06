@@ -228,8 +228,7 @@ void  mvceditor::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 	int goodCount = Limit - TokenStart;
 	int currentIndex = Current - TokenStart;
 	int markerIndex = Marker - TokenStart;
-	UnicodeString c(TokenStart, goodCount);
-	
+
 	u_memmove(Buffer, TokenStart, goodCount);
 	
 	// make everything point to the beginning of the buffer
