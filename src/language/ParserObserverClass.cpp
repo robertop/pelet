@@ -425,7 +425,8 @@ mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserve
 	, ExpressionObserver(expressionObserver)
 	, CurrentExpression()
 	, ExpressionVariables()
-	, AllValues() {
+	, AllValues()
+	, DoCollectExpressions(true) {
 }
 
 mvceditor::ObserverQuadClass::~ObserverQuadClass() {
@@ -519,6 +520,14 @@ void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 	if (!isProperty) {
 		NotifyVariablesFromParameterList();
 	}
+
+	// when encountering methods; 'skip' the method body if at all possible
+	if (!isProperty) {
+		DoCollectExpressions = Variable || ExpressionObserver;
+	}
+	else {
+		DoCollectExpressions = true;
+	}
 }
 
 void mvceditor::ObserverQuadClass::ClassMethodEnd(mvceditor::SemanticValueClass& value) {
@@ -530,6 +539,7 @@ void mvceditor::ObserverQuadClass::ClassMethodEnd(mvceditor::SemanticValueClass&
 	}
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
+	DoCollectExpressions = true;
 }
 
 void mvceditor::ObserverQuadClass::DefineFound(const mvceditor::ExpressionClass& nameSymbol, const mvceditor::ExpressionClass& valueSymbol, const UnicodeString& comment) {
@@ -573,6 +583,7 @@ void mvceditor::ObserverQuadClass::FunctionFound() {
 		Function->FunctionFound(functionName, signature, returnType, comment);
 	}
 	NotifyVariablesFromParameterList();
+	DoCollectExpressions = Variable || ExpressionObserver;
 }
 
 void mvceditor::ObserverQuadClass::CreateParameterWithOptionalClassName() {
@@ -591,10 +602,11 @@ void mvceditor::ObserverQuadClass::FunctionEnd(mvceditor::SemanticValueClass& va
 	}
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
+	DoCollectExpressions = true;
 }
 
 void mvceditor::ObserverQuadClass::AssignmentExpressionFound() {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (ExpressionVariables.size() < (size_t)2) {
@@ -640,7 +652,7 @@ void mvceditor::ObserverQuadClass::AssignmentExpressionFound() {
 }
 
 void mvceditor::ObserverQuadClass::ExceptionCatchFound(mvceditor::SemanticValueClass& variableValue) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	CurrentExpression.Name = CurrentQualifiedName;
@@ -675,7 +687,7 @@ void mvceditor::ObserverQuadClass::GlobalVariableFound(mvceditor::SemanticValueC
 }
 
 void mvceditor::ObserverQuadClass::ForeachVariableFound() {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (Variable && !ExpressionVariables.empty()) {
@@ -689,7 +701,7 @@ void mvceditor::ObserverQuadClass::ForeachVariableFound() {
 }
 
 void mvceditor::ObserverQuadClass::StaticVariableFound(mvceditor::SemanticValueClass& variableValue) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (Variable && variableValue.Lexeme) {
@@ -703,7 +715,7 @@ void mvceditor::ObserverQuadClass::StaticVariableFound(mvceditor::SemanticValueC
 }
 
 void mvceditor::ObserverQuadClass::ExpressionPushNewScalar(mvceditor::SemanticValueClass& value) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -715,7 +727,7 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewScalar(mvceditor::SemanticVa
 }
 
 void mvceditor::ObserverQuadClass::ExpressionPushNewArray(mvceditor::SemanticValueClass& value) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -727,7 +739,7 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewArray(mvceditor::SemanticVal
 }
 
 void mvceditor::ObserverQuadClass::ExpressionPushNewVariable(mvceditor::SemanticValueClass& value) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -746,7 +758,7 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewVariable(mvceditor::Semantic
 }
 
 void mvceditor::ObserverQuadClass::ExpressionPushNewInstanceCall() {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -760,7 +772,7 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewInstanceCall() {
 }
 
 void mvceditor::ObserverQuadClass::ExpressionPushNewUnknown(mvceditor::SemanticValueClass& value) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -779,7 +791,7 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewUnknown(mvceditor::SemanticV
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionPushAsVariable(mvceditor::SemanticValueClass& value) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -798,7 +810,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsVariable(mvceditor::Se
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (!ExpressionVariables.empty()) {
@@ -829,7 +841,7 @@ void mvceditor::ObserverQuadClass::FunctionCallEnd() {
 }
 
 void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (!ExpressionVariables.empty()) {
@@ -848,7 +860,7 @@ void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	mvceditor::ExpressionClass expr;
@@ -864,7 +876,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
 }
 
 void mvceditor::ObserverQuadClass::CurrentExpressionAsStaticMember(mvceditor::SemanticValueClass& scopeOperatorValue) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (ExpressionObserver && !ExpressionVariables.empty()) {
@@ -885,7 +897,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAsStaticMember(mvceditor::Se
 
 void mvceditor::ObserverQuadClass::CurrentExpressionPushAsClassConstant(mvceditor::SemanticValueClass& scopeOperatorValue, 
 										 mvceditor::SemanticValueClass& constantNameValue) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!DoCollectExpressions) {
 		return;
 	}
 	if (scopeOperatorValue.Lexeme && constantNameValue.Lexeme) {
@@ -1165,6 +1177,9 @@ void mvceditor::ObserverQuadClass::SemanticValueInit(mvceditor::SemanticValueCla
 	value.Comment = NULL;
 	value.Pos = 0;
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (!DoCollectExpressions) {
 		return;
 	}
 	UnicodeString* lexeme = new UnicodeString();

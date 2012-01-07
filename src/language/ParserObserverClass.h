@@ -940,6 +940,12 @@ private:
 	 * constructor/destructors
 	 */
 	std::vector<UnicodeString*> AllValues;
+
+	/**
+	 * Optimization to not bother collecting expressions when they are not needed (no variable
+	 * or expression observers). 
+	 */
+	bool DoCollectExpressions;
 };
 
 }

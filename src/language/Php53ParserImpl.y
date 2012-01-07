@@ -975,10 +975,11 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	if (T_OPEN_TAG == ret) {
 		ret = analyzer.NextToken();
 	}
-	UnicodeString* regularComments = NULL;
-	if (value->Comment) {
-		regularComments = new UnicodeString();
-	}
+	
+	// optimization: SemanticValueInit() method knows when we need to examine
+	// comments and will allocate memory only when needed
+	mvceditor::SemanticValueClass commentValue;
+	observers.SemanticValueInit(commentValue);
 	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
 				
 		// advance past all comments (there can be more than one consecutive)
@@ -988,20 +989,17 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 			if (T_DOC_COMMENT == ret && value->Comment) {
 				analyzer.GetLexeme(*value->Comment);
 			}
-			else if (T_COMMENT == ret && regularComments) {
-				analyzer.GetLexeme(*regularComments);
+			else if (T_COMMENT == ret && commentValue.Comment) {
+				analyzer.GetLexeme(*commentValue.Comment);
 			}
 			ret = analyzer.NextToken();
 		}
 	}
-	if (regularComments  && !regularComments->isEmpty()) {
-		observers.NotifyLocalVariableTypeHint(*regularComments);
+	if (commentValue.Comment && !commentValue.Comment->isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(*commentValue.Comment);
 	}
 	if (T_CLOSE_TAG == ret) {
 		ret = ';';
-	}
-	if (regularComments) {
-		delete regularComments;
 	}
 	value->Token = ret;
 	if (value->Lexeme) {
