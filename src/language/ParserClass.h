@@ -27,6 +27,7 @@
 
 #include <language/LexicalAnalyzerClass.h>
 #include <language/TokenClass.h>
+#include <language/ParserObserverClass.h>
 #include <wx/string.h>
 #include <unicode/unistr.h>
 
@@ -36,7 +37,7 @@ namespace mvceditor {
  * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
  * given code and make calls to the different registered observers.  There are observers for classes, functions, and 
  * methods. Not all observers have to be set; for example if a FunctionObserverClass is never registered then the 
- * parse will not notify when a function has been found in a piece of code.
+ * parser will not notify when a function has been found in a piece of code.
  * 
  * @code
  *   class EchoAndObserverClass : public ClassObserverClass {
@@ -56,8 +57,8 @@ namespace mvceditor {
  *   }
  * @endcode
  * 
- * Observers are very lenient.  They are not meant to be used to check code for errors, it is only meant to scan files for 
- * specific resources (classes, methods, functions, ...)
+ * Observers follow the PHP parsing rules to the letter.  If source code is not valid; then observers may not
+ * get called.
  *
  * Lint functionality
  * 
@@ -75,10 +76,6 @@ namespace mvceditor {
  *   }
  * @encode
  */
-class ClassObserverClass;
-class ClassMemberObserverClass;
-class FunctionObserverClass;
-class VariableObserverClass;
 
 /**
  * Holds the results of the lint check.  Currently lint check will stop when 
@@ -128,8 +125,10 @@ public:
 	ParserClass();
 	
 	/**
-	 * Opens and scans the given file; calling the proper observers when it encounters
-	 * a class, function, or variable declaration.
+	 * Opens and scans the given file; This function will return once the entire
+	 * file has been parsed; it will call the proper observers when it encounters
+	 * a class, function, or variable declaration. This means that this
+	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const wxString& file the file to parse.  Must be a full path.
 	 * @return bool if file was found.
@@ -137,8 +136,10 @@ public:
 	bool ScanFile(const wxString& file);
 	
 	/**
-	 * Scans the given string; calling the proper observers when it encounters
-	 * a class, function, or variable declaration.
+	 * Scans the given string. This function will return once the entire
+	 * string has been parsed; it will call the proper observers when it encounters
+	 * a class, function, or variable declaration. This means that this
+	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const UnicodeString& code the code to parse.
 	 * @return bool alway true for now, just to give this method symmetry with ParseFile() method.
@@ -203,6 +204,85 @@ public:
 	 * @return bool true if the code has no syntax errors.
 	 */
 	bool LintString(const UnicodeString& code, LintResultsClass& results);
+
+	/**
+	 * @return the character position where the parser is currently parsing. This can be called
+	 * inside an observer callback; in which case the character position is right PAST the
+	 * current token.
+	 */
+	int GetCharacterPosition() const;
+
+	
+	/**
+	 * Parses a given PHP expression.  This method will parse the given expression into a list of
+	 * of "chained" calls.
+	 *
+	 * A PHP expression is  
+	 *  - a variable  ($obj)
+	 *  - a function call (myFunc())
+	 *  - an object operation ("$obj->prop")
+	 *  - a static object operation ("MyClass::Prop")
+	 * 
+	 * Object operations can be chained; like "$obj->prop->anotherFunc()". While indirect variables are allowed
+	 * in PHP (ie $this->$prop)  this method will not handle them as it is nearly impossible to resolve them at parse time.
+	 *
+	 * The most extreme example is this expression: "$obj->prop->anotherFunc()"
+	 * This method will parse the expression into
+	 * $obj
+	 * ->prop
+	 * ->anotherFunc()
+
+	 * For example, if sourceCode represented this string:
+	 * 
+	 *   @code
+	 *     UnicodeString sourceCode = UNICODE_STRING_SIMPLE("
+	 *       class UserClass {
+	 *         private $name;
+	 * 
+	 *         function getName() {
+	 *           return $this->
+	 *     ");
+	 *   @endcode
+	 *  then the following C++ code can be used to find a variable's type
+	 * 
+	 *   @code
+	 *     ParserClass parser;
+	 *     UnicodeString expression = UNICODE_STRING_SIMPLE("$this->");
+	 *     mvceditor::SymbolClass exprResult;
+	 *     if (parser.ParseExpression(expression, exprResult)) {
+	 *     	// if successful, symbol.Lexeme will be set to "$this"
+	 *     }
+	 *   @endcode
+	 * 
+	 * 
+	 * @param expression the code string of the expression to resolve. This must be the code for a single expression.
+	 *        Examples:
+	 *        $anObject
+	 *        $this->prop
+	 *        $this->work()->another
+	 *        $this->
+	 *		  work()->another
+	 *		  work()
+	 *        self::prop
+	 *        self::prop::
+	 *        self::func()->prop
+	 *        parent::prop
+	 *        parent::fun()->prop
+	 *        aFunction
+	 *        An expression can have whitespace like this
+	 *        $anObject
+	 *			->method1()
+	 *			->method2()
+	 *			->method3()
+	 *
+	 * A special case that happens when the given expression ends with the object operator:
+	 *        $this->
+	 *        MyClass::
+	 * In this case, the operator will be added the chain list; this way the client code can determine that
+	 * the variable name actually ended.
+	 * @param symbol the expression's name and "chain" list. The  properties of this object will be reset every call.
+	 */
+	void ParseExpression(UnicodeString expression, SymbolClass& symbol);
 	
 private:
 
@@ -212,108 +292,6 @@ private:
 	 * long string).
 	 */
 	void Close();
-
-	/**
-	 * Loops through all of the lexer's tokens, notifying the different observers when classes, methods, functions 
-	 * are found.
-	 */
-	void Scan();
-	
-	/**
-	 * Scans a class declaration ("class XXXX extends BBBB implements CCCC, DDDDD {" ), eating up to and including 
-	 * tokens until the open brace.
-	 * Notifies the class observer, if registered.
-	 * 
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the class
-	 * @return UnicodeString the class that was parsed.
-	 */
-	UnicodeString ScanClass(const UnicodeString& phpDocComment);
-
-	/**
-	 * Scans a method declaration ("protected function getName($XXX) {" ), eating up tokens up to and including the 
-	 * open brace. Notifies the class member observer, if registered.
-	 * 
-	 * @param const UnicodeString& className the class name the method is in
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the method
-	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
-	 * @param isStatic true if the method is static
-	 * @return UnicodeString the name of the method that was parsed.
-	 */
-	UnicodeString ScanMethod(const UnicodeString& className, const UnicodeString& phpDocComment, 
-		TokenClass::TokenIds visibility, bool isStatic);
-
-	/**
-	 * Scans a member declaration ("protected $name;" ), eating up tokens up to and including the semicolon ';'
-	 * Notifies the class member observer, if registered.
-	 * 
-	 * @param const UnicodeString& className the class name the method is in
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the member
-	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
-	 * @param isStatic true if the method is static
-	 */
-	void ScanMemberVariable(const UnicodeString& className, const UnicodeString& phpDocComment, 
-		TokenClass::TokenIds visibility, bool isStatic);
-		
-	/**
-	 * Scans a constant declaration ("const NAME='';"), eating up tokens up to and including the semicolon ';'
-	 * Notifies the class observer, if registered.
-	 * 
-	 * @param const UnicodeString& className the class name the method is in
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the constant
-	 */
-	void ScanConstantDeclaration(const UnicodeString& className, const UnicodeString& phpDocComment);
-	
-	/**
-	 * Scans all variables declarations inside of a code block (parsing will stop at the end of the 
-	 * block). For this method tow work correctly, Lexer must be located at the open brace. Will notify the 
-	 * VariableObserver when each variable declaration is found. The lexer will be left at the end brace position, 
-	 * such that a call to Lexer.GetLexeme() will return '}' and Lexer.NextToken() will return the token after the 
-	 * end brace.
-	 * 
-	 * @param const UnicodeString& className the class name of the current block scope
-	 * @param const UnicodeString& functionName the function name of the block scope
-	 */
-	void ScanVariableDeclarations(const UnicodeString& className, const UnicodeString& functionName);
-	
-	/**
-	 * Parses a define declaration ("define('CONST', 'ff')" ), eating up tokens up to and including the semicolon ';'
-	 * Notifies the define observer, if registered.
-	 * 
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the define statement
-	 */
-	void ScanDefineDeclaration(const UnicodeString& phpDocComment);
-	
-	/**
-	 * Get the return type from the '@return' / '@var' annotation
-	 * 
-	 * @param const UnicodeString& phpDocComment the comment
-	 * @param bool varAnnotation if false, will return the word after '@var', else return the word after '@return'
-	 * @return UnicodeString
-	 */
-	UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation = false);
-
-	/**
-	 * Scans a function declaration ("function getName($XXX) {" ), eating up tokens up to and including the open brace.
-	 * Notifies the function observer, if registered.
-	 * 
-	 * @param const UnicodeString& phpDocComment the phpDOC comment for the method
-	 * @return UnicodeString the name of the method that was parsed.
-	 */
-	UnicodeString ScanFunction(const UnicodeString& phpDocComment);
-	
-	/**
-	 * Gets the next token from the input being parsed. 
-	 * 
-	 * @return bool false if the EOF token has been reached (or there are no more tokens).
-	 */
-	bool Advance();
-	
-	/**
-	 * Check for the existence of more tokens from the input soruce
-	 * 
-	 * @return bool false if the EOF token has been reached (or there are no more tokens).
-	 */
-	bool MoreTokens();
 
 	/**
 	 * Used to tokenize code
@@ -353,234 +331,9 @@ private:
 	 * @var VariableObserverClass*
 	 */		
 	VariableObserverClass* VariableObserver;
-	
-	/**
-	 * The lexeme currenly being parsed
-	 * @var UnicodeString
-	 */
-	UnicodeString Lexeme;
-	
-	/**
-	 * The lexeme one past the currenly being parsed
-	 * @var UnicodeString
-	 */
-	UnicodeString LookaheadLexeme;
-	
-	/**
-	 * The lexeme twice past the currenly being parsed
-	 * @var UnicodeString
-	 */
-	UnicodeString NextLookaheadLexeme;
-
-	/**
-	 * The token currently being parsed
-	 * @var int
-	 */
-	int Token;
-	
-	/**
-	 * The token one past the currently being parsed
-	 * @var int
-	 */
-	int LookaheadToken;
-	
-	/**
-	 * The token twice past the currently being parsed
-	 * @var int
-	 */
-	int NextLookaheadToken;
-	
-	/**
-	 * The number of nested braces encountered.  This helps determine in we are inside of a class or function.
-	 * 
-	 * @var int 0 = global scope 
-	 *          1 = class or function scope 
-	 *          2 = method scope
-	 */
-	int BraceDepth;
 };
 
 
-/**
- * Interface to inherit from when needing to be notified when a class structure is encountered
- */
-class ClassObserverClass {
 
-public:
-	/**
-	 * Override this method to perform any custom logic when a class is found.
-	 * 
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
-	 *        for example "extends UserClass implements Runnable"
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment) = 0;
-	
-	/**
-	 * Override this method to perform any custom logic when a define declaration is found.
-	 * 
-	 * @param const UnicodeString& variableName the name of the defined variable
-	 * @param const UnicodeString& variableValue the variable value
-	 * @param const UnicodeString& comment PHPDoc attached to the define
-	 */
-	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment) = 0;
-	
-};
-
-/**
- * Interface to inherit from when needing to be notified when a class member (either variable or method)
- * is encountered.
- */
-class ClassMemberObserverClass {
-
-public:
-	/**
-	 * Override this method to perform any custom logic when a class method is found.
-	 * 
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& methodName the name of the method that was found
-	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
-	 *        any extra white space is removed, and every token is separated by one space only. ie. for the code
-	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
-	 * @param const UnicodeString& returnType the method's return type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
-	 * @param isStatic true if the method is static
-	 */
-	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isStatic) = 0;
-	
-	/**
-	 * Override this method to perform any custom logic when a class property is found.
-	 * 
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& propertyName the name of the property that was found
-	 * @param const UnicodeString& propertyType the property's type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the property
-	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
-	 * @param bool isConst true if property is a constant
-	 * @param isStatic true if the method is static
-	 */
-	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
-		const UnicodeString& propertyType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isConst, bool isStatic) = 0;
-};
-
-/**
- * Interface to inherit from when needing to be notified when a function is encountered.
- */
-class FunctionObserverClass {
-
-public:
-	/**
-	 * Override this method to perform any custom logic when a function is found.
-	 * 
-	 * @param const UnicodeString& functionName the name of the method that was found
-	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
-	 *        any extra white space is removed, and every token is separated by one space only. ie. for the code
-	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
-	 * @param const UnicodeString& returnType the function's return type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void FunctionFound(const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) = 0;
-	
-};
-
-/**
- * Interface to inherit from when needing to be notified when a variable is encountered.
- */
-class VariableObserverClass {
-
-public:
-	/**
-	 * Override this method to perform any custom logic when a 'new' variable declaration is found.
-	 * 
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
-	 *        inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
-	 *        variable is globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& returnType the variable's type, as dictated by  the 'new' declaration 
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void VariableCreatedWithNewFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& returnType, const UnicodeString& comment) = 0;
-		
-	/**
-	 * Override this method to perform any custom logic when a variable assignment from a function is found.
-	 * 
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
-	 *        inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if
-	 *        variable is globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& functionCalledName the name of the function that was used to create the variable
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void VariableCreatedWithFunctionFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName,  const UnicodeString& functionCalledName, const UnicodeString& comment) = 0;	
-
-	/**
-	 * Override this method to perform any custom logic when a variable declaration is found.
-	 * 
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
-	 *        inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty is 
-	 *        variable is globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& methodCalledName the method name only (not prepended with class)
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void VariableCreatedWithThisMethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& methodCalledName, const UnicodeString& comment) = 0;	
-		
-	/**
-	 * Override this method to perform any custom logic when a variable declaration is found.
-	 *
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
-	 *        inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty is 
-	 *        variable is globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& returnType the variable's type, as dictated by  the 'new' declaration 
-	 * @param const UnicodeString& comment PHPDoc attached to the class
-	 */
-	virtual void VariableCreatedWithObjectMethodFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& objectName, const UnicodeString& objectMethod, 
-		const UnicodeString& comment) = 0;
-		
-	/**
-	 * Override this method to perform any custom logic when a variable declaration is found. ($var1 = $var2)
-	 *
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped inside a function
-	 * 	      or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty is variable is 
-	 *        globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& sourceVariable the variable's type, as dictated by  the 'new' declaration 
-	 * @param const UnicodeString& comment PHPDoc attached to the variable
-	 */
-	virtual void VariableCreatedWithAnotherVariableFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& sourceVariable, const UnicodeString& comment) = 0;
-		
-	/**
-	 * Override this method to perform any custom logic when a variable declaration is found. ($var1 = 'hello')
-	 *
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
-	 *       inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty is 
-	 *        variable is globally scoped.
-	 * @param const UnicodeString& variableName the name of the variable that was found
-	 * @param const UnicodeString& constant the variable value
-	 * @param const UnicodeString& comment PHPDoc attached to the variable
-	 */
-	virtual void VariableConstantFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& variableName, const UnicodeString& constant, const UnicodeString& comment) = 0;
-};
 }
 #endif // __parserclass__

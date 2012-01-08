@@ -161,7 +161,7 @@ int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
 	}
-	return failed;
+	return failed;	
 }
 
 int mvceditor::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {
@@ -485,43 +485,42 @@ yyc_MULTI_LINE_COMMENT:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_5_3_lexical_analyzer_88;
-		case '\n':	goto php_5_3_lexical_analyzer_90;
-		case '\r':	goto php_5_3_lexical_analyzer_92;
-		case '*':	goto php_5_3_lexical_analyzer_93;
+		case 0x00:	goto php_5_3_lexical_analyzer_90;
+		case '\n':	goto php_5_3_lexical_analyzer_92;
+		case '\r':	goto php_5_3_lexical_analyzer_94;
+		case '*':	goto php_5_3_lexical_analyzer_88;
 		default:	goto php_5_3_lexical_analyzer_95;
 		}
 php_5_3_lexical_analyzer_88:
 		++YYCURSOR;
-		{ buffer->TokenStart = buffer->Current; return T_ERROR_UNTERMINATED_COMMENT; }
+		switch ((yych = *YYCURSOR)) {
+		case '/':	goto php_5_3_lexical_analyzer_97;
+		default:	goto php_5_3_lexical_analyzer_89;
+		}
+php_5_3_lexical_analyzer_89:
+		{ goto php_5_3_lexical_analyzer_next_char; }
 php_5_3_lexical_analyzer_90:
 		++YYCURSOR;
-php_5_3_lexical_analyzer_91:
-		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_token_start; }
+		{ buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
 php_5_3_lexical_analyzer_92:
+		++YYCURSOR;
+php_5_3_lexical_analyzer_93:
+		{ buffer->IncrementLine(); goto php_5_3_lexical_analyzer_next_char; }
+php_5_3_lexical_analyzer_94:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '\n':	goto php_5_3_lexical_analyzer_98;
-		default:	goto php_5_3_lexical_analyzer_91;
+		case '\n':	goto php_5_3_lexical_analyzer_96;
+		default:	goto php_5_3_lexical_analyzer_93;
 		}
-php_5_3_lexical_analyzer_93:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case '/':	goto php_5_3_lexical_analyzer_96;
-		default:	goto php_5_3_lexical_analyzer_94;
-		}
-php_5_3_lexical_analyzer_94:
-		{ goto php_5_3_lexical_analyzer_next_token_start; }
 php_5_3_lexical_analyzer_95:
 		yych = *++YYCURSOR;
-		goto php_5_3_lexical_analyzer_94;
+		goto php_5_3_lexical_analyzer_89;
 php_5_3_lexical_analyzer_96:
+		yych = *++YYCURSOR;
+		goto php_5_3_lexical_analyzer_93;
+php_5_3_lexical_analyzer_97:
 		++YYCURSOR;
-		{  condition = yycSCRIPT; goto php_5_3_lexical_analyzer_next_token_start; }
-php_5_3_lexical_analyzer_98:
-		++YYCURSOR;
-		yych = *YYCURSOR;
-		goto php_5_3_lexical_analyzer_91;
+		{ condition = yycSCRIPT; return T_COMMENT; }
 /* *********************************** */
 yyc_NOWDOC:
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);

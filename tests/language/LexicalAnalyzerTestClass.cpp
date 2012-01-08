@@ -164,15 +164,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
 	
 	/*
 	 * test for single line, PHP Doc comments 
 	 */
-	
 	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
 		"<?php\n"
-		"//for fun, let's enable every predefined rules for every product group for this merchant\r"
+		"//for fun, let's enable every rule for every group for this client\r"
 		"# testing another comment\r" 
 		"/** this is a PHPDoc Comment */"
 		"require_once('globals.php');\n"
@@ -206,7 +206,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 	
 	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
 		"<?php\n"
-		"//for fun, let's enable every predefined rules for every product group for this merchant\r"
+		"//for fun, let's enable every rule for every group for this client\r"
 		"require_once('globals.php');\n"
 	));
 	file = TestProjectDir;
@@ -234,6 +234,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_CLASS, UNICODE_STRING_SIMPLE("class"));
 	CheckTokenLexeme(T_STRING, UNICODE_STRING_SIMPLE("ExtendedRecordSetForUnitTestDoesNotInitializeRcord"));
 	CheckTokenLexeme(T_EXTENDS, UNICODE_STRING_SIMPLE("extends"));
@@ -276,6 +278,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 	CheckTokenLexeme(T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("globals.php"));
 	CheckTokenLexeme(')', UNICODE_STRING_SIMPLE(")"));
 	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
 	CheckTokenLexeme(T_CLASS, UNICODE_STRING_SIMPLE("class"));
 	CheckTokenLexeme(T_STRING, UNICODE_STRING_SIMPLE("UserClass"));
 	CheckTokenLexeme('{', UNICODE_STRING_SIMPLE("{"));
@@ -540,6 +543,148 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) 
 	CHECK_EQUAL(4, Lexer->GetLineNumber());
 	CheckTokenLexeme(';', UNICODE_STRING_SIMPLE(";"));
 	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
+}
+
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFirstFunction) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php echo"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("echo"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionSimpleVariable) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"$expr2"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgument) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"func($expr2"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2"), last);
+}
+
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionChain) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"func($expr2)->prop"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("func($expr2)->prop"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgumentAsFunction) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"func(funct2($expr2), $arr[3])->prop"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("func(funct2($expr2), $arr[3])->prop"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticMember) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"$expr2 = MyClass::$prop"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::$prop"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionConstMember) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = 3;\n"
+		"$expr2 = MyClass::DEFAULT_NU"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::DEFAULT_NU"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectMethodChain) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = new MyClass;\n"
+		"$expr2 = $expr->funct3('two')->prop"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr->funct3('two')->prop"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionNoExpression) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr1 = new MyClass;\n"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectVariable) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = 3;\n"
+		"$expr1 = 'expr2';\n"
+		"$$expr1"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr1"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectProperty) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = new MyClass;\n"
+		"$expr1 = 'prop';\n"
+		"$expr2->$expr1"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr1"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperator) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = new MyClass;\n"
+		"$expr2->"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = new MyClass;\n"
+		"MyClass::"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperatorWithWhitespace) {
+	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"$expr2 = new MyClass;\n"
+		"$expr2\n"
+		"->"
+	);
+	UnicodeString last = Lexer->LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
 }
 
 }
