@@ -196,7 +196,8 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, const UnicodeString& expressionScope,
 															  const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 															  mvceditor::ResourceFinderClass* globalResourceFinder,
-															  std::vector<UnicodeString>& autoCompleteList) const {
+															  std::vector<UnicodeString>& autoCompleteVariableList,
+															  std::vector<mvceditor::ResourceClass>& autoCompleteResourceList) const {
 	if (parsedExpression.ChainList.size() == 1 && parsedExpression.Lexeme.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 
 		// if expression does not have more than one chained called AND it starts with a '$' then we want to match (local)
@@ -208,20 +209,14 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 		}
 		for (size_t i = 0; i < scopeSymbols.size(); ++i) {
 			if (scopeSymbols[i].Lexeme.startsWith(parsedExpression.Lexeme)) {
-				autoCompleteList.push_back(scopeSymbols[i].Lexeme);
+				autoCompleteVariableList.push_back(scopeSymbols[i].Lexeme);
 			}
 		}
 	}
 	else {
 
 		// some kind of function call / method chain call
-		std::vector<mvceditor::ResourceClass> resourceMatches;
-		ResourceMatches(parsedExpression, expressionScope, openedResourceFinders, globalResourceFinder, resourceMatches);
-
-		// now we loop through the possbile matches and get the identifiers only
-		for (size_t i = 0; i < resourceMatches.size(); ++i) {
-			autoCompleteList.push_back(resourceMatches[i].Identifier);
-		}
+		ResourceMatches(parsedExpression, expressionScope, openedResourceFinders, globalResourceFinder, autoCompleteResourceList);
 	}	
 }
 

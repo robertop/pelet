@@ -93,13 +93,17 @@ public:
 	 *        values. This map should contain only cache for files that are currently being edited.  The key
 	 *        of the map is the file's full path, the value is the cache itself.
 	 * @param globalResourceFinder the 'global' cache of resources for files that are NOT being edited
-	 * @param autoCompleteList the results of the matches; these are the names of the items that
-	 *        are "near matches" to the parsed expression.
+	 * @param autoCompleteVariableList the results of the matches; these are the names of the variables that
+	 *        are "near matches" to the parsed expression. This will be filled only when parsedExpression is a variable. 
+	 * @param autoCompleteResourceList the results of the matches; these are the names of the items that
+	 *        are "near matches" to the parsed expression. This will be filled only when parsedExpression is a variable "chain" or
+	 *        a function / static class call. 
 	 */
 	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
-		std::vector<UnicodeString>& autoCompleteList) const;
+		std::vector<UnicodeString>& autoCompleteVariableList,
+		std::vector<ResourceClass>& autoCompleteResourceList) const;
 
 	/**
 	 * This method will resolve the given parsed expression and will figure out the type of a resource. It will resolve

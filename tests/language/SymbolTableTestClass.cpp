@@ -29,12 +29,6 @@
 
 UnicodeString CURSOR = UNICODE_STRING_SIMPLE("{CURSOR}");
 
-// The variables that are available in all scopes
-// $GLOBALS, $_SERVER, $_GET, $_POST, $_FILES,
-// $_REQUEST, $_SESSION, $_ENV, $_COOKIE, $php_errormsg,
-// $HTTP_RAW_POST_DATA, $http_response_header, $argc, $argv
-static size_t PREDEFINED_VARIABLE_COUNT = 14;
-
 /**
  *  In order to simulate actual usage of the SymbolTableClass as closely as possible, we need to
  *  test use character positions as required by the symbol table. In order to improve the readability of these tests, we will
@@ -84,7 +78,8 @@ public:
 	std::map<wxString, mvceditor::ResourceFinderClass*> OpenedFinders;
 	mvceditor::ResourceFinderClass Finder1;
 	mvceditor::ResourceFinderClass GlobalFinder;
-	std::vector<UnicodeString> Matches;
+	std::vector<UnicodeString> VariableMatches;
+	std::vector<mvceditor::ResourceClass> ResourceMatches;
 
 	SymbolTableCompletionTestClass()
 		: CompletionSymbolTable()
@@ -92,7 +87,8 @@ public:
 		, OpenedFinders()
 		, Finder1()
 		, GlobalFinder()
-		, Matches() {
+		, VariableMatches()
+		, ResourceMatches() {
 
 	}
 
@@ -144,14 +140,14 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionName) {
 	);
 	Init(sourceCode);	
 	ToFunction(UNICODE_STRING_SIMPLE("wo"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK(!Matches.empty());
-	if (!Matches.empty()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("work"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK(!ResourceMatches.empty());
+	if (!ResourceMatches.empty()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("work"), ResourceMatches[0].Identifier);
 	}
 }
 
-TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableName) {
+TEST_FIXTURE(SymbolTableCompletionTestClass, VariableMatchesWithVariableName) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalOne = 1;\n"
@@ -159,15 +155,15 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableName) {
 	);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)2, Matches.size());
-	if ((size_t)2 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalTwo"), Matches[1]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, VariableMatches.size());
+	if ((size_t)2 == VariableMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), VariableMatches[0]);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalTwo"), VariableMatches[1]);
 	}
 }
 
-TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalVariableOnly) {
+TEST_FIXTURE(SymbolTableCompletionTestClass, VariableMatchesWithLocalVariableOnly) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalOne = 1;\n"
@@ -175,10 +171,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalVariableOnly) {
 	);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, VariableMatches.size());
+	if ((size_t)1 == VariableMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), VariableMatches[0]);
 	}
 }
 
@@ -193,14 +189,14 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, ManyVariableAssignments) {
 	);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$global"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, VariableMatches.size());
+	if ((size_t)1 == VariableMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$globalOne"), VariableMatches[0]);
 	}
 }
 
-TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPredefinedVariable) {
+TEST_FIXTURE(SymbolTableCompletionTestClass, VariableMatchesWithPredefinedVariable) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
 		"$globalOne = 1;\n"
@@ -208,10 +204,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPredefinedVariable) {
 	);
 	Init(sourceCode);	
 	ToVariable(UNICODE_STRING_SIMPLE("$_POS"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::work"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$_POST"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::work"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, VariableMatches.size());
+	if ((size_t)1 == VariableMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$_POST"), VariableMatches[0]);
 	}
 }
 
@@ -223,11 +219,11 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCall) {
 	);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)2, Matches.size());
-	if ((size_t)2 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, ResourceMatches.size());
+	if ((size_t)2 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), ResourceMatches[0].Identifier);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), ResourceMatches[1].Identifier);
 	}
 }
 
@@ -242,11 +238,11 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodCallFromGlobalFind
 	Init(sourceCode);
 	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)2, Matches.size());
-	if ((size_t)2 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, ResourceMatches.size());
+	if ((size_t)2 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), ResourceMatches[0].Identifier);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), ResourceMatches[1].Identifier);
 	}
 }
 
@@ -272,10 +268,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLocalFinderOverridesGlob
 
 	GlobalFinder.BuildResourceCacheForFile(wxT("MyClass.php"), sourceCodeGlobal, true);
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -287,11 +283,11 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithObjectWithoutMethodCall)
 	);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE(""), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)2, Matches.size());
-	if ((size_t)2 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[1]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, ResourceMatches.size());
+	if ((size_t)2 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), ResourceMatches[0].Identifier);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), ResourceMatches[1].Identifier);
 	}
 }
 
@@ -304,10 +300,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithStaticMethodCall) {
 	sourceCode = FindCursor(sourceCode, pos);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("MyClass"), UNICODE_STRING_SIMPLE("work"), true);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workB"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -319,10 +315,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithPrivateMethodCall) {
 	);
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("work"), false);
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("workA"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -336,10 +332,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithMethodChain) {
 	Init(sourceCode);	
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->ti"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -356,10 +352,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongPropertyChain) {
 	ToMethod(UNICODE_STRING_SIMPLE("$my"), UNICODE_STRING_SIMPLE("workA()"), false);
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->pare"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -375,10 +371,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongMethodChain) {
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->parent()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->p"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), ResourceMatches[0].Identifier);
 	}
 }
 
@@ -397,10 +393,10 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 	ToFunction(UNICODE_STRING_SIMPLE("workA()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->toString()"));
 	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->stat"));
-	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, Matches);
-	CHECK_EQUAL((size_t)1, Matches.size());
-	if ((size_t)1 == Matches.size()) {
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), Matches[0]);
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), ResourceMatches[0].Identifier);
 	}
 }
 
