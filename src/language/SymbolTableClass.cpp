@@ -139,7 +139,9 @@ void mvceditor::SymbolTableClass::DefineDeclarationFound(const UnicodeString& va
 
 void mvceditor::SymbolTableClass::FunctionFound(const UnicodeString& functionName, const UnicodeString& signature, 
 		const UnicodeString& returnType, const UnicodeString& comment) {
-	std::vector<SymbolClass>& functionScope = GetScope(UNICODE_STRING_SIMPLE(""), functionName);
+	
+	// this call will automatically create the predefined variables
+	GetScope(UNICODE_STRING_SIMPLE(""), functionName);
 }
 
 void mvceditor::SymbolTableClass::FunctionEnd(const UnicodeString& functionName, int pos) {
