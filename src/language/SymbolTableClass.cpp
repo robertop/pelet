@@ -311,7 +311,7 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 		int32_t index = expressionScope.indexOf(UNICODE_STRING_SIMPLE("::"));
 		if (index >= 0) {
 			scopeClass.setTo(expressionScope, 0, index);
-			scopeMethod.setTo(expressionScope, index + 2);
+			scopeMethod.setTo(UNICODE_STRING_SIMPLE(""));
 		}
 		for (size_t i = 0; i < allResourceFinders.size(); ++i) {	
 			typeToLookup = allResourceFinders[i]->GetResourceParentClassName(scopeClass, scopeMethod);
