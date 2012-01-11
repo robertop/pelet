@@ -378,7 +378,6 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithLongMethodChain) {
 	}
 }
 
-
 TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
 		"<?php\n"
@@ -399,6 +398,71 @@ TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithFunctionChain) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), ResourceMatches[0].Identifier);
 	}
 }
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithParentChain) {
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class FirstClass { /** @return OtherClass */ function status() {} } \n"
+		"class OtherClass extends FirstClass { var $time; function status() { } }\n"
+		"$my = new MyClass;\n"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ParsedExpression.Lexeme = UNICODE_STRING_SIMPLE("parent");
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("parent"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("OtherClass::status"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)1, ResourceMatches.size());
+	if ((size_t)1 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("status"), ResourceMatches[0].Identifier);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableCreatedFunctionChain) {
+
+	// variables created with a function should be resolved
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"/** @return OtherClass */ function workA() {} \n"
+		"class OtherClass { var $time;  /** @return FirstClass */ function toString() {} }\n"
+		"$my = workA();\n"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToVariable(UNICODE_STRING_SIMPLE("$my"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, ResourceMatches.size());
+	if ((size_t)2 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), ResourceMatches[0].Identifier);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("toString"), ResourceMatches[1].Identifier);
+	}
+}
+
+TEST_FIXTURE(SymbolTableCompletionTestClass, MatchesWithVariableCreatedMethodChain) {
+
+	// variables created with a function should be resolved
+	UnicodeString sourceCode = mvceditor::StringHelperClass::charToIcu(
+		"<?php\n"
+		"class OtherClass { var $time;  /** @return OtherClass */ function parent() {} }\n"
+		"$my = new OtherClass();\n"
+		"$parent = $my->parent();\n"
+	);
+	int32_t pos;
+	sourceCode = FindCursor(sourceCode, pos);
+	Init(sourceCode);	
+	ToVariable(UNICODE_STRING_SIMPLE("$parent"));
+	ParsedExpression.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
+	CompletionSymbolTable.ExpressionCompletionMatches(ParsedExpression, UNICODE_STRING_SIMPLE("::"), OpenedFinders, &GlobalFinder, VariableMatches, ResourceMatches);
+	CHECK_EQUAL((size_t)2, ResourceMatches.size());
+	if ((size_t)2 == ResourceMatches.size()) {
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("parent"), ResourceMatches[0].Identifier);
+		CHECK_EQUAL(UNICODE_STRING_SIMPLE("time"), ResourceMatches[1].Identifier);
+	}
+}
+
 
 TEST_FIXTURE(SymbolTableCompletionTestClass, ResourceMatchesWithMethodCall) {
 

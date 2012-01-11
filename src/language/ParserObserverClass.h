@@ -164,13 +164,23 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a variable assignment is found. Note that the same 
 	 * variable may be assigned different values at different times within the same function.
+	 * The symbol will be constructed in the following way:
+	 *
+	 * Example assignment:  $name = $this->getName()->toString();
+	 *
+	 * Lexeme: lexeme will contain the variable's name (ie $name)
+	 * ChainList: This is a list of  properties / methods
+	 *            that were successively invoked.
+	 *            In this example, the expression chain list will have 3 items in
+	 *           the chain list "$this" "->getName()" and "->toString()".
+	 *
 	 * 
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.
 	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
 	 *        variable is globally scoped.
 	 * @param const SymbolClass& symbol the name  & type of the variable that was found
-	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param const UnicodeString& comment PHPDoc attached to the variable
 	 */
 	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const SymbolClass& symbol, const UnicodeString& comment) = 0;

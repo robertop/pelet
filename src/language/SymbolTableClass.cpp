@@ -59,20 +59,56 @@ static bool IsResourceVisible(const mvceditor::ResourceClass& resource, bool isS
 
 /*
  * figure out a [local] variable's type by looking at the other variables at the symbol table.
+ * Since the symbol table just stores the parsed assignment expression tree; the symbols in the symbol table
+ * have a chain list that needs to be looked up (with the symbol table).
+ * Yes, this will cause a recursive call (symbol table may call this function); but it will never be very deep.
+
+ * @see VariableObserverClass
  * @param variable the variable's name.  This is a single token, ie "$this", "$aglob" no object
  *        operations.
- * @param scopySymbols the scope to look for the variable in
+ * @param scopeSymbols the scope to look for the variable in
+ * @param symbolTable the symbol table is used to resolve the variable assigments.
+ * @param expressionScope needed to use the symbol table
+ * @param openedResourceFinders needed to use the symbol table
+ * @param globalResourceFinder needed to use the symbol table
  * @return the variable's type; could be empty string if type could not be determined 
  */
-static UnicodeString ResolveVariableType(const UnicodeString& variable, const std::vector<mvceditor::SymbolClass>& scopeSymbols) {
+static UnicodeString ResolveVariableType(const UnicodeString& variable, const std::vector<mvceditor::SymbolClass>& scopeSymbols,
+										 const mvceditor::SymbolTableClass& symbolTable, 
+										 const UnicodeString& expressionScope, 
+										 const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders, 
+										 mvceditor::ResourceFinderClass* globalResourceFinder) {
 	UnicodeString type;
 	for (size_t i = 0; i < scopeSymbols.size(); ++i) {
-		if (variable == scopeSymbols[i].Lexeme) {
-			if (scopeSymbols[i].PhpDocType.isEmpty() && !scopeSymbols[i].ChainList.empty()) {
-				type = scopeSymbols[i].ChainList[0];
+		mvceditor::SymbolClass symbol = scopeSymbols[i];
+		if (variable == symbol.Lexeme) {
+			if (!symbol.PhpDocType.isEmpty()) {
+				
+				// user declares a type (in a PHPDoc comment  @var $dog Dog
+				type = symbol.PhpDocType;
 			}
-			else if (!scopeSymbols[i].PhpDocType.isEmpty()) {
-				type = scopeSymbols[i].PhpDocType;
+			else if (!symbol.ChainList.empty()) {
+				
+				// go through the chain list; the first item in the list may be a variable
+				mvceditor::SymbolClass parsedExpression;
+
+				// this is important; the lexeme of the thing to resolve always be the ChainList
+				parsedExpression.Lexeme = symbol.ChainList[0];
+				if (parsedExpression.Lexeme.endsWith("()")) {
+					parsedExpression.Lexeme.remove(parsedExpression.Lexeme.length() - 2, 2);
+				}
+				parsedExpression.ChainList = symbol.ChainList;
+				std::vector<mvceditor::ResourceClass> resourceMatches;
+				symbolTable.ResourceMatches(parsedExpression, expressionScope, 
+					openedResourceFinders, globalResourceFinder,resourceMatches);
+				if (!resourceMatches.empty()) {
+					if (mvceditor::ResourceClass::CLASS == resourceMatches[0].Type) {
+						type = resourceMatches[0].Resource;
+					}
+					else {
+						type =  resourceMatches[0].ReturnType;
+					}
+				}
 			}
 			break;
 		}
@@ -196,7 +232,7 @@ void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 }
 
 void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, const UnicodeString& expressionScope,
-															  const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+															  const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders,
 															  mvceditor::ResourceFinderClass* globalResourceFinder,
 															  std::vector<UnicodeString>& autoCompleteVariableList,
 															  std::vector<mvceditor::ResourceClass>& autoCompleteResourceList) const {
@@ -223,7 +259,7 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 }
 
 void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
-												  const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
+												  const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders,
 												  mvceditor::ResourceFinderClass* globalResourceFinder,
 												  std::vector<mvceditor::ResourceClass>& resourceMatches) const {
 	UnicodeString start = parsedExpression.Lexeme;
@@ -246,7 +282,7 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 	if (start.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 		
 		// a variable. look at the type from the symbol table
-		typeToLookup = ResolveVariableType(start, scopeSymbols);
+		typeToLookup = ResolveVariableType(start, scopeSymbols, *this, expressionScope, openedResourceFinders, globalResourceFinder);
 		if (UNICODE_STRING_SIMPLE("$this") == start) {
 			isThisCall = true;
 		}
@@ -269,8 +305,16 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 		// what class is the parent
 		// this code assumes that the resource finders have parsed the same exact code as the code that the
 		// symbol table has parsed.
-		for (size_t i = 0; i < allResourceFinders.size(); ++i) {
-			typeToLookup = allResourceFinders[i]->GetResourceParentClassName(start, UNICODE_STRING_SIMPLE(""));
+		// also, determine the type of "parent" by looking at the scope
+		UnicodeString scopeClass;
+		UnicodeString scopeMethod;
+		int32_t index = expressionScope.indexOf(UNICODE_STRING_SIMPLE("::"));
+		if (index >= 0) {
+			scopeClass.setTo(expressionScope, 0, index);
+			scopeMethod.setTo(expressionScope, index + 2);
+		}
+		for (size_t i = 0; i < allResourceFinders.size(); ++i) {	
+			typeToLookup = allResourceFinders[i]->GetResourceParentClassName(scopeClass, scopeMethod);
 			if (!typeToLookup.isEmpty()) {
 				break;
 			}
@@ -309,6 +353,10 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 	if (!typeToLookup.isEmpty() && parsedExpression.ChainList.size() > 1) {
 		resourceToLookup = typeToLookup + parsedExpression.ChainList.back();
 		resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("->"), UNICODE_STRING_SIMPLE("::")); 
+
+		// remove the stuff leftover from the expression parser; the resource finder cannot handle them
+		// and would result in lookup failures
+		resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("()"), UNICODE_STRING_SIMPLE("")); 
 	}
 	else {
 		resourceToLookup = typeToLookup;
