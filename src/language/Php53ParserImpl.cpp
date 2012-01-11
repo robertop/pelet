@@ -3761,7 +3761,7 @@ yyreduce:
 
   case 133:
 
-    { observers.ParametersListSetName((yyvsp[(2) - (4)]), true); ;}
+    { observers.ParametersListSetName((yyvsp[(2) - (4)]), false); ;}
     break;
 
   case 134:

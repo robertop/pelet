@@ -457,7 +457,7 @@ non_empty_parameter_list:
 		optional_class_type T_VARIABLE														{ observers.ParametersListSetName($2, false); }
 	|	optional_class_type '&' T_VARIABLE													{ observers.ParametersListSetName($3, true); }
 	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ observers.ParametersListSetName($3, true);}
-	|	optional_class_type T_VARIABLE '=' static_scalar									{ observers.ParametersListSetName($2, true); }
+	|	optional_class_type T_VARIABLE '=' static_scalar									{ observers.ParametersListSetName($2, false); }
 	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ observers.ParametersListSetName($4, false); } 
 	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ observers.ParametersListSetName($5, true); }
 	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ observers.ParametersListSetName($5, true); }
