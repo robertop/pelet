@@ -344,11 +344,11 @@ solution "mvc_editor"
 		kind "WindowedApp"
 		files { 
 			"profilers/code_control_profiler.cpp",
-			"src/widgets/CodeControlOptionsClass.cpp",
-			"src/widgets/CodeControlClass.cpp",
+			"src/code_control/CodeControlOptionsClass.cpp",
+			"src/code_control/CodeControlClass.cpp",
+			"src/code_control/DocumentClass.cpp",
 			"src/widgets/ResourceUpdateThreadClass.cpp",
-			"src/widgets/ThreadWithHeartbeatClass.cpp",
-			"src/widgets/DocumentClass.cpp",
+			"src/widgets/ThreadWithHeartbeatClass.cpp",			
 			"src/windows/StringHelperClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/*.cpp",
