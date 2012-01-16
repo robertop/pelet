@@ -79,6 +79,10 @@ int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 			end = true;
 			return T_ERROR_UNTERMINATED_STRING;
 		}
+		
+		// since we are eating up a  newline, otherwise line numbering in lint errors
+		// will be wrong
+		buffer->IncrementLine();
 		bool hasEndingSemicolon = true;
 		if (!line.endsWith(UNICODE_STRING(";", 1))) {
 			line.append(UNICODE_STRING(";", 1));
