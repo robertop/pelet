@@ -45,6 +45,89 @@ public:
 };
 
 /**
+ * A small class that will tell the outside world why the symbol table failed
+ * to match a symbol or failed to complete an expression.
+ */
+class SymbolTableMatchErrorClass {
+
+public:
+
+	enum ErrorTypes {
+
+		/** success */
+		NONE,
+
+		/** 
+		 * an item in the parsedExpression ChainList could not be resolved.  This means that
+		 * a method or property did not have a PHPDoc hint
+		 */
+		TYPE_RESOLUTION_ERROR,
+
+		/**
+		 * A resource was found; but it was a protected/private member attempting to
+		 * be accessed from outside class; it was removed from matches
+		 */
+		VISIBILITY_ERROR,
+		
+		/**
+		 * A static resource was found; but it was a protected/private member attempting to
+		 * be accessed from outside class; it was removed from matches
+		 */
+		STATIC_ERROR,
+
+		/**
+		 * "parent" keyword could not be resolved because expression is not in a class scope.
+		 */
+		PARENT_ERROR,
+
+		/**
+		 * A resource was not found
+		 */
+		UNKNOWN_RESOURCE,
+
+		/**
+		 * A static resource was not found
+		 */
+		UNKNOWN_STATIC_RESOURCE,
+
+		/**
+		 * Expression attempted to call the object operator on a primitive (string, int, double, ...)
+		 */
+		PRIMITIVE_ERROR,
+
+		/**
+		 * Expression attempted to call the object operator on an array
+		 */
+		ARRAY_ERROR
+	};
+
+	/**
+	 * The identifier that could not be resolved.
+	 */
+	UnicodeString ErrorLexeme;
+
+	/**
+	 * The name of the class that was searched; may only be filled
+	 * when the parsed expression is a Chain list (chain of object
+	 * operations).
+	 */
+	UnicodeString ErrorClass;
+
+	/**
+	 * Reason why matching failed.
+	 */
+	ErrorTypes Type;
+
+	SymbolTableMatchErrorClass();
+
+	/**
+	 * Set to ErrorTypes NONE and clears the error strings.
+	 */
+	void Clear();
+
+};
+
+/**
  * A Symbol table is the data structure that will hold all of the variables in the code along with their type information.
  * Symbols will be generated per each file according to PHP lanuguage semantics: 
  *  1. There are proper scopes (local variables)
@@ -98,12 +181,14 @@ public:
 	 * @param autoCompleteResourceList the results of the matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression. This will be filled only when parsedExpression is a variable "chain" or
 	 *        a function / static class call. 
+	 * @param error any errors / explanations will be populated here
 	 */
 	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
 		std::vector<UnicodeString>& autoCompleteVariableList,
-		std::vector<ResourceClass>& autoCompleteResourceList) const;
+		std::vector<ResourceClass>& autoCompleteResourceList,
+		SymbolTableMatchErrorClass& error) const;
 
 	/**
 	 * This method will resolve the given parsed expression and will figure out the type of a resource. It will resolve
@@ -128,11 +213,13 @@ public:
 	 * @param globalResourceFinder the 'global' cache of resources for files that are NOT being edited
 	 * @param resourceMatches the resource matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
+	 * @param error any errors / explanations will be populated here
 	 */
 	void ResourceMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
-		std::vector<ResourceClass>& resourceMatches) const;
+		std::vector<ResourceClass>& resourceMatches,
+		SymbolTableMatchErrorClass& error) const;
 	
 	/**
 	 * outout to stdout

@@ -77,12 +77,19 @@ static UnicodeString ResolveVariableType(const UnicodeString& variable, const st
 										 const mvceditor::SymbolTableClass& symbolTable, 
 										 const UnicodeString& expressionScope, 
 										 const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders, 
-										 mvceditor::ResourceFinderClass* globalResourceFinder) {
+										 mvceditor::ResourceFinderClass* globalResourceFinder,
+										 mvceditor::SymbolTableMatchErrorClass& error) {
 	UnicodeString type;
 	for (size_t i = 0; i < scopeSymbols.size(); ++i) {
 		mvceditor::SymbolClass symbol = scopeSymbols[i];
 		if (variable == symbol.Lexeme) {
-			if (!symbol.PhpDocType.isEmpty()) {
+			if (mvceditor::SymbolClass::PRIMITIVE == symbol.Type) {
+				type = "primitive";
+			}
+			else if (mvceditor::SymbolClass::ARRAY == symbol.Type) {
+				type = "array";
+			}
+			else if (!symbol.PhpDocType.isEmpty()) {
 				
 				// user declares a type (in a PHPDoc comment  @var $dog Dog
 				type = symbol.PhpDocType;
@@ -100,7 +107,7 @@ static UnicodeString ResolveVariableType(const UnicodeString& variable, const st
 				parsedExpression.ChainList = symbol.ChainList;
 				std::vector<mvceditor::ResourceClass> resourceMatches;
 				symbolTable.ResourceMatches(parsedExpression, expressionScope, 
-					openedResourceFinders, globalResourceFinder,resourceMatches);
+					openedResourceFinders, globalResourceFinder,resourceMatches, error);
 				if (!resourceMatches.empty()) {
 					if (mvceditor::ResourceClass::CLASS == resourceMatches[0].Type) {
 						type = resourceMatches[0].Resource;
@@ -149,6 +156,18 @@ static UnicodeString ResolveResourceType(UnicodeString resourceToLookup, const s
  */
 static UnicodeString ScopeString(const UnicodeString& className, const UnicodeString& functionName) {
 	return className + UNICODE_STRING_SIMPLE("::") + functionName;
+}
+
+mvceditor::SymbolTableMatchErrorClass::SymbolTableMatchErrorClass()
+	: ErrorLexeme()
+	, ErrorClass()
+	, Type(NONE) {
+}
+
+void mvceditor::SymbolTableMatchErrorClass::Clear() {
+	Type = NONE;
+	ErrorLexeme.remove();
+	ErrorClass.remove();
 }
 
 mvceditor::SymbolTableClass::SymbolTableClass() 
@@ -235,7 +254,8 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 															  const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders,
 															  mvceditor::ResourceFinderClass* globalResourceFinder,
 															  std::vector<UnicodeString>& autoCompleteVariableList,
-															  std::vector<mvceditor::ResourceClass>& autoCompleteResourceList) const {
+															  std::vector<mvceditor::ResourceClass>& autoCompleteResourceList,
+															  mvceditor::SymbolTableMatchErrorClass& error) const {
 	if (parsedExpression.ChainList.size() == 1 && parsedExpression.Lexeme.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 
 		// if expression does not have more than one chained called AND it starts with a '$' then we want to match (local)
@@ -254,14 +274,16 @@ void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::S
 	else {
 
 		// some kind of function call / method chain call
-		ResourceMatches(parsedExpression, expressionScope, openedResourceFinders, globalResourceFinder, autoCompleteResourceList);
+		ResourceMatches(parsedExpression, expressionScope, openedResourceFinders, globalResourceFinder, 
+			autoCompleteResourceList, error);
 	}	
 }
 
 void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 												  const std::map<wxString, mvceditor::ResourceFinderClass*>& openedResourceFinders,
 												  mvceditor::ResourceFinderClass* globalResourceFinder,
-												  std::vector<mvceditor::ResourceClass>& resourceMatches) const {
+												  std::vector<mvceditor::ResourceClass>& resourceMatches,
+												  mvceditor::SymbolTableMatchErrorClass& error) const {
 	UnicodeString start = parsedExpression.Lexeme;
 
 	std::vector<mvceditor::SymbolClass> scopeSymbols;
@@ -282,7 +304,8 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 	if (start.startsWith(UNICODE_STRING_SIMPLE("$"))) {
 		
 		// a variable. look at the type from the symbol table
-		typeToLookup = ResolveVariableType(start, scopeSymbols, *this, expressionScope, openedResourceFinders, globalResourceFinder);
+		typeToLookup = ResolveVariableType(start, scopeSymbols, *this, expressionScope, openedResourceFinders, 
+			globalResourceFinder, error);
 		if (UNICODE_STRING_SIMPLE("$this") == start) {
 			isThisCall = true;
 		}
@@ -320,6 +343,10 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 			}
 		}
 		isParentCall = true;
+		if (typeToLookup.isEmpty()) {
+			error.Type = mvceditor::SymbolTableMatchErrorClass::PARENT_ERROR;
+			error.ErrorLexeme = scopeClass;
+		}
 	}
 	else if (parsedExpression.ChainList.size() > 1) {
 
@@ -344,9 +371,41 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 
 	// continue to the next item in the chain up until the second to last one
 	// if we can't resolve a type then just exit
-	for (size_t i = 1; i < (parsedExpression.ChainList.size() - 1) && !typeToLookup.isEmpty(); ++i) {
-		UnicodeString nextResource = typeToLookup + parsedExpression.ChainList[i];
-		typeToLookup = ResolveResourceType(nextResource, allResourceFinders);
+	bool resolutionError = false;
+	bool primitiveError = false;
+	bool arrayError = false;
+	UnicodeString resolutionLexeme,
+		resolutionClass;
+	if (typeToLookup.caseCompare(UNICODE_STRING_SIMPLE("primitive"), 0) == 0) {
+		primitiveError = true;
+		resolutionLexeme = start;
+		typeToLookup = UNICODE_STRING_SIMPLE("");
+	}
+	else if (typeToLookup.caseCompare(UNICODE_STRING_SIMPLE("array"), 0) == 0) {
+		arrayError = true;
+		resolutionLexeme = start;
+		typeToLookup = UNICODE_STRING_SIMPLE("");
+	}
+	else {
+		for (size_t i = 1; i < (parsedExpression.ChainList.size() - 1) && !typeToLookup.isEmpty(); ++i) {	
+			UnicodeString nextResource = typeToLookup + parsedExpression.ChainList[i];
+			typeToLookup = ResolveResourceType(nextResource, allResourceFinders);
+			if (typeToLookup.isEmpty()) {
+				resolutionError = true;
+				resolutionClass = typeToLookup;
+				resolutionLexeme = parsedExpression.ChainList[i];
+			}
+			else if (typeToLookup.caseCompare(UNICODE_STRING_SIMPLE("primitive"), 0) == 0) {
+				primitiveError = true;
+				resolutionClass = typeToLookup;
+				resolutionLexeme =  parsedExpression.ChainList[i];
+			}
+			else if (typeToLookup.caseCompare(UNICODE_STRING_SIMPLE("array"), 0) == 0) {
+				arrayError = true;
+				resolutionClass = typeToLookup;
+				resolutionLexeme =  parsedExpression.ChainList[i];
+			}
+		}
 	}
 
 	UnicodeString resourceToLookup;
@@ -358,10 +417,12 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 		// and would result in lookup failures
 		resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("()"), UNICODE_STRING_SIMPLE("")); 
 	}
-	else {
+	else if (!arrayError && !primitiveError) {
 		resourceToLookup = typeToLookup;
 	}
 	wxString wxResource = mvceditor::StringHelperClass::IcuToWx(resourceToLookup);
+	bool removedByVisibility = false;
+	
 	for (size_t j = 0; j < allResourceFinders.size(); ++j) {
 		mvceditor::ResourceFinderClass* finder = allResourceFinders[j];
 		if (finder->Prepare(wxResource) && finder->CollectNearMatchResources()) {
@@ -370,13 +431,60 @@ void mvceditor::SymbolTableClass::ResourceMatches(const mvceditor::SymbolClass& 
 			// make sense because of visibility rules
 			for (size_t k = 0; k < finder->GetResourceMatchCount(); ++k) {
 				mvceditor::ResourceClass resource = finder->GetResourceMatch(k);
-				if (!mvceditor::IsResourceDirty(openedResourceFinders, resource, finder) &&
-						IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall)) {
+				bool isVisible = IsResourceVisible(resource, isStaticCall, isThisCall, isParentCall);
+				if (!mvceditor::IsResourceDirty(openedResourceFinders, resource, finder) && isVisible) {
 					resourceMatches.push_back(resource);
+				}
+				else if (!isVisible) {
+					removedByVisibility = true;
 				}
 			}
 		}
 	}
+	if (resourceMatches.empty() && removedByVisibility && !parsedExpression.ChainList.empty()) {
+		if (isStaticCall) {
+			error.Type = mvceditor::SymbolTableMatchErrorClass::STATIC_ERROR;
+		}
+		else {
+			error.Type = mvceditor::SymbolTableMatchErrorClass::VISIBILITY_ERROR;
+		}
+		error.ErrorLexeme = parsedExpression.ChainList.back();
+		error.ErrorClass = typeToLookup;
+	}
+	else if (resourceMatches.empty() && resolutionError) {
+
+		// an error resolving one of the types in the ChainList (not necessarily the last item)
+		error.Type = mvceditor::SymbolTableMatchErrorClass::TYPE_RESOLUTION_ERROR;
+		error.ErrorLexeme = resolutionLexeme;
+		error.ErrorClass = resolutionClass;
+	}
+	else if (arrayError) {
+		error.Type = mvceditor::SymbolTableMatchErrorClass::ARRAY_ERROR;
+		error.ErrorLexeme = resolutionLexeme;
+		error.ErrorClass = resolutionClass;
+	}
+	else if (primitiveError) {
+		error.Type = mvceditor::SymbolTableMatchErrorClass::PRIMITIVE_ERROR;
+		error.ErrorLexeme = resolutionLexeme;
+		error.ErrorClass = resolutionClass;
+	}
+	else if (resourceMatches.empty() && !parsedExpression.ChainList.empty()) {
+		if (isStaticCall) {
+			error.Type = mvceditor::SymbolTableMatchErrorClass::UNKNOWN_STATIC_RESOURCE;
+		}
+		else {
+			error.Type = mvceditor::SymbolTableMatchErrorClass::UNKNOWN_RESOURCE;
+		}
+		error.ErrorLexeme = parsedExpression.ChainList.back();		
+
+		// ChainList may be of size 1, in which case a function was looked up
+		if (parsedExpression.ChainList.size() > 1) {
+			error.ErrorClass = typeToLookup;
+		}
+	}
+	error.ErrorLexeme.findAndReplace(UNICODE_STRING_SIMPLE("->"), UNICODE_STRING_SIMPLE(""));
+	error.ErrorLexeme.findAndReplace(UNICODE_STRING_SIMPLE("::"), UNICODE_STRING_SIMPLE(""));
+	error.ErrorLexeme.findAndReplace(UNICODE_STRING_SIMPLE("()"), UNICODE_STRING_SIMPLE(""));
 }
 
 std::vector<mvceditor::SymbolClass>& mvceditor::SymbolTableClass::GetScope(const UnicodeString& className, 
