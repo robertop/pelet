@@ -81,12 +81,15 @@ public:
 		PARENT_ERROR,
 
 		/**
-		 * A resource was not found
+		 * All items in the parsedExpression ChainList were able to be resolved, but the
+		 * final item was not found in the resolved class.
 		 */
 		UNKNOWN_RESOURCE,
 
 		/**
-		 * A static resource was not found
+		 * A static resource was not found.
+		 * All items in the parsedExpression ChainList were able to be resolved, but the
+		 * final item was not found in the resolved class.
 		 */
 		UNKNOWN_STATIC_RESOURCE,
 
@@ -121,9 +124,44 @@ public:
 	SymbolTableMatchErrorClass();
 
 	/**
+	 * @return true if ErrorType is any of the error types
+	 */
+	bool HasError() const;
+
+	/**
 	 * Set to ErrorTypes NONE and clears the error strings.
 	 */
 	void Clear();
+	
+	/**
+	 * @param parsedExpression the expression that was attempted
+	 * @param className the name of the class that was searched
+	 */
+	void ToVisibility(const SymbolClass& parsedExpression, const UnicodeString& className);
+
+	/**
+	 * @param className the class name that was attempted
+	 * @param memberName the name that was attempted 
+	 */
+	void ToTypeResolution(const UnicodeString& className, const UnicodeString& methodName);
+
+	/**
+	 * @param className the class name that was attempted
+	 * @param memberName the name that was attempted 
+	 */
+	void ToArrayError(const UnicodeString& className, const UnicodeString& methodName);
+
+	/**
+	 * @param className the class name that was attempted
+	 * @param memberName the name that was attempted 
+	 */
+	void ToPrimitiveError(const UnicodeString& className, const UnicodeString& methodName);
+
+	/**
+	 * @param parsedExpression the expression that was attempted
+	 * @param className the name of the class that was searched
+	 */
+	void ToUnknownResource(const SymbolClass& parsedExpression, const UnicodeString& className);
 
 };
 
@@ -181,13 +219,17 @@ public:
 	 * @param autoCompleteResourceList the results of the matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression. This will be filled only when parsedExpression is a variable "chain" or
 	 *        a function / static class call. 
-	 * @param error any errors / explanations will be populated here
+	 * @param doDuckTyping if an expression chain could not be fully resolved; then we could still
+	 *        perform a search for the expression member in ALL classes. The lookups will not be
+	 *        slower because ResourceFinderClass still handles them
+	 * @param error any errors / explanations will be populated here. error must be set to no error (initial state of object; or use Clear() )
 	 */
 	void ExpressionCompletionMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
 		std::vector<UnicodeString>& autoCompleteVariableList,
 		std::vector<ResourceClass>& autoCompleteResourceList,
+		bool doDuckTyping,
 		SymbolTableMatchErrorClass& error) const;
 
 	/**
@@ -213,12 +255,16 @@ public:
 	 * @param globalResourceFinder the 'global' cache of resources for files that are NOT being edited
 	 * @param resourceMatches the resource matches; these are the names of the items that
 	 *        are "near matches" to the parsed expression.
-	 * @param error any errors / explanations will be populated here
+	 * @param doDuckTyping if an expression chain could not be fully resolved; then we could still
+	 *        perform a search for the expression member in ALL classes. The lookups will not be
+	 *        slower because ResourceFinderClass still handles them
+	 * @param error any errors / explanations will be populated here. error must be set to no error (initial state of object; or use Clear())
 	 */
 	void ResourceMatches(const SymbolClass& parsedExpression, const UnicodeString& expressionScope, 
 		const std::map<wxString, ResourceFinderClass*>& openedResourceFinders,
 		mvceditor::ResourceFinderClass* globalResourceFinder,
 		std::vector<ResourceClass>& resourceMatches,
+		bool doDuckTyping, 
 		SymbolTableMatchErrorClass& error) const;
 	
 	/**
