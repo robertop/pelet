@@ -275,6 +275,7 @@ solution "mvc_editor"
 			"src/search/ResourceFinderClass.cpp",
 			"src/widgets/ResourceUpdateThreadClass.cpp",
 			"src/widgets/ThreadWithHeartbeatClass.cpp",
+			"src/widgets/ProcessWithHeartbeatClass.cpp",
 			"src/windows/StringHelperClass.cpp",
 			"src/MvcEditorErrors.cpp",
 			"src/MvcEditorAssets.cpp"
