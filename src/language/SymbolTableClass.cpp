@@ -609,7 +609,7 @@ void mvceditor::SymbolTableClass::CreatePredefinedVariables(std::vector<mvcedito
 bool mvceditor::IsResourceDirty(const std::map<wxString, mvceditor::ResourceFinderClass*>& finders, 
 								const ResourceClass& resource, mvceditor::ResourceFinderClass* resourceFinder) {
 	bool ret = false;
-	wxString matchFullName = resourceFinder->GetResourceMatchFullPathFromResource(resource);
+	wxString matchFullName = resource.GetFullPath();
 	std::map<wxString, mvceditor::ResourceFinderClass*>::const_iterator it = finders.begin();
 	while (it != finders.end()) {
 
