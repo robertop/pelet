@@ -159,7 +159,12 @@ static UnicodeString ResolveResourceType(UnicodeString resourceToLookup,
 	resourceToLookup.findAndReplace(UNICODE_STRING_SIMPLE("()"), UNICODE_STRING_SIMPLE(""));
 	for (size_t j = 0; j < resourceFinders.size(); ++j) {
 		mvceditor::ResourceFinderClass* finder = resourceFinders[j];
-		type = finder->GetResourceReturnType(resourceToLookup);
+		if (finder->Prepare(mvceditor::StringHelperClass::IcuToWx(resourceToLookup)) && finder->CollectFullyQualifiedResource()) {
+			if (finder->GetResourceMatchCount() == 1) {
+				mvceditor::ResourceClass match = finder->GetResourceMatch(0);
+				type = match.ReturnType;
+			}
+		}
 		if (!type.isEmpty()) {
 
 			// since we are doing exact lookups, only one should be found
