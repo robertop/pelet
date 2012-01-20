@@ -273,7 +273,7 @@ solution "mvc_editor"
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
 			"src/search/ResourceFinderClass.cpp",
-			"src/widgets/ResourceUpdateThreadClass.cpp",
+			"src/widgets/ResourceCacheClass.cpp",
 			"src/widgets/ThreadWithHeartbeatClass.cpp",
 			"src/widgets/ProcessWithHeartbeatClass.cpp",
 			"src/windows/StringHelperClass.cpp",
@@ -348,9 +348,10 @@ solution "mvc_editor"
 			"src/code_control/CodeControlOptionsClass.cpp",
 			"src/code_control/CodeControlClass.cpp",
 			"src/code_control/DocumentClass.cpp",
-			"src/widgets/ResourceUpdateThreadClass.cpp",
+			"src/widgets/ResourceCacheClass.cpp",
 			"src/widgets/ThreadWithHeartbeatClass.cpp",
 			"src/widgets/ProcessWithHeartbeatClass.cpp",
+			"src/widgets/StatusBarWithGaugeClass.cpp",
 			"src/windows/StringHelperClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/*.cpp",
@@ -359,6 +360,7 @@ solution "mvc_editor"
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
 			"src/search/ResourceFinderClass.cpp",
+			"src/search/DirectorySearchClass.cpp",
 			"src/MvcEditorErrors.cpp",
 			"src/MvcEditorAssets.cpp"
 		}
