@@ -269,6 +269,7 @@ solution "mvc_editor"
 			"src/language/LanguageDiscoveryClass.cpp",
 			"src/language/ParserObserverClass.cpp",
 			"src/php_frameworks/ProjectClass.cpp",
+			"src/php_frameworks/FrameworkDetectorClass.cpp",
 			"src/search/DirectorySearchClass.cpp",
 			"src/search/FinderClass.cpp",
 			"src/search/FindInFilesClass.cpp",
