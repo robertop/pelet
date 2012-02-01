@@ -4,8 +4,8 @@
 #ifndef __filetestfixtureclass__
 #define __filetestfixtureclass__
 
-#include "wx/string.h" 
-#include "unicode/ustream.h" //get the << overloaded operator, needed by UnitTest++
+#include <wx/string.h>
+#include <unicode/ustream.h> //get the << overloaded operator, needed by UnitTest++
 #include <iostream>
 
 /**
