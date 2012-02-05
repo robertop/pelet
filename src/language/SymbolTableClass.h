@@ -101,7 +101,19 @@ public:
 		/**
 		 * Expression attempted to call the object operator on an array
 		 */
-		ARRAY_ERROR
+		ARRAY_ERROR,
+		
+		/**
+		 * The symbol table has not been generated yet (this is a usage error, as CreateSymbols() needs
+		 * to be called before ExpressionCompletionMatches() or ResourceMatches()
+		 */
+		EMPTY_SYMBOL_TABLE,
+
+		/**
+		 * This is also a usage error; a file must be Register() 'ed with the ResourceCache before 
+		 * variables can be resolved.
+		 */
+		UNREGISTERED_FILE
 	};
 
 	/**
@@ -184,6 +196,14 @@ public:
 	 * @param UnicodeString code the code to analyze
 	 */
 	void CreateSymbols(const UnicodeString& code);
+	
+
+	/**
+	 * Builds symbols for the given source code file. After symbols are created, lookups can be performed. 
+	 * 
+	 * @param wxString full path to the file that contains the code to analyze
+	 */
+	void CreateSymbolsFromFile(const wxString& fileName);
 
 	/**
 	 * This is the entry point into the code completion functionality; it will take a parsed expression (symbol)

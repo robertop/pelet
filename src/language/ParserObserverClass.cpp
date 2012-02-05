@@ -410,6 +410,37 @@ void mvceditor::SymbolClass::Clear() {
 	Type = mvceditor::SymbolClass::PRIMITIVE;
 }
 
+void mvceditor::SymbolClass::FromExpression(const mvceditor::ExpressionClass& expression) {
+	if (mvceditor::ExpressionClass::ARRAY == expression.Type) {
+		SetToArray();
+	}
+	else if (mvceditor::ExpressionClass::FUNCTION_CALL == expression.Type) {
+		SetToObject();
+	}
+	else if (mvceditor::ExpressionClass::NEW_CALL == expression.Type) {
+		SetToObject();
+	}
+	else if (mvceditor::ExpressionClass::SCALAR == expression.Type) {
+		SetToPrimitive();
+	}
+	else if (mvceditor::ExpressionClass::UNKNOWN == expression.Type) {
+		SetToUnknown();
+	}
+	else if (mvceditor::ExpressionClass::VARIABLE == expression.Type) {
+		SetToObject();
+	}
+	Comment = expression.Comment;
+	Lexeme = expression.Lexeme;
+	ChainList = expression.ChainList;
+	if (expression.Lexeme.isEmpty() && expression.ChainList.empty()) {
+		
+		 // when a static property; the "namespace_name" parser rule 
+		 // is triggered
+		Lexeme = expression.Name.ToSignature();
+		ChainList.insert(ChainList.begin(), Lexeme);
+	}
+}
+
 mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
 				  FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
 				  ExpressionObserverClass* expressionObserver)

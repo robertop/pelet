@@ -542,6 +542,11 @@ public:
 	void SetToArray();
 	void SetToUnknown();
 	void Clear();
+	
+	/**
+	 * Turns the given expression into this symbol
+	 */
+	void FromExpression(const ExpressionClass& expression);
 };
 
 

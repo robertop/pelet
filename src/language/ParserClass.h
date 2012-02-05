@@ -115,6 +115,11 @@ public:
 	 * copy the attributes from src to this object.
 	 */
 	void Copy(const LintResultsClass& src);
+	
+	/**
+	 * remove any error string
+	 */
+	void Clear();
 };
 
 class ParserClass {
@@ -131,9 +136,10 @@ public:
 	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const wxString& file the file to parse.  Must be a full path.
-	 * @return bool if file was found.
+	 * @param LintResultsClass& results any error message will be populated here
+	 * @return bool if file was found and could be parsed successfully
 	 */
-	bool ScanFile(const wxString& file);
+	bool ScanFile(const wxString& file, LintResultsClass& results);
 	
 	/**
 	 * Scans the given string. This function will return once the entire
@@ -142,9 +148,10 @@ public:
 	 * parser should not be modified in the observer calls.
 	 * 
 	 * @param const UnicodeString& code the code to parse.
-	 * @return bool alway true for now, just to give this method symmetry with ParseFile() method.
+	 * @param LintResultsClass& results any error message will be populated here
+	 * @return bool if string could be parsed successfully
 	 */
-	bool ScanString(const UnicodeString& code);
+	bool ScanString(const UnicodeString& code, LintResultsClass& results);
 	
 	/**
 	 * Set the class observer.  The observer will get notified when a class is encountered.
@@ -177,6 +184,14 @@ public:
 	 * @param VariableObserverClass* observer the object to sent notifications to 
 	 */
 	void SetVariableObserver(VariableObserverClass* observer);
+	
+	/**
+	 * Set the expression observer.  The observer will get notified when a new expression has been created.
+	 * Memory management of this pointer should be done by the caller.
+	 * 
+	 * @param ExpressionObserverClass* observer the object to sent notifications to 
+	 */
+	void SetExpressionObserver(ExpressionObserverClass* expressionObserver);
 	
 	/**
 	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3.
@@ -331,6 +346,15 @@ private:
 	 * @var VariableObserverClass*
 	 */		
 	VariableObserverClass* VariableObserver;
+	
+	
+	/**
+	 * Notify the ExpressionObserver when an expressionhas been found. Memory management of this pointer should be
+	 * done by the caller.
+	 * 
+	 * @var ExpressionObserverClass*
+	 */		
+	ExpressionObserverClass* ExpressionObserver;
 };
 
 

@@ -105,6 +105,7 @@ public:
 	}
 	
 	mvceditor::ParserClass* Parser;
+	mvceditor::LintResultsClass LintResults;
 };
 
 /**
@@ -207,7 +208,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 	wxString file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
-	CHECK(Parser->ScanFile(file));
+	CHECK(Parser->ScanFile(file, LintResults));
 	CHECK_EQUAL((size_t)1, observer.ClassName.size());
 	if (!observer.ClassName.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.ClassName[0]);
@@ -239,7 +240,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	wxString file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetClassMemberObserver(&observer);
-	CHECK(Parser->ScanFile(file));
+	CHECK(Parser->ScanFile(file, LintResults));
 	CHECK_EQUAL((size_t)4, observer.MethodClassName.size());
 	if (observer.MethodClassName.size() == 4) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("UserClass"), observer.MethodClassName[0]);
@@ -330,7 +331,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 	wxString file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetFunctionObserver(&observer);
-	CHECK(Parser->ScanFile(file));
+	CHECK(Parser->ScanFile(file, LintResults));
 	CHECK_EQUAL((size_t)1, observer.FunctionName.size());
 	if (!observer.FunctionName.empty()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("showUser"), observer.FunctionName[0]);
@@ -355,7 +356,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	wxString file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetVariableObserver(&observer);
-	CHECK(Parser->ScanFile(file));
+	CHECK(Parser->ScanFile(file, LintResults));
 	CHECK_EQUAL((size_t)7, observer.VariableName.size());
 	if (observer.VariableName.size() == 7) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("$blog"), observer.VariableName[0]);
@@ -419,7 +420,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 		"abstract class AbstractRunnable implements Runnable, ArrayAccess {}\n"
 		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
 	);
-	CHECK(Parser->ScanString(code));
+	CHECK(Parser->ScanString(code, LintResults));
 	CHECK_EQUAL((size_t)4, observer.ClassName.size());
 	if ((size_t)4 == observer.ClassName.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Runnable"), observer.ClassName[0]);
@@ -453,7 +454,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
 		"	var $publicVar;\n"
 		"} \n"
 	);
-	CHECK(Parser->ScanString(code));
+	CHECK(Parser->ScanString(code, LintResults));
 	CHECK_EQUAL((size_t)3, observer.MethodClassName.size());
 	if ((size_t)3 == observer.ClassSignature.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Runnable"), observer.MethodClassName[0]);
@@ -529,7 +530,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
 		"   static $stat = 1; \n"
 		"}"
 	);
-	CHECK(Parser->ScanString(code));
+	CHECK(Parser->ScanString(code, LintResults));
 	CHECK_EQUAL((size_t)14, observer.VariableMethodName.size());
 	if ((size_t)14 == observer.VariableMethodName.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), observer.VariableMethodName[0]);
@@ -608,7 +609,7 @@ TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
 		"	}\n"
 		"}"
 	);
-	CHECK(Parser->ScanString(code));
+	CHECK(Parser->ScanString(code, LintResults));
 	CHECK_EQUAL((size_t)2, observer.MethodClassName.size());
 	if ((size_t)2 == observer.MethodClassName.size()) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("Person"), observer.MethodClassName[0]);
@@ -673,7 +674,7 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 		"}\n"
 		"}"
 	);
-	CHECK(Parser->ScanString(code));
+	CHECK(Parser->ScanString(code, LintResults));
 	CHECK(!observer.MethodEndPos.empty());
 	if (!observer.MethodEndPos.empty()) {
 		CHECK_EQUAL((16 + 1 + 18 + 4), observer.MethodEndPos[0]);

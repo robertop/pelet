@@ -97,6 +97,10 @@ static UnicodeString ResolveVariableType(const UnicodeString& expressionScope,
 										 const std::vector<mvceditor::SymbolClass>& scopeSymbols,
 										 const mvceditor::SymbolTableClass& symbolTable) {
 	UnicodeString type;
+	if (scopeSymbols.empty()) {
+		error.Type = mvceditor::SymbolTableMatchErrorClass::EMPTY_SYMBOL_TABLE;
+		return type;
+	}
 	for (size_t i = 0; i < scopeSymbols.size(); ++i) {
 		mvceditor::SymbolClass symbol = scopeSymbols[i];
 		if (variable == symbol.Lexeme) {
@@ -423,7 +427,18 @@ void mvceditor::SymbolTableClass::VariableFound(const UnicodeString& className, 
 
 void mvceditor::SymbolTableClass::CreateSymbols(const UnicodeString& code) {
 	Variables.clear();
-	Parser.ScanString(code);
+	
+	// for now ignore parse errors
+	mvceditor::LintResultsClass results;
+	Parser.ScanString(code, results);
+}
+
+void mvceditor::SymbolTableClass::CreateSymbolsFromFile(const wxString& fileName) {
+	Variables.clear();
+	
+	// for now ignore parse errors
+	mvceditor::LintResultsClass results;
+	Parser.ScanFile(fileName, results);
 }
 
 void mvceditor::SymbolTableClass::ExpressionCompletionMatches(const mvceditor::SymbolClass& parsedExpression, const UnicodeString& expressionScope,
@@ -679,7 +694,10 @@ void mvceditor::ScopeFinderClass::FunctionEnd(const UnicodeString& functionName,
 
 UnicodeString mvceditor::ScopeFinderClass::GetScopeString(const UnicodeString& code, int pos) {
 	ScopePositions.clear();
-	Parser.ScanString(code);
+	
+	// for now ignore parse errors
+	mvceditor::LintResultsClass results;
+	Parser.ScanString(code, results);
 
 	// ScopePositions are ranges; we just need to check which range pos falls in
 	UnicodeString scopeString = ScopeString(UNICODE_STRING_SIMPLE(""), UNICODE_STRING_SIMPLE(""));

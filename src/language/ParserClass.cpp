@@ -38,10 +38,11 @@ mvceditor::ParserClass::ParserClass()
 	, ClassObserver(0)
 	, ClassMemberObserver(0)
 	, FunctionObserver(0)
-	, VariableObserver(0) {
+	, VariableObserver(0)
+	, ExpressionObserver(0) {
 }
 
-bool mvceditor::ParserClass::ScanFile(const wxString& file) {
+bool mvceditor::ParserClass::ScanFile(const wxString& file, mvceditor::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		
@@ -49,18 +50,26 @@ bool mvceditor::ParserClass::ScanFile(const wxString& file) {
 		extern int php53debug;
 		php53debug = 0;
 
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, NULL);
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
+		results.Error = Lexer.ParserError;
+		results.File = file;
+		results.LineNumber = Lexer.GetLineNumber();
+		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
 	}
 	return ret;
 }
 
-bool mvceditor::ParserClass::ScanString(const UnicodeString& code) {
+bool mvceditor::ParserClass::ScanString(const UnicodeString& code, mvceditor::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, NULL);
+		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
+		results.Error = Lexer.ParserError;
+		results.File = wxEmptyString;
+		results.LineNumber = Lexer.GetLineNumber();
+		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
 	}
 	return ret;
@@ -82,6 +91,9 @@ void mvceditor::ParserClass::SetVariableObserver(VariableObserverClass* observer
 	VariableObserver = observer;
 }
 
+void mvceditor::ParserClass::SetExpressionObserver(ExpressionObserverClass* observer) {
+	ExpressionObserver = observer;
+}
 
 bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results) {
 
@@ -173,34 +185,7 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 	}
 	if (!localObserver.Expressions.empty()) {
 		mvceditor::ExpressionClass expr = localObserver.Expressions.back();
-		if (mvceditor::ExpressionClass::ARRAY == expr.Type) {
-			symbol.SetToArray();
-		}
-		else if (mvceditor::ExpressionClass::FUNCTION_CALL == expr.Type) {
-			symbol.SetToObject();
-		}
-		else if (mvceditor::ExpressionClass::NEW_CALL == expr.Type) {
-			symbol.SetToObject();
-		}
-		else if (mvceditor::ExpressionClass::SCALAR == expr.Type) {
-			symbol.SetToPrimitive();
-		}
-		else if (mvceditor::ExpressionClass::UNKNOWN == expr.Type) {
-			symbol.SetToUnknown();
-		}
-		else if (mvceditor::ExpressionClass::VARIABLE == expr.Type) {
-			symbol.SetToObject();
-		}
-		symbol.Comment = expr.Comment;
-		symbol.Lexeme = expr.Lexeme;
-		symbol.ChainList = expr.ChainList;
-		if (expr.Lexeme.isEmpty() && expr.ChainList.empty()) {
-			
-			 // when a static property; the "namespace_name" parser rule 
-			 // is triggered
-			symbol.Lexeme = expr.Name.ToSignature();
-			symbol.ChainList.insert(symbol.ChainList.begin(), symbol.Lexeme);
-		}
+		symbol.FromExpression(expr);
 	}
 	if (endsWithObject) {
 		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
@@ -222,4 +207,11 @@ void mvceditor::LintResultsClass::Copy(const mvceditor::LintResultsClass& other)
 	File = other.File;
 	LineNumber = other.LineNumber;
 	CharacterPosition = other.CharacterPosition;
+}
+
+void mvceditor::LintResultsClass::Clear() {
+	Error.remove();
+	File = wxT("");
+	LineNumber = 0;
+	CharacterPosition = 0;
 }
