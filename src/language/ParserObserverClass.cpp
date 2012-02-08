@@ -846,6 +846,10 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueC
 	}
 	if (!ExpressionVariables.empty()) {
 		ExpressionVariables.back().AppendToChain(operatorValue, propertyValue, isMethod);
+		
+		if (isMethod) {
+			ExpressionVariables.back().CallArguments = CurrentFunctionCallExpression.CallArguments;
+		}
 	}
 }
 
@@ -898,7 +902,8 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
 	expr.Type = mvceditor::ExpressionClass::VARIABLE;
 	expr.Name = CurrentFunctionCallExpression.Name;
 	expr.Comment = CurrentFunctionCallExpression.Comment;
-
+	expr.CallArguments = CurrentFunctionCallExpression.CallArguments;
+	
 	UnicodeString name = expr.Name.ToSignature();
 	if (!name.isEmpty()) {
 		expr.ChainList.push_back(name + UNICODE_STRING_SIMPLE("()"));
