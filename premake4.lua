@@ -259,6 +259,7 @@ solution "mvc_editor"
 			"src/environment/EnvironmentClass.cpp",
 			"src/environment/DatabaseInfoClass.cpp",
 			"src/environment/SqlResourceFinderClass.cpp",
+			"src/environment/UrlResourceClass.cpp",
 			"src/language/ParserClass.cpp",
 			"src/language/LexicalAnalyzerClass.cpp",
 			"src/language/SqlLexicalAnalyzerClass.cpp",
