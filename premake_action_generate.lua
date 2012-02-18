@@ -46,7 +46,7 @@ newaction {
 			print("re2c command failed for file src/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
 		end
 		code = os.execute(cmd) 
-		cmd = "bison --no-lines --warnings=error --defines " ..
+		cmd = "bison --no-lines --warnings=error --defines=" .. normalizepath("include/Php53ParserImpl.h") ..
 			"-o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
 			normalizepath("src/Php53ParserImpl.y")
 		code = os.execute(cmd) 
