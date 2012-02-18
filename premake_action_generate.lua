@@ -32,32 +32,26 @@ newaction {
 		-- regenerate the parser and lexer implementation files
 		-- re2c does not escape windows paths and leads to compile errors, turn off debug info
 		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/language/Php53LexicalAnalyzerImpl.cpp") .. " " ..
-			normalizepath("src/language/Php53LexicalAnalyzerImpl.re");
+			"-o " .. normalizepath("src/Php53LexicalAnalyzerImpl.cpp") .. " " ..
+			normalizepath("src/Php53LexicalAnalyzerImpl.re");
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("re2c command failed for file src/language/Php53LexicalAnalyzerImpl.re. Is re2c installed? Is it in the PATH?");	
+			print("re2c command failed for file src/Php53LexicalAnalyzerImpl.re. Is re2c installed? Is it in the PATH?");	
 		end
 		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/language/LanguageDiscoveryClass.cpp") .. " " ..
-			normalizepath("src/language/LanguageDiscoveryClass.re");
+			"-o " .. normalizepath("src/LanguageDiscoveryClass.cpp") .. " " ..
+			normalizepath("src/LanguageDiscoveryClass.re");
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("re2c command failed for file src/language/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
+			print("re2c command failed for file src/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
 		end
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/language/SqlLexicalAnalyzerClass.cpp") .. " " ..
-			normalizepath("src/language/SqlLexicalAnalyzerClass.re");
 		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/language/SqlLexicalAnalyzerClass.re. Is re2c installed? Is it in the PATH?");	
-		end
 		cmd = "bison --no-lines --warnings=error --defines " ..
-			"-o " .. normalizepath("src/language/Php53ParserImpl.cpp") .. " " ..
-			normalizepath("src/language/Php53ParserImpl.y")
+			"-o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
+			normalizepath("src/Php53ParserImpl.y")
 		code = os.execute(cmd) 
 		if code ~= 0 then
-			print("Bison command failed for file src/language/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
+			print("Bison command failed for file src/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
 	end
 }

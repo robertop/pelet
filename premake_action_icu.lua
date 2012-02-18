@@ -40,7 +40,7 @@ newaction {
 				end
 			else
 				-- build the debug version 
-				ICU_BUILD =  os.getcwd() .. "/lib/icu/mvc_editor/Debug/"
+				ICU_BUILD =  os.getcwd() .. "/lib/icu/pelet/Debug/"
 				os.execute(
 					"cd lib/ && " ..
 					"tar xzf icu4c-4_2_1-src.tgz && " ..
@@ -51,7 +51,7 @@ newaction {
 				);
 				
 				-- build the release version
-				ICU_BUILD =  os.getcwd() .. "/lib/icu/mvc_editor/Release/"
+				ICU_BUILD =  os.getcwd() .. "/lib/icu/pelet/Release/"
 				os.execute(
 					"cd lib/icu/source && " ..
 					"make clean && " ..
