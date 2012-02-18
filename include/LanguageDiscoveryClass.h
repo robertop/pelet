@@ -26,7 +26,7 @@
 #define LANGUAGE_DISCOVERY_CLASS_H
 
 #include <unicode/unistr.h>
-#include <language/UCharBufferedFileClass.h>
+#include <UCharBufferedFileClass.h>
 
 namespace mvceditor {
 

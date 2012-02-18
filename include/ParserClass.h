@@ -25,10 +25,9 @@
 #ifndef __parserclass__
 #define __parserclass__
 
-#include <language/LexicalAnalyzerClass.h>
-#include <language/TokenClass.h>
-#include <language/ParserObserverClass.h>
-#include <wx/string.h>
+#include <LexicalAnalyzerClass.h>
+#include <TokenClass.h>
+#include <ParserObserverClass.h>
 #include <unicode/unistr.h>
 
 namespace mvceditor {
@@ -96,7 +95,7 @@ public:
 	 * This is what was given to the LintFile() method.
 	 * For LintString() results this will be the empty string.
 	 */
-	wxString File;
+	std::string File;
 
 	/**
 	 * The line in which the error ocurred. This is 1-based.
@@ -135,11 +134,11 @@ public:
 	 * a class, function, or variable declaration. This means that this
 	 * parser should not be modified in the observer calls.
 	 * 
-	 * @param const wxString& file the file to parse.  Must be a full path.
+	 * @param file the file to parse.  Must be a full path.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool if file was found and could be parsed successfully
 	 */
-	bool ScanFile(const wxString& file, LintResultsClass& results);
+	bool ScanFile(const std::string& file, LintResultsClass& results);
 	
 	/**
 	 * Scans the given string. This function will return once the entire
@@ -202,11 +201,11 @@ public:
 	 * any PHP code will be considered a good file (a PHP file that has only HTML is
 	 * considered good and true will be returned).
 	 * 
-	 * @param const wxString& file the file to parse.  Must be a full path.
+	 * @param file the file to parse.  Must be a full path.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if file was found and had no syntax errors.
 	 */
-	bool LintFile(const wxString& file, LintResultsClass& results);
+	bool LintFile(const std::string& file, LintResultsClass& results);
 	
 	/**
 	 * Perform a syntax check on the given source code. Source code is assumed to be

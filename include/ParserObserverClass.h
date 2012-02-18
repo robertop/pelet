@@ -25,7 +25,7 @@
 #ifndef __PARSEROBSERVERCLASS_H__
 #define __PARSEROBSERVERCLASS_H__
 
-#include <language/TokenClass.h>
+#include <TokenClass.h>
 #include <unicode/unistr.h>
 #include <stack>
 #include <vector>

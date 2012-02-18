@@ -23,13 +23,13 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
-#include <language/ParserObserverClass.h>
-#include <language/ParserClass.h>
-#include <windows/StringHelperClass.h>
+#include <ParserObserverClass.h>
+#include <ParserClass.h>
 #include <FileTestFixtureClass.h>
-#include <wx/filefn.h> 
 #include <vector>
 
+// TODO: remove this
+#define wxT(a) a
 
 /**
  * At the start of each test, clear out the test folder and create a new file to be parsed.
@@ -37,15 +37,12 @@
 class ParserTestClass : public FileTestFixtureClass {
 public:	
 	ParserTestClass() 
-		: FileTestFixtureClass(wxT("parser")) {
+		: FileTestFixtureClass() {
 		Parser = new mvceditor::ParserClass();
-		if (wxDirExists(TestProjectDir)) {
-			RecursiveRmDir(TestProjectDir);
-		}
-
+		
 		// this file was carefully crafted to hit all the observers
 		// class, method, function, and variable observers
-		CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+		CreateFixtureFile(wxT("test.php"),
 			"<?php\n"
 			"/**\n"
 			" * This is a define comment\n"
@@ -97,7 +94,7 @@ public:
 			"}"
 			"\n"
 			"?>\n"
-		));		
+		);		
 	}
 	
 	virtual ~ParserTestClass() {
@@ -205,7 +202,7 @@ public:
 SUITE(ParserTestClass) {
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
-	wxString file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -237,7 +234,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
-	wxString file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetClassMemberObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -328,7 +325,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
-	wxString file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetFunctionObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -353,7 +350,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
-	wxString file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + wxT("test.php");
 	TestClassObserverClass observer;
 	Parser->SetVariableObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -414,7 +411,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, ArrayAccess {}\n"
@@ -440,7 +437,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	TestClassObserverClass observer;
 	Parser->SetClassMemberObserver(&observer);
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"interface Runnable { const MSG = 'const'; abstract function run();}\n"
 		"abstract class MyRunnable implements Runnable { \n"
 		"	function run() {} \n"
@@ -512,7 +509,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
 	// a catch block
 	// a global declaration
 	// a static declaration
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"$glob = new Globals();\n"
 		"function workFunc(Globals $srcGlobal) {\n"
 		"	$local = $srcGlobal;\n"
@@ -582,7 +579,7 @@ TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
 	// test all the PHPDoc stuff
 	// @property, @property-read, @property-write, @method, and @var
 	// also @param and @return
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"/**\n"
 		" * This is a class that implements the 'magic' methods\n"
 		" *\n"
@@ -666,7 +663,7 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 	Parser->SetClassObserver(&observer);
 	Parser->SetClassMemberObserver(&observer);
 	Parser->SetFunctionObserver(&observer);
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"class MyClass {\n"     //16
 		"\n"                    // 1
 		"function work() {\n"   //18
@@ -683,22 +680,22 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
-	wxString file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + wxT("test.php");
 	mvceditor::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
-	CreateFixtureFile(wxT("testpure.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("testpure.php"),
 			"<html> </html>"
-	));
-	wxString file = TestProjectDir + wxT("testpure.php");
+	);
+	std::string file = TestProjectDir + wxT("testpure.php");
 	mvceditor::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
-	CreateFixtureFile(wxT("testpure.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("testpure.php"),
 			"<?php\n"
 			"\techo 'Today is ...'; \n"
 			"?>\n"
@@ -714,14 +711,14 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
 			"?>\n"
 			"</body>\n"
 			"</html>\n"
-	));
-	wxString file = TestProjectDir + wxT("testpure.php");
+	);
+	std::string file = TestProjectDir + wxT("testpure.php");
 	mvceditor::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
-	CreateFixtureFile(wxT("testpure.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("testpure.php"),
 			"<?php\n"
 			"/* this is a comment\n"
 			" */\n"
@@ -730,8 +727,8 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 			"<body>\n"
 			"</body>\n"
 			"</html>\n"
-	));
-	wxString file = TestProjectDir + wxT("testpure.php");
+	);
+	std::string file = TestProjectDir + wxT("testpure.php");
 	mvceditor::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }

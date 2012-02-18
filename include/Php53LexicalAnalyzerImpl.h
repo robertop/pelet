@@ -25,7 +25,7 @@
 #ifndef __php53lexicalanalyzerimpl_h__
 #define __php53lexicalanalyzerimpl_h__
  
-#include <language/UCharBufferedFileClass.h>
+#include <UCharBufferedFileClass.h>
 
 /**
  * The lexer has different rules based on where in the source code a specific token is.

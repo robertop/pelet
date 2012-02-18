@@ -25,13 +25,12 @@
 
 #include <UnitTest++.h>
 #include <unicode/unistr.h>
-#include <language/LanguageDiscoveryClass.h>
-#include <windows/StringHelperClass.h>
+#include <LanguageDiscoveryClass.h>
 
 SUITE(LanguageDiscoveryTestClass) {
 
 TEST(DiscoverHtmlAndPhp) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<html><body>"
 		"<?php echo 'hello'; ?>"
 		"</body></html>"
@@ -52,7 +51,7 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 	
 	// put the end tag in various strings; check that we still discover PHP 
 	// note that end tag WILL break out of single line comments 
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<html><body>"
 		"<?php echo '?>hello';\n"
 		"echo \"goodbye ?> double\";\n"
@@ -102,7 +101,7 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 }
 
 TEST(MultipleHtmlBlocks) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<html>"
 		"<head><title><?php echo $title;?></title></head>"
 		"<body class='<?php echo \"?>\" . $theclass; ?>' id='thebody'>This is the body</body>"

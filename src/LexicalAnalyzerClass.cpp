@@ -22,14 +22,13 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <language/LexicalAnalyzerClass.h>
-#include <language/Php53LexicalAnalyzerImpl.h>
-#include <windows/StringHelperClass.h>
+#include <LexicalAnalyzerClass.h>
+#include <Php53LexicalAnalyzerImpl.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
 
-mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const wxString& fileName) 
+mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName) 
 	: ParserError()
 	, Buffer(NULL)
 	, FileName()
@@ -56,7 +55,7 @@ void mvceditor::LexicalAnalyzerClass::Close() {
 	}
 }
 
-bool mvceditor::LexicalAnalyzerClass::OpenFile(const wxString& newFile) {
+bool mvceditor::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 	Close();
 	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
 	Buffer = bufferFile;
@@ -65,12 +64,12 @@ bool mvceditor::LexicalAnalyzerClass::OpenFile(const wxString& newFile) {
 	 
 	// ATTN: fn_str() would not compile in MSW
 	// what about unicode file names?
-	return bufferFile->OpenFile(newFile.ToAscii());
+	return bufferFile->OpenFile(newFile.c_str());
 }
 
 bool mvceditor::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
 	Close();
-	FileName = wxT("");
+	FileName = "";
 	Condition = yycSCRIPT;
 	mvceditor::UCharBufferClass* memBuffer = new UCharBufferClass();
 	Buffer = memBuffer;
@@ -204,7 +203,7 @@ int mvceditor::LexicalAnalyzerClass::GetCharacterPosition() const {
 	return Buffer ? Buffer->GetCharacterPosition() : 0;
 }
 
-wxString mvceditor::LexicalAnalyzerClass::GetFileName() const {
+std::string mvceditor::LexicalAnalyzerClass::GetFileName() const {
 	return FileName;
 }
 

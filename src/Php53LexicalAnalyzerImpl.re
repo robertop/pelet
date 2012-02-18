@@ -23,8 +23,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
  
-#include <language/Php53LexicalAnalyzerImpl.h>
-#include <language/Php53ParserImpl.hpp>
+#include <Php53LexicalAnalyzerImpl.h>
+#include <Php53ParserImpl.h>
 #include <unicode/unistr.h>
 
 // tell re2c we will use Unicode chars

@@ -22,8 +22,8 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <language/ParserClass.h>
-#include <language/TokenClass.h>
+#include <ParserClass.h>
+#include <TokenClass.h>
 #include <stack>
 
 /* 
@@ -42,7 +42,7 @@ mvceditor::ParserClass::ParserClass()
 	, ExpressionObserver(0) {
 }
 
-bool mvceditor::ParserClass::ScanFile(const wxString& file, mvceditor::LintResultsClass& results) {
+bool mvceditor::ParserClass::ScanFile(const std::string& file, mvceditor::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		
@@ -67,7 +67,7 @@ bool mvceditor::ParserClass::ScanString(const UnicodeString& code, mvceditor::Li
 		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
-		results.File = wxEmptyString;
+		results.File = "";
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
@@ -95,7 +95,7 @@ void mvceditor::ParserClass::SetExpressionObserver(ExpressionObserverClass* obse
 	ExpressionObserver = observer;
 }
 
-bool mvceditor::ParserClass::LintFile(const wxString& file, LintResultsClass& results) {
+bool mvceditor::ParserClass::LintFile(const std::string& file, LintResultsClass& results) {
 
 	// set to 1 and the parser will dump stuff to std out. useful for debugging only
 	extern int php53debug;
@@ -120,7 +120,7 @@ bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsCl
 		mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
-		results.File = wxEmptyString;
+		results.File = "";
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
@@ -211,7 +211,7 @@ void mvceditor::LintResultsClass::Copy(const mvceditor::LintResultsClass& other)
 
 void mvceditor::LintResultsClass::Clear() {
 	Error.remove();
-	File = wxT("");
+	File = "";
 	LineNumber = 0;
 	CharacterPosition = 0;
 }

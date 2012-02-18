@@ -23,20 +23,18 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
-#include <language/LexicalAnalyzerClass.h>
-#include <language/Php53LexicalAnalyzerImpl.h>
-#include <windows/StringHelperClass.h>
+#include <LexicalAnalyzerClass.h>
+#include <Php53LexicalAnalyzerImpl.h>
 #include <FileTestFixtureClass.h>
-#include <wx/filefn.h>
+
+// TODO: remove this macro
+#define wxT(a) a
 
 class LexicalAnalyzerTestClass : public FileTestFixtureClass {
 public:	
 	LexicalAnalyzerTestClass() 
-		: FileTestFixtureClass(wxT("lexical_analyzer")) {
+		: FileTestFixtureClass() {
 		Lexer = new mvceditor::LexicalAnalyzerClass();
-		if (wxDirExists(TestProjectDir)) {
-			RecursiveRmDir(TestProjectDir);
-		}
 	}
 	
 	virtual ~LexicalAnalyzerTestClass() {
@@ -56,13 +54,13 @@ public:
 SUITE(LexicalAnalyzerTestClass) {
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasy) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"),
 		"<?php\n"
 		"$s = 'hello';\n"
 		"$a = 1 * 3;\n"
 		"$b = -1;\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -87,18 +85,17 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasy) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindWhenFileEndsWithIdentifier) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"function echoA"
 	);
 	CHECK(Lexer->OpenString(code));
-	wxString lexeme;
 	CheckTokenLexeme(T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
 	CheckTokenLexeme(T_STRING, UNICODE_STRING_SIMPLE("echoA"));
 	CHECK_EQUAL(T_END_OF_FILE, Lexer->NextToken());
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
-	UnicodeString code  = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code  = UNICODE_STRING_SIMPLE(
 		"$s = 'hello';\n"
 		"$a = 1 * 3;"
 	);
@@ -117,16 +114,16 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"if(NULL !== $value && !is_array($value)) {\n"
 		"\t$value = (string) $value;\n"
 		"}\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
-	wxString lexeme;
+	std::string lexeme;
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_IF, UNICODE_STRING_SIMPLE("if"));
 	CheckTokenLexeme('(', UNICODE_STRING_SIMPLE("("));
@@ -152,15 +149,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"),
 		"<?php\n"
 		"/*\n"
 		" *\n"
 		" */\n"
 		"function work() {\n"
 		"}"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -170,13 +167,13 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	/*
 	 * test for single line, PHP Doc comments 
 	 */
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"),
 		"<?php\n"
 		"//for fun, let's enable every rule for every group for this client\r"
 		"# testing another comment\r" 
 		"/** this is a PHPDoc Comment */"
 		"require_once('globals.php');\n"
-	));
+	);
 	file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
@@ -188,7 +185,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"/*\n"
 		" *\n"
@@ -196,19 +193,19 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 		"function work() {\n"
 		"}\n"
 		"?>"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_ERROR_UNTERMINATED_COMMENT, UNICODE_STRING_SIMPLE(""));
 	
 	
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"//for fun, let's enable every rule for every group for this client\r"
 		"require_once('globals.php');\n"
-	));
+	);
 	file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
@@ -219,7 +216,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"/* ***************************************************************************************************************************************************************************************\n"
 		" * The following class extends the 'RecordSet' class.\n"
@@ -229,8 +226,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 		" */\n"
 		"class ExtendedRecordSetForUnitTestDoesNotInitializeRcord extends RecordSet {\n"
 		"}\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -245,7 +242,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php \n"
 		"require_once('globals.php');\n"
 		"/*\n"
@@ -268,8 +265,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 		"}\r\n"
 		"?>\r\n"
 		"\r\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php "));
@@ -343,11 +340,11 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSlashes) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = '\\\\';"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -359,11 +356,11 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSlashes) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSingleQuoteStrings) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"	
 		"$s = 'this \\\\ is an \\'escaped\\' \\n string';"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -384,11 +381,11 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedDoubleQuoteSt
 	// but since the PHP code is inside a C string, we must escape the
 	// double quotes of the PHP code and escape the quote in PHP which means
 	// escape the double quote escape sequence in C; that's how we get 3 backslashes
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = \"this is an \\\"escaped\\\" string\";"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -406,14 +403,14 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 	// heredocs follow the same escaping rules as double quoted strings.
 	// except that double quotes do not have to be escaped.
 	// this is what we want the string to be:  this is an "escaped" string
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
 		"EOF;\n"
 		"$a = 55;\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -431,15 +428,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDontEndWithSemicolon) {
 
 	// this test is for the semicolon AFTER the ending marker
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
 		"EOF\r\n"
 		";"
 		"$a = 55;\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -457,7 +454,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDo
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEmptyLines) {
 
 	// this test is for the semicolon AFTER the ending marker
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
@@ -465,8 +462,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEm
 		"this is an \"escaped\" string;\n"
 		"EOF;\n"
 		"$a = 55;\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -487,14 +484,14 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 	// heredocs follow the same escaping rules as double quoted strings.
 	// except that double quotes do not have to be escaped.
 	// this is what we want the string to be:  this is an "escaped" string
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\n"
 		"$s = <<<'EOF'\n"
 		"this is an \"escaped\" string;\n"
 		"EOF;\n"
 		"$a = 55;\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -510,13 +507,13 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {
-	CreateFixtureFile(wxT("test.php"), wxString::FromAscii(
+	CreateFixtureFile(wxT("test.php"), 
 		"<?php\r\n" // length= 6
 		"$s = 'hello';\r\n" //length = 21
 		"$a = 1 * 3;\r\n" //length = 34
 		"$b = -1;\r\n"
-	));
-	wxString file = TestProjectDir;
+	);
+	std::string file = TestProjectDir;
 	file += wxT("test.php");
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\r\n"));
@@ -547,7 +544,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) 
 
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFirstFunction) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php echo"
 	);
 	UnicodeString last = Lexer->LastExpression(code);
@@ -555,7 +552,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFirstFunction) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionSimpleVariable) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2"
@@ -565,7 +562,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionSimpleVariable) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgument) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2"
@@ -576,7 +573,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgument) {
 
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionChain) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2)->prop"
@@ -586,7 +583,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionChain) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgumentAsFunction) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func(funct2($expr2), $arr[3])->prop"
@@ -596,7 +593,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgumentAsFunction)
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticMember) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::$prop"
@@ -606,7 +603,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticMember) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionConstMember) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::DEFAULT_NU"
@@ -616,7 +613,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionConstMember) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectMethodChain) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 		"$expr2 = $expr->funct3('two')->prop"
@@ -626,7 +623,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectMethodChain) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionNoExpression) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 	);
@@ -635,7 +632,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionNoExpression) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectVariable) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr2 = 3;\n"
 		"$expr1 = 'expr2';\n"
@@ -646,7 +643,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectVariable) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectProperty) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr1 = 'prop';\n"
@@ -657,7 +654,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectProperty) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperator) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2->"
@@ -667,7 +664,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperator) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"MyClass::"
@@ -677,7 +674,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperatorWithWhitespace) {
-	UnicodeString code = mvceditor::StringHelperClass::charToIcu(
+	UnicodeString code = UNICODE_STRING_SIMPLE(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2\n"

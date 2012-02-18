@@ -99,9 +99,9 @@ solution "pelet"
 	
 	project "pelet_sample"
 		language "C++"
-		kind "WindowedApp"
-		files { "src/**.cpp", "src/**.h", "*.lua", "src/**.re, src/**.y, src/**.hpp" }
-		includedirs { "src/" }
+		kind "ConsoleApp"
+		files { "src/*", "include/*", "*.lua", "src/**.re", "src/**.y", "sample.cpp" }
+		includedirs { "include/" }
 		links { "tests" }
 		
 		configuration "Debug"
@@ -130,7 +130,7 @@ solution "pelet"
 			"tests/**.h",
 			"src/**.cpp",
 		}
-		includedirs { "src/", "lib/UnitTest++/src/", "tests/" }
+		includedirs { "include/", "lib/UnitTest++/src/", "tests/" }
 		links { "unit_test++" }
 		
 		configuration "Debug"

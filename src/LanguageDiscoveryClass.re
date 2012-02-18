@@ -22,9 +22,9 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <language/LanguageDiscoveryClass.h>
-#include <language/Php53LexicalAnalyzerImpl.h>
-#include <language/Php53ParserImpl.hpp>
+#include <LanguageDiscoveryClass.h>
+#include <Php53LexicalAnalyzerImpl.h>
+#include <Php53ParserImpl.h>
 
 #define DISCOVERY_BUFFER_FILL(n) { Buffer.AppendToLexeme(n); }
 

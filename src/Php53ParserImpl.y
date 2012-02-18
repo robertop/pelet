@@ -24,11 +24,11 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
- #include <language/UCharBufferedFileClass.h>
- #include <language/LexicalAnalyzerClass.h>
-#include <language/ParserObserverClass.h>
- #include <unicode/unistr.h>
- #include <string>
+#include <UCharBufferedFileClass.h>
+#include <LexicalAnalyzerClass.h>
+#include <ParserObserverClass.h>
+#include <unicode/unistr.h>
+#include <string>
  
  #if defined(_MSC_VER)
     #pragma warning(disable:4065) // Bison generates a switch statement without a case

@@ -25,11 +25,11 @@
 #ifndef LEXICALANALYZER_H
 #define LEXICALANALYZER_H
 
-#include <wx/string.h>
+#include <string>
 #include <unicode/unistr.h>
-#include <language/UCharBufferedFileClass.h>
-#include <language/Php53LexicalAnalyzerImpl.h>
-#include <language/Php53ParserImpl.hpp>
+#include <UCharBufferedFileClass.h>
+#include <Php53LexicalAnalyzerImpl.h>
+#include <Php53ParserImpl.h>
 
 namespace mvceditor {
 
@@ -50,9 +50,9 @@ class LexicalAnalyzerClass {
 	/**
 	 * constructor: opens the file with the name given
 	 * 
-	 * @param const wxString& file to be analyzed.
+	 * @param file full path of the file to be analyzed.
 	 */
-	LexicalAnalyzerClass(const wxString& filename);
+	LexicalAnalyzerClass(const std::string& filename);
 
 	/**
 	 * default constructor
@@ -65,10 +65,10 @@ class LexicalAnalyzerClass {
 	 * prepares file to be analyzed. If another file is currently opened it 
 	 * will be closed.
 	 * 
-	 * @param const wxString& newFile to open
+	 * @param const std::string& newFile to open
 	 * @return bool true if file can be opened for reading
 	 */
-	bool OpenFile(const wxString& newFile);
+	bool OpenFile(const std::string& newFile);
 	
 	/**
 	 * prepares the given code to be analyzed. If another file/buffer is currently
@@ -128,7 +128,7 @@ class LexicalAnalyzerClass {
 	 * @return wxString  file name given to OpenFile() method. This will be empty string if OpenCode()
 	 * is used; will never be NULL
 	 */
-	wxString GetFileName() const;
+	std::string GetFileName() const;
 
 	/**
 	 * Get the last expression from the give code (the string that is to be 'completed'). 
@@ -170,9 +170,9 @@ private:
 	
 	/**
 	 * The file being parsed. Exactly what was given to OpenFile().
-	 * @var String
+	 * @var string
 	 */
-	wxString FileName;
+	std::string FileName;
 	
 	/**
 	 * Lexical analyzer to keep track of its "context" to execute some of its

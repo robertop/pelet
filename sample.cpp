@@ -1,5 +1,5 @@
 /**
- * This software is released under the terms of the MIT License
+ * The MIT License
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,10 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <FileTestFixtureClass.h>
-#include <fstream>
+#include <stdio.h>
 
 
-FileTestFixtureClass::FileTestFixtureClass()
-	: TestProjectDir() {
-}
-	
-FileTestFixtureClass::~FileTestFixtureClass() {
-}
-
-void FileTestFixtureClass::CreateFixtureFile(const std::string& fileName, const std::string& contents) {
-	std::ofstream file;
-	file.open(fileName.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
-
-	file << contents;
-	file.close();
+int main() {
+	printf("hello world\n");
+	return 0;
 }

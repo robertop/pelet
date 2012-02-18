@@ -25,7 +25,7 @@
 #ifndef TOKEN_CLASS_H
 #define TOKEN_CLASS_H
 
-#include <language/Php53ParserImpl.hpp>
+#include <Php53ParserImpl.h>
 
 namespace mvceditor {
 	

@@ -22,7 +22,7 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <language/UCharBufferedFileClass.h>
+#include <UCharBufferedFileClass.h>
 #include <unicode/ustring.h>
 
 /**

@@ -47,7 +47,7 @@ newaction {
 		end
 		code = os.execute(cmd) 
 		cmd = "bison --no-lines --warnings=error --defines=" .. normalizepath("include/Php53ParserImpl.h") ..
-			"-o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
+			" -o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
 			normalizepath("src/Php53ParserImpl.y")
 		code = os.execute(cmd) 
 		if code ~= 0 then
