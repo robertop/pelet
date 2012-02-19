@@ -27,9 +27,6 @@
 #include <pelet/UCharBufferedFileClass.h>
 #include <unicode/unistr.h>
 
-// TODO: remove this
-#define wxT(a) a
-
 class UCharBufferedFileTestFixtureClass : public FileTestFixtureClass {
 	
 public:
@@ -51,7 +48,7 @@ public:
 };
 
 SUITE(UCharBufferedFileTestClass) {
-#if 0
+
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, MemoryBufferHasEnded) {
 	UnicodeString test = UNICODE_STRING_SIMPLE("function");
 	CHECK(MemBuffer->OpenString(test));
@@ -72,12 +69,12 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, MemoryBufferHasEnded) {
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferHasEnded) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii()));
+	CHECK(FileBuffer->OpenFile(filePath.c_str()));
 	FileBuffer->AppendToLexeme(1);
 	CHECK_EQUAL(false, FileBuffer->HasReachedEnd());
 	CHECK_EQUAL('f', *FileBuffer->Current++);
@@ -103,12 +100,12 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferHasEnded) {
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferHasEndedWhenAppendingMuch) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii()));
+	CHECK(FileBuffer->OpenFile(filePath.c_str()));
 	FileBuffer->AppendToLexeme(20);
 	CHECK_EQUAL(false, FileBuffer->HasReachedEnd());
 	CHECK_EQUAL('f', *FileBuffer->Current++);
@@ -125,14 +122,14 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferHasEndedWhenAppendingM
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenBufferHasToGrow) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii(), 2));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), 2));
 	CHECK_EQUAL(false, FileBuffer->HasReachedEnd());
 	CHECK_EQUAL('f', *FileBuffer->Current++);
 	CHECK_EQUAL('u', *FileBuffer->Current++);
@@ -157,14 +154,14 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenBufferHasToGrow) {
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSlack) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("another free function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "another free function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii(), 15));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), 15));
 	
 	// advance past 'another free '
 	for (int i = 0; i < 13; i++) {
@@ -192,14 +189,14 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSlackInTheMiddleOfToken) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("another free function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "another free function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii(), 15));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), 15));
 	
 	// advance past 'another free '
 	for (int i = 0; i < 13; i++) {
@@ -229,14 +226,14 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 }
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSlackAndHasToGrowInTheMiddleOfToken) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("another free function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "another free function";
 	CreateFixtureFile(fileName, test);
-	std::string filePath = TestProjectDir + wxT("/") + fileName;
+	std::string filePath = TestProjectDir + fileName;
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.ToAscii(), 9));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), 9));
 	
 	// advance past 'another '
 	for (int i = 0; i < 8; i++) {
@@ -270,11 +267,10 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("free function"), str);
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
-#endif
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillFromFileAfterRemovingSlack) {
-	std::string fileName = wxT("test_buffer.txt");
-	std::string test = wxT("another free function");
+	std::string fileName = "test_buffer.txt";
+	std::string test = "another free function";
 	CreateFixtureFile(fileName, test);
 	std::string filePath = TestProjectDir + fileName;
 

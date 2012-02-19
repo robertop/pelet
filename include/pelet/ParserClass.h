@@ -65,13 +65,13 @@ namespace pelet {
  * 
  * @code
  *   ParserClass parser;
- *   wxString file = wxT("/path/to/phpfile.php");
+ *   std::string file = "/path/to/phpfile.php";
  *   LintResultsClass lintResults;
  *   if (parser.LintFile(file, parserResults)) {
- *     printf("No syntax errors in file %s", (const char*)file.ToAscii());
+ *     printf("No syntax errors in file %s", (const char*)file.c_str());
  *   }
  *   else {
- *     printf("%s. Error found in file %s on line %d.\n", parserResults.Error, (const char*)file.ToAscii(), parserResults.LineNumber);
+ *     printf("%s. Error found in file %s on line %d.\n", parserResults.Error, file.c_str(), parserResults.LineNumber);
  *   }
  * @encode
  */

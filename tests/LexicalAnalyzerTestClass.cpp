@@ -27,9 +27,6 @@
 #include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <FileTestFixtureClass.h>
 
-// TODO: remove this macro
-#define wxT(a) a
-
 class LexicalAnalyzerTestClass : public FileTestFixtureClass {
 public:	
 	LexicalAnalyzerTestClass() 
@@ -54,14 +51,14 @@ public:
 SUITE(LexicalAnalyzerTestClass) {
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasy) {
-	CreateFixtureFile(wxT("test.php"),
+	CreateFixtureFile("test.php",
 		"<?php\n"
 		"$s = 'hello';\n"
 		"$a = 1 * 3;\n"
 		"$b = -1;\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -114,14 +111,14 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"if(NULL !== $value && !is_array($value)) {\n"
 		"\t$value = (string) $value;\n"
 		"}\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	std::string lexeme;
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
@@ -149,7 +146,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
-	CreateFixtureFile(wxT("test.php"),
+	CreateFixtureFile("test.php",
 		"<?php\n"
 		"/*\n"
 		" *\n"
@@ -158,7 +155,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 		"}"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
@@ -167,7 +164,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	/*
 	 * test for single line, PHP Doc comments 
 	 */
-	CreateFixtureFile(wxT("test.php"),
+	CreateFixtureFile("test.php",
 		"<?php\n"
 		"//for fun, let's enable every rule for every group for this client\r"
 		"# testing another comment\r" 
@@ -175,7 +172,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 		"require_once('globals.php');\n"
 	);
 	file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_DOC_COMMENT, UNICODE_STRING_SIMPLE("/** this is a PHPDoc Comment */"));
@@ -185,7 +182,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"/*\n"
 		" *\n"
@@ -195,19 +192,19 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 		"?>"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_ERROR_UNTERMINATED_COMMENT, UNICODE_STRING_SIMPLE(""));
 	
 	
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"//for fun, let's enable every rule for every group for this client\r"
 		"require_once('globals.php');\n"
 	);
 	file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_REQUIRE_ONCE, UNICODE_STRING_SIMPLE("require_once"));
@@ -216,7 +213,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"/* ***************************************************************************************************************************************************************************************\n"
 		" * The following class extends the 'RecordSet' class.\n"
@@ -228,7 +225,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 		"}\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CHECK_EQUAL(T_COMMENT, Lexer->NextToken());
@@ -242,7 +239,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php \n"
 		"require_once('globals.php');\n"
 		"/*\n"
@@ -267,7 +264,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 		"\r\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php "));
 	CheckTokenLexeme(T_REQUIRE_ONCE, UNICODE_STRING_SIMPLE("require_once"));
@@ -340,12 +337,12 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSlashes) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = '\\\\';"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -356,12 +353,12 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSlashes) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSingleQuoteStrings) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"	
 		"$s = 'this \\\\ is an \\'escaped\\' \\n string';"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -381,12 +378,12 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedDoubleQuoteSt
 	// but since the PHP code is inside a C string, we must escape the
 	// double quotes of the PHP code and escape the quote in PHP which means
 	// escape the double quote escape sequence in C; that's how we get 3 backslashes
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = \"this is an \\\"escaped\\\" string\";"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -403,7 +400,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 	// heredocs follow the same escaping rules as double quoted strings.
 	// except that double quotes do not have to be escaped.
 	// this is what we want the string to be:  this is an "escaped" string
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
@@ -411,7 +408,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 		"$a = 55;\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -428,7 +425,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDontEndWithSemicolon) {
 
 	// this test is for the semicolon AFTER the ending marker
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
@@ -437,7 +434,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDo
 		"$a = 55;\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -454,7 +451,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDo
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEmptyLines) {
 
 	// this test is for the semicolon AFTER the ending marker
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = <<<EOF\n"
 		"this is an \"escaped\" string;\n"
@@ -464,7 +461,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEm
 		"$a = 55;\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -484,7 +481,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 	// heredocs follow the same escaping rules as double quoted strings.
 	// except that double quotes do not have to be escaped.
 	// this is what we want the string to be:  this is an "escaped" string
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\n"
 		"$s = <<<'EOF'\n"
 		"this is an \"escaped\" string;\n"
@@ -492,7 +489,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 		"$a = 55;\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
@@ -507,14 +504,14 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {
-	CreateFixtureFile(wxT("test.php"), 
+	CreateFixtureFile("test.php", 
 		"<?php\r\n" // length= 6
 		"$s = 'hello';\r\n" //length = 21
 		"$a = 1 * 3;\r\n" //length = 34
 		"$b = -1;\r\n"
 	);
 	std::string file = TestProjectDir;
-	file += wxT("test.php");
+	file += "test.php";
 	CHECK(Lexer->OpenFile(file));
 	CheckTokenLexeme(T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\r\n"));
 	CheckTokenLexeme(T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));

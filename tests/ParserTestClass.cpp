@@ -28,9 +28,6 @@
 #include <FileTestFixtureClass.h>
 #include <vector>
 
-// TODO: remove this
-#define wxT(a) a
-
 /**
  * At the start of each test, clear out the test folder and create a new file to be parsed.
  */
@@ -42,7 +39,7 @@ public:
 		
 		// this file was carefully crafted to hit all the observers
 		// class, method, function, and variable observers
-		CreateFixtureFile(wxT("test.php"),
+		CreateFixtureFile("test.php",
 			"<?php\n"
 			"/**\n"
 			" * This is a define comment\n"
@@ -202,7 +199,7 @@ public:
 SUITE(ParserTestClass) {
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
-	std::string file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + "test.php";
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -234,7 +231,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
-	std::string file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + "test.php";
 	TestClassObserverClass observer;
 	Parser->SetClassMemberObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -325,7 +322,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
-	std::string file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + "test.php";
 	TestClassObserverClass observer;
 	Parser->SetFunctionObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -350,7 +347,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 }
 
 TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
-	std::string file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + "test.php";
 	TestClassObserverClass observer;
 	Parser->SetVariableObserver(&observer);
 	CHECK(Parser->ScanFile(file, LintResults));
@@ -680,22 +677,22 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
-	std::string file = TestProjectDir + wxT("test.php");
+	std::string file = TestProjectDir + "test.php";
 	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
-	CreateFixtureFile(wxT("testpure.php"),
+	CreateFixtureFile("testpure.php",
 			"<html> </html>"
 	);
-	std::string file = TestProjectDir + wxT("testpure.php");
+	std::string file = TestProjectDir + "testpure.php";
 	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
-	CreateFixtureFile(wxT("testpure.php"),
+	CreateFixtureFile("testpure.php",
 			"<?php\n"
 			"\techo 'Today is ...'; \n"
 			"?>\n"
@@ -712,13 +709,13 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
 			"</body>\n"
 			"</html>\n"
 	);
-	std::string file = TestProjectDir + wxT("testpure.php");
+	std::string file = TestProjectDir + "testpure.php";
 	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
-	CreateFixtureFile(wxT("testpure.php"),
+	CreateFixtureFile("testpure.php",
 			"<?php\n"
 			"/* this is a comment\n"
 			" */\n"
@@ -728,7 +725,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 			"</body>\n"
 			"</html>\n"
 	);
-	std::string file = TestProjectDir + wxT("testpure.php");
+	std::string file = TestProjectDir + "testpure.php";
 	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
