@@ -100,7 +100,7 @@ solution "pelet"
 	project "pelet"
 		language "C++"
 		kind "SharedLib"
-		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y" }
+		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md" }
 		includedirs { "include/" }
 		links { "tests" }
 		
