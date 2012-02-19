@@ -99,8 +99,8 @@ solution "pelet"
 		
 	project "pelet"
 		language "C++"
-		kind "SharedLib"
-		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md" }
+		kind "ConsoleApp"
+		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md", "sample.cpp" }
 		includedirs { "include/" }
 		links { "tests" }
 		
@@ -119,22 +119,7 @@ solution "pelet"
 		configuration { "Release", "gmake or codelite" }
 			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
-		
-	project "pelet_sample"
-		language "C++"
-		kind "ConsoleApp"
-		files { "sample.cpp" }
-		includedirs { "include/" }
-		links { "pelet" }
-		
-		configuration "Debug"
-			pickywarnings(_ACTION)
-			icuconfiguration("Debug", _ACTION)
-			
-		configuration "Release"
-			pickywarnings(_ACTION)
-			icuconfiguration("Release", _ACTION)
-			
+								
 	project "tests"
 		language "C++"
 		kind "ConsoleApp"

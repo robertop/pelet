@@ -45,10 +45,15 @@ users will not need to do so):
 
 Building 
 ---------
-pelet uses premake as its build system (premake is included in the repository). This enables 
-users to create Makefiles or various IDE solutions (MS Visual Studio, CodeBlocks, CodeLite). 
-Before attempting to build, please download the ICU 4.2 source from the 
-[ICU] http://site.icu-project.org/) website and place it in pelet's lib subdirectory.
+pelet does not yet have a shared library deliverable.  The source code is surpringly simple that the
+easiest way to integrate pelet into your project is to copy the include/ and src/ directories into
+the desired location in your project. Example shell instructions:
+
+Having said that, pelet comes with an working exmaple solution "skeleton" that you can see how
+you can integrate it into your projects.  The skelton uses premake as its build system (premake is 
+included in the repository). This enables users to create Makefiles or various IDE solutions (MS 
+Visual Studio, CodeBlocks, CodeLite). Before attempting to build, please download the ICU 4.2 
+source from the [ICU] http://site.icu-project.org/) website and place it in pelet's lib subdirectory.
 
 Using Make  (On  Linux)
 ------------------------
@@ -112,7 +117,10 @@ See sample.cpp file for a full-fledged, running example.
 
 TODO
 -----
-- Build environment: Allow options to use a pre-exisiting installation of the 
-ICU library.
+- Create a nice DLL package for this library. This is a surprisingly difficult task that may 
+  involve re-writing some code because of the way DLLs and <STL> templates work in MSW. See this
+  [page] (http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html) for a bit
+  of background.
+- Build environment: Allow options to use a pre-exisiting installation of the ICU library.
 - PHP 5.4 support (array dereferencing, traits)
 - Namespaces: While are captured by the parser, they are not visible to the caller.
