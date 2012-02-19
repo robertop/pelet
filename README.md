@@ -47,7 +47,7 @@ Building
 ---------
 pelet does not yet have a shared library deliverable.  The source code is surpringly simple that the
 easiest way to integrate pelet into your project is to copy the include/ and src/ directories into
-the desired location in your project. Example shell instructions:
+the desired location in your project.
 
 Having said that, pelet comes with an working exmaple solution "skeleton" that you can see how
 you can integrate it into your projects.  The skelton uses premake as its build system (premake is 
