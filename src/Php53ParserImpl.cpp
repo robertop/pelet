@@ -101,9 +101,9 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
-#include <UCharBufferedFileClass.h>
-#include <LexicalAnalyzerClass.h>
-#include <ParserObserverClass.h>
+#include <pelet/UCharBufferedFileClass.h>
+#include <pelet/LexicalAnalyzerClass.h>
+#include <pelet/ParserObserverClass.h>
 #include <unicode/unistr.h>
 #include <string>
  
@@ -112,10 +112,10 @@
  #endif
  
  
-#define YYSTYPE mvceditor::SemanticValueClass
+#define YYSTYPE pelet::SemanticValueClass
  
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg);
+int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg);
 
 
 
@@ -2903,15 +2903,15 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers)
 #else
 static void
 yy_symbol_value_print (yyoutput, yytype, yyvaluep, analyzer, observers)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    mvceditor::LexicalAnalyzerClass &analyzer;
-    mvceditor::ObserverQuadClass& observers;
+    pelet::LexicalAnalyzerClass &analyzer;
+    pelet::ObserverQuadClass& observers;
 #endif
 {
   if (!yyvaluep)
@@ -2939,15 +2939,15 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, analyzer, observers)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers)
 #else
 static void
 yy_symbol_print (yyoutput, yytype, yyvaluep, analyzer, observers)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    mvceditor::LexicalAnalyzerClass &analyzer;
-    mvceditor::ObserverQuadClass& observers;
+    pelet::LexicalAnalyzerClass &analyzer;
+    pelet::ObserverQuadClass& observers;
 #endif
 {
   if (yytype < YYNTOKENS)
@@ -2998,14 +2998,14 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers)
 #else
 static void
 yy_reduce_print (yyvsp, yyrule, analyzer, observers)
     YYSTYPE *yyvsp;
     int yyrule;
-    mvceditor::LexicalAnalyzerClass &analyzer;
-    mvceditor::ObserverQuadClass& observers;
+    pelet::LexicalAnalyzerClass &analyzer;
+    pelet::ObserverQuadClass& observers;
 #endif
 {
   int yynrhs = yyr2[yyrule];
@@ -3278,15 +3278,15 @@ yysyntax_error (char *yyresult, int yystate, int yychar)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers)
 #else
 static void
 yydestruct (yymsg, yytype, yyvaluep, analyzer, observers)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
-    mvceditor::LexicalAnalyzerClass &analyzer;
-    mvceditor::ObserverQuadClass& observers;
+    pelet::LexicalAnalyzerClass &analyzer;
+    pelet::ObserverQuadClass& observers;
 #endif
 {
   YYUSE (yyvaluep);
@@ -3314,7 +3314,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
+int yyparse (pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 #else
 int yyparse ();
 #endif
@@ -3342,12 +3342,12 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers)
+yyparse (pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers)
 #else
 int
 yyparse (analyzer, observers)
-    mvceditor::LexicalAnalyzerClass &analyzer;
-    mvceditor::ObserverQuadClass& observers;
+    pelet::LexicalAnalyzerClass &analyzer;
+    pelet::ObserverQuadClass& observers;
 #endif
 #endif
 {
@@ -4613,7 +4613,7 @@ yyreturn:
 
 
 
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers) {
+int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers) {
 	int ret = analyzer.NextToken();
 	observers.SemanticValueInit(*value);
 
@@ -4624,7 +4624,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	
 	// optimization: SemanticValueInit() method knows when we need to examine
 	// comments and will allocate memory only when needed
-	mvceditor::SemanticValueClass commentValue;
+	pelet::SemanticValueClass commentValue;
 	observers.SemanticValueInit(commentValue);
 	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
 				
@@ -4655,7 +4655,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	return ret;
 }
 
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg) {
+void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);

@@ -25,12 +25,12 @@
 #ifndef __parserclass__
 #define __parserclass__
 
-#include <LexicalAnalyzerClass.h>
-#include <TokenClass.h>
-#include <ParserObserverClass.h>
+#include <pelet/LexicalAnalyzerClass.h>
+#include <pelet/TokenClass.h>
+#include <pelet/ParserObserverClass.h>
 #include <unicode/unistr.h>
 
-namespace mvceditor {
+namespace pelet {
 
 /**
  * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
@@ -262,7 +262,7 @@ public:
 	 *   @code
 	 *     ParserClass parser;
 	 *     UnicodeString expression = UNICODE_STRING_SIMPLE("$this->");
-	 *     mvceditor::SymbolClass exprResult;
+	 *     pelet::SymbolClass exprResult;
 	 *     if (parser.ParseExpression(expression, exprResult)) {
 	 *     	// if successful, symbol.Lexeme will be set to "$this"
 	 *     }

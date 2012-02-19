@@ -26,9 +26,9 @@
 #define LANGUAGE_DISCOVERY_CLASS_H
 
 #include <unicode/unistr.h>
-#include <UCharBufferedFileClass.h>
+#include <pelet/UCharBufferedFileClass.h>
 
-namespace mvceditor {
+namespace pelet {
 
 /**
  * PHP is an embedded language; it is embedded within HTML documents.  This class helps

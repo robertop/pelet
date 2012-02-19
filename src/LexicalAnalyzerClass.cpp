@@ -22,13 +22,13 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <LexicalAnalyzerClass.h>
-#include <Php53LexicalAnalyzerImpl.h>
+#include <pelet/LexicalAnalyzerClass.h>
+#include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
 
-mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName) 
+pelet::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName) 
 	: ParserError()
 	, Buffer(NULL)
 	, FileName()
@@ -36,18 +36,18 @@ mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileNam
 	OpenFile(fileName);
 }
 
-mvceditor::LexicalAnalyzerClass::LexicalAnalyzerClass()
+pelet::LexicalAnalyzerClass::LexicalAnalyzerClass()
 	: ParserError()
 	, Buffer(NULL)
 	, FileName()
 	, Condition(yycINLINE_HTML) {
 }
 
-mvceditor::LexicalAnalyzerClass::~LexicalAnalyzerClass() {
+pelet::LexicalAnalyzerClass::~LexicalAnalyzerClass() {
 	Close();
 }
 
-void mvceditor::LexicalAnalyzerClass::Close() {
+void pelet::LexicalAnalyzerClass::Close() {
 	if (Buffer) {
 		Buffer->Close();
 		delete Buffer;
@@ -55,7 +55,7 @@ void mvceditor::LexicalAnalyzerClass::Close() {
 	}
 }
 
-bool mvceditor::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
+bool pelet::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 	Close();
 	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
 	Buffer = bufferFile;
@@ -67,20 +67,20 @@ bool mvceditor::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 	return bufferFile->OpenFile(newFile.c_str());
 }
 
-bool mvceditor::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
+bool pelet::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
 	Close();
 	FileName = "";
 	Condition = yycSCRIPT;
-	mvceditor::UCharBufferClass* memBuffer = new UCharBufferClass();
+	pelet::UCharBufferClass* memBuffer = new UCharBufferClass();
 	Buffer = memBuffer;
 	return memBuffer->OpenString(code);
 }
 
-int mvceditor::LexicalAnalyzerClass::NextToken() {
-	return Buffer ? mvceditor::NextToken(Buffer, Condition) : T_END_OF_FILE;
+int pelet::LexicalAnalyzerClass::NextToken() {
+	return Buffer ? pelet::NextToken(Buffer, Condition) : T_END_OF_FILE;
 }
 
-bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
+bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 	if (!Buffer) {
 		return false;
 	}
@@ -195,15 +195,15 @@ bool mvceditor::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 	return ret;
 }
 
-int mvceditor::LexicalAnalyzerClass::GetLineNumber() const {
+int pelet::LexicalAnalyzerClass::GetLineNumber() const {
 	return Buffer ? Buffer->GetLineNumber() : 0;
 }
 
-int mvceditor::LexicalAnalyzerClass::GetCharacterPosition() const {
+int pelet::LexicalAnalyzerClass::GetCharacterPosition() const {
 	return Buffer ? Buffer->GetCharacterPosition() : 0;
 }
 
-std::string mvceditor::LexicalAnalyzerClass::GetFileName() const {
+std::string pelet::LexicalAnalyzerClass::GetFileName() const {
 	return FileName;
 }
 
@@ -214,7 +214,7 @@ static bool IsPhpIdentifierChar(UChar c) {
 	return u_isalnum(c) || '_' == c || (c >= 0x7f && c <= 0xff);
 }
 
-UnicodeString mvceditor::LexicalAnalyzerClass::LastExpression(const UnicodeString& code) const {
+UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& code) const {
 	bool done = false;
 
 	// keep iterating backwards; if we used re2c lexer then we would have to iterate through the entire

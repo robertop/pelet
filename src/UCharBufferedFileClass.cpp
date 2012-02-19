@@ -22,7 +22,7 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <UCharBufferedFileClass.h>
+#include <pelet/UCharBufferedFileClass.h>
 #include <unicode/ustring.h>
 
 /**
@@ -35,7 +35,7 @@
  * Also, note the use of UChar arrays.  Using arrays (and in some cases arrays allocated on the
  * stack) greatly improved the tokenizer performance.
  */
-mvceditor::BufferClass::BufferClass() 
+pelet::BufferClass::BufferClass() 
 	: Current(NULL)
 	, TokenStart(NULL)
 	, Marker(NULL)
@@ -44,15 +44,15 @@ mvceditor::BufferClass::BufferClass()
 		
 }
 
-void mvceditor::BufferClass::IncrementLine() {
+void pelet::BufferClass::IncrementLine() {
 	LineNumber++;
 }
 
-int mvceditor::BufferClass::GetLineNumber() const {
+int pelet::BufferClass::GetLineNumber() const {
 	return LineNumber;
 }
 
-void mvceditor::BufferClass::Close() {
+void pelet::BufferClass::Close() {
 	
 }
  
@@ -136,7 +136,7 @@ void mvceditor::BufferClass::Close() {
  * --------------------------------------------
  *
  */
-void mvceditor::UCharBufferedFileClass::CleanupBuffer() {
+void pelet::UCharBufferedFileClass::CleanupBuffer() {
 	if (Buffer) {
 		delete[] Buffer;
 		Buffer = NULL;
@@ -144,7 +144,7 @@ void mvceditor::UCharBufferedFileClass::CleanupBuffer() {
 	}
 }
 
-void mvceditor::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
+void pelet::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	int newCapacity = minCapacity < (2 * BufferCapacity) ? (2 * BufferCapacity) : minCapacity;
 	UChar* newBuffer = new UChar[newCapacity];
 	u_memcpy(newBuffer, Buffer, BufferCapacity);
@@ -166,12 +166,12 @@ void mvceditor::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	UnicodeString lexeme(Buffer, BufferCapacity);
 }
 
-void mvceditor::UCharBufferedFileClass::MarkTokenStart() {
+void pelet::UCharBufferedFileClass::MarkTokenStart() {
 	TokenStart = Current;
 	Marker = Current;
 }
 
-void mvceditor::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
+void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 	if (NULL != File) {
 
 		
@@ -210,7 +210,7 @@ void mvceditor::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 	}
 }
 
-bool mvceditor::UCharBufferedFileClass::HasReachedEnd() const {
+bool pelet::UCharBufferedFileClass::HasReachedEnd() const {
 	
 	// if we havent yet read in all of the file from disk then Limit is not really the end of the input
 	// there is more to be had
@@ -220,7 +220,7 @@ bool mvceditor::UCharBufferedFileClass::HasReachedEnd() const {
 	return Current >= Eof;
 }
 
-void  mvceditor::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
+void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 	CharacterPos += TokenStart - Buffer;
 
 	// copy any good content to the beginning of the buffer
@@ -239,7 +239,7 @@ void  mvceditor::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 
 }
 
-bool mvceditor::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCapacity) {
+bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCapacity) {
 	if (NULL != File) {
 		u_fclose(File);
 		File = NULL;	
@@ -281,7 +281,7 @@ bool mvceditor::UCharBufferedFileClass::OpenFile(const char *newFile, int starti
 	return opened;
 }
 
-mvceditor::UCharBufferedFileClass::UCharBufferedFileClass()
+pelet::UCharBufferedFileClass::UCharBufferedFileClass()
 	: BufferClass()
 	, FileName(NULL)
 	, Buffer(NULL)
@@ -293,11 +293,11 @@ mvceditor::UCharBufferedFileClass::UCharBufferedFileClass()
 	{
 }
 
-mvceditor::UCharBufferedFileClass::~UCharBufferedFileClass() {
+pelet::UCharBufferedFileClass::~UCharBufferedFileClass() {
 	Close();
 }
 
-void mvceditor::UCharBufferedFileClass::Close() {
+void pelet::UCharBufferedFileClass::Close() {
 	CleanupBuffer();
 	if (NULL != File) {
 		u_fclose(File);
@@ -317,22 +317,22 @@ void mvceditor::UCharBufferedFileClass::Close() {
 	Limit = NULL;
 }
 
-int mvceditor::UCharBufferedFileClass::GetCharacterPosition() const {
+int pelet::UCharBufferedFileClass::GetCharacterPosition() const {
 	return CharacterPos + (TokenStart - Buffer);
 }
 
-mvceditor::UCharBufferClass::UCharBufferClass() 
+pelet::UCharBufferClass::UCharBufferClass() 
 	: BufferClass()
 	, Buffer(NULL) 
 	, BufferCapacity(0) {
 		
 }
 
-mvceditor::UCharBufferClass::~UCharBufferClass() {
+pelet::UCharBufferClass::~UCharBufferClass() {
 	Close();
 }
 
-bool mvceditor::UCharBufferClass::OpenString(const UnicodeString& code) {
+bool pelet::UCharBufferClass::OpenString(const UnicodeString& code) {
 	Close();
 	int length = code.length();
 	if (length > 0) {
@@ -350,7 +350,7 @@ bool mvceditor::UCharBufferClass::OpenString(const UnicodeString& code) {
 	return length > 0;
 }
 
-void mvceditor::UCharBufferClass::Close() {
+void pelet::UCharBufferClass::Close() {
 	if (Buffer) {
 		
 		// the original string still owns the data, according to getTerminatedBuffer()
@@ -363,17 +363,17 @@ void mvceditor::UCharBufferClass::Close() {
 	Limit = NULL;
 }
 
-void mvceditor::UCharBufferClass::AppendToLexeme(int charsToFill) {
+void pelet::UCharBufferClass::AppendToLexeme(int charsToFill) {
 }
 
-void mvceditor::UCharBufferClass::MarkTokenStart() {
+void pelet::UCharBufferClass::MarkTokenStart() {
 	TokenStart = Current;
 }
 
-bool mvceditor::UCharBufferClass::HasReachedEnd() const {
+bool pelet::UCharBufferClass::HasReachedEnd() const {
 	return Current >= Limit;
 }
 
-int mvceditor::UCharBufferClass::GetCharacterPosition() const {
+int pelet::UCharBufferClass::GetCharacterPosition() const {
 	return TokenStart - Buffer;
 }

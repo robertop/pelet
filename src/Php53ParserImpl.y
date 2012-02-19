@@ -24,9 +24,9 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
-#include <UCharBufferedFileClass.h>
-#include <LexicalAnalyzerClass.h>
-#include <ParserObserverClass.h>
+#include <pelet/UCharBufferedFileClass.h>
+#include <pelet/LexicalAnalyzerClass.h>
+#include <pelet/ParserObserverClass.h>
 #include <unicode/unistr.h>
 #include <string>
  
@@ -35,17 +35,17 @@
  #endif
  
  
-#define YYSTYPE mvceditor::SemanticValueClass
+#define YYSTYPE pelet::SemanticValueClass
  
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg);
+int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg);
 
 %}
 
-%parse-param { mvceditor::LexicalAnalyzerClass &analyzer }
-%parse-param { mvceditor::ObserverQuadClass& observers }
-%lex-param  { mvceditor::LexicalAnalyzerClass &analyzer }
-%lex-param { mvceditor::ObserverQuadClass& observers }
+%parse-param { pelet::LexicalAnalyzerClass &analyzer }
+%parse-param { pelet::ObserverQuadClass& observers }
+%lex-param  { pelet::LexicalAnalyzerClass &analyzer }
+%lex-param { pelet::ObserverQuadClass& observers }
 %destructor { observers.SemanticValueFree($$); } <*>
 
 /**
@@ -967,7 +967,7 @@ class_constant:
 
 %%
 
-int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers) {
+int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers) {
 	int ret = analyzer.NextToken();
 	observers.SemanticValueInit(*value);
 
@@ -978,7 +978,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	
 	// optimization: SemanticValueInit() method knows when we need to examine
 	// comments and will allocate memory only when needed
-	mvceditor::SemanticValueClass commentValue;
+	pelet::SemanticValueClass commentValue;
 	observers.SemanticValueInit(commentValue);
 	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
 				
@@ -1009,7 +1009,7 @@ int php53lex(YYSTYPE* value, mvceditor::LexicalAnalyzerClass &analyzer, mvcedito
 	return ret;
 }
 
-void php53error(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers, std::string msg) {
+void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);

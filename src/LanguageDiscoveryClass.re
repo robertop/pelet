@@ -22,9 +22,9 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <LanguageDiscoveryClass.h>
-#include <Php53LexicalAnalyzerImpl.h>
-#include <Php53ParserImpl.h>
+#include <pelet/LanguageDiscoveryClass.h>
+#include <pelet/Php53LexicalAnalyzerImpl.h>
+#include <pelet/Php53ParserImpl.h>
 
 #define DISCOVERY_BUFFER_FILL(n) { Buffer.AppendToLexeme(n); }
 
@@ -32,16 +32,16 @@
 
 #define DISCOVERY_SET_CONDITION(c) syntax = c
 
-mvceditor::LanguageDiscoveryClass::LanguageDiscoveryClass()
+pelet::LanguageDiscoveryClass::LanguageDiscoveryClass()
 	: Buffer()
 	, Code() {
 }
 
-void mvceditor::LanguageDiscoveryClass::Close() {
+void pelet::LanguageDiscoveryClass::Close() {
 	Buffer.Close();
 }
 
-bool mvceditor::LanguageDiscoveryClass::Open(const UnicodeString& code) {
+bool pelet::LanguageDiscoveryClass::Open(const UnicodeString& code) {
 	bool ret = Buffer.OpenString(code);
 	if (ret) {
 		Code = code;
@@ -49,7 +49,7 @@ bool mvceditor::LanguageDiscoveryClass::Open(const UnicodeString& code) {
 	return ret;
 }
 
-mvceditor::LanguageDiscoveryClass::Syntax mvceditor::LanguageDiscoveryClass::at(int pos) {
+pelet::LanguageDiscoveryClass::Syntax pelet::LanguageDiscoveryClass::at(int pos) {
 
 	// need to reset the buffer back to the beginning of the source code
 	Buffer.OpenString(Code);
@@ -59,8 +59,8 @@ mvceditor::LanguageDiscoveryClass::Syntax mvceditor::LanguageDiscoveryClass::at(
 	// value) and when we break out of the PHP we need to know what HTML condition we were in
 	// for example this line:  < a href="<?php link_to('home'); ?>"
 	// in this case when PHP ends we need to go back to the HTML_ATTRIBUTE_VALUE condition 
-	mvceditor::LanguageDiscoveryClass::Syntax lastCondition = mvceditor::LanguageDiscoveryClass::SYNTAX_HTML;
-	mvceditor::LanguageDiscoveryClass::Syntax syntax = mvceditor::LanguageDiscoveryClass::SYNTAX_HTML;
+	pelet::LanguageDiscoveryClass::Syntax lastCondition = pelet::LanguageDiscoveryClass::SYNTAX_HTML;
+	pelet::LanguageDiscoveryClass::Syntax syntax = pelet::LanguageDiscoveryClass::SYNTAX_HTML;
 	
 	// Note: the rules below are NOT the full PHP spec; they are only enough rules so that we can
 	// properly tell what language we are in.  
@@ -82,7 +82,7 @@ re2c:define:YYCURSOR = Buffer.Current;
 re2c:define:YYLIMIT = Buffer.Limit;
 re2c:define:YYMARKER = Buffer.Marker;
 re2c:define:YYFILL = DISCOVERY_BUFFER_FILL;
-re2c:define:YYCONDTYPE = mvceditor::LanguageDiscoveryClass::Syntax;
+re2c:define:YYCONDTYPE = pelet::LanguageDiscoveryClass::Syntax;
 re2c:define:YYGETCONDITION = DISCOVERY_GET_CONDITION;
 re2c:define:YYSETCONDITION = DISCOVERY_SET_CONDITION;
 re2c:indent:top = 1;
@@ -225,8 +225,8 @@ WHITESPACE = [ \t\v\f];
  * check to see if we are past the wanted position and return immediately so that 
  * we give the correct condition to the caller
  */
-<PHP_HEREDOC> ANY { if (mvceditor::HandleHeredoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
-<PHP_NOWDOC> ANY { if (mvceditor::HandleNowdoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+<PHP_HEREDOC> ANY { if (pelet::HandleHeredoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos)  { return syntax ; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
+<PHP_NOWDOC> ANY { if (pelet::HandleNowdoc(&Buffer) == T_ERROR_UNTERMINATED_STRING || (currentPos + (Buffer.Current - Buffer.TokenStart)) >= pos) { return syntax; } syntax = SYNTAX_PHP_SCRIPT; goto discovery_start; }
 
 
 /*!ignore:re2c

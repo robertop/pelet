@@ -25,12 +25,12 @@
 #ifndef __PARSEROBSERVERCLASS_H__
 #define __PARSEROBSERVERCLASS_H__
 
-#include <TokenClass.h>
+#include <pelet/TokenClass.h>
 #include <unicode/unistr.h>
 #include <stack>
 #include <vector>
 
-namespace mvceditor {
+namespace pelet {
 
 // these classes are defined below.
 class SymbolClass;
@@ -786,7 +786,7 @@ public:
 	 * when parser encounters a variable at the right side of an assignment 
 	 * expression. Will push the expression to the ExpressionVariablesList
 	 */
-	void CurrentExpressionPushAsVariable(mvceditor::SemanticValueClass& value);
+	void CurrentExpressionPushAsVariable(pelet::SemanticValueClass& value);
 
 	/**
 	 * Add a property name to the current variable (the one that was last pushed) chain list

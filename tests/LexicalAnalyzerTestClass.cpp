@@ -23,8 +23,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
-#include <LexicalAnalyzerClass.h>
-#include <Php53LexicalAnalyzerImpl.h>
+#include <pelet/LexicalAnalyzerClass.h>
+#include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <FileTestFixtureClass.h>
 
 // TODO: remove this macro
@@ -34,7 +34,7 @@ class LexicalAnalyzerTestClass : public FileTestFixtureClass {
 public:	
 	LexicalAnalyzerTestClass() 
 		: FileTestFixtureClass() {
-		Lexer = new mvceditor::LexicalAnalyzerClass();
+		Lexer = new pelet::LexicalAnalyzerClass();
 	}
 	
 	virtual ~LexicalAnalyzerTestClass() {
@@ -48,7 +48,7 @@ public:
 		CHECK_EQUAL(expectedLexeme, actualLexeme);
 	}
 
-	mvceditor::LexicalAnalyzerClass* Lexer;	
+	pelet::LexicalAnalyzerClass* Lexer;	
 };
 
 SUITE(LexicalAnalyzerTestClass) {

@@ -25,9 +25,9 @@
 #ifndef TOKEN_CLASS_H
 #define TOKEN_CLASS_H
 
-#include <Php53ParserImpl.h>
+#include <pelet/Php53ParserImpl.h>
 
-namespace mvceditor {
+namespace pelet {
 	
 class TokenClass {
 public:

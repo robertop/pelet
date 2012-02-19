@@ -25,7 +25,7 @@
 
 #include <UnitTest++.h>
 #include <unicode/unistr.h>
-#include <LanguageDiscoveryClass.h>
+#include <pelet/LanguageDiscoveryClass.h>
 
 SUITE(LanguageDiscoveryTestClass) {
 
@@ -35,16 +35,16 @@ TEST(DiscoverHtmlAndPhp) {
 		"<?php echo 'hello'; ?>"
 		"</body></html>"
 	);
-	mvceditor::LanguageDiscoveryClass discover;
+	pelet::LanguageDiscoveryClass discover;
 	CHECK(discover.Open((code)));
 	
 	int pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
-	mvceditor::LanguageDiscoveryClass::Syntax syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
+	pelet::LanguageDiscoveryClass::Syntax syntax = discover.at(pos);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 }
 
 TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
@@ -66,38 +66,38 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 		" // singleline ?> \n"
 		"</body></html>"
 	);
-	mvceditor::LanguageDiscoveryClass discover;
+	pelet::LanguageDiscoveryClass discover;
 	CHECK(discover.Open((code)));
 	
 	int pos;
-	mvceditor::LanguageDiscoveryClass::Syntax syntax;
+	pelet::LanguageDiscoveryClass::Syntax syntax;
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("double"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_DOUBLE_QUOTE_STRING, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_DOUBLE_QUOTE_STRING, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("heredoc"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_HEREDOC, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_HEREDOC, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("nowdoc"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_NOWDOC, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_NOWDOC, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("backtick"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_BACKTICK, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_BACKTICK, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("multiline"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_MULTI_LINE_COMMENT, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_MULTI_LINE_COMMENT, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 }
 
 TEST(MultipleHtmlBlocks) {
@@ -107,35 +107,35 @@ TEST(MultipleHtmlBlocks) {
 		"<body class='<?php echo \"?>\" . $theclass; ?>' id='thebody'>This is the body</body>"
 		"</html>"
 	);
-	mvceditor::LanguageDiscoveryClass discover;
+	pelet::LanguageDiscoveryClass discover;
 	
 	CHECK(discover.Open(code));
-	mvceditor::LanguageDiscoveryClass::Syntax syntax;
+	pelet::LanguageDiscoveryClass::Syntax syntax;
 	int pos;
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("$title"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
 	
 	// a start tag
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("itle>"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("/head>"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("$theclass"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("id="));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE, syntax);
 	
 	pos = code.indexOf(UNICODE_STRING_SIMPLE("thebody"));
 	syntax = discover.at(pos);
-	CHECK_EQUAL(mvceditor::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE, syntax);
+	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE, syntax);
 	
 }
 

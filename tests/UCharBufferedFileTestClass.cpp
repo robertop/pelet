@@ -24,7 +24,7 @@
  */
 #include <UnitTest++.h>
 #include <FileTestFixtureClass.h>
-#include <UCharBufferedFileClass.h>
+#include <pelet/UCharBufferedFileClass.h>
 #include <unicode/unistr.h>
 
 // TODO: remove this
@@ -36,8 +36,8 @@ public:
 
 	UCharBufferedFileTestFixtureClass()
 		: FileTestFixtureClass() {
-		MemBuffer = new mvceditor::UCharBufferClass();
-		FileBuffer = new mvceditor::UCharBufferedFileClass();
+		MemBuffer = new pelet::UCharBufferClass();
+		FileBuffer = new pelet::UCharBufferedFileClass();
 	}
 	
 	~UCharBufferedFileTestFixtureClass() {
@@ -45,8 +45,8 @@ public:
 		delete FileBuffer;
 	}
 	
-	mvceditor::UCharBufferClass* MemBuffer;
-	mvceditor::UCharBufferedFileClass* FileBuffer;
+	pelet::UCharBufferClass* MemBuffer;
+	pelet::UCharBufferedFileClass* FileBuffer;
 	
 };
 

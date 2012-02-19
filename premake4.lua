@@ -96,13 +96,32 @@ solution "pelet"
 		
 		-- prevent "warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library"
 		buildoptions { "/MDd" }
-	
+		
+	project "pelet"
+		language "C++"
+		kind "SharedLib"
+		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y" }
+		includedirs { "include/" }
+		links { "tests" }
+		
+		configuration "Release"
+			pickywarnings(_ACTION)
+			icuconfiguration("Release", _ACTION)
+		configuration { "Debug", "vs2008" }
+			postbuildcommands { "cd " .. normalizepath("Debug") .. " && tests.exe" }
+		configuration { "Debug", "gmake or codelite" }
+			postbuildcommands { "cd " .. normalizepath("Debug") .. " && ./tests" }
+		configuration { "Release", "vs2008" }
+			postbuildcommands { "cd " .. normalizepath("Release") .. " && tests.exe"  }
+		configuration { "Release", "gmake or codelite" }
+			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
+		
 	project "pelet_sample"
 		language "C++"
 		kind "ConsoleApp"
-		files { "src/*", "include/*", "*.lua", "src/**.re", "src/**.y", "sample.cpp" }
+		files { "sample.cpp" }
 		includedirs { "include/" }
-		links { "tests" }
+		links { "pelet" }
 		
 		configuration "Debug"
 			pickywarnings(_ACTION)
@@ -111,16 +130,6 @@ solution "pelet"
 		configuration "Release"
 			pickywarnings(_ACTION)
 			icuconfiguration("Release", _ACTION)
-		configuration { "Debug", "vs2008" }
-			includedirs { "$(WXWIN)/contrib/include/" }
-			postbuildcommands { "cd " .. normalizepath("Debug") .. " && tests.exe" }
-		configuration { "Debug", "gmake or codelite" }
-			postbuildcommands { "cd " .. normalizepath("Debug") .. " && ./tests" }
-		configuration { "Release", "vs2008" }
-			includedirs { "$(WXWIN)/contrib/include/" }
-			postbuildcommands { "cd " .. normalizepath("Release") .. " && tests.exe"  }
-		configuration { "Release", "gmake or codelite" }
-			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
 			
 	project "tests"
 		language "C++"

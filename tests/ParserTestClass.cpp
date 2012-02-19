@@ -23,8 +23,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
-#include <ParserObserverClass.h>
-#include <ParserClass.h>
+#include <pelet/ParserObserverClass.h>
+#include <pelet/ParserClass.h>
 #include <FileTestFixtureClass.h>
 #include <vector>
 
@@ -38,7 +38,7 @@ class ParserTestClass : public FileTestFixtureClass {
 public:	
 	ParserTestClass() 
 		: FileTestFixtureClass() {
-		Parser = new mvceditor::ParserClass();
+		Parser = new pelet::ParserClass();
 		
 		// this file was carefully crafted to hit all the observers
 		// class, method, function, and variable observers
@@ -101,8 +101,8 @@ public:
 		delete Parser;
 	}
 	
-	mvceditor::ParserClass* Parser;
-	mvceditor::LintResultsClass LintResults;
+	pelet::ParserClass* Parser;
+	pelet::LintResultsClass LintResults;
 };
 
 /**
@@ -110,8 +110,8 @@ public:
  * all observer interfaces and push the parameters into publicly accessible vectors. The different test cases
  * can then assert that the notifications send the correct arguments.
  */
-class TestClassObserverClass : public mvceditor::ClassObserverClass, public mvceditor::ClassMemberObserverClass, 
-	public mvceditor::FunctionObserverClass, public mvceditor::VariableObserverClass {
+class TestClassObserverClass : public pelet::ClassObserverClass, public pelet::ClassMemberObserverClass, 
+	public pelet::FunctionObserverClass, public pelet::VariableObserverClass {
 
 public:
 	std::vector<UnicodeString> ClassName, ClassSignature, ClassComment,
@@ -123,8 +123,8 @@ public:
 						DefinedName, DefinedValue, DefinedComment,
 						MethodEndClassName, MethodEndMethodName;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
-	std::vector<mvceditor::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
-	std::vector<mvceditor::SymbolClass::Types> VariableTypes;
+	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
+	std::vector<pelet::SymbolClass::Types> VariableTypes;
 	std::vector<int> MethodEndPos;
 	
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
@@ -136,7 +136,7 @@ public:
 	
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
-			mvceditor::TokenClass::TokenIds visibility, bool isStatic) {
+			pelet::TokenClass::TokenIds visibility, bool isStatic) {
 		MethodClassName.push_back(className);
 		MethodName.push_back(methodName);
 		MethodSignature.push_back(signature);
@@ -154,7 +154,7 @@ public:
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
-			mvceditor::TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
+			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
 		PropertyClassName.push_back(className);
 		PropertyName.push_back(propertyName);
 		PropertyType.push_back(propertyType);
@@ -177,7 +177,7 @@ public:
 	}
 	
 	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
-		const mvceditor::SymbolClass& symbol, const UnicodeString& comment) {
+		const pelet::SymbolClass& symbol, const UnicodeString& comment) {
 		VariableClassName.push_back(className);
 		VariableMethodName.push_back(methodName);
 		VariableName.push_back(symbol.Lexeme);
@@ -269,8 +269,8 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	}
 	CHECK_EQUAL((size_t)4, observer.MethodVisibility.size());
 	if (observer.MethodVisibility.size() == 4) {
-		CHECK_EQUAL(mvceditor::TokenClass::PUBLIC, observer.MethodVisibility[0]);
-		CHECK_EQUAL(mvceditor::TokenClass::PRIVATE, observer.MethodVisibility[3]);
+		CHECK_EQUAL(pelet::TokenClass::PUBLIC, observer.MethodVisibility[0]);
+		CHECK_EQUAL(pelet::TokenClass::PRIVATE, observer.MethodVisibility[3]);
 	}
 	CHECK_EQUAL((size_t)4, observer.MethodIsStatic.size());
 	if (observer.MethodIsStatic.size() == 4) {
@@ -313,8 +313,8 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyVisibility.size());
 	if (observer.PropertyVisibility.size() == 2) {
-		CHECK_EQUAL(mvceditor::TokenClass::PRIVATE, observer.PropertyVisibility[0]);
-		CHECK_EQUAL(mvceditor::TokenClass::PUBLIC, observer.PropertyVisibility[1]);
+		CHECK_EQUAL(pelet::TokenClass::PRIVATE, observer.PropertyVisibility[0]);
+		CHECK_EQUAL(pelet::TokenClass::PUBLIC, observer.PropertyVisibility[1]);
 	}
 	CHECK_EQUAL((size_t)2, observer.PropertyIsStatic.size());
 	if (observer.PropertyIsStatic.size() == 2) {
@@ -386,15 +386,15 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	}
 	CHECK_EQUAL((size_t)7, observer.VariableTypes.size());
 	if (observer.VariableTypes.size() == 7) {
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[0]);
-		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[1]);
+		CHECK_EQUAL(pelet::SymbolClass::OBJECT, observer.VariableTypes[0]);
+		CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, observer.VariableTypes[1]);
 
 		// cannot resolve variables that are assigned 
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[2]);
-		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[3]);
-		CHECK_EQUAL(mvceditor::SymbolClass::PRIMITIVE, observer.VariableTypes[4]);
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[5]);
-		CHECK_EQUAL(mvceditor::SymbolClass::OBJECT, observer.VariableTypes[6]);
+		CHECK_EQUAL(pelet::SymbolClass::OBJECT, observer.VariableTypes[2]);
+		CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, observer.VariableTypes[3]);
+		CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, observer.VariableTypes[4]);
+		CHECK_EQUAL(pelet::SymbolClass::OBJECT, observer.VariableTypes[5]);
+		CHECK_EQUAL(pelet::SymbolClass::OBJECT, observer.VariableTypes[6]);
 	}
 	CHECK_EQUAL((size_t)7, observer.VariableChainList.size());
 	if (observer.VariableChainList.size() == 7) {
@@ -681,7 +681,7 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + wxT("test.php");
-	mvceditor::LintResultsClass results;
+	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
@@ -690,7 +690,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
 			"<html> </html>"
 	);
 	std::string file = TestProjectDir + wxT("testpure.php");
-	mvceditor::LintResultsClass results;
+	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
@@ -713,7 +713,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
 			"</html>\n"
 	);
 	std::string file = TestProjectDir + wxT("testpure.php");
-	mvceditor::LintResultsClass results;
+	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
@@ -729,13 +729,13 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 			"</html>\n"
 	);
 	std::string file = TestProjectDir + wxT("testpure.php");
-	mvceditor::LintResultsClass results;
+	pelet::LintResultsClass results;
 	CHECK(Parser->LintFile(file, results));
 }
 
 TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("$'gag's = 'hello' \"again\" $not gaging;");
-	mvceditor::LintResultsClass results;
+	pelet::LintResultsClass results;
 	CHECK_EQUAL(false, Parser->LintString(code, results));
 	CHECK(results.Error.length() > 0);
 	CHECK(results.LineNumber > 0);
@@ -743,14 +743,14 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 
 TEST_FIXTURE(ParserTestClass, ParseVariableExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("$variable");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
 }
 
 TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->prop");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
@@ -766,7 +766,7 @@ TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
 	// chain list so that during code completion we can trigger lookup
 	// of class members
 	UnicodeString code = UNICODE_STRING_SIMPLE("$obj->");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$obj"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
@@ -782,7 +782,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
 	// chain list so that during code completion we can trigger lookup
 	// of class members
 	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
@@ -794,7 +794,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
 
 TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::$DEFAULT");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
@@ -806,7 +806,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
 
 TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::PI;");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
@@ -818,7 +818,7 @@ TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->func1()->prop2->func3()->prop4");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
@@ -833,7 +833,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("func1()->prop2->prop4");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), symbol.Lexeme);
 	CHECK_EQUAL((size_t)3, symbol.ChainList.size());
@@ -848,7 +848,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = UNICODE_STRING_SIMPLE("$this->propA->func1($a, $b)->prop2->prop4");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
@@ -865,7 +865,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodA
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = UNICODE_STRING_SIMPLE("$this->func1($a, $b)->propA->prop2->prop4");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
 	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
@@ -882,7 +882,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctio
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = UNICODE_STRING_SIMPLE("func1($a, $b)->propA->func2($c)->prop4");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 
 	// lexeme empty because function call is first in the chain
@@ -898,7 +898,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctio
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithWhitespace) {
 	UnicodeString code = UNICODE_STRING_SIMPLE("$propA->time->time\n->");
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 
 	// lexeme empty because function call is first in the chain

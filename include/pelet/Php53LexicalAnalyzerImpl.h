@@ -25,7 +25,7 @@
 #ifndef __php53lexicalanalyzerimpl_h__
 #define __php53lexicalanalyzerimpl_h__
  
-#include <UCharBufferedFileClass.h>
+#include <pelet/UCharBufferedFileClass.h>
 
 /**
  * The lexer has different rules based on where in the source code a specific token is.
@@ -56,11 +56,11 @@ enum YYCONDTYPE {
 	yycBACKTICK,
 };
 
-namespace mvceditor {
+namespace pelet {
 	 
 /**
  * Get the next token from the given buffer. Checking for the end is not as simple as checking for T_EOF, you will
- * need to call mvceditor::TokenClass::IsTerminatingToken() to ensure that the end of stream
+ * need to call pelet::TokenClass::IsTerminatingToken() to ensure that the end of stream
  * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
  * 
  * @param BufferClass* buffer contains the code to be tokenized. This function will NOT own the pointer.

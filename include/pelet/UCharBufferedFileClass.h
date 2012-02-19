@@ -28,7 +28,7 @@
 #include <unicode/ustdio.h>
 #include <unicode/unistr.h>
 
-namespace mvceditor {
+namespace pelet {
 	
 class BufferClass {
 

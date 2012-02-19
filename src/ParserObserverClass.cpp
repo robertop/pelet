@@ -22,12 +22,12 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <ParserObserverClass.h>
+#include <pelet/ParserObserverClass.h>
 #include <unicode/ustdio.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
-mvceditor::ClassSymbolClass::ClassSymbolClass() 
+pelet::ClassSymbolClass::ClassSymbolClass() 
 	: ClassName()
 	, Comment()
 	, ExtendsFrom()
@@ -38,19 +38,19 @@ mvceditor::ClassSymbolClass::ClassSymbolClass()
 
 }
 
-void mvceditor::ClassSymbolClass::GrabClassName(mvceditor::SemanticValueClass& value) {
+void pelet::ClassSymbolClass::GrabClassName(pelet::SemanticValueClass& value) {
 	if (value.Lexeme) {
 		ClassName = *value.Lexeme;
 	}
 }
 
-void mvceditor::ClassSymbolClass::AppendToComment(mvceditor::SemanticValueClass& value) {
+void pelet::ClassSymbolClass::AppendToComment(pelet::SemanticValueClass& value) {
 	if (value.Comment) {
 		Comment.append(*value.Comment);
 	}
 }
 
-void mvceditor::ClassSymbolClass::Clear() {
+void pelet::ClassSymbolClass::Clear() {
 	ClassName.remove();
 	Comment.remove();
 	ExtendsFrom.Clear();
@@ -60,7 +60,7 @@ void mvceditor::ClassSymbolClass::Clear() {
 	IsInterface = false;
 }
 
-UnicodeString mvceditor::ClassSymbolClass::ToSignature() const {
+UnicodeString pelet::ClassSymbolClass::ToSignature() const {
 	UnicodeString sig;
 	if (!IsInterface && !IsAbstract) {
 		sig.append(UNICODE_STRING_SIMPLE("class "));
@@ -95,7 +95,7 @@ UnicodeString mvceditor::ClassSymbolClass::ToSignature() const {
 	return sig;
 }
 
-mvceditor::ClassMemberSymbolClass::ClassMemberSymbolClass() 
+pelet::ClassMemberSymbolClass::ClassMemberSymbolClass() 
 	: MemberName()
 	, Comment()
 
@@ -111,7 +111,7 @@ mvceditor::ClassMemberSymbolClass::ClassMemberSymbolClass()
 
 }
 
-void mvceditor::ClassMemberSymbolClass::SetNameAndReturnReference(mvceditor::SemanticValueClass& nameValue, mvceditor::SemanticValueClass& referenceValue, mvceditor::SemanticValueClass& functionValue) {
+void pelet::ClassMemberSymbolClass::SetNameAndReturnReference(pelet::SemanticValueClass& nameValue, pelet::SemanticValueClass& referenceValue, pelet::SemanticValueClass& functionValue) {
 	if (nameValue.Lexeme) {
 		MemberName = *nameValue.Lexeme;
 	}
@@ -124,7 +124,7 @@ void mvceditor::ClassMemberSymbolClass::SetNameAndReturnReference(mvceditor::Sem
 	}
 }
 
-void mvceditor::ClassMemberSymbolClass::SetAsConst(mvceditor::SemanticValueClass& nameValue, mvceditor::SemanticValueClass& commentValue) {
+void pelet::ClassMemberSymbolClass::SetAsConst(pelet::SemanticValueClass& nameValue, pelet::SemanticValueClass& commentValue) {
 	IsPublicMember = true;
 	IsProtectedMember = false;
 	IsPrivateMember = false;
@@ -144,30 +144,30 @@ void mvceditor::ClassMemberSymbolClass::SetAsConst(mvceditor::SemanticValueClass
 	}
 }
 
-void mvceditor::ClassMemberSymbolClass::AppendToComment(SemanticValueClass& value) {
+void pelet::ClassMemberSymbolClass::AppendToComment(SemanticValueClass& value) {
 	if (value.Comment) {
 		Comment.append(*value.Comment);
 	}
 }
 
-void mvceditor::ClassMemberSymbolClass::SetAsPublic() {
+void pelet::ClassMemberSymbolClass::SetAsPublic() {
 	IsPublicMember = true;
 	IsProtectedMember = false;
 	IsPrivateMember = false;
 }
 
-void mvceditor::ClassMemberSymbolClass::SetAsProtected() {
+void pelet::ClassMemberSymbolClass::SetAsProtected() {
 	IsPublicMember = false;
 	IsProtectedMember = true;
 	IsPrivateMember = false;
 }
-void mvceditor::ClassMemberSymbolClass::SetAsPrivate() {
+void pelet::ClassMemberSymbolClass::SetAsPrivate() {
 	IsPublicMember = false;
 	IsProtectedMember = false;
 	IsPrivateMember = true;
 }
 
-void mvceditor::ClassMemberSymbolClass::Clear() {
+void pelet::ClassMemberSymbolClass::Clear() {
 	MemberName.remove();
 	Comment.remove();
 
@@ -182,7 +182,7 @@ void mvceditor::ClassMemberSymbolClass::Clear() {
 	IsReturnReference = false;
 }
 
-UnicodeString mvceditor::ClassMemberSymbolClass::ToMethodSignature(UnicodeString variablesSignature) const {
+UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString variablesSignature) const {
 	UnicodeString sig;
 
 	// methods cannot be const
@@ -215,32 +215,32 @@ UnicodeString mvceditor::ClassMemberSymbolClass::ToMethodSignature(UnicodeString
 	return sig;
 }
 
-mvceditor::QualifiedNameClass::QualifiedNameClass()
+pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
 	, Namespaces() {
 
 }
 
-void mvceditor::QualifiedNameClass::GrabNameAndComment(SemanticValueClass& value) {
+void pelet::QualifiedNameClass::GrabNameAndComment(SemanticValueClass& value) {
 	if (value.Comment) {
 		Comment.setTo(*value.Comment);
 	}
 	AddName(value);
 }
 
-void mvceditor::QualifiedNameClass::Clear() {
+void pelet::QualifiedNameClass::Clear() {
 	while (!Namespaces.empty()) {
 		Namespaces.pop();
 	}
 }
 
-void mvceditor::QualifiedNameClass::AddName(SemanticValueClass& value) {
+void pelet::QualifiedNameClass::AddName(SemanticValueClass& value) {
 	if (value.Lexeme) {
 		Namespaces.push(*value.Lexeme);
 	}
 }
 
-UnicodeString mvceditor::QualifiedNameClass::ToSignature() const {
+UnicodeString pelet::QualifiedNameClass::ToSignature() const {
 	UnicodeString ret;
 
 	// create a local copy so that we can pop() from it
@@ -255,18 +255,18 @@ UnicodeString mvceditor::QualifiedNameClass::ToSignature() const {
 	return ret;
 }
 
-mvceditor::ParametersListClass::ParametersListClass()
+pelet::ParametersListClass::ParametersListClass()
 	: Params()
 	, OptionalTypes() {
 
 }
 
-void mvceditor::ParametersListClass::Create() {
+void pelet::ParametersListClass::Create() {
 	Params.push_back(UNICODE_STRING_SIMPLE(""));
 	OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 }
 
-void mvceditor::ParametersListClass::CreateWithOptionalType(mvceditor::SemanticValueClass& typeValue) {
+void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClass& typeValue) {
 	Params.push_back(UNICODE_STRING_SIMPLE(""));
 	if (typeValue.Lexeme) {
 		OptionalTypes.push_back(*typeValue.Lexeme);
@@ -276,7 +276,7 @@ void mvceditor::ParametersListClass::CreateWithOptionalType(mvceditor::SemanticV
 	}
 }
 
-void mvceditor::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
+void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
 	Params.push_back(UNICODE_STRING_SIMPLE(""));
 	if (!className.isEmpty()) {
 		OptionalTypes.push_back(className);
@@ -287,12 +287,12 @@ void mvceditor::ParametersListClass::CreateWithOptionalType(const UnicodeString&
 }
 
 
-void mvceditor::ParametersListClass::Clear() {
+void pelet::ParametersListClass::Clear() {
 	Params.clear();
 	OptionalTypes.clear();
 }
 
-void mvceditor::ParametersListClass::SetName(SemanticValueClass& value, bool isReference) {
+void pelet::ParametersListClass::SetName(SemanticValueClass& value, bool isReference) {
 	if (value.Lexeme) {
 		Params.back().setTo(*value.Lexeme);
 		if (isReference) {
@@ -301,7 +301,7 @@ void mvceditor::ParametersListClass::SetName(SemanticValueClass& value, bool isR
 	}
 }
 
-UnicodeString mvceditor::ParametersListClass::ToSignature() const {
+UnicodeString pelet::ParametersListClass::ToSignature() const {
 	UnicodeString signature = UNICODE_STRING_SIMPLE("(");
 	size_t i = 0;
 	for (; i < Params.size(); ++i) {
@@ -318,11 +318,11 @@ UnicodeString mvceditor::ParametersListClass::ToSignature() const {
 	return signature;
 }
 
-size_t mvceditor::ParametersListClass::GetCount() const {
+size_t pelet::ParametersListClass::GetCount() const {
 	return Params.size();
 }
 
-void mvceditor::ParametersListClass::Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const {
+void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const {
 	if (index < Params.size()) {
 		param.setTo(Params[index]);
 	}
@@ -331,7 +331,7 @@ void mvceditor::ParametersListClass::Param(size_t index, UnicodeString& param, U
 	}
 }
 
-mvceditor::ExpressionClass::ExpressionClass()
+pelet::ExpressionClass::ExpressionClass()
 	: Name()
 	, Lexeme()
 	, Comment()
@@ -340,17 +340,17 @@ mvceditor::ExpressionClass::ExpressionClass()
 	, Type(SCALAR) {
 }
 
-void mvceditor::ExpressionClass::Clear() {
+void pelet::ExpressionClass::Clear() {
 	Name.Clear();
 	Lexeme.remove();
 	Comment.remove();
 	CallArguments.clear();
 	ChainList.clear();
-	Type = mvceditor::ExpressionClass::SCALAR;
+	Type = pelet::ExpressionClass::SCALAR;
 }
 
 
-void mvceditor::ExpressionClass::AppendToChain(mvceditor::SemanticValueClass& operatorValue, mvceditor::SemanticValueClass& propertyValue, bool isMethod) {
+void pelet::ExpressionClass::AppendToChain(pelet::SemanticValueClass& operatorValue, pelet::SemanticValueClass& propertyValue, bool isMethod) {
 	UnicodeString objectCall;
 	if (operatorValue.Lexeme) {
 		objectCall.append(*operatorValue.Lexeme);
@@ -364,7 +364,7 @@ void mvceditor::ExpressionClass::AppendToChain(mvceditor::SemanticValueClass& op
 	ChainList.push_back(objectCall);
 }
 
-mvceditor::SymbolClass::SymbolClass() 
+pelet::SymbolClass::SymbolClass() 
 	: Lexeme()
 	, Comment()
 	, PhpDocType()
@@ -372,7 +372,7 @@ mvceditor::SymbolClass::SymbolClass()
 	, Type(PRIMITIVE) {
 }
 
-void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
+void pelet::SymbolClass::Copy(const pelet::SymbolClass& src) {
 	Lexeme = src.Lexeme;
 	Comment = src.Comment;
 	PhpDocType = src.PhpDocType;
@@ -380,53 +380,53 @@ void mvceditor::SymbolClass::Copy(const mvceditor::SymbolClass& src) {
 	Type = src.Type;
 }
 
-void mvceditor::SymbolClass::AppendToComment(mvceditor::SemanticValueClass& value) {
+void pelet::SymbolClass::AppendToComment(pelet::SemanticValueClass& value) {
 	if (value.Comment) {
 		Comment.append(*value.Comment);
 	}
 }
 
-void mvceditor::SymbolClass::SetToPrimitive() {
-	Type = mvceditor::SymbolClass::PRIMITIVE;
+void pelet::SymbolClass::SetToPrimitive() {
+	Type = pelet::SymbolClass::PRIMITIVE;
 }
 
-void mvceditor::SymbolClass::SetToObject() {
-	Type = mvceditor::SymbolClass::OBJECT;
+void pelet::SymbolClass::SetToObject() {
+	Type = pelet::SymbolClass::OBJECT;
 }
 
-void mvceditor::SymbolClass::SetToArray() {
-	Type = mvceditor::SymbolClass::ARRAY;
+void pelet::SymbolClass::SetToArray() {
+	Type = pelet::SymbolClass::ARRAY;
 }
 
-void mvceditor::SymbolClass::SetToUnknown() {
-	Type = mvceditor::SymbolClass::UNKNOWN;
+void pelet::SymbolClass::SetToUnknown() {
+	Type = pelet::SymbolClass::UNKNOWN;
 }
 
-void mvceditor::SymbolClass::Clear() {
+void pelet::SymbolClass::Clear() {
 	Lexeme.remove();
 	Comment.remove();
 	PhpDocType.remove();
 	ChainList.clear();
-	Type = mvceditor::SymbolClass::PRIMITIVE;
+	Type = pelet::SymbolClass::PRIMITIVE;
 }
 
-void mvceditor::SymbolClass::FromExpression(const mvceditor::ExpressionClass& expression) {
-	if (mvceditor::ExpressionClass::ARRAY == expression.Type) {
+void pelet::SymbolClass::FromExpression(const pelet::ExpressionClass& expression) {
+	if (pelet::ExpressionClass::ARRAY == expression.Type) {
 		SetToArray();
 	}
-	else if (mvceditor::ExpressionClass::FUNCTION_CALL == expression.Type) {
+	else if (pelet::ExpressionClass::FUNCTION_CALL == expression.Type) {
 		SetToObject();
 	}
-	else if (mvceditor::ExpressionClass::NEW_CALL == expression.Type) {
+	else if (pelet::ExpressionClass::NEW_CALL == expression.Type) {
 		SetToObject();
 	}
-	else if (mvceditor::ExpressionClass::SCALAR == expression.Type) {
+	else if (pelet::ExpressionClass::SCALAR == expression.Type) {
 		SetToPrimitive();
 	}
-	else if (mvceditor::ExpressionClass::UNKNOWN == expression.Type) {
+	else if (pelet::ExpressionClass::UNKNOWN == expression.Type) {
 		SetToUnknown();
 	}
-	else if (mvceditor::ExpressionClass::VARIABLE == expression.Type) {
+	else if (pelet::ExpressionClass::VARIABLE == expression.Type) {
 		SetToObject();
 	}
 	Comment = expression.Comment;
@@ -441,7 +441,7 @@ void mvceditor::SymbolClass::FromExpression(const mvceditor::ExpressionClass& ex
 	}
 }
 
-mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
+pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
 				  FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
 				  ExpressionObserverClass* expressionObserver)
 	: CurrentClass()
@@ -460,11 +460,11 @@ mvceditor::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserve
 	, DoCollectExpressions(true) {
 }
 
-mvceditor::ObserverQuadClass::~ObserverQuadClass() {
+pelet::ObserverQuadClass::~ObserverQuadClass() {
 	SemanticValueFree();
 }
 
-void mvceditor::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, bool isAbstract, 
+void pelet::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, bool isAbstract, 
 											  bool isFinal, bool isInterface) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
@@ -479,21 +479,21 @@ void mvceditor::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, 
 	CurrentClass.IsInterface = isInterface;
 }
 
-void mvceditor::ObserverQuadClass::ClassSetName(SemanticValueClass& nameValue) {
+void pelet::ObserverQuadClass::ClassSetName(SemanticValueClass& nameValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentClass.GrabClassName(nameValue);
 }
 
-void mvceditor::ObserverQuadClass::ClassSetExtends() {
+void pelet::ObserverQuadClass::ClassSetExtends() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentClass.ExtendsFrom = CurrentQualifiedName;
 }
 
-void mvceditor::ObserverQuadClass::ClassAddToImplements() {
+void pelet::ObserverQuadClass::ClassAddToImplements() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -502,7 +502,7 @@ void mvceditor::ObserverQuadClass::ClassAddToImplements() {
 }
 
 
-void mvceditor::ObserverQuadClass::ClassFound() {
+void pelet::ObserverQuadClass::ClassFound() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -515,23 +515,23 @@ void mvceditor::ObserverQuadClass::ClassFound() {
 	CurrentMember.Clear();
 }
 
-void mvceditor::ObserverQuadClass::ClassEnd() {
+void pelet::ObserverQuadClass::ClassEnd() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentClass.Clear();
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
+void pelet::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
-	mvceditor::TokenClass::TokenIds visibility = mvceditor::TokenClass::PUBLIC;
+	pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
 	if (CurrentMember.IsProtectedMember) {
-		visibility = mvceditor::TokenClass::PROTECTED;
+		visibility = pelet::TokenClass::PROTECTED;
 	}
 	else if (CurrentMember.IsPrivateMember) {
-		visibility = mvceditor::TokenClass::PRIVATE;
+		visibility = pelet::TokenClass::PRIVATE;
 	}
 	UnicodeString className = CurrentClass.ClassName;
 	UnicodeString propName = CurrentMember.MemberName;
@@ -561,7 +561,7 @@ void mvceditor::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 	}
 }
 
-void mvceditor::ObserverQuadClass::ClassMethodEnd(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::ClassMethodEnd(pelet::SemanticValueClass& value) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -573,7 +573,7 @@ void mvceditor::ObserverQuadClass::ClassMethodEnd(mvceditor::SemanticValueClass&
 	DoCollectExpressions = true;
 }
 
-void mvceditor::ObserverQuadClass::DefineFound(const mvceditor::ExpressionClass& nameSymbol, const mvceditor::ExpressionClass& valueSymbol, const UnicodeString& comment) {
+void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -582,7 +582,7 @@ void mvceditor::ObserverQuadClass::DefineFound(const mvceditor::ExpressionClass&
 	}
 }
 
-void mvceditor::ObserverQuadClass::FunctionStart(mvceditor::SemanticValueClass& nameValue, mvceditor::SemanticValueClass& referenceValue, mvceditor::SemanticValueClass& commentValue) {
+void pelet::ObserverQuadClass::FunctionStart(pelet::SemanticValueClass& nameValue, pelet::SemanticValueClass& referenceValue, pelet::SemanticValueClass& commentValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -595,7 +595,7 @@ void mvceditor::ObserverQuadClass::FunctionStart(mvceditor::SemanticValueClass& 
 	CurrentParametersList.Clear();
 }
 
-void mvceditor::ObserverQuadClass::FunctionFound() {
+void pelet::ObserverQuadClass::FunctionFound() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -617,14 +617,14 @@ void mvceditor::ObserverQuadClass::FunctionFound() {
 	DoCollectExpressions = Variable || ExpressionObserver;
 }
 
-void mvceditor::ObserverQuadClass::CreateParameterWithOptionalClassName() {
+void pelet::ObserverQuadClass::CreateParameterWithOptionalClassName() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentParametersList.CreateWithOptionalType(CurrentQualifiedName.ToSignature());
 }
 
-void mvceditor::ObserverQuadClass::FunctionEnd(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::FunctionEnd(pelet::SemanticValueClass& value) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -636,39 +636,39 @@ void mvceditor::ObserverQuadClass::FunctionEnd(mvceditor::SemanticValueClass& va
 	DoCollectExpressions = true;
 }
 
-void mvceditor::ObserverQuadClass::AssignmentExpressionFound() {
+void pelet::ObserverQuadClass::AssignmentExpressionFound() {
 	if (!DoCollectExpressions) {
 		return;
 	}
 	if (ExpressionVariables.size() < (size_t)2) {
 		return;
 	}
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 
 	// the first variable is the name of the variable
 	// the second variable has the value
-	mvceditor::ExpressionClass dest = ExpressionVariables[0];
-	mvceditor::ExpressionClass src = ExpressionVariables[1];
+	pelet::ExpressionClass dest = ExpressionVariables[0];
+	pelet::ExpressionClass src = ExpressionVariables[1];
 	symbol.Comment = dest.Comment;
 	symbol.Lexeme = dest.Lexeme;			
 	symbol.ChainList.insert(symbol.ChainList.end(), src.ChainList.begin(), src.ChainList.end());
-	if (mvceditor::ExpressionClass::ARRAY == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::ARRAY;
+	if (pelet::ExpressionClass::ARRAY == src.Type) {
+		symbol.Type = pelet::SymbolClass::ARRAY;
 	}
-	else if (mvceditor::ExpressionClass::FUNCTION_CALL == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::OBJECT;
+	else if (pelet::ExpressionClass::FUNCTION_CALL == src.Type) {
+		symbol.Type = pelet::SymbolClass::OBJECT;
 	}
-	else if (mvceditor::ExpressionClass::NEW_CALL == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::OBJECT;
+	else if (pelet::ExpressionClass::NEW_CALL == src.Type) {
+		symbol.Type = pelet::SymbolClass::OBJECT;
 	}
-	else if (mvceditor::ExpressionClass::SCALAR == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::PRIMITIVE;
+	else if (pelet::ExpressionClass::SCALAR == src.Type) {
+		symbol.Type = pelet::SymbolClass::PRIMITIVE;
 	}
-	else if (mvceditor::ExpressionClass::UNKNOWN == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::UNKNOWN;
+	else if (pelet::ExpressionClass::UNKNOWN == src.Type) {
+		symbol.Type = pelet::SymbolClass::UNKNOWN;
 	}
-	else if (mvceditor::ExpressionClass::VARIABLE == src.Type) {
-		symbol.Type = mvceditor::SymbolClass::OBJECT;
+	else if (pelet::ExpressionClass::VARIABLE == src.Type) {
+		symbol.Type = pelet::SymbolClass::OBJECT;
 	}
 	UnicodeString className = CurrentClass.ClassName;
 	UnicodeString functionName = CurrentMember.MemberName;
@@ -682,7 +682,7 @@ void mvceditor::ObserverQuadClass::AssignmentExpressionFound() {
 	ExpressionVariables.clear();
 }
 
-void mvceditor::ObserverQuadClass::ExceptionCatchFound(mvceditor::SemanticValueClass& variableValue) {
+void pelet::ObserverQuadClass::ExceptionCatchFound(pelet::SemanticValueClass& variableValue) {
 	if (!DoCollectExpressions) {
 		return;
 	}
@@ -690,7 +690,7 @@ void mvceditor::ObserverQuadClass::ExceptionCatchFound(mvceditor::SemanticValueC
 	if (variableValue.Lexeme) {
 		CurrentExpression.Lexeme = *variableValue.Lexeme;
 	}
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	symbol.SetToObject();
 	symbol.Lexeme = CurrentExpression.Lexeme;
 	symbol.Comment = CurrentExpression.Comment;
@@ -703,13 +703,13 @@ void mvceditor::ObserverQuadClass::ExceptionCatchFound(mvceditor::SemanticValueC
 	}
 }
 
-void mvceditor::ObserverQuadClass::GlobalVariableFound(mvceditor::SemanticValueClass& variableValue) {
+void pelet::ObserverQuadClass::GlobalVariableFound(pelet::SemanticValueClass& variableValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (Variable && variableValue.Lexeme) {
 		CurrentExpression.Lexeme = *variableValue.Lexeme;
-		mvceditor::SymbolClass symbol;
+		pelet::SymbolClass symbol;
 		symbol.SetToObject();
 		symbol.Lexeme = CurrentExpression.Lexeme;
 		symbol.Comment = CurrentExpression.Comment;
@@ -717,13 +717,13 @@ void mvceditor::ObserverQuadClass::GlobalVariableFound(mvceditor::SemanticValueC
 	}
 }
 
-void mvceditor::ObserverQuadClass::ForeachVariableFound() {
+void pelet::ObserverQuadClass::ForeachVariableFound() {
 	if (!DoCollectExpressions) {
 		return;
 	}
 	if (Variable && !ExpressionVariables.empty()) {
-		mvceditor::ExpressionClass expr = ExpressionVariables.back();
-		mvceditor::SymbolClass symbol;
+		pelet::ExpressionClass expr = ExpressionVariables.back();
+		pelet::SymbolClass symbol;
 		symbol.SetToObject();
 		symbol.Lexeme = expr.Lexeme;
 		symbol.Comment = expr.Comment;
@@ -731,13 +731,13 @@ void mvceditor::ObserverQuadClass::ForeachVariableFound() {
 	}
 }
 
-void mvceditor::ObserverQuadClass::StaticVariableFound(mvceditor::SemanticValueClass& variableValue) {
+void pelet::ObserverQuadClass::StaticVariableFound(pelet::SemanticValueClass& variableValue) {
 	if (!DoCollectExpressions) {
 		return;
 	}
 	if (Variable && variableValue.Lexeme) {
 		CurrentExpression.Lexeme = *variableValue.Lexeme;
-		mvceditor::SymbolClass symbol;
+		pelet::SymbolClass symbol;
 		symbol.SetToObject();
 		symbol.Lexeme = CurrentExpression.Lexeme;
 		symbol.Comment = CurrentExpression.Comment;
@@ -745,36 +745,36 @@ void mvceditor::ObserverQuadClass::StaticVariableFound(mvceditor::SemanticValueC
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionPushNewScalar(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::ExpressionPushNewScalar(pelet::SemanticValueClass& value) {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::SCALAR;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::SCALAR;
 	if (value.Lexeme) {
 		expr.Lexeme = *value.Lexeme;
 		ExpressionVariables.push_back(expr);
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionPushNewArray(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::ExpressionPushNewArray(pelet::SemanticValueClass& value) {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	CurrentExpression.Type = mvceditor::ExpressionClass::ARRAY;
+	pelet::ExpressionClass expr;
+	CurrentExpression.Type = pelet::ExpressionClass::ARRAY;
 	if (value.Lexeme) {
 		expr.Lexeme = *value.Lexeme;
 		ExpressionVariables.push_back(expr);
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionPushNewVariable(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::ExpressionPushNewVariable(pelet::SemanticValueClass& value) {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::VARIABLE;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::VARIABLE;
 	if (value.Lexeme) {
 		expr.Lexeme = *value.Lexeme;
 	}
@@ -788,12 +788,12 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewVariable(mvceditor::Semantic
 	ExpressionVariables.push_back(expr);
 }
 
-void mvceditor::ObserverQuadClass::ExpressionPushNewInstanceCall() {
+void pelet::ObserverQuadClass::ExpressionPushNewInstanceCall() {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::NEW_CALL;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::NEW_CALL;
 	expr.Name = CurrentQualifiedName;
 	UnicodeString name = expr.Name.ToSignature();
 	if (!name.isEmpty()) {
@@ -802,12 +802,12 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewInstanceCall() {
 	ExpressionVariables.push_back(expr);
 }
 
-void mvceditor::ObserverQuadClass::ExpressionPushNewUnknown(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::ExpressionPushNewUnknown(pelet::SemanticValueClass& value) {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::UNKNOWN;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::UNKNOWN;
 	if (value.Lexeme) {
 		expr.Lexeme = *value.Lexeme;
 	}
@@ -821,12 +821,12 @@ void mvceditor::ObserverQuadClass::ExpressionPushNewUnknown(mvceditor::SemanticV
 	ExpressionVariables.push_back(expr);
 }
 
-void mvceditor::ObserverQuadClass::CurrentExpressionPushAsVariable(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::CurrentExpressionPushAsVariable(pelet::SemanticValueClass& value) {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::VARIABLE;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::VARIABLE;
 	if (value.Lexeme) {
 		expr.Lexeme = *value.Lexeme;
 	}
@@ -840,7 +840,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsVariable(mvceditor::Se
 	ExpressionVariables.push_back(expr);
 }
 
-void mvceditor::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod) {
+void pelet::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod) {
 	if (!DoCollectExpressions) {
 		return;
 	}
@@ -853,16 +853,16 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueC
 	}
 }
 
-void mvceditor::ObserverQuadClass::FunctionCallStart() {
+void pelet::ObserverQuadClass::FunctionCallStart() {
 	if (!Class && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentFunctionCallExpression.Clear();
 	CurrentFunctionCallExpression.Name = CurrentQualifiedName;
-	CurrentFunctionCallExpression.Type = mvceditor::ExpressionClass::FUNCTION_CALL;
+	CurrentFunctionCallExpression.Type = pelet::ExpressionClass::FUNCTION_CALL;
 }
 
-void mvceditor::ObserverQuadClass::FunctionCallEnd() {
+void pelet::ObserverQuadClass::FunctionCallEnd() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -875,7 +875,7 @@ void mvceditor::ObserverQuadClass::FunctionCallEnd() {
 	}
 }
 
-void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
+void pelet::ObserverQuadClass::ExpressionAsCallArgument() {
 	if (!DoCollectExpressions) {
 		return;
 	}
@@ -894,12 +894,12 @@ void mvceditor::ObserverQuadClass::ExpressionAsCallArgument() {
 	}
 }
 
-void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
+void pelet::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
 	if (!DoCollectExpressions) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
-	expr.Type = mvceditor::ExpressionClass::VARIABLE;
+	pelet::ExpressionClass expr;
+	expr.Type = pelet::ExpressionClass::VARIABLE;
 	expr.Name = CurrentFunctionCallExpression.Name;
 	expr.Comment = CurrentFunctionCallExpression.Comment;
 	expr.CallArguments = CurrentFunctionCallExpression.CallArguments;
@@ -911,7 +911,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
 	}
 }
 
-void mvceditor::ObserverQuadClass::CurrentExpressionAsStaticMember(mvceditor::SemanticValueClass& scopeOperatorValue) {
+void pelet::ObserverQuadClass::CurrentExpressionAsStaticMember(pelet::SemanticValueClass& scopeOperatorValue) {
 	if (!DoCollectExpressions) {
 		return;
 	}
@@ -921,7 +921,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAsStaticMember(mvceditor::Se
 		// the class name itself is in the QualifiedName
 		// this is called right after the variable is parsed, so
 		// ChainList will have the variable name as its first element
-		mvceditor::ExpressionClass& expr = ExpressionVariables.back();
+		pelet::ExpressionClass& expr = ExpressionVariables.back();
 		if (!expr.ChainList.empty() && scopeOperatorValue.Lexeme) {
 			expr.ChainList[0] = *scopeOperatorValue.Lexeme + expr.Lexeme;
 			expr.ChainList.insert(expr.ChainList.begin(), CurrentQualifiedName.ToSignature());
@@ -931,13 +931,13 @@ void mvceditor::ObserverQuadClass::CurrentExpressionAsStaticMember(mvceditor::Se
 	}
 }
 
-void mvceditor::ObserverQuadClass::CurrentExpressionPushAsClassConstant(mvceditor::SemanticValueClass& scopeOperatorValue, 
-										 mvceditor::SemanticValueClass& constantNameValue) {
+void pelet::ObserverQuadClass::CurrentExpressionPushAsClassConstant(pelet::SemanticValueClass& scopeOperatorValue, 
+										 pelet::SemanticValueClass& constantNameValue) {
 	if (!DoCollectExpressions) {
 		return;
 	}
 	if (scopeOperatorValue.Lexeme && constantNameValue.Lexeme) {
-		mvceditor::ExpressionClass expr;
+		pelet::ExpressionClass expr;
 		expr.Name = CurrentQualifiedName;
 		expr.Lexeme = CurrentQualifiedName.ToSignature();
 		expr.ChainList.push_back(CurrentQualifiedName.ToSignature());
@@ -946,7 +946,7 @@ void mvceditor::ObserverQuadClass::CurrentExpressionPushAsClassConstant(mvcedito
 	}
 }
 
-void mvceditor::ObserverQuadClass::ClearExpressions() {
+void pelet::ObserverQuadClass::ClearExpressions() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -956,7 +956,7 @@ void mvceditor::ObserverQuadClass::ClearExpressions() {
 	CurrentQualifiedName.Clear();
 }
 
-void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
+void pelet::ObserverQuadClass::NotifyVariablesFromParameterList() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -964,13 +964,13 @@ void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
 	if (paramCount > 0 && Variable) {
 		UnicodeString paramName,
 			paramType;
-		mvceditor::SymbolClass symbol;
+		pelet::SymbolClass symbol;
 		UnicodeString comment; // no comment it is lost in the variables
 		for (size_t i = 0; i < paramCount; ++i) {
 			CurrentParametersList.Param(i, paramName, paramType);
 			if (!paramType.isEmpty()) {
 				symbol.ChainList.push_back(paramType);
-				symbol.Type = mvceditor::SymbolClass::OBJECT;
+				symbol.Type = pelet::SymbolClass::OBJECT;
 			}
 			symbol.Lexeme = paramName;
 			Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, comment);
@@ -982,14 +982,14 @@ void mvceditor::ObserverQuadClass::NotifyVariablesFromParameterList() {
 	ClearExpressions();
 }
 
-void mvceditor::ObserverQuadClass::ExpressionFound() {
+void pelet::ObserverQuadClass::ExpressionFound() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (!ExpressionObserver) {
 		return;
 	}
-	mvceditor::ExpressionClass expr;
+	pelet::ExpressionClass expr;
 	if (!ExpressionVariables.empty()) {
 
 		// ExpressionVariables is filled when a variable is parsed
@@ -1006,14 +1006,14 @@ void mvceditor::ObserverQuadClass::ExpressionFound() {
 	}
 }
 
-void mvceditor::ObserverQuadClass::NotifyLocalVariableTypeHint(const UnicodeString& comment) {
+void pelet::ObserverQuadClass::NotifyLocalVariableTypeHint(const UnicodeString& comment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	NotifyLocalVariableFromPhpDoc(comment);
 }	
 
-UnicodeString mvceditor::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
+UnicodeString pelet::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
 	UnicodeString returnType;
 	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
 	int32_t pos = phpDocComment.indexOf(annotation);
@@ -1044,7 +1044,7 @@ static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& v
 	}
 }
 
-void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment) {
+void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -1077,7 +1077,7 @@ void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeSt
 	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
 	UnicodeString varName;
 	UnicodeString varType;
-	mvceditor::SymbolClass symbol;
+	pelet::SymbolClass symbol;
 	while (next) {
 		if (UNICODE_STRING_SIMPLE("@var").caseCompare(next, 0) == 0) {
 			symbol.Clear();
@@ -1108,7 +1108,7 @@ void mvceditor::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeSt
 	delete[] delimsBuffer;
 }
 
-void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment) {
+void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -1151,7 +1151,7 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), mvceditor::TokenClass::PUBLIC, false, false);
+				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, false);
 				memberName.remove();
 				memberType.remove();
 			}
@@ -1193,7 +1193,7 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
 					memberName.remove(memberName.length() - 2, 2);
 				}
-				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), mvceditor::TokenClass::PUBLIC, false);
+				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false);
 			}
 			if (!next) {
 				break;
@@ -1207,7 +1207,7 @@ void mvceditor::ObserverQuadClass::NotifyMagicMethodsAndProperties(const Unicode
 	delete[] delimsBuffer;
 }
 
-void mvceditor::ObserverQuadClass::SemanticValueInit(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::SemanticValueInit(pelet::SemanticValueClass& value) {
 	value.Token = 0;
 	value.Lexeme = NULL;
 	value.Comment = NULL;
@@ -1226,14 +1226,14 @@ void mvceditor::ObserverQuadClass::SemanticValueInit(mvceditor::SemanticValueCla
 	AllValues.push_back(comment);
 }
 
-void mvceditor::ObserverQuadClass::SemanticValueFree() {
+void pelet::ObserverQuadClass::SemanticValueFree() {
 	for (size_t i = 0; i < AllValues.size(); ++i) {
 		delete AllValues[i];
 	}
 	AllValues.clear();
 }
 
-void mvceditor::ObserverQuadClass::SemanticValueFree(mvceditor::SemanticValueClass& value) {
+void pelet::ObserverQuadClass::SemanticValueFree(pelet::SemanticValueClass& value) {
 	std::vector<UnicodeString*>::iterator it = AllValues.begin();
 	while (it != AllValues.end()) {
 		if (*it == value.Comment) {
@@ -1252,56 +1252,56 @@ void mvceditor::ObserverQuadClass::SemanticValueFree(mvceditor::SemanticValueCla
 	value.Comment = NULL;
 }
 
-void mvceditor::ObserverQuadClass::QualifiedNameClear() {
+void pelet::ObserverQuadClass::QualifiedNameClear() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentQualifiedName.Clear();
 }
 
-void mvceditor::ObserverQuadClass::QualifiedNameGrabNameAndComment(mvceditor::SemanticValueClass& nameValue) {
+void pelet::ObserverQuadClass::QualifiedNameGrabNameAndComment(pelet::SemanticValueClass& nameValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentQualifiedName.GrabNameAndComment(nameValue);
 }
 
-void mvceditor::ObserverQuadClass::QualifiedNameAddName(mvceditor::SemanticValueClass& nameValue) {
+void pelet::ObserverQuadClass::QualifiedNameAddName(pelet::SemanticValueClass& nameValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentQualifiedName.AddName(nameValue);
 }
 
-void mvceditor::ObserverQuadClass::ParametersListSetName(mvceditor::SemanticValueClass& nameValue, bool isReference) {
+void pelet::ObserverQuadClass::ParametersListSetName(pelet::SemanticValueClass& nameValue, bool isReference) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentParametersList.SetName(nameValue, isReference);
 }
 
-void mvceditor::ObserverQuadClass::ParametersListCreate() {
+void pelet::ObserverQuadClass::ParametersListCreate() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentParametersList.Create();
 }
 
-void mvceditor::ObserverQuadClass::ParametersListCreateWithOptionalType(mvceditor::SemanticValueClass& typeValue) {
+void pelet::ObserverQuadClass::ParametersListCreateWithOptionalType(pelet::SemanticValueClass& typeValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentParametersList.CreateWithOptionalType(typeValue);
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberClear() {
+void pelet::ObserverQuadClass::ClassMemberClear() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.Clear();
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, 
+void pelet::ObserverQuadClass::ClassMemberSetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, 
 																		SemanticValueClass& functionValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
@@ -1309,56 +1309,56 @@ void mvceditor::ObserverQuadClass::ClassMemberSetNameAndReturnReference(Semantic
 	CurrentMember.SetNameAndReturnReference(nameValue, referenceValue, functionValue);
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsPublic() {
+void pelet::ObserverQuadClass::ClassMemberSetAsPublic() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.SetAsPublic();
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsProtected() {
+void pelet::ObserverQuadClass::ClassMemberSetAsProtected() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.SetAsProtected();
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsPrivate() {
+void pelet::ObserverQuadClass::ClassMemberSetAsPrivate() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.SetAsPrivate();
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsStatic() {
+void pelet::ObserverQuadClass::ClassMemberSetAsStatic() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.IsStaticMember = true;
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsAbstract() {
+void pelet::ObserverQuadClass::ClassMemberSetAsAbstract() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.IsAbstractMember = true;
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsFinal() {
+void pelet::ObserverQuadClass::ClassMemberSetAsFinal() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.IsFinalMember = true;
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberSetAsConst(mvceditor::SemanticValueClass& nameValue, mvceditor::SemanticValueClass& commentValue) {
+void pelet::ObserverQuadClass::ClassMemberSetAsConst(pelet::SemanticValueClass& nameValue, pelet::SemanticValueClass& commentValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentMember.SetAsConst(nameValue, commentValue);
 }
 
-void mvceditor::ObserverQuadClass::ClassMemberAppendToComment(mvceditor::SemanticValueClass& commentValue) {
+void pelet::ObserverQuadClass::ClassMemberAppendToComment(pelet::SemanticValueClass& commentValue) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}

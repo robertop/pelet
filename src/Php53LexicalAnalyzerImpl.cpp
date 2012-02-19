@@ -24,8 +24,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
  
-#include <Php53LexicalAnalyzerImpl.h>
-#include <Php53ParserImpl.h>
+#include <pelet/Php53LexicalAnalyzerImpl.h>
+#include <pelet/Php53ParserImpl.h>
 #include <unicode/unistr.h>
 
 // tell re2c we will use Unicode chars
@@ -50,7 +50,7 @@
 #define YYSETCONDITION(c)  condition = c
 
 
-int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
+int pelet::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 	bool end = false;
 	
 	// add semicolon to make checks easier
@@ -108,7 +108,7 @@ int mvceditor::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 	return 0;
 }
 
-int mvceditor::HandleHeredoc(BufferClass *buffer) {
+int pelet::HandleHeredoc(BufferClass *buffer) {
 
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -133,14 +133,14 @@ int mvceditor::HandleHeredoc(BufferClass *buffer) {
 	if ((YYLIMIT - YYCURSOR) < 2) {
 		YYFILL(1);
 	}
-	int failed = mvceditor::SkipToIdentifier(buffer, identifier);
+	int failed = pelet::SkipToIdentifier(buffer, identifier);
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
 	}
 	return failed;
 }
 
-int mvceditor::HandleNowdoc(BufferClass *buffer) {
+int pelet::HandleNowdoc(BufferClass *buffer) {
 	
 	/*
 	 * find out the stopping identifier. Since current is past the newline, the
@@ -161,14 +161,14 @@ int mvceditor::HandleNowdoc(BufferClass *buffer) {
 	if ((YYLIMIT - YYCURSOR) < 2) {
 		YYFILL(1);
 	}
-	int failed = mvceditor::SkipToIdentifier(buffer, identifier);
+	int failed = pelet::SkipToIdentifier(buffer, identifier);
 	if (!failed) {
 		return T_CONSTANT_ENCAPSED_STRING;
 	}
 	return failed;
 }
 
-int mvceditor::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {
+int pelet::NextToken(BufferClass* buffer, YYCONDTYPE &condition) {
 	if (buffer->HasReachedEnd()) {
 		return T_END_OF_FILE;
 	}
@@ -335,7 +335,7 @@ yyc_HEREDOC:
 		if (yych >= 0x01) goto php_5_3_lexical_analyzer_45;
 php_5_3_lexical_analyzer_45:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; return mvceditor::HandleHeredoc(buffer); }
+		{ condition = yycSCRIPT; return pelet::HandleHeredoc(buffer); }
 /* *********************************** */
 yyc_INLINE_HTML:
 		if ((YYLIMIT - YYCURSOR) < 7) YYFILL(7);
@@ -532,7 +532,7 @@ yyc_NOWDOC:
 		if (yych >= 0x01) goto php_5_3_lexical_analyzer_102;
 php_5_3_lexical_analyzer_102:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; return mvceditor::HandleNowdoc(buffer); }
+		{ condition = yycSCRIPT; return pelet::HandleNowdoc(buffer); }
 /* *********************************** */
 yyc_PROPERTY:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);

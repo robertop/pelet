@@ -27,11 +27,11 @@
 
 #include <string>
 #include <unicode/unistr.h>
-#include <UCharBufferedFileClass.h>
-#include <Php53LexicalAnalyzerImpl.h>
-#include <Php53ParserImpl.h>
+#include <pelet/UCharBufferedFileClass.h>
+#include <pelet/Php53LexicalAnalyzerImpl.h>
+#include <pelet/Php53ParserImpl.h>
 
-namespace mvceditor {
+namespace pelet {
 
 
 /* 
@@ -87,11 +87,11 @@ class LexicalAnalyzerClass {
 
 	/**
 	 * gets the next token. Checking for the end is not as simple as checking for T_EOF, you will
-	 * need to call mvceditor::TokenClass::IsTerminatingToken() to ensure that the end of stream
+	 * need to call pelet::TokenClass::IsTerminatingToken() to ensure that the end of stream
 	 * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
 	 * 
 	 * @return int token ID
-	 * @see mvceditor::TokenClass::TokenIds
+	 * @see pelet::TokenClass::TokenIds
 	 */
 	int NextToken();
 

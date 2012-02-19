@@ -22,8 +22,8 @@
  * @copyright  2009-2011 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-#include <ParserClass.h>
-#include <TokenClass.h>
+#include <pelet/ParserClass.h>
+#include <pelet/TokenClass.h>
 #include <stack>
 
 /* 
@@ -31,9 +31,9 @@
  * Bison won't put this declaration in the header file so we must
  * manually make it available here by using "extern"
  */
-extern int php53parse(mvceditor::LexicalAnalyzerClass &analyzer, mvceditor::ObserverQuadClass& observers);
+extern int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 
-mvceditor::ParserClass::ParserClass()
+pelet::ParserClass::ParserClass()
 	: Lexer()
 	, ClassObserver(0)
 	, ClassMemberObserver(0)
@@ -42,7 +42,7 @@ mvceditor::ParserClass::ParserClass()
 	, ExpressionObserver(0) {
 }
 
-bool mvceditor::ParserClass::ScanFile(const std::string& file, mvceditor::LintResultsClass& results) {
+bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		
@@ -50,7 +50,7 @@ bool mvceditor::ParserClass::ScanFile(const std::string& file, mvceditor::LintRe
 		extern int php53debug;
 		php53debug = 0;
 
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = file;
@@ -61,10 +61,10 @@ bool mvceditor::ParserClass::ScanFile(const std::string& file, mvceditor::LintRe
 	return ret;
 }
 
-bool mvceditor::ParserClass::ScanString(const UnicodeString& code, mvceditor::LintResultsClass& results) {
+bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		mvceditor::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = "";
@@ -75,27 +75,27 @@ bool mvceditor::ParserClass::ScanString(const UnicodeString& code, mvceditor::Li
 	return ret;
 }
 
-void mvceditor::ParserClass::SetClassMemberObserver(ClassMemberObserverClass* observer) {
+void pelet::ParserClass::SetClassMemberObserver(ClassMemberObserverClass* observer) {
 	ClassMemberObserver = observer;
 }
 
-void mvceditor::ParserClass::SetClassObserver(ClassObserverClass* observer) {
+void pelet::ParserClass::SetClassObserver(ClassObserverClass* observer) {
 	ClassObserver = observer;
 }
 
-void mvceditor::ParserClass::SetFunctionObserver(FunctionObserverClass* observer) {
+void pelet::ParserClass::SetFunctionObserver(FunctionObserverClass* observer) {
 	FunctionObserver = observer;
 }
 
-void mvceditor::ParserClass::SetVariableObserver(VariableObserverClass* observer) {
+void pelet::ParserClass::SetVariableObserver(VariableObserverClass* observer) {
 	VariableObserver = observer;
 }
 
-void mvceditor::ParserClass::SetExpressionObserver(ExpressionObserverClass* observer) {
+void pelet::ParserClass::SetExpressionObserver(ExpressionObserverClass* observer) {
 	ExpressionObserver = observer;
 }
 
-bool mvceditor::ParserClass::LintFile(const std::string& file, LintResultsClass& results) {
+bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& results) {
 
 	// set to 1 and the parser will dump stuff to std out. useful for debugging only
 	extern int php53debug;
@@ -103,7 +103,7 @@ bool mvceditor::ParserClass::LintFile(const std::string& file, LintResultsClass&
 	
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
+		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = file;
@@ -114,10 +114,10 @@ bool mvceditor::ParserClass::LintFile(const std::string& file, LintResultsClass&
 	return ret;
 }
 
-bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
+bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
+		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = "";
@@ -128,16 +128,16 @@ bool mvceditor::ParserClass::LintString(const UnicodeString& code, LintResultsCl
 	return ret;
 }
 
-int mvceditor::ParserClass::GetCharacterPosition() const {
+int pelet::ParserClass::GetCharacterPosition() const {
 	return Lexer.GetCharacterPosition();
 }
 
-void mvceditor::ParserClass::Close() {
+void pelet::ParserClass::Close() {
 	Lexer.Close();
 }
 
 
-namespace mvceditor {
+namespace pelet {
 
 class ParserVariableObserverClass : public ExpressionObserverClass {
 
@@ -151,7 +151,7 @@ public:
 };
 }
 
-void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor::SymbolClass& symbol) {
+void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::SymbolClass& symbol) {
 	expression.trim();
 
 	// remove the operators if they are at the end; this prevents parse errors
@@ -172,8 +172,8 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 	}
 	symbol.Clear();
 
-	mvceditor::ParserVariableObserverClass localObserver;
-	mvceditor::ObserverQuadClass observers(NULL, NULL, NULL, NULL, &localObserver);
+	pelet::ParserVariableObserverClass localObserver;
+	pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, &localObserver);
 
 	// parse the given expression code snippet
 	// most of the time, the variable observer will NOT be called because 
@@ -184,7 +184,7 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 		Lexer.Close();
 	}
 	if (!localObserver.Expressions.empty()) {
-		mvceditor::ExpressionClass expr = localObserver.Expressions.back();
+		pelet::ExpressionClass expr = localObserver.Expressions.back();
 		symbol.FromExpression(expr);
 	}
 	if (endsWithObject) {
@@ -195,21 +195,21 @@ void mvceditor::ParserClass::ParseExpression(UnicodeString expression, mvceditor
 	}
 }
 
-mvceditor::LintResultsClass::LintResultsClass()
+pelet::LintResultsClass::LintResultsClass()
 	: Error()
 	, File()
 	, LineNumber(0)
 	, CharacterPosition(0) {
 }
 
-void mvceditor::LintResultsClass::Copy(const mvceditor::LintResultsClass& other) {
+void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 	Error = other.Error;
 	File = other.File;
 	LineNumber = other.LineNumber;
 	CharacterPosition = other.CharacterPosition;
 }
 
-void mvceditor::LintResultsClass::Clear() {
+void pelet::LintResultsClass::Clear() {
 	Error.remove();
 	File = "";
 	LineNumber = 0;
