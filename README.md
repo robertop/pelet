@@ -26,7 +26,7 @@ These are the cases that pelet supports
 - Parsers define() function calls
 - Can handle all PHP strings: single quoted, double quoted, heredoc, and nowdoc.
 - Uses proper tokenizing techniques (it will ignore a "class" if it occurs inside of a comment or a string).
-- Parses PHPDoc comments to assign types to class members and function parameters
+- Parses PHPDoc comments to assign types to class members, function parameters and return values.
 - Can read type hints from a function / method signature
 - Fully tested (see tests/ subdirectory in the distribution)
 
@@ -47,15 +47,16 @@ Building
 ---------
 pelet does not yet have a shared library deliverable.  The source code is surpringly simple that the
 easiest way to integrate pelet into your project is to copy the include/ and src/ directories into
-the desired locations in your project.
+the desired locations in your project. This also prevents me from dictating whethe your project should
+make use of dynamic vs. shared libraries.
 
 Having said that, pelet comes with a working example solution "skeleton" that shows how
 you can integrate it into your projects.  The skeleton uses premake as its build system (premake is 
 included in the repository). This enables users to create Makefiles or various IDE solutions (MS 
 Visual Studio, CodeBlocks, CodeLite). Before attempting to build, please download the ICU 4.2 
-source from the [ICU] http://site.icu-project.org/) website and place it in pelet's lib subdirectory.
+source from the [ICU] (http://site.icu-project.org/) website and place it in pelet's lib subdirectory.
 
-Using Make  (On  Linux)
+Using Make (On  Linux)
 ------------------------
 
 	git clone git@github.com:robertop/pelet.git /home/user/pelet
@@ -67,7 +68,7 @@ Using Make  (On  Linux)
 	cd build/gmake
 	make config=release
 
-"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 CodeLite"
+"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 codelite"
 
 MSW instructions (Visual Studio Solution)
 ------------------------------------------
@@ -114,6 +115,21 @@ when it enounters an artifact.
 
 
 See sample.cpp file for a full-fledged, running example.
+
+Help
+-----
+I gave pelet its name for a reason; this is a simple library.  The source is fairly well documented and 
+the included sample program covers 90% of the functionality. If you are having problems getting the library
+up and running, you can contact the me directly; see my Github [profile page] (https://github.com/robertop). 
+If I find that I cannot handle the volume of requests I may setup a forum or mailing list.
+
+To report bugs or feature requests please use the [Issues] (https://github.com/robertop/pelet/issues)
+page of the pelet Github project. 
+
+Contributing
+-------------
+Contributions will be taken in form of Github pull requests. Before creating a pull request, please 
+verify that your changes do not break the standards outlined in the CODING_STANDARDS file.
 
 TODO
 -----
