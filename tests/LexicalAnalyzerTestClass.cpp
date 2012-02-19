@@ -85,7 +85,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasy) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindWhenFileEndsWithIdentifier) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"function echoA"
 	);
 	CHECK(Lexer->OpenString(code));
@@ -95,7 +95,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindWhenFileEndsWithIdenti
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
-	UnicodeString code  = UNICODE_STRING_SIMPLE(
+	UnicodeString code  = _U(
 		"$s = 'hello';\n"
 		"$a = 1 * 3;"
 	);
@@ -544,7 +544,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) 
 
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFirstFunction) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php echo"
 	);
 	UnicodeString last = Lexer->LastExpression(code);
@@ -552,7 +552,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFirstFunction) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionSimpleVariable) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2"
@@ -562,7 +562,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionSimpleVariable) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgument) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2"
@@ -573,7 +573,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgument) {
 
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionChain) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2)->prop"
@@ -583,7 +583,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionChain) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgumentAsFunction) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func(funct2($expr2), $arr[3])->prop"
@@ -593,7 +593,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionFunctionArgumentAsFunction)
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticMember) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::$prop"
@@ -603,7 +603,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticMember) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionConstMember) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::DEFAULT_NU"
@@ -613,7 +613,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionConstMember) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectMethodChain) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 		"$expr2 = $expr->funct3('two')->prop"
@@ -623,7 +623,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectMethodChain) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionNoExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 	);
@@ -632,7 +632,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionNoExpression) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectVariable) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr2 = 3;\n"
 		"$expr1 = 'expr2';\n"
@@ -643,7 +643,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectVariable) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectProperty) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr1 = 'prop';\n"
@@ -654,7 +654,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionIndirectProperty) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperator) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2->"
@@ -664,7 +664,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperator) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"MyClass::"
@@ -674,7 +674,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionStaticOperator) {
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, LastExpressionObjectOperatorWithWhitespace) {
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2\n"

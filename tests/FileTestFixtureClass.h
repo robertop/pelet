@@ -35,4 +35,19 @@ public:
 	std::string TestProjectDir; 
 };
 
+/**
+ * Create a UnicodeString from a char*.  This function is useful when creating a string
+ * that is broken up into multiple lines of code; like this:
+ *
+ *   // does not compile in MSW 
+ *   // error C2308: concatenating mismatched strings
+ *   UnicodeString str = UNICODE_STRING_SIMPLE("line 1\n"
+ *    "line 2");
+ *
+ *   // works
+ *   UnicodeString str = _U("line 1\n"
+ *    "line 2");
+ */
+UnicodeString _U(const char* str);
+
 #endif // __filetestfixtureclass__

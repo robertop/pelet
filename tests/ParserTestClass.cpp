@@ -411,7 +411,7 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldNotifyVariableObserver) {
 TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, ArrayAccess {}\n"
@@ -437,7 +437,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	TestClassObserverClass observer;
 	Parser->SetClassMemberObserver(&observer);
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"interface Runnable { const MSG = 'const'; abstract function run();}\n"
 		"abstract class MyRunnable implements Runnable { \n"
 		"	function run() {} \n"
@@ -509,7 +509,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
 	// a catch block
 	// a global declaration
 	// a static declaration
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"$glob = new Globals();\n"
 		"function workFunc(Globals $srcGlobal) {\n"
 		"	$local = $srcGlobal;\n"
@@ -579,7 +579,7 @@ TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
 	// test all the PHPDoc stuff
 	// @property, @property-read, @property-write, @method, and @var
 	// also @param and @return
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"/**\n"
 		" * This is a class that implements the 'magic' methods\n"
 		" *\n"
@@ -663,7 +663,7 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 	Parser->SetClassObserver(&observer);
 	Parser->SetClassMemberObserver(&observer);
 	Parser->SetFunctionObserver(&observer);
-	UnicodeString code = UNICODE_STRING_SIMPLE(
+	UnicodeString code = _U(
 		"class MyClass {\n"     //16
 		"\n"                    // 1
 		"function work() {\n"   //18
@@ -734,7 +734,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 }
 
 TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$'gag's = 'hello' \"again\" $not gaging;");
+	UnicodeString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
 	pelet::LintResultsClass results;
 	CHECK_EQUAL(false, Parser->LintString(code, results));
 	CHECK(results.Error.length() > 0);
@@ -742,14 +742,14 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseVariableExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$variable");
+	UnicodeString code = _U("$variable");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
 }
 
 TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->prop");
+	UnicodeString code = _U("$variable->prop");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
@@ -765,7 +765,7 @@ TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
-	UnicodeString code = UNICODE_STRING_SIMPLE("$obj->");
+	UnicodeString code = _U("$obj->");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$obj"), symbol.Lexeme);
@@ -781,7 +781,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
-	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::");
+	UnicodeString code = _U("MyClass::");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
@@ -793,7 +793,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::$DEFAULT");
+	UnicodeString code = _U("MyClass::$DEFAULT");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
@@ -805,7 +805,7 @@ TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("MyClass::PI;");
+	UnicodeString code = _U("MyClass::PI;");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), symbol.Lexeme);
@@ -817,7 +817,7 @@ TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$variable->func1()->prop2->func3()->prop4");
+	UnicodeString code = _U("$variable->func1()->prop2->func3()->prop4");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$variable"), symbol.Lexeme);
@@ -832,7 +832,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
 }
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("func1()->prop2->prop4");
+	UnicodeString code = _U("func1()->prop2->prop4");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), symbol.Lexeme);
@@ -847,7 +847,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = UNICODE_STRING_SIMPLE("$this->propA->func1($a, $b)->prop2->prop4");
+	UnicodeString code = _U("$this->propA->func1($a, $b)->prop2->prop4");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
@@ -864,7 +864,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = UNICODE_STRING_SIMPLE("$this->func1($a, $b)->propA->prop2->prop4");
+	UnicodeString code = _U("$this->func1($a, $b)->propA->prop2->prop4");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this"), symbol.Lexeme);
@@ -881,7 +881,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodA
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = UNICODE_STRING_SIMPLE("func1($a, $b)->propA->func2($c)->prop4");
+	UnicodeString code = _U("func1($a, $b)->propA->func2($c)->prop4");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 
@@ -897,7 +897,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctio
 }
 
 TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithWhitespace) {
-	UnicodeString code = UNICODE_STRING_SIMPLE("$propA->time->time\n->");
+	UnicodeString code = _U("$propA->time->time\n->");
 	pelet::SymbolClass symbol;
 	Parser->ParseExpression(code, symbol);
 

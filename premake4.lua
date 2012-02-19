@@ -108,12 +108,16 @@ solution "pelet"
 			pickywarnings(_ACTION)
 			icuconfiguration("Release", _ACTION)
 		configuration { "Debug", "vs2008" }
+			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Debug") .. " && tests.exe" }
 		configuration { "Debug", "gmake or codelite" }
+			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Debug") .. " && ./tests" }
 		configuration { "Release", "vs2008" }
+			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && tests.exe"  }
 		configuration { "Release", "gmake or codelite" }
+			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
 		
 	project "pelet_sample"
