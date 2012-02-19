@@ -67,7 +67,7 @@ Using Make  (On  Linux)
 	cd build/gmake
 	make config=release
 
-"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4"
+"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 CodeLite"
 
 MSW instructions (Visual Studio Solution)
 ------------------------------------------
