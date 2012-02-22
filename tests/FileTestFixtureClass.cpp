@@ -25,6 +25,7 @@
 #include <FileTestFixtureClass.h>
 #include <fstream>
 #include <unicode/ustring.h>
+#include <string.h>
 
 FileTestFixtureClass::FileTestFixtureClass()
 	: TestProjectDir() {

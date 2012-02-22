@@ -26,6 +26,10 @@ newaction {
 	trigger = "prep",
 	description = "Copy the shared libs to the same location as the binary so that the binary can find them",
 	execute = function()
+
+		-- in case they have not been created yet
+		os.mkdir("Debug");
+		os.mkdir("Release");
 		if os.is "windows" then
 			dlls = os.matchfiles("lib/icu/bin/*.dll")
 			if #dlls > 0 then

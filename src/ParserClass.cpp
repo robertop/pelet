@@ -45,11 +45,6 @@ pelet::ParserClass::ParserClass()
 bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		
-		// set to 1 and the parser will dump stuff to std out. useful for debugging only
-		extern int php53debug;
-		php53debug = 0;
-
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
@@ -96,11 +91,6 @@ void pelet::ParserClass::SetExpressionObserver(ExpressionObserverClass* observer
 }
 
 bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& results) {
-
-	// set to 1 and the parser will dump stuff to std out. useful for debugging only
-	extern int php53debug;
-	php53debug = 0;
-	
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
