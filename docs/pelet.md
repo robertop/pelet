@@ -2,7 +2,8 @@ pelet design
 ============
 This doc briefly describes the major design of the pelet parser library.
 
-pelet has the folowing major components: 
+pelet has the folowing major components:
+
 - PHP lexer (LexicalAnalyzerClass). This is used to tokenize the source code (turn strings into tokens).
 - PHP syntax rules (Php53ParserImpl.y, a parser generated with Bison). This used to follow the PHP rules; 
   for example after "function" comes the function name; after "if" comes a "(" and so on...)
