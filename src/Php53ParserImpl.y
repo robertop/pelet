@@ -328,17 +328,17 @@ is_reference:
 
 unticked_function_declaration_statement:
 		function is_reference T_STRING		{ observers.FunctionStart($3, $2, $1); }
-		'(' parameter_list ')'				{ observers.FunctionFound(); }
+		'(' parameter_list ')'				{ observers.FunctionFound(analyzer.GetLineNumber()); }
 		'{' inner_statement_list '}'		{ observers.FunctionEnd($11); }
 ;
 
 unticked_class_declaration_statement:
 		class_entry_type T_STRING			{ observers.ClassSetName($2); }
-		extends_from implements_list		{ observers.ClassFound(); }
-		'{' class_statement_list '}'		{ observers.ClassEnd(); }
+		extends_from implements_list		{ observers.ClassFound(analyzer.GetLineNumber()); }
+		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber()); }
 	|	interface_entry T_STRING			{ observers.ClassSetName($2); }
-		interface_extends_list				{ observers.ClassFound(); }
-		'{' class_statement_list '}'		{ observers.ClassEnd(); }
+		interface_extends_list				{ observers.ClassFound(analyzer.GetLineNumber()); }
+		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber()); }
 ;
 
 class_entry_type:
@@ -512,7 +512,7 @@ class_statement:
 		variable_modifiers class_variable_declaration ';'	{ observers.ClassMemberClear(); }
 	|	class_constant_declaration ';'						{ observers.ClassMemberClear(); }
 	|	method_modifiers function is_reference T_STRING		{ observers.ClassMemberSetNameAndReturnReference($4, $3, $2); }
-		'('	parameter_list  ')'								{ observers.ClassMemberFound(false); }
+		'('	parameter_list  ')'								{ observers.ClassMemberFound(false, analyzer.GetLineNumber()); }
 		method_body											{ observers.ClassMemberClear(); }
 ;
 
@@ -546,16 +546,16 @@ member_modifier:
 ;
 
 class_variable_declaration:
-		class_variable_declaration ',' T_VARIABLE						{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	T_VARIABLE														{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
-	|	T_VARIABLE '=' static_scalar									{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true); }
+		class_variable_declaration ',' T_VARIABLE						{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
+	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
+	|	T_VARIABLE														{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
+	|	T_VARIABLE '=' static_scalar									{ observers.ClassMemberSetNameAndReturnReference($1, $1, $1); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
 ;
 
 class_constant_declaration:
 		class_constant_declaration ',' 
-		T_STRING '=' static_scalar			{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true); }
-	|	T_CONST T_STRING '=' static_scalar  { observers.ClassMemberSetAsConst($2, $1); observers.ClassMemberFound(true); }
+		T_STRING '=' static_scalar			{ observers.ClassMemberSetNameAndReturnReference($3, $3, $3); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
+	|	T_CONST T_STRING '=' static_scalar  { observers.ClassMemberSetAsConst($2, $1); observers.ClassMemberFound(true, analyzer.GetLineNumber()); }
 ;
 
 echo_expr_list:
@@ -667,7 +667,7 @@ lexical_var_list:
 
 function_call:
 		namespace_name '('								{ observers.FunctionCallStart(); }
-		function_call_parameter_list	')'				{ observers.FunctionCallEnd(); }
+		function_call_parameter_list	')'				{ observers.FunctionCallEnd(analyzer.GetLineNumber()); }
 	|	T_NAMESPACE T_NS_SEPARATOR 
 		namespace_name '(' 
 		function_call_parameter_list ')' 
@@ -948,11 +948,11 @@ encaps_var_offset:
 internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')'
 	|	T_EMPTY '(' variable ')'
-	|	T_INCLUDE expr 
-	|	T_INCLUDE_ONCE expr 
+	|	T_INCLUDE expr  { observers.IncludeFound(analyzer.GetLineNumber()); } 
+	|	T_INCLUDE_ONCE expr { observers.IncludeFound(analyzer.GetLineNumber()); } 
 	|	T_EVAL '(' expr ')' 
-	|	T_REQUIRE expr
-	|	T_REQUIRE_ONCE expr
+	|	T_REQUIRE expr  { observers.IncludeFound(analyzer.GetLineNumber()); } 
+	|	T_REQUIRE_ONCE expr { observers.IncludeFound(analyzer.GetLineNumber()); } 
 ;
 
 isset_variables:

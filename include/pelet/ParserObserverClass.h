@@ -55,7 +55,7 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 */
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment) = 0;
+		const UnicodeString& comment, const int lineNumber) = 0;
 	
 	/**
 	 * Override this method to perform any custom logic when a define declaration is found.
@@ -65,7 +65,14 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the define
 	 */
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment) = 0;
+		const UnicodeString& comment, const int lineNumber) = 0;
+		
+	/**
+	 * Override this method to perform any custom logic when an include declaration is found.
+	 * 
+	 * @param const UnicodeString& filename the name of the included file 
+	 */
+	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) = 0;
 	
 };
 
@@ -94,7 +101,7 @@ public:
 	 */
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isStatic) = 0;
+		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) = 0;
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
@@ -109,7 +116,7 @@ public:
 	 */
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isConst, bool isStatic) = 0;
+		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) = 0;
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
@@ -141,7 +148,7 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 */
 	virtual void FunctionFound(const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) = 0;
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) = 0;
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
@@ -610,12 +617,12 @@ public:
 	/**
 	 * Notifies that a class was found. The CurrentClass variable should have been filled with the data.
 	 */
-	void ClassFound();
+	void ClassFound(const int lineNumber);
 
 	/**
 	 * Will erase the current class info.
 	 */
-	void ClassEnd();
+	void ClassEnd(const int lineNumber);
 
 	void QualifiedNameClear();
 	
@@ -659,7 +666,7 @@ public:
 	/**
 	 * Notifies that a class property / method has been found. The CurrentMember variable should have been filled with the data.
 	 */
-	void ClassMemberFound(bool isProperty);
+	void ClassMemberFound(bool isProperty, const int lineNumber);
 
 	/**
 	 * Will erase the current method info and notify the method observer
@@ -667,9 +674,14 @@ public:
 	void ClassMethodEnd(SemanticValueClass& value);
 
 	/**
-	 *  Notifites that a define (constant) has been found.
+	 *  Notifies that a define (constant) has been found.
 	 */
-	void DefineFound(const ExpressionClass& name, const ExpressionClass& value, const UnicodeString& comment);
+	void DefineFound(const ExpressionClass& name, const ExpressionClass& value, const UnicodeString& comment, const int lineNumber);
+	
+	/**
+	 *  Notifies that an include has been found.
+	 */
+	void IncludeFound(const int lineNumber);//like in include("filename.php")
 
 	/**
 	 * Initializes the CurrentMember info.
@@ -679,7 +691,7 @@ public:
 	/**
 	 * Notifies that a stand-alone function has been found.
 	 */
-	void FunctionFound();
+	void FunctionFound(const int lineNumber);
 
 	/**
 	 * Will erase the current function info and notify the function observer.
@@ -771,7 +783,7 @@ public:
 	 * Checks the current function call that was parsed; will notify the class observer when 
 	 * the define() function was called
 	 */
-	void FunctionCallEnd();
+	void FunctionCallEnd(const int lineNumber);
 
 	/**
 	 * Saves the current function call to expression to the CurrentExpression.
@@ -866,7 +878,7 @@ private:
 	 * @property, @property-read, @property-write, and @method 
 	 * declarations.
 	 */
-	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment);
+	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, const int lineNumber);
 
 	/**
 	 * the class that is currently being parsed.

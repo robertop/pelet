@@ -26,6 +26,7 @@
 #include <pelet/ParserObserverClass.h>
 #include <pelet/ParserClass.h>
 #include <FileTestFixtureClass.h>
+#include <PeletChecks.h>
 #include <vector>
 
 /**
@@ -118,22 +119,25 @@ public:
 						VariableClassName, VariableMethodName, VariableName, VariableComment,
 						VariableChainList, VariablePhpDocType,
 						DefinedName, DefinedValue, DefinedComment,
-						MethodEndClassName, MethodEndMethodName;
+						MethodEndClassName, MethodEndMethodName,
+						IncludeFile;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
 	std::vector<pelet::SymbolClass::Types> VariableTypes;
 	std::vector<int> MethodEndPos;
+	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
-			const UnicodeString& comment) {
+			const UnicodeString& comment, const int lineNumber) {
 		ClassName.push_back(className);
 		ClassSignature.push_back(signature);
 		ClassComment.push_back(comment);
+		ClassLineNumber.push_back(lineNumber);
 	}
 	
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
-			pelet::TokenClass::TokenIds visibility, bool isStatic) {
+			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
 		MethodClassName.push_back(className);
 		MethodName.push_back(methodName);
 		MethodSignature.push_back(signature);
@@ -141,6 +145,7 @@ public:
 		MethodComment.push_back(comment);
 		MethodVisibility.push_back(visibility);
 		MethodIsStatic.push_back(isStatic);
+		MethodLineNumber.push_back(lineNumber);
 	}
 
 	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
@@ -151,7 +156,7 @@ public:
 	
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
-			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
+			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
 		PropertyClassName.push_back(className);
 		PropertyName.push_back(propertyName);
 		PropertyType.push_back(propertyType);
@@ -159,14 +164,16 @@ public:
 		PropertyConsts.push_back(isConst);
 		PropertyVisibility.push_back(visibility);
 		PropertyIsStatic.push_back(isStatic);
+		PropertyLineNumber.push_back(lineNumber);
 	}
 	
 	virtual void FunctionFound(const UnicodeString& functionName, 
-			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) {
+			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
 		FunctionName.push_back(functionName);
 		FunctionSignature.push_back(signature);
 		FunctionReturnType.push_back(returnType);
 		FunctionComment.push_back(comment);
+		FunctionLineNumber.push_back(lineNumber);
 	}
 
 	virtual void FunctionEnd(const UnicodeString& functionName, int pos) {
@@ -189,10 +196,15 @@ public:
 	}
 	
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
-			const UnicodeString& comment) {
+			const UnicodeString& comment, const int lineNumber) {
 		DefinedName.push_back(variableName);
 		DefinedValue.push_back(variableValue);
 		DefinedComment.push_back(comment);		
+	}
+
+	virtual void IncludeFound(const UnicodeString& file, const int lineNumber) {
+		IncludeFile.push_back(file);
+		IncludeLineNumber.push_back(lineNumber);
 	}
 };
 
@@ -675,6 +687,128 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 	}
 }
 
+TEST_FIXTURE(ParserTestClass, IncludeWithStringConstant) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	UnicodeString code = _U(
+		"require 'db_functions_0.php';\n"
+		"require_once 'db_functions_1.php';\n"
+		"include 'db_functions_2.php';\n"
+		"include_once 'db_functions_3.php';\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(4, observer.IncludeFile);
+	CHECK_UNISTR_EQUALS("db_functions_0.php", observer.IncludeFile[0]);
+	CHECK_UNISTR_EQUALS("db_functions_1.php", observer.IncludeFile[1]);
+	CHECK_UNISTR_EQUALS("db_functions_2.php", observer.IncludeFile[2]);
+	CHECK_UNISTR_EQUALS("db_functions_3.php", observer.IncludeFile[3]);
+}
+
+TEST_FIXTURE(ParserTestClass, IncludeWithExpression) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	UnicodeString code = _U(
+		"@include($file);\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, observer.IncludeFile);
+
+	// parser cannot resolve include file at parse time
+	CHECK_UNISTR_EQUALS("", observer.IncludeFile[0]);
+}
+
+TEST_FIXTURE(ParserTestClass, IncludeWithMagicConstant) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	UnicodeString code = _U(
+		"include (__DIR__ . '/file.php');\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, observer.IncludeFile);
+
+	// parser cannot resolve include file at parse time
+	CHECK_UNISTR_EQUALS("", observer.IncludeFile[0]);
+
+}
+
+TEST_FIXTURE(ParserTestClass, ClassLineNumber) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	Parser->SetClassMemberObserver(&observer);
+	UnicodeString code = _U(
+		"/**\n"
+		" * my class \n"
+		" */\n"
+		"class MyClass {\n"
+		"	function \n"
+		"      myFunc() {\n"
+		"      echo 'hello world';\n"
+		"   }\n"
+		"}\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, observer.ClassLineNumber);
+
+	// for now method lineNumber is the line after the class declaration is read
+	CHECK_EQUAL(4, observer.ClassLineNumber[0]);
+}
+
+TEST_FIXTURE(ParserTestClass, MethodLineNumber) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	Parser->SetClassMemberObserver(&observer);
+	UnicodeString code = _U(
+		"class MyClass {\n"
+		"	function \n"
+		"      myFunc() {\n"
+		"      echo 'hello world';\n"
+		"   }\n"
+		"}\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, observer.MethodLineNumber);
+
+	// for now method lineNumber is the line after all function params are read
+	CHECK_EQUAL(3, observer.MethodLineNumber[0]);
+}
+
+TEST_FIXTURE(ParserTestClass, PropertyLineNumber) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	Parser->SetClassMemberObserver(&observer);
+	UnicodeString code = _U(
+		"class MyClass {\n"
+		"	var $name;\n"
+		"}\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, observer.PropertyLineNumber);
+
+	// for now property line number is the line after the entire property declaration
+	// has been read
+	CHECK_EQUAL(2, observer.PropertyLineNumber[0]);
+}
+
+TEST_FIXTURE(ParserTestClass, IncludeLineNumber) {
+	TestClassObserverClass observer;
+	Parser->SetClassObserver(&observer);
+	UnicodeString code = _U(
+		"require 'db_functions_0.php';\n"             // line 1
+		"require_once 'db_functions_1.php';\n"
+		"include 'db_functions_2.php';\n"
+		"\n"
+		"\n"                                          // line 5
+		"include_once \n"
+		" 'db_functions_3.php';\n"
+	);
+	CHECK(Parser->ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(4, observer.IncludeFile);
+	CHECK_VECTOR_SIZE(4, observer.IncludeLineNumber);
+	CHECK_EQUAL(1, observer.IncludeLineNumber[0]);
+	CHECK_EQUAL(2, observer.IncludeLineNumber[1]);
+	CHECK_EQUAL(3, observer.IncludeLineNumber[2]);
+	CHECK_EQUAL(7, observer.IncludeLineNumber[3]);
+}
 
 TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";

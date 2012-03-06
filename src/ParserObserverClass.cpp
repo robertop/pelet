@@ -502,27 +502,27 @@ void pelet::ObserverQuadClass::ClassAddToImplements() {
 }
 
 
-void pelet::ObserverQuadClass::ClassFound() {
+void pelet::ObserverQuadClass::ClassFound(const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (Class) {
-		Class->ClassFound(CurrentClass.ClassName, CurrentClass.ToSignature(), CurrentClass.Comment);
+		Class->ClassFound(CurrentClass.ClassName, CurrentClass.ToSignature(), CurrentClass.Comment, lineNumber);
 	}
 	if (Member) {
-		NotifyMagicMethodsAndProperties(CurrentClass.Comment);
+		NotifyMagicMethodsAndProperties(CurrentClass.Comment, lineNumber);
 	}
 	CurrentMember.Clear();
 }
 
-void pelet::ObserverQuadClass::ClassEnd() {
+void pelet::ObserverQuadClass::ClassEnd(const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentClass.Clear();
 }
 
-void pelet::ObserverQuadClass::ClassMemberFound(bool isProperty) {
+void pelet::ObserverQuadClass::ClassMemberFound(bool isProperty, const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -541,12 +541,12 @@ void pelet::ObserverQuadClass::ClassMemberFound(bool isProperty) {
 
 	if (Member && isProperty) {
 		UnicodeString propType = ReturnTypeFromPhpDocComment(comment, true);
-		Member->PropertyFound(className, propName, propType, comment, visibility, isConst, isStatic);
+		Member->PropertyFound(className, propName, propType, comment, visibility, isConst, isStatic, lineNumber);
 	}
 	else if (Member && !isProperty) {
 		UnicodeString propType = ReturnTypeFromPhpDocComment(comment, false);
 		UnicodeString signature = CurrentMember.ToMethodSignature(CurrentParametersList.ToSignature());
-		Member->MethodFound(className, propName, signature, propType, comment, visibility, isStatic); 
+		Member->MethodFound(className, propName, signature, propType, comment, visibility, isStatic, lineNumber); 
 	}
 	if (!isProperty) {
 		NotifyVariablesFromParameterList();
@@ -573,12 +573,35 @@ void pelet::ObserverQuadClass::ClassMethodEnd(pelet::SemanticValueClass& value) 
 	DoCollectExpressions = true;
 }
 
-void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment) {
+void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment, const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (Class) {
-		Class->DefineDeclarationFound(nameSymbol.Lexeme, valueSymbol.Lexeme, comment);
+		Class->DefineDeclarationFound(nameSymbol.Lexeme, valueSymbol.Lexeme, comment, lineNumber);
+	}
+}
+
+void pelet::ObserverQuadClass::IncludeFound(const int lineNumber) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		if (!ExpressionVariables.empty()) {
+
+			// ExpressionVariables is filled when a variable is parsed
+			pelet::ExpressionClass expr = ExpressionVariables[0];
+			if (pelet::ExpressionClass::SCALAR == expr.Type && ExpressionVariables.size() == 1) {
+				Class->IncludeFound(expr.Lexeme, lineNumber);
+			}
+			else {
+
+				// not sure what to do for include statements
+				// with variables; ie. " include $file; "
+				// for now just propagate an empty name
+				Class->IncludeFound(UNICODE_STRING_SIMPLE(""), lineNumber);
+			}
+		}
 	}
 }
 
@@ -595,7 +618,7 @@ void pelet::ObserverQuadClass::FunctionStart(pelet::SemanticValueClass& nameValu
 	CurrentParametersList.Clear();
 }
 
-void pelet::ObserverQuadClass::FunctionFound() {
+void pelet::ObserverQuadClass::FunctionFound(const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -611,7 +634,7 @@ void pelet::ObserverQuadClass::FunctionFound() {
 	UnicodeString comment = CurrentMember.Comment;
 	UnicodeString returnType = ReturnTypeFromPhpDocComment(comment, false);
 	if (Function) {
-		Function->FunctionFound(functionName, signature, returnType, comment);
+		Function->FunctionFound(functionName, signature, returnType, comment, lineNumber);
 	}
 	NotifyVariablesFromParameterList();
 	DoCollectExpressions = Variable || ExpressionObserver;
@@ -862,7 +885,7 @@ void pelet::ObserverQuadClass::FunctionCallStart() {
 	CurrentFunctionCallExpression.Type = pelet::ExpressionClass::FUNCTION_CALL;
 }
 
-void pelet::ObserverQuadClass::FunctionCallEnd() {
+void pelet::ObserverQuadClass::FunctionCallEnd(const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -870,7 +893,7 @@ void pelet::ObserverQuadClass::FunctionCallEnd() {
 		if (CurrentFunctionCallExpression.Name.ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
 			DefineFound(CurrentFunctionCallExpression.CallArguments[0], 
 				CurrentFunctionCallExpression.CallArguments[1], 
-				CurrentFunctionCallExpression.Name.Comment);
+				CurrentFunctionCallExpression.Name.Comment, lineNumber);
 		}
 	}
 }
@@ -1108,7 +1131,7 @@ void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString
 	delete[] delimsBuffer;
 }
 
-void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment) {
+void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
@@ -1151,7 +1174,7 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, false);
+				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, false, lineNumber);
 				memberName.remove();
 				memberType.remove();
 			}
@@ -1193,7 +1216,7 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
 					memberName.remove(memberName.length() - 2, 2);
 				}
-				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false);
+				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, lineNumber);
 			}
 			if (!next) {
 				break;

@@ -3646,7 +3646,7 @@ yyreduce:
 
   case 74:
 
-    { observers.FunctionFound(); ;}
+    { observers.FunctionFound(analyzer.GetLineNumber()); ;}
     break;
 
   case 75:
@@ -3661,12 +3661,12 @@ yyreduce:
 
   case 77:
 
-    { observers.ClassFound(); ;}
+    { observers.ClassFound(analyzer.GetLineNumber()); ;}
     break;
 
   case 78:
 
-    { observers.ClassEnd(); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber()); ;}
     break;
 
   case 79:
@@ -3676,12 +3676,12 @@ yyreduce:
 
   case 80:
 
-    { observers.ClassFound(); ;}
+    { observers.ClassFound(analyzer.GetLineNumber()); ;}
     break;
 
   case 81:
 
-    { observers.ClassEnd(); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber()); ;}
     break;
 
   case 82:
@@ -3871,7 +3871,7 @@ yyreduce:
 
   case 163:
 
-    { observers.ClassMemberFound(false); ;}
+    { observers.ClassMemberFound(false, analyzer.GetLineNumber()); ;}
     break;
 
   case 164:
@@ -3926,32 +3926,32 @@ yyreduce:
 
   case 179:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 180:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 181:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 182:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 183:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 184:
 
-    { observers.ClassMemberSetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true); ;}
+    { observers.ClassMemberSetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
     break;
 
   case 191:
@@ -4276,7 +4276,7 @@ yyreduce:
 
   case 267:
 
-    { observers.FunctionCallEnd(); ;}
+    { observers.FunctionCallEnd(analyzer.GetLineNumber()); ;}
     break;
 
   case 297:
@@ -4392,6 +4392,26 @@ yyreduce:
   case 376:
 
     {;}
+    break;
+
+  case 404:
+
+    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    break;
+
+  case 405:
+
+    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    break;
+
+  case 407:
+
+    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    break;
+
+  case 408:
+
+    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
     break;
 
   case 411:
