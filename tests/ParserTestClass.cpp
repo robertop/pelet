@@ -691,8 +691,8 @@ TEST_FIXTURE(ParserTestClass, IncludeWithStringConstant) {
 	TestClassObserverClass observer;
 	Parser->SetClassObserver(&observer);
 	UnicodeString code = _U(
-		"require 'db_functions_0.php';\n"
-		"require_once 'db_functions_1.php';\n"
+		"require ('db_functions_0.php');\n"
+		"require_once ('db_functions_1.php');\n"
 		"include 'db_functions_2.php';\n"
 		"include_once 'db_functions_3.php';\n"
 	);

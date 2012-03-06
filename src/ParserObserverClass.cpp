@@ -599,7 +599,8 @@ void pelet::ObserverQuadClass::IncludeFound(const int lineNumber) {
 				// not sure what to do for include statements
 				// with variables; ie. " include $file; "
 				// for now just propagate an empty name
-				Class->IncludeFound(UNICODE_STRING_SIMPLE(""), lineNumber);
+				UnicodeString empty;
+				Class->IncludeFound(empty, lineNumber);
 			}
 		}
 	}

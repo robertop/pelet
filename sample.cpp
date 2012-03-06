@@ -52,11 +52,12 @@ public:
 	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
 	 *        for example "extends UserClass implements Runnable"
 	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment) {
+		const UnicodeString& comment, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
-		u_fprintf(ufout, "Class Found: %.*S\n", className.length(), className.getBuffer());
+		u_fprintf(ufout, "Class Found: %.*S on line %d\n", className.length(), className.getBuffer(), lineNumber);
 		u_fclose(ufout);		
 	}
 	
@@ -66,13 +67,28 @@ public:
 	 * @param const UnicodeString& variableName the name of the defined variable
 	 * @param const UnicodeString& variableValue the variable value
 	 * @param const UnicodeString& comment PHPDoc attached to the define
+	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment) {
+		const UnicodeString& comment, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
-		u_fprintf(ufout, "Define Found: %.*S\n", variableName.length(), variableName.getBuffer());
+		u_fprintf(ufout, "Define Found: %.*S on line %d\n", variableName.length(), variableName.getBuffer(), lineNumber);
 		u_fclose(ufout);
 	}
+	
+	/**
+	 * Override this method to perform any custom logic when an include / require / require_once / include_once declaration is found.
+	 * 
+	 * @param const UnicodeString& filename the name of the included file, but only if the statement
+	 *        is a constant expression. Otherwise, lineNumber will be an empty string 
+	 * @param lineNumber the line number (1-based) that the include/ was found in
+	 */
+	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) {
+		UFILE* ufout = u_finit(stdout, NULL, NULL);
+		u_fprintf(ufout, "Include or Require Found: %.*S on line %d\n", filename.length(), filename.getBuffer(), lineNumber);
+		u_fclose(ufout);
+	}
+	
 		
 	/* This method gets called when a class method is found.
 	 * 
@@ -85,18 +101,19 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
 	 * @param isStatic true if the method is static
+	 * @param lineNumber the line number (1-based) that the method was found in
 	 */
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
-		pelet::TokenClass::TokenIds visibility, bool isStatic) {
+		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		if (returnType.isEmpty()) {
-			u_fprintf(ufout, "Method Found: %.*S in class %.*S. Method did not have @return in PHPDoc comment\n", 
-				methodName.length(), methodName.getBuffer(), className.length(), className.getBuffer());
+			u_fprintf(ufout, "Method Found: %.*S in class %.*S on line %d. Method did not have @return in PHPDoc comment\n", 
+				methodName.length(), methodName.getBuffer(), className.length(), className.getBuffer(), lineNumber);
 		}
 		else {
-			u_fprintf(ufout, "Method Found: %.*S in class %.*S and returns %.*S\n", 
-				methodName.length(), methodName.getBuffer(), className.length(), className.getBuffer(), 
+			u_fprintf(ufout, "Method Found: %.*S in class %.*S on line %d and returns %.*S\n", 
+				methodName.length(), methodName.getBuffer(), className.length(), className.getBuffer(), lineNumber,
 				returnType.length(), returnType.getBuffer());
 		}
 		u_fclose(ufout);
@@ -111,19 +128,20 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the property
 	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
 	 * @param bool isConst true if property is a constant
-	 * @param isStatic true if the method is static
+	 * @param isStatic true if the property is static
+	 * @param lineNumber the line number (1-based) that the property was found in
 	 */
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
-		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic) {
+		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		if (propertyType.isEmpty()) {
-			u_fprintf(ufout, "Property Found: %.*S in class %.*S. Did not have @return in PHPDoc comment\n", 
-				propertyName.length(), propertyName.getBuffer(), className.length(), className.getBuffer());
+			u_fprintf(ufout, "Property Found: %.*S in class %.*S on line %d. Did not have @return in PHPDoc comment\n", 
+				propertyName.length(), propertyName.getBuffer(), className.length(), className.getBuffer(), lineNumber);
 		}
 		else {
-			u_fprintf(ufout, "Property Found: %.*S in class %.*S and is of type %.*S\n", 
-				propertyName.length(), propertyName.getBuffer(), className.length(), className.getBuffer(), 
+			u_fprintf(ufout, "Property Found: %.*S in class %.*S on line %d and is of type %.*S\n", 
+				propertyName.length(), propertyName.getBuffer(), className.length(), className.getBuffer(), lineNumber,
 				propertyType.length(), propertyType.getBuffer());
 		}
 		u_fclose(ufout);	
@@ -149,17 +167,18 @@ public:
 	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
 	 * @param const UnicodeString& returnType the function's return type, as dictated by the PHPDoc comment
 	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param lineNumber the line number (1-based) that the function was found in
 	 */
 	virtual void FunctionFound(const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment) {
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		if (returnType.isEmpty()) {
-			u_fprintf(ufout, "Function Found: %.*S. Function Did not have @return in PHPDoc comment\n", 
-				functionName.length(), functionName.getBuffer());
+			u_fprintf(ufout, "Function Found: %.*S on line %d. Function Did not have @return in PHPDoc comment\n", 
+				functionName.length(), functionName.getBuffer(), lineNumber);
 		}
 		else {
-			u_fprintf(ufout, "Function Found: %.*S and it returns %.*S\n", 
-				functionName.length(), functionName.getBuffer(),
+			u_fprintf(ufout, "Function Found: %.*S on line %d and it returns %.*S\n", 
+				functionName.length(), functionName.getBuffer(), lineNumber,
 				returnType.length(), returnType.getBuffer());
 		}
 		u_fclose(ufout);		

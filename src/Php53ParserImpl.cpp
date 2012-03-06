@@ -4206,7 +4206,7 @@ yyreduce:
 
   case 241:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    { /* no need to push here as this is recursive */ ;}
     break;
 
   case 242:

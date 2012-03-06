@@ -624,7 +624,7 @@ expr_without_variable:
 	|	expr '>' expr 												{ observers.ExpressionPushNewScalar($1); }
 	|	expr T_IS_GREATER_OR_EQUAL expr								{ observers.ExpressionPushNewScalar($1); }
 	|	expr T_INSTANCEOF class_name_reference						{ observers.ExpressionPushNewScalar($1); }
-	|	'(' expr ')'  												{ observers.ExpressionPushNewScalar($1); }
+	|	'(' expr ')'  												{ /* no need to push here as this is recursive */ }
 	|	expr '?' 
 		expr ':' 
 		expr														{ observers.ExpressionPushNewScalar($1); }

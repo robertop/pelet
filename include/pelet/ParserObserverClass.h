@@ -53,6 +53,7 @@ public:
 	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
 	 *        for example "extends UserClass implements Runnable"
 	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) = 0;
@@ -63,14 +64,17 @@ public:
 	 * @param const UnicodeString& variableName the name of the defined variable
 	 * @param const UnicodeString& variableValue the variable value
 	 * @param const UnicodeString& comment PHPDoc attached to the define
+	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
 		const UnicodeString& comment, const int lineNumber) = 0;
 		
 	/**
-	 * Override this method to perform any custom logic when an include declaration is found.
+	 * Override this method to perform any custom logic when an include / require / require_once / include_once declaration is found.
 	 * 
-	 * @param const UnicodeString& filename the name of the included file 
+	 * @param const UnicodeString& filename the name of the included file, but only if the statement
+	 *        is a constant expression. Otherwise, lineNumber will be an empty string 
+	 * @param lineNumber the line number (1-based) that the include/ was found in
 	 */
 	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) = 0;
 	
@@ -98,6 +102,7 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
 	 * @param isStatic true if the method is static
+	 * @param lineNumber the line number (1-based) that the method was found in
 	 */
 	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
@@ -112,7 +117,8 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the property
 	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
 	 * @param bool isConst true if property is a constant
-	 * @param isStatic true if the method is static
+	 * @param isStatic true if the property is static
+	 * @param lineNumber the line number (1-based) that the propertywas found in
 	 */
 	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
@@ -146,6 +152,7 @@ public:
 	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
 	 * @param const UnicodeString& returnType the function's return type, as dictated by the PHPDoc comment
 	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param lineNumber the line number (1-based) that the function was found in
 	 */
 	virtual void FunctionFound(const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) = 0;
