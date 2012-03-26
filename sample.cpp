@@ -41,7 +41,8 @@
 class SampleObserver : 
 	public pelet::ClassObserverClass,   // for classes and define()
 	public pelet::ClassMemberObserverClass,  // for properties and methods
-	public pelet::FunctionObserverClass  {   // for functions
+	public pelet::FunctionObserverClass,  // for functions
+	public pelet::VariableObserverClass { // for variables
 
 public:
 
@@ -193,7 +194,70 @@ public:
 		
 	}
 	
-	
+	/**
+	 * This method gets called when a variable assignment is found. Note that the same 
+	 * variable may be assigned different values at different times within the same function.
+	 * The symbol will be constructed in the following way:
+	 *
+	 * Example assignment:  $name = $this->getName()->toString();
+	 *
+	 * Lexeme: lexeme will contain the variable's name (ie $name)
+	 * ChainList: This is a list of  properties / methods
+	 *            that were successively invoked.
+	 *            In this example, the expression chain list will have 3 items in
+	 *           the chain list "$this" "->getName()" and "->toString()".
+	 *
+	 * 
+	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
+	 *        inside a function or is global.
+	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
+	 *        variable is globally scoped.
+	 * @param const SymbolClass& symbol the name  & type of the variable that was found
+	 * @param const UnicodeString& comment PHPDoc attached to the variable
+	 */
+	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+			const pelet::SymbolClass& symbol, const UnicodeString& comment) {
+		UFILE* ufout = u_finit(stdout, NULL, NULL);
+		UnicodeString scope;
+		if (className.isEmpty() && methodName.isEmpty()) {
+			scope = UNICODE_STRING_SIMPLE("<global>");
+		}
+		else if (className.isEmpty() && !methodName.isEmpty()) {
+			scope = methodName;
+		}
+		else {
+			scope = className + UNICODE_STRING_SIMPLE("::") + methodName;
+		}
+		UnicodeString type;
+		if (pelet::SymbolClass::ARRAY == symbol.Type) {
+			type = UNICODE_STRING_SIMPLE("Variable is an array");
+		}
+		else if (pelet::SymbolClass::PRIMITIVE == symbol.Type) {
+			type = UNICODE_STRING_SIMPLE("Variable is a primitive");
+		}
+		else if (pelet::SymbolClass::OBJECT == symbol.Type) {
+			type = UNICODE_STRING_SIMPLE("Variable is the result of an object operation. ");
+			type += UNICODE_STRING_SIMPLE("Chain list is: ");
+			for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
+				type += symbol.ChainList[i];
+				if (i < (symbol.ChainList.size() - 1)) {
+					type += UNICODE_STRING_SIMPLE(", ");
+				}
+			}
+			
+		}
+		else if (pelet::SymbolClass::UNKNOWN == symbol.Type) {
+			type = UNICODE_STRING_SIMPLE("Variable is dynamic variable");
+		}
+		if (!symbol.PhpDocType.isEmpty()) {
+			type += UNICODE_STRING_SIMPLE("Variable is decorated with a PHPDoc comment: ");
+			type += symbol.PhpDocType;
+		}
+		u_fprintf(ufout, "Variable Found: %.*S in scope %S. %S\n", 
+				symbol.Lexeme.length(), symbol.Lexeme.getBuffer(),
+				scope.getTerminatedBuffer(),
+				type.getTerminatedBuffer());
+	}
 };
 
 int main(int argc, char** argv) {
@@ -206,6 +270,7 @@ int main(int argc, char** argv) {
 	parser.SetClassObserver(&observer);
 	parser.SetClassMemberObserver(&observer);
 	parser.SetFunctionObserver(&observer);
+	parser.SetVariableObserver(&observer);
 	
 	pelet::LintResultsClass results;
 	bool parsed = parser.ScanFile(argv[1], results);
