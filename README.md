@@ -50,7 +50,7 @@ pelet comes with a working example solution "skeleton" that shows how
 you can integrate it into your projects.  The skeleton uses premake as its build system (premake is 
 included in the repository). This enables users to create Makefiles or various IDE solutions (MS 
 Visual Studio, CodeBlocks, CodeLite). Before attempting to build, please download the ICU 4.2 
-source from the [ICU] (http://site.icu-project.org/) website and place it in pelet's lib subdirectory.
+source from the [ICU] (http://site.icu-project.org/) website and build it.
 
 Using Make (On  Linux)
 ------------------------
