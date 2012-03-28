@@ -26,10 +26,11 @@
 #define TOKEN_CLASS_H
 
 #include <pelet/Php53ParserImpl.h>
+#include <pelet/Api.h>
 
 namespace pelet {
 	
-class TokenClass {
+class PELET_API TokenClass {
 public:
 
 	

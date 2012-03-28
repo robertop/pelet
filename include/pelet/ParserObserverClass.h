@@ -27,6 +27,7 @@
 
 #include <pelet/TokenClass.h>
 #include <unicode/unistr.h>
+#include <pelet/Api.h>
 #include <stack>
 #include <vector>
 
@@ -43,7 +44,7 @@ class ExpressionClass;
  * methods when a class or define statement has been found in the source code.
  * The observer will get notified as the buffer is being parsed.
  */
-class ClassObserverClass {
+class PELET_API ClassObserverClass {
 
 public:
 	/**
@@ -86,7 +87,7 @@ public:
  * methods when a class property or method has been parsed.
  * The observer will get notified as the buffer is being parsed.
  */
-class ClassMemberObserverClass {
+class PELET_API ClassMemberObserverClass {
 
 public:
 
@@ -140,7 +141,7 @@ public:
  * method when a funciton been parsed.
  * The observer will get notified as the buffer is being parsed.
  */
-class FunctionObserverClass {
+class PELET_API FunctionObserverClass {
 
 public:
 	/**
@@ -171,7 +172,7 @@ public:
  * method when a variable assignment has been parsed.
  * The observer will get notified as the buffer is being parsed.
  */
-class VariableObserverClass {
+class PELET_API VariableObserverClass {
 
 public:
 
@@ -207,7 +208,7 @@ public:
  * a single expression.
  * The observer will get notified as the buffer is being parsed.
  */
-class ExpressionObserverClass {
+class PELET_API ExpressionObserverClass {
 
 public:
 
@@ -232,7 +233,7 @@ public:
  * Be sure to init and free with the ParserObserverClas; that way memory can be 
  * cleaned up correctly.
  */
-class SemanticValueClass {
+class PELET_API SemanticValueClass {
 
 public:
 
@@ -263,7 +264,7 @@ public:
  * This represents a fully qualified name; it may have any number of namespaces attached to
  * it.
  */
-class QualifiedNameClass {
+class PELET_API QualifiedNameClass {
 
 public:
 
@@ -286,7 +287,7 @@ private:
  * Data structure that will hold the data points we can to keep track of
  * for PHP class structures.
  */
-class ClassSymbolClass {
+class PELET_API ClassSymbolClass {
 
 public:
 
@@ -311,7 +312,7 @@ public:
  * Data structure that will hold the data points we can to keep track of
  * for PHP class method & property structures.
  */
-class ClassMemberSymbolClass {
+class PELET_API ClassMemberSymbolClass {
 
 public:
 
@@ -353,7 +354,7 @@ public:
  * This is a list of function / method parameters for a single function / method. It store
  * the name and type info of each parameter.
  */
-class ParametersListClass {
+class PELET_API ParametersListClass {
 
 public:
 	ParametersListClass();
@@ -400,7 +401,7 @@ private:
  * - a function call
  * - a variable assignment of one variable to an expression
  */
-class ExpressionClass {
+class PELET_API ExpressionClass {
 	
 public:
 
@@ -476,7 +477,7 @@ public:
  * will produce one symbol only (called 'name').
  * 
  */
-class SymbolClass {
+class PELET_API SymbolClass {
 
 public:
 	
@@ -570,7 +571,7 @@ public:
  * This class will also hold the current scope as the parser is parsing the code, acting as a 'global'
  * that the parser can use to store data accross multiple grammar rules.
  */
-class ObserverQuadClass {
+class PELET_API ObserverQuadClass {
 
 public:
 

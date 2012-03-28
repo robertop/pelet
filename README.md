@@ -45,10 +45,6 @@ users will not need to do so):
 
 Building 
 ---------
-pelet does not yet have a shared library deliverable.  The source code is surpringly simple that the
-easiest way to integrate pelet into your project is to copy the include/ and src/ directories into
-the desired locations in your project. This also prevents me from dictating whethe your project should
-make use of dynamic vs. shared libraries.
 
 Having said that, pelet comes with a working example solution "skeleton" that shows how
 you can integrate it into your projects.  The skeleton uses premake as its build system (premake is 
@@ -68,7 +64,10 @@ Using Make (On  Linux)
 	cd build/gmake
 	make config=release
 
-"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 codelite"
+"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 codelite". After this, the
+resulting shared library will be created in Release/pelet.so. The library can then be imported
+by any C++ project by using the include directory (-Iinclude) to the include path and adding the 
+library file as a library (-lpelet)
 
 MSW instructions (Visual Studio Solution)
 ------------------------------------------
@@ -80,7 +79,10 @@ MSW instructions (Visual Studio Solution)
 	premake4.exe prep
 	premake4.exe vs2008
 
-Now you can open the pelet solution file under build/vs2008 and build the solution.
+Now you can open the pelet solution file under build/vs2008 and build the solution. After this, the
+resulting shared library will be created in Release/pelet.so. The library can then be imported
+by any C++ project by using the include directory (include) to the include path and adding the 
+library file as a library (pelet.dll)
 
 Sample Usage
 -------------
@@ -133,10 +135,6 @@ verify that your changes do not break the standards outlined in the CODING_STAND
 
 TODO
 -----
-- Create a nice DLL package for this library. This is a surprisingly difficult task that may 
-  involve re-writing some code because of the way DLLs and <STL> templates work in MSW. See this
-  [page] (http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html) for a bit
-  of background.
 - Build environment: Allow options to use a pre-exisiting installation of the ICU library.
 - PHP 5.4 support (array dereferencing, traits)
 - Namespaces: While are captured by the parser, they are not visible to the caller.

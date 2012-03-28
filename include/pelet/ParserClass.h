@@ -29,6 +29,7 @@
 #include <pelet/TokenClass.h>
 #include <pelet/ParserObserverClass.h>
 #include <unicode/unistr.h>
+#include <pelet/Api.h>
 
 namespace pelet {
 
@@ -80,7 +81,7 @@ namespace pelet {
  * Holds the results of the lint check.  Currently lint check will stop when 
  * the first error is encountered.
  */
-class LintResultsClass {
+class PELET_API LintResultsClass {
 public:
 
 	/**
@@ -121,7 +122,7 @@ public:
 	void Clear();
 };
 
-class ParserClass {
+class PELET_API ParserClass {
 
 
 public:

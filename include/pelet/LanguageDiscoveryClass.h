@@ -27,6 +27,7 @@
 
 #include <unicode/unistr.h>
 #include <pelet/UCharBufferedFileClass.h>
+#include <pelet/Api.h>
 
 namespace pelet {
 
@@ -39,7 +40,7 @@ namespace pelet {
  * PHP strings (heredoc and NowDoc).
  *
  */
-class LanguageDiscoveryClass {
+class PELET_API LanguageDiscoveryClass {
 
 public:
 

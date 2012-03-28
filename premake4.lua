@@ -97,12 +97,12 @@ solution "pelet"
 		-- prevent "warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library"
 		buildoptions { "/MDd" }
 		
-	project "pelet"
+	project "sample"
 		language "C++"
 		kind "ConsoleApp"
-		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md", "sample.cpp" }
+		files { "sample/sample.cpp" }
 		includedirs { "include/" }
-		links { "tests" }
+		links { "pelet", "tests" }
 		
 		configuration "Release"
 			pickywarnings(_ACTION)
@@ -119,17 +119,28 @@ solution "pelet"
 		configuration { "Release", "gmake or codelite" }
 			icuconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
+		
+	project "pelet"
+		language "C++"
+		kind "SharedLib"
+		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md" }
+		includedirs { "include/" }
+		defines { "PELET_MAKING_DLL" }
+		pickywarnings(_ACTION)
+		configuration "Release"			
+			icuconfiguration("Release", _ACTION)
+		configuration { "Debug" }
+			icuconfiguration("Debug", _ACTION)
 								
 	project "tests"
 		language "C++"
 		kind "ConsoleApp"
 		files { 
 			"tests/**.cpp",
-			"tests/**.h",
-			"src/**.cpp",
+			"tests/**.h"
 		}
 		includedirs { "include/", "lib/UnitTest++/src/", "tests/" }
-		links { "unit_test++" }
+		links { "pelet", "unit_test++" }
 		
 		configuration "Debug"
 			pickywarnings(_ACTION)

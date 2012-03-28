@@ -27,10 +27,11 @@
 
 #include <unicode/ustdio.h>
 #include <unicode/unistr.h>
+#include <pelet/Api.h>
 
 namespace pelet {
 	
-class BufferClass {
+class PELET_API BufferClass {
 
 public:
 
@@ -148,7 +149,7 @@ protected:
  * The public API was designed to fit the re2c generated scanners; it is not the preference of the author
  * to have public pointers that may change at any time.  Beware.
  */
-class UCharBufferedFileClass : public BufferClass {
+class PELET_API UCharBufferedFileClass : public BufferClass {
 	
 public:
 		
@@ -268,7 +269,7 @@ private:
 	bool HasReachedEof;
 };
 
-class UCharBufferClass : public BufferClass {
+class PELET_API UCharBufferClass : public BufferClass {
 	
 public:
 		

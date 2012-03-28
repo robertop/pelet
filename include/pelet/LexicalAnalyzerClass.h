@@ -30,6 +30,7 @@
 #include <pelet/UCharBufferedFileClass.h>
 #include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <pelet/Php53ParserImpl.h>
+#include <pelet/Api.h>
 
 namespace pelet {
 
@@ -38,7 +39,7 @@ namespace pelet {
  * This class represents the lexical analyzer.  It returns tokens from
  * the globals include file representing what the source file contains
  */
-class LexicalAnalyzerClass {
+class PELET_API LexicalAnalyzerClass {
 	public :
 	
 	/**
