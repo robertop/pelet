@@ -24,39 +24,58 @@
 -------------------------------------------------------------------
 
 dofile "premake_functions.lua"
-dofile "premake_action_prep.lua"
-dofile "premake_action_icu.lua"
 dofile "premake_action_generate.lua"
 
--- these are the ICU unicode string libraries
+newoption {
+	trigger = "icu-include",
+	value = "path",
+	description = "Directory Location of the ICU header files. " ..
+	"This option should only be used on Win32 systems"
+}
+
+newoption {
+	trigger = "icu-lib",
+	value = "path",
+	description = "Directory Location of the ICU library shared object files. " ..
+	"This option should only be used on Win32 systems"
+}
+
+newoption {
+	trigger = "icu-config",
+	value = "path",
+	description = "File location of the icu-config binary. If given, " .. 
+		"it will be used to get the appropriate compiler and linker flags. " ..
+		"This option should only be used on linux systems"
+}
+
+-- these are the ICU unicode string libraries (in Win32)
 ICU_LIBS_RELEASE = {
        "icudt", "icuin", "icuio", "icule",
        "iculx", "icutu", "icuuc"
 }
 
--- these are the ICU unicode string libraries
+-- these are the ICU unicode string libraries (in Win32)
 ICU_LIBS_DEBUG = {
        "icudt", "icuind", "icuiod", "iculed",
        "iculxd", "icutud", "icuucd"
 }
 
--- this configuration uses the icu-config binary to get the ICU header & library locations
--- this is usually the case on linux
+-- this configuration uses the command line options to get the ICU header & library locations
 function icuconfiguration(config, action)
-	if config == "Debug" and action == "vs2008" then
-		includedirs { "lib/icu/include/" }
-		libdirs { "lib/icu/lib/" }
+	if config == "Debug" and _OPTIONS['icu-include'] then
+		includedirs { _OPTIONS['icu-include'] }
+		libdirs { _OPTIONS['icu-lib'] }
 		links { ICU_LIBS_DEBUG }
-	elseif config == "Debug" and (action == "gmake" or action == "codelite") then
-		buildoptions { "`../../lib/icu/pelet/Debug/bin/icu-config --cppflags`" }
-		linkoptions { "`../../lib/icu/pelet/Debug/bin/icu-config --ldflags --ldflags-icuio`" }
-	elseif config == "Release" and action ==  "vs2008" then
-		includedirs { "lib/icu/include/" }
-		libdirs { "lib/icu/lib/" }
+	elseif config == "Release" and _OPTIONS['icu-include'] then
+		includedirs { _OPTIONS['icu-include'] }
+		libdirs { _OPTIONS['icu-lib'] }
 		links { ICU_LIBS_RELEASE }
-	elseif config == "Release" and (action == "gmake" or action == "codelite") then
-		buildoptions { "`../../lib/icu/pelet/Release/bin/icu-config --cppflags`" }
-		linkoptions { "`../../lib/icu/pelet/Release/bin/icu-config --ldflags --ldflags-icuio`" }
+	elseif _OPTIONS['icu-config'] then
+	
+		-- use the execution operator '``' because the icu-config program
+		-- will be used to generate the correct compile and linker flags
+		buildoptions { "`" .. _OPTIONS['icu-config'] .. " --cppflags`" }
+		linkoptions { "`" .. _OPTIONS['icu-config'] .. " --ldflags --ldflags-icuio`" }
 	end
 end
 
@@ -68,6 +87,12 @@ function pickywarnings(action)
 		-- when compiling strict warning checks; also check against variable length arrays
 		-- since Visual Studio is not C99 compliant
 		buildoptions { "-Wall", "-Wvla", "-Wno-comment"  }
+	end
+end
+
+if ((not _OPTIONS.help) and (_ACTION ~= 'clean') and (_ACTION ~= 'generate')) then
+	if ((not _OPTIONS['icu-include']) and (not _OPTIONS['icu-config'])) then
+		error("Missing one of --icu-include or --icu-config. See --help for details")
 	end
 end
 
@@ -88,10 +113,6 @@ solution "pelet"
 	configuration "Release"
 		objdir "Release"
 		targetdir "Release"
-	configuration "gmake or codelite"
-	
-		-- link against our own version of ICU instead of any installed in the system
-		linkoptions { "-Wl,-rpath=./" }
 	configuration { "Debug", "vs2008" }
 		
 		-- prevent "warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library"
@@ -101,7 +122,7 @@ solution "pelet"
 		language "C++"
 		kind "ConsoleApp"
 		files { "sample/sample.cpp" }
-		includedirs { "include/" }
+		includedirs { "include" }
 		links { "pelet", "tests" }
 		
 		configuration "Release"
@@ -124,7 +145,7 @@ solution "pelet"
 		language "C++"
 		kind "SharedLib"
 		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md" }
-		includedirs { "include/" }
+		includedirs { "include" }
 		defines { "PELET_MAKING_DLL" }
 		pickywarnings(_ACTION)
 		configuration "Release"			
@@ -173,7 +194,7 @@ solution "pelet"
 		language "C++"
 		kind "ConsoleApp"
 		links { "unit_test++" }
-		files { "lib//UnitTest++/src/tests/*.cpp" }
+		files { "lib/UnitTest++/src/tests/*.cpp" }
 		
 		-- enable Stuctured Exception Handling needed by UnitTest++
 		flags { "SEH" }

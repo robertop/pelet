@@ -46,7 +46,7 @@ users will not need to do so):
 Building 
 ---------
 
-Having said that, pelet comes with a working example solution "skeleton" that shows how
+pelet comes with a working example solution "skeleton" that shows how
 you can integrate it into your projects.  The skeleton uses premake as its build system (premake is 
 included in the repository). This enables users to create Makefiles or various IDE solutions (MS 
 Visual Studio, CodeBlocks, CodeLite). Before attempting to build, please download the ICU 4.2 
@@ -54,35 +54,41 @@ source from the [ICU] (http://site.icu-project.org/) website and place it in pel
 
 Using Make (On  Linux)
 ------------------------
-
+	(build the ICU library as normal, many linux distros have it in their package manager)
 	git clone git@github.com:robertop/pelet.git /home/user/pelet
 	cd /home/user/pelet
-	cp /home/user/Downloads/icu4c-4_2_1-src.tgz lib/
-	./premake4 icu
-	./premake4 prep
-	./premake4 gmake
+	./premake4 --icu-config="/path/to/icu-config" vs2008
 	cd build/gmake
 	make config=release
 
-"./premake4 gmake" can be substituted for an IDE solution; ie "./premake4 codelite". After this, the
-resulting shared library will be created in Release/pelet.so. The library can then be imported
-by any C++ project by using the include directory (-Iinclude) to the include path and adding the 
-library file as a library (-lpelet)
+"./premake4 gmake" can be substituted for an IDE solution; ie 
+"./premake4 --icu-config="/path/to/icu-config codelite". After these steps
+the resulting shared library will be created in Release/pelet.so. The library can then be imported
+into any C++ project by adding the include directory (-Iinclude) to the include path and adding the 
+library file as a library (-lpelet). 
+
+Also note that if you installed ICU in a non-standard place you will need to add the ICU library subdirectory
+to the LD_LIBRARY_PATH environment variable as well. You will need to do this BEFORE compiling
+pelet, as the compilation has a post-build action to run a test suite (and the test suite requires
+the ICU library).
 
 MSW instructions (Visual Studio Solution)
 ------------------------------------------
+    (build the ICU library as normal before attempting these steps using the VS solution that ICU 
+	provides)
 	git clone git@github.com:robertop/pelet.git C:\Users\user\pelet
-	cd C:\Users\user\pelet
-	copy C:\Users\user\Downloads\icu4c-4_2_1-src.tgz lib\
-	<manually extract and compile the ICU library (Debug & Relase) using the VS solution that ICU 
-	provides>
-	premake4.exe prep
-	premake4.exe vs2008
+	cd C:\Users\user\pelet	
+	./premake4 --icu-include="C:\path\to\icu\headers" --icu-lib="C:\path\to\icu\libs" vs2008
 
-Now you can open the pelet solution file under build/vs2008 and build the solution. After this, the
-resulting shared library will be created in Release/pelet.so. The library can then be imported
-by any C++ project by using the include directory (include) to the include path and adding the 
+Now you can open the pelet solution file under build/vs2008 and build the solution. After these
+steps, the resulting shared library will be created in Release/pelet.dll. The library can then be imported
+into any C++ project by using the include directory (include) to the include path and adding the 
 library file as a library (pelet.dll)
+
+Also note that if you installed ICU in a non-standard place you will need to copy the ICU DLLs (icu*.dll) into the 
+same directory as the sample program (the Debug/ and Release/ directories). You will need to do this 
+BEFORE compiling pelet, as the compilation has a post-build action to run a test suite (and the test 
+suite requires the ICU library).
 
 Sample Usage
 -------------
@@ -135,6 +141,5 @@ verify that your changes do not break the standards outlined in the CODING_STAND
 
 TODO
 -----
-- Build environment: Allow options to use a pre-exisiting installation of the ICU library.
 - PHP 5.4 support (array dereferencing, traits)
 - Namespaces: While are captured by the parser, they are not visible to the caller.
