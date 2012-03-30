@@ -456,8 +456,9 @@ pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, C
 	, ExpressionObserver(expressionObserver)
 	, CurrentExpression()
 	, ExpressionVariables()
-	, AllValues()
-	, DoCollectExpressions(true) {
+	, AllValues() {
+
+	DoCollectExpressions = classObserver || memberObserver || functionObserver || variableObserver || expressionObserver;
 }
 
 pelet::ObserverQuadClass::~ObserverQuadClass() {
