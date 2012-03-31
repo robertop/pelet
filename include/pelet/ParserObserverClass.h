@@ -33,6 +33,104 @@
 
 namespace pelet {
 
+/**
+@page ParserImplementationDetailsPage Parser Implementation Details
+
+pelet uses a Bison parser to validate PHP syntax rules. Knowledge of the bison
+parser generator is required to modify the parser code.  You may look at the
+bison manual at http://www.gnu.org/software/bison/manual/
+
+First thing to note is that the pelet grammar file (Php53ParserImpl.y) was created
+by gutting the grammar file that comes in the PHP source distribution.  If you
+already know the PHP grammar file then you will be familiar with the grammar. If not,
+continue reading this to get a better understanding.
+
+Bison is a parser generator; we write rules in bison grammar, run the grammar through the 
+bison executable, and the executable generates C++ source code that can be used in any 
+program. The generated C++ source code will define a function called php53parse() that 
+we can then call from anywhere in our program.
+
+\section ParserImplementationDetailsInput Input
+We define the inputs to the php53parse function by using the %parse-param directive, this will make it so 
+that the php53parse and the php53lex functionx accept a pelet::LexicalAnalyzerClass as 
+an argument.
+We define a php53lex function, and in that function we will use 
+pelet::LexicalAnalyzerClass::NextToken to get the next token from the
+source code being parsed.
+
+\section ParserImplementationDetailsGrammar Grammar rules
+Let's look at an example grammar rule. A (simplified) bison grammar rule for a PHP variable
+looks like this:
+
+@code
+compound_variable:
+		T_VARIABLE			{ observers.CurrentExpressionPushAsVariable($1); }
+	|	'$' '{' expr '}' 
+;
+@endcode
+
+Where 
+compound_variable is the name of a rule
+T_VARIABLE is token that matches the rule
+|  is the symbol to say that rule can match another set of tokens
+'$' {' expr '}'  is a "nonterminal" rule (rule that is made up of another rule)
+
+This rule will match a T_VARIABLE token (from the lexer) or a "$" followed by a "{" that
+is followed by an expr rule that is followed by another "}".  
+
+Each rule can have an action associated with it.  An action is just a block of C / C++ code
+that is executed when the rule is matched.  The only addition is that the action can
+access the matching tokens by using $1 for the first token, $2 for the second token, and 
+so on... For example, in the second branch $4 is the token '}'
+
+So just what type is $1 ? The $n variables are of type YYSTYPE, in our case we define
+it to be pelet::SemanticValueClass (see the php53lex() function). This allows us to
+get the token, but also the lexeme, where token is the numeric representation, for example
+T_VARIABLE, and the lexeme is the textual representation (for example "$userName").
+
+What about the tokens from recursive rules, as in "expr" in the case above? Bison allows a rule 
+to return a YYSTYPE back to a calling rule by using the $$ pseudo variable, but in our case
+this is rarely used, and this means that rules should NOT access tokens from sub-rules.  Attempting
+to access variables from sub-rules will result in program crashes.
+
+The grammar file contains the entire PHP grammar; most of the rules don't have actions because
+we are not interested in them; but the ones we are interested in have actions.  In our case,
+we delegate most of the work to the pelet::ObserverQuadClass and the rules contain just 1-liner
+method calls. This makes the code a bit more IDE-friendly.
+
+\section ParserImplementationDetailsObserver Observer Quad
+An ObserverQuadClass is an object that holds the observers (the objects that want to be notified
+of source code artifacts like classes, functions, etc..). It gets passed in as a parameter to 
+the php53parse and the php53lex functions just like the lexer. The different methods of
+the ObserverQuad get called as the different bison rules are triggered, as in for example
+the "class" rule:
+
+@code
+unticked_class_declaration_statement:
+		class_entry_type T_STRING			{ observers.ClassSetName($2); }
+		extends_from implements_list		{ observers.ClassFound(analyzer.GetLineNumber()); }
+		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber()); }
+
+class_entry_type:
+		T_CLASS					{ observers.ClassStart($1, false, false, false); }
+	|	T_ABSTRACT T_CLASS		{ observers.ClassStart($1, true, false, false); }
+	|	T_FINAL T_CLASS			{ observers.ClassStart($1, false, true, false); }
+;
+@endcode
+
+In this case, when we see T_CLASS (class keyword) the ClassStart method gets called. Then, the
+ClassSetName method gets called (which allows us to get the name of the class). Then, after
+any extends or implements keywords rules are parsed we call the ClassFound method. The ClassFound
+method will, in turn, call any pelet::ClassObserverClass instances that it has been given.
+
+\section ParserImplementationDetailsUpdatingGrammar Updating the grammar
+When a new PHP version updates the grammar; we must update the rules.  The simplest way to do this 
+would be to diff the PHP grammar file with its prior versions, taking the new rules, gutting them (removing
+the action block), and adding them to Php53ParserImpl.y.  If any new artifacts become available, then 
+we should create new methods in the ObserverQuadClass, and possibly new interfaces that will expose
+the new artifacts to the users of the pelet library.
+*/
+
 // these classes are defined below.
 class SymbolClass;
 class ExpressionClass;
@@ -500,8 +598,7 @@ public:
 	 * self
 	 * parent
 	 * $aVariable
-	 * 
-	 * @var UnicodeString
+	 *
 	 */
 	UnicodeString Lexeme;
 
@@ -533,8 +630,7 @@ public:
 	 *
 	 * Any arguments to any of the calling functions will be ignored (since they do not contribute to the type info).
 	 * Note that the ChainList may be empty in the case of primitives or 'simple' variables. 
-	 * 
-	 * @var std::vector<UnicodeString>
+	 *
 	 */
 	std::vector<UnicodeString> ChainList;
 	
@@ -844,10 +940,10 @@ public:
 	void ClearExpressions();
 
 	/**
-	 * Will check the given comment for @var annotations FOR LOCAL VARIABLES ONLY
+	 * Will check the given comment for \@var annotations FOR LOCAL VARIABLES ONLY
 	 * and notify the observer.
 	 * assuming that comment for local variables look like this
-	 *  /* @var $dog Dog * /
+	 *  /* \@var $dog Dog * /
 	 * people got used to doing it this way
 	 * http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	 */
@@ -863,10 +959,10 @@ private:
 	void NotifyVariablesFromParameterList();
 
 	/**
-	 * Get the return type from the '@return' / '@var' annotation
+	 * Get the return type from the '\@return' / '\@var' annotation
 	 * 
 	 * @param const UnicodeString& phpDocComment the comment
-	 * @param bool varAnnotation if false, will return the word after '@var', else return the word after '@return'
+	 * @param bool varAnnotation if false, will return the word after '\@var', else return the word after '\@return'
 	 * @return UnicodeString
 	 */
 	UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation);
@@ -874,7 +970,7 @@ private:
 	/**
 	 * Parses any variable type hints from the given PHPDoc and notifies the variable observer. In this case, the annotation will
 	 * contain the variable name AND the variable type as in:
-	 *   /* @var $myvar VarTypeClass * /
+	 *   /* \@var $myvar VarTypeClass * /
 	 *
 	 * The comment may contain more than on name-type pair
 	 * @param phpDocComment the entire comment
@@ -883,7 +979,7 @@ private:
 
 	/**
 	 * parses out the given PHPDoc comment and notifies the member observer of any
-	 * @property, @property-read, @property-write, and @method 
+	 * \@property, \@property-read, \@property-write, and \@method 
 	 * declarations.
 	 */
 	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, const int lineNumber);

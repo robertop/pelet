@@ -30,7 +30,13 @@
 #include <pelet/Api.h>
 
 namespace pelet {
-	
+
+/**
+ * This is a base class for handling PHP source (or any other string really) that comes from
+ * various sources (memory buffer or files). This abstraction will allows us to use the
+ * LexicalAnalyzerClass on source code that comes from a string in memory or from a file on
+ * the hard disk.
+ */
 class PELET_API BufferClass {
 
 public:
@@ -113,8 +119,6 @@ protected:
 	/**
 	 * The current line number. This number is controlled by the IncrementLine() method
 	 * since this buffer is always AHEAD of the token being read
-	 * 
-	 * @var int
 	 */
 	int LineNumber;
 	
@@ -223,8 +227,6 @@ private:
 	
 	/**
 	 * The name of the file being analyzed
-	 * 
-	 * @var const char *
 	 */
 	const char *FileName;
 	
@@ -245,15 +247,12 @@ private:
 
 	/**
 	 * The opened file handle.
-	 * 
-	 * @var UFILE*
 	 */
 	UFILE* File;
 		
 	/**
 	 * This variable stores the total memory allocated to the buffer.
 	 *
-	 * @var int
 	 */
 	int BufferCapacity;
 
@@ -269,6 +268,10 @@ private:
 	bool HasReachedEof;
 };
 
+/**
+ * The UCharBufferClass will wrap an array of UChars or a UnicodeString, making it
+ * possible to tokenize a string of PHP source code.
+ */
 class PELET_API UCharBufferClass : public BufferClass {
 	
 public:
@@ -330,8 +333,6 @@ private:
 	
 	/**
 	 * This variable stores the total memory allocated to the buffer.
-	 *
-	 * @var int
 	 */
 	int BufferCapacity;
 };

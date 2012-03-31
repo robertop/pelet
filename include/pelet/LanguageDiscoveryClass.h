@@ -94,16 +94,12 @@ private:
 
 
 	/**
-	 * The tokenizer positions
-	 *
-	 * @var UCharBufferedFileClass
+	 * Contains positions of the token currently being tokenized.
 	 */
 	UCharBufferClass Buffer;
 
 	/**
 	 * The actual code being parsed
-	 *
-	 * @var UnicodeString
 	 */
 	UnicodeString Code;
 };

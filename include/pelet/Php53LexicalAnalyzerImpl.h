@@ -1,4 +1,4 @@
-/**
+/*
  * This software is released under the terms of the MIT License
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,51 @@
 #define __php53lexicalanalyzerimpl_h__
  
 #include <pelet/UCharBufferedFileClass.h>
+
+/**
+\page LexerDetailsPage Lexer Details
+The lexer is an re2c-generated state machine that will turn source code into
+tokens. Knowledge of re2c is required for to modify the lexer code. You may
+look at the re2 man page http://re2c.org/manual.html for the basics. Also,
+a more in-depth example of using re2c can be found 
+http://blog.mvceditor.com/2011/11/the-gritty-details-of-a-lexical-analyzer-in-c-using-re2c/
+
+In Php53LexicalAnalyzerImpl.re you will find the source code for the lexer.  This a text
+file that contains C++ code in addition to re2c rules (in the form of a comment "/*!re2c"). 
+The lexer can be modified by updating the .re file, running the re2c program, which will
+output the C++ code for the lexer rules.
+
+The lexer uses the macros YYCURSOR, YYFILL, and YYLIMIT to iterate through a buffer that
+contains the source code to be tokenized. The generated code will advance the YYCURSOR
+until it finds a matching rule; when a rule is matched then its corresponding action 
+is executed.
+
+Each re2c rules looks like this:
+
+\<SCRIPT\> 'and' { return T_LOGICAL_AND; }
+
+There are 3 parts here:
+
+1. The condition: in this case "<SCRIPT>".  Sometimes the same character may have different
+   meaning depending on where it is; for example if a " (double quote) is inside of a 
+   comment it has a different meaning than it has when it is inside of another double quote.
+   Conditions help us treat the same character separately depending of the current condition.
+   
+2. The rule: in this case 'and'.  This represents the text to match.  The rule can be an exact
+   match or a regular expression, see the re2c man page for more info.
+ 
+3. The action: in this case  "{ return T_LOGICAL_AND; }". The action is a normal set of
+   C++ source code that will be executed when the rule is matched.  In most cases, we will
+   return the appropriate token when a rule is matched. (the token allows the parser to easily
+   compare tokens).
+   
+By far the most important part to understand is the conditions.  Conditions are what allows
+us to properly parse strings, comments, and variables. 
+
+This lexer uses essentially the same tokens as the lexer that is included in the PHP source;
+the main difference being that this lexer does not attempt to unescape strings ie turn
+"\x0010" into "\n". 
+*/
 
 /**
  * The lexer has different rules based on where in the source code a specific token is.

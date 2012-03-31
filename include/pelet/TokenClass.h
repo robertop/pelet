@@ -29,7 +29,10 @@
 #include <pelet/Api.h>
 
 namespace pelet {
-	
+
+/**
+ * This class contains some useful constants used when tokenizinh PHP code.
+ */
 class PELET_API TokenClass {
 public:
 

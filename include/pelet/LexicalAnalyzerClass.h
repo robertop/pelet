@@ -1,4 +1,4 @@
-/**
+/*
  * This software is released under the terms of the MIT License
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,9 +35,9 @@
 namespace pelet {
 
 
-/* 
- * This class represents the lexical analyzer.  It returns tokens from
- * the globals include file representing what the source file contains
+/** 
+ * This class represents the lexical analyzer.  It turns source code into
+ * tokens that can be used to analyze PHP code.
  */
 class PELET_API LexicalAnalyzerClass {
 	public :
@@ -91,17 +91,16 @@ class PELET_API LexicalAnalyzerClass {
 	 * need to call pelet::TokenClass::IsTerminatingToken() to ensure that the end of stream
 	 * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
 	 * 
-	 * @return int token ID
+	 * @return int token ID, one of  pelet::TokenClass::TokenIds or, if a token is a symbol then the
+	 *         ASCII value of that symbol is returned. For example, for '(' this method returns 40.
 	 * @see pelet::TokenClass::TokenIds
 	 */
 	int NextToken();
 
 	/**
 	 * Get the current lexeme, which is set during NextToken() method.
-	 * This method is way faster than GetLexeme(wxString) because no
-	 * conversion needs to be done.
 	 *
-	 * @param wxString& lexeme will be set with the lexeme
+	 * @param UnicodeString& lexeme will be set with the lexeme
 	 * @return bool true if successful, false on error
 	 */
 	bool GetLexeme(UnicodeString& lexeme);
@@ -163,24 +162,18 @@ class PELET_API LexicalAnalyzerClass {
 private:	
 	
 	/**
-	 * The file buffer
-	 * 
-	 * @var BufferClass
+	 * The buffer that holds the source code being tokenized.
 	 */
 	BufferClass* Buffer;
 	
 	/**
 	 * The file being parsed. Exactly what was given to OpenFile().
-	 * @var string
 	 */
 	std::string FileName;
 	
 	/**
 	 * Lexical analyzer to keep track of its "context" to execute some of its
 	 * rules properly.
-	 * 
-	 * @var YYCONDTYPE
-	 * @see YYCONDTYPE
 	 */
 	YYCONDTYPE Condition;
 	

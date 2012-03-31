@@ -1,4 +1,4 @@
-/**
+/*
  * This software is released under the terms of the MIT License
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,51 +31,50 @@
 #include <unicode/unistr.h>
 #include <pelet/Api.h>
 
-namespace pelet {
-
 /**
- * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
- * given code and make calls to the different registered observers.  There are observers for classes, functions, and 
- * methods. Not all observers have to be set; for example if a FunctionObserverClass is never registered then the 
- * parser will not notify when a function has been found in a piece of code.
- * 
- * @code
- *   class EchoAndObserverClass : public ClassObserverClass {
- * 
- *     virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
- *          const UnicodeString& comment) {
- *       printf("Found Class %s\n", (const char*)className.ToUTF8());
- *     }
- *   }
- * 
- *   EchoAndObserverClass echoObserver;
- *   ParserClass parser;
- *   parser.SetClassObserver(&echoObserver);
- *   wxString someFileName = wxT("/some/file.php");
- *   if (!parser.ScanFile(someFileName)) {
- *     puts("Could not find file to parse!");
- *   }
- * @endcode
- * 
- * Observers follow the PHP parsing rules to the letter.  If source code is not valid; then observers may not
- * get called.
- *
- * Lint functionality
- * 
- * The parser class has the ability to check PHP code for syntax errors. This is done via the Lint() method.
- * 
- * @code
- *   ParserClass parser;
- *   std::string file = "/path/to/phpfile.php";
- *   LintResultsClass lintResults;
- *   if (parser.LintFile(file, parserResults)) {
- *     printf("No syntax errors in file %s", (const char*)file.c_str());
- *   }
- *   else {
- *     printf("%s. Error found in file %s on line %d.\n", parserResults.Error, file.c_str(), parserResults.LineNumber);
- *   }
- * @encode
- */
+\mainpage pelet: Php Easy LanguagE Toolkit. A C++ library for analyzing PHP source code
+\section Overview
+This doc briefly describes the major design of the pelet parser library.
+
+pelet has the folowing major components:
+
+- Parser
+- Lexer
+- Parser Implementation
+
+\section Parser
+The pelet::ParserClass, along with pelet::ClassObserverClass, pelet::ClassMemberObserverClass, 
+pelet::FunctionObserverClass, pelet::VariableObserverClass, and pelet::ExpressionObserverClass, make up
+the "driver" (or main entry point) to pelet. ParserClass takes as input a string (or file) of PHP source code and 
+extracts artifacts from it (classes, functions, methods, etc..).
+
+To use the parser, a user will create a class that defines the callbacks for each PHP artifact (class, function,
+method, etc). The user will register these callbacks with the parser. When pelet::ParserClass::ScanFile is called, 
+the bison parser rules start looking for syntax rules. The parser will ask the lexer for tokens.  As soon as a 
+specific rule is hit, then the proper parser observer callback gets called. For example, when the parser hits 
+the "class" rule (ie "class MyClass {") then the class observer will get called; and the observer will get the 
+identifer ("MyClass") along with other info (signature, comment).
+
+The important thing to note here is that the callbacks happen while ParserClass::ScanFile still has control.
+ParserClass::ScanFile does not return control until the entire file has been parsed; multiple callbacks will have
+been called before ParserClass::ScanFile returns.  For this reason, it is important that ParserClass::ScanFile
+should not be called within any of the observers.
+
+A word on concurrency: The pelet parser does not keep global state (it is a "pure" bison parser), but the pelet
+parser is not thread-safe.  If pelet is used on a multi-threaded app, each thread should have its own instance
+of pelet::ParserClass.
+
+\section Lexer 
+The pelet::LexicalAnalyzerClass is used to tokenize the source code (turn strings into tokens). The
+details of the implementation can be found in the \ref LexerDetailsPage page.
+
+\section ParserImplementation Parser Implementation
+This is a parser generated with the help of Bison. This used to follow the PHP rules; 
+for example after "function" comes the function name; after "if" comes a "(" and so on...)
+When the syntax rules hit an artifact (for example a class) the syntax rules will call the proper observer.
+The details of the implementation can be found in the \ref ParserImplementationDetailsPage page.
+*/
+namespace pelet {
 
 /**
  * Holds the results of the lint check.  Currently lint check will stop when 
@@ -122,6 +121,49 @@ public:
 	void Clear();
 };
 
+/**
+ * The parser class is designed in a way that can utilized by different pieces of code.  The parser will analyze
+ * given code and make calls to the different registered observers.  There are observers for classes, functions, and 
+ * methods. Not all observers have to be set; for example if a FunctionObserverClass is never registered then the 
+ * parser will not notify when a function has been found in a piece of code.
+ * 
+ * @code
+ *   class EchoAndObserverClass : public ClassObserverClass {
+ * 
+ *     virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+ *          const UnicodeString& comment) {
+ *       printf("Found Class %s\n", (const char*)className.ToUTF8());
+ *     }
+ *   }
+ * 
+ *   EchoAndObserverClass echoObserver;
+ *   ParserClass parser;
+ *   parser.SetClassObserver(&echoObserver);
+ *   wxString someFileName = wxT("/some/file.php");
+ *   if (!parser.ScanFile(someFileName)) {
+ *     puts("Could not find file to parse!");
+ *   }
+ * @endcode
+ * 
+ * Observers follow the PHP parsing rules to the letter.  If source code is not valid; then observers may not
+ * get called.
+ *
+ * Lint functionality
+ * 
+ * The parser class has the ability to check PHP code for syntax errors. This is done via the Lint() method.
+ * 
+ * @code
+ *   ParserClass parser;
+ *   std::string file = "/path/to/phpfile.php";
+ *   LintResultsClass lintResults;
+ *   if (parser.LintFile(file, parserResults)) {
+ *     printf("No syntax errors in file %s", (const char*)file.c_str());
+ *   }
+ *   else {
+ *     printf("%s. Error found in file %s on line %d.\n", parserResults.Error, file.c_str(), parserResults.LineNumber);
+ *   }
+ * @endcode
+ */
 class PELET_API ParserClass {
 
 
@@ -310,40 +352,30 @@ private:
 
 	/**
 	 * Used to tokenize code
-	 * 
-	 * @var LexicalAnalyzerClass
 	 */
 	LexicalAnalyzerClass Lexer;
 	
 	/**
 	 * Notify the ClassObserver when a class has been found. Memory management of this pointer should be
 	 * done by the caller.
-	 * 
-	 * @var ClassObserverClass*
 	 */
 	ClassObserverClass* ClassObserver;
 
 	/**
 	 * Notify the ClassMemberObserver when a class member has been found. Memory management of this pointer should be
 	 * done by the caller.
-	 * 
-	 * @var ClassMemberObserverClass*
 	 */
 	ClassMemberObserverClass* ClassMemberObserver;
 	
 	/**
 	 * Notify the FunctionObserver when a function has been found. Memory management of this pointer should be
 	 * done by the caller.
-	 * 
-	 * @var ClassObserverClass*
 	 */	
 	FunctionObserverClass* FunctionObserver;
 	
 	/**
 	 * Notify the VariableObserver when a variable has been created. Memory management of this pointer should be
 	 * done by the caller.
-	 * 
-	 * @var VariableObserverClass*
 	 */		
 	VariableObserverClass* VariableObserver;
 	
@@ -351,8 +383,6 @@ private:
 	/**
 	 * Notify the ExpressionObserver when an expressionhas been found. Memory management of this pointer should be
 	 * done by the caller.
-	 * 
-	 * @var ExpressionObserverClass*
 	 */		
 	ExpressionObserverClass* ExpressionObserver;
 };
