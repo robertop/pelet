@@ -128,7 +128,7 @@ Help
 -----
 I gave pelet its name for a reason; this is a simple library.  The source is fairly well documented and 
 the included sample program covers 90% of the functionality. If you are having problems getting the library
-up and running, you can browse the [docs online] https://raw.github.com/robertop/pelet/master/docs/html/index.html .
+up and running, you can browse the [docs online] http://robertop.github.com/pelet/ .
 Here you will find API docs, as well as some higher-level docs explaining the implementation details.
 You can contact also the me directly; see my Github [profile page] (https://github.com/robertop) or E-mail me
 at roberto@mvceditor.com. If I find that I cannot handle the volume of requests I may setup a forum or mailing list.
