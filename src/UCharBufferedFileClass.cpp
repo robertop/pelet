@@ -1,3 +1,4 @@
+
 /**
  * This software is released under the terms of the MIT License
  *
@@ -240,6 +241,17 @@ void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 }
 
 bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCapacity) {
+	FileName = newFile;
+	UFILE* uFile = u_fopen(newFile, "rb", NULL, NULL);
+	return OpenFile(uFile);
+}
+
+bool pelet::UCharBufferedFileClass::OpenFile(FILE* file, int startingCapacity) {
+	UFILE* uFile = u_finit(file, NULL, NULL);
+	return OpenFile(uFile);
+}
+
+bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity) {
 	if (NULL != File) {
 		u_fclose(File);
 		File = NULL;	
@@ -255,9 +267,8 @@ bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCa
 		HasReachedEof = false;
 		Eof = NULL;
 	}
-	FileName = newFile;
 	bool opened = false;
-	File = u_fopen(newFile, "rb", NULL, NULL);
+	File = ufile;
 	if (NULL != File) {
 		
 		// point to the start of the file
@@ -301,7 +312,7 @@ void pelet::UCharBufferedFileClass::Close() {
 	CleanupBuffer();
 	if (NULL != File) {
 		u_fclose(File);
-		File = NULL;	
+		File = NULL;
 	}
 	FileName = NULL;
 	Buffer = NULL;

@@ -61,10 +61,16 @@ bool pelet::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 	Buffer = bufferFile;
 	FileName = newFile;
 	Condition = yycINLINE_HTML;
-	 
-	// ATTN: fn_str() would not compile in MSW
-	// what about unicode file names?
 	return bufferFile->OpenFile(newFile.c_str());
+}
+
+bool pelet::LexicalAnalyzerClass::OpenFile(FILE* file) {
+	Close();
+	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
+	Buffer = bufferFile;
+	FileName = "";
+	Condition = yycINLINE_HTML;
+	return bufferFile->OpenFile(file);
 }
 
 bool pelet::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {

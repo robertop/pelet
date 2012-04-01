@@ -163,6 +163,9 @@ solution "pelet"
 		includedirs { "include/", "lib/UnitTest++/src/", "tests/" }
 		links { "pelet", "unit_test++" }
 		
+		-- dont bother with warnings  with using 'unsafe' fopen
+		defines { "_CRT_SECURE_NO_WARNINGS" }
+		
 		configuration "Debug"
 			pickywarnings(_ACTION)
 			icuconfiguration("Debug", _ACTION)

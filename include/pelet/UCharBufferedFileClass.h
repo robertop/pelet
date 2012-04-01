@@ -169,12 +169,25 @@ public:
 	/**
 	 * Opens the file and partially loads it into the buffer. InlineHtml starts at true; signaling the lexer
 	 * to start consuming the html (open tag in the stream will be required to start lexing as php).
-	 * 
+	 * This method is a convenience method, but it will NOT handle unicode file names.
+	 *
 	 * @param const char *newFile to open
 	 * @param startingCapacity to initial buffer size
 	 * @return bool true if file can be opened for reading
 	 */
 	bool OpenFile(const char *newFile, int statingCapacity = 512);
+
+	/**
+	 * Opens the file and partially loads it into the buffer. InlineHtml starts at true; signaling the lexer
+	 * to start consuming the html (open tag in the stream will be required to start lexing as php).This method
+	 * is useful when, for example, a file with a unicode filename was opened by the caller of this
+	 * method.
+	 * 
+	 * @param FILE* *file opened file pointer, this class will NOT own the file pointer
+	 * @param startingCapacity to initial buffer size
+	 * @return bool true if file can be opened for reading
+	 */
+	bool OpenFile(FILE* file, int statingCapacity = 512);
 	
 	/**
 	 * Gets the next character from the file stream. This method may allocate a larger 
@@ -224,6 +237,11 @@ private:
 	 * This will, in effect, throw away any old data.
 	 */
 	void RemoveLeadingSlackSpace();
+
+	/**
+	 * common code that is shared by the public OpenFile() methods
+	 */
+	bool OpenFile(UFILE* file, int statingCapacity = 512);
 	
 	/**
 	 * The name of the file being analyzed

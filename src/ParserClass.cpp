@@ -56,6 +56,20 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 	return ret;
 }
 
+bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pelet::LintResultsClass& results) {
+	bool ret = false;
+	if (Lexer.OpenFile(file)) {
+		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		ret = php53parse(Lexer, observers) == 0;
+		results.Error = Lexer.ParserError;
+		results.UnicodeFilename = filename;
+		results.LineNumber = Lexer.GetLineNumber();
+		results.CharacterPosition = Lexer.GetCharacterPosition();
+		Close();
+	}
+	return ret;
+}
+
 bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
@@ -97,6 +111,20 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 		ret = php53parse(Lexer, observers) == 0;
 		results.Error = Lexer.ParserError;
 		results.File = file;
+		results.LineNumber = Lexer.GetLineNumber();
+		results.CharacterPosition = Lexer.GetCharacterPosition();
+		Lexer.Close();
+	}
+	return ret;
+}
+
+bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, LintResultsClass& results) {
+	bool ret = false;
+	if (Lexer.OpenFile(file)) {
+		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
+		ret = php53parse(Lexer, observers) == 0;
+		results.Error = Lexer.ParserError;
+		results.UnicodeFilename = filename;
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
@@ -188,6 +216,7 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 pelet::LintResultsClass::LintResultsClass()
 	: Error()
 	, File()
+	, UnicodeFilename()
 	, LineNumber(0)
 	, CharacterPosition(0) {
 }
@@ -195,6 +224,7 @@ pelet::LintResultsClass::LintResultsClass()
 void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 	Error = other.Error;
 	File = other.File;
+	UnicodeFilename = other.UnicodeFilename;
 	LineNumber = other.LineNumber;
 	CharacterPosition = other.CharacterPosition;
 }

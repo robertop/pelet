@@ -64,12 +64,23 @@ class PELET_API LexicalAnalyzerClass {
 	
 	/**
 	 * prepares file to be analyzed. If another file is currently opened it 
-	 * will be closed.
+	 * will be closed. This is a convenience method, this method does not handle unicode
+	 * filenames.
 	 * 
 	 * @param const std::string& newFile to open
 	 * @return bool true if file can be opened for reading
 	 */
 	bool OpenFile(const std::string& newFile);
+
+	/**
+	 * prepares file to be analyzed. If another file is currently opened it 
+	 * will be closed. The caller can, for example, open a file with a unicode filename and then
+	 * pass it to this method
+	 * 
+	 * @param FILE* opened file to tokenize, this class will NOT own the file pointer
+	 * @return bool true if file pointer is valid
+	 */
+	bool OpenFile(FILE* file);
 	
 	/**
 	 * prepares the given code to be analyzed. If another file/buffer is currently
@@ -126,7 +137,7 @@ class PELET_API LexicalAnalyzerClass {
 	 * Returns the name of the file being parsed.
 	 * 
 	 * @return wxString  file name given to OpenFile() method. This will be empty string if OpenCode()
-	 * is used; will never be NULL
+	 * or OpenFile(FILE*) is used; will never be NULL
 	 */
 	std::string GetFileName() const;
 

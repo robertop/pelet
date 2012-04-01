@@ -27,6 +27,7 @@
 #include <pelet/ParserClass.h>
 #include <FileTestFixtureClass.h>
 #include <PeletChecks.h>
+#include <unicode/ustring.h>
 #include <vector>
 
 /**
@@ -870,6 +871,57 @@ TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(false, Parser->LintString(code, results));
 	CHECK(results.Error.length() > 0);
 	CHECK(results.LineNumber > 0);
+}
+
+TEST_FIXTURE(ParserTestClass, LintFileShouldReturnFalseOnBadCode) {
+	CreateFixtureFile("testpure.php", 
+		"<?php $'gag's = 'hello' \"again\" $not gaging;");
+	std::string filename = TestProjectDir + "testpure.php";
+	pelet::LintResultsClass results;
+	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
+	int charCount = filename.length();
+	UErrorCode status = U_ZERO_ERROR;
+	UnicodeString uni;
+	int actualCount = 0;
+	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
+	if (U_SUCCESS(status)) {
+		ufilename.releaseBuffer(actualCount + 0);	
+	}
+	else {
+		ufilename.releaseBuffer(0);
+	}
+
+	FILE* file = fopen(filename.c_str(), "rb");
+	CHECK_EQUAL(false, Parser->LintFile(file, ufilename, results));
+	CHECK(results.Error.length() > 0);
+	CHECK(results.LineNumber > 0);
+	CHECK_EQUAL(ufilename, results.UnicodeFilename);
+}
+
+TEST_FIXTURE(ParserTestClass, ScanFileShouldReturnFalseOnBadCode) {
+	CreateFixtureFile("testpure.php", 
+		"<?php $'gag's = 'hello' \"again\" $not gaging;");
+	pelet::LintResultsClass results;
+	std::string filename = TestProjectDir + "testpure.php";
+	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
+	int charCount = filename.length();
+	UErrorCode status = U_ZERO_ERROR;
+	UnicodeString uni;
+	int actualCount = 0;
+	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
+	if (U_SUCCESS(status)) {
+		ufilename.releaseBuffer(actualCount + 0);	
+	}
+	else {
+		ufilename.releaseBuffer(0);
+	}
+
+	FILE* file = fopen(filename.c_str(), "rb");
+	CHECK_EQUAL(false, Parser->ScanFile(file, ufilename, results));
+	fclose(file);
+	CHECK(results.Error.length() > 0);
+	CHECK(results.LineNumber > 0);
+	CHECK_EQUAL(ufilename, results.UnicodeFilename);
 }
 
 TEST_FIXTURE(ParserTestClass, ParseVariableExpression) {

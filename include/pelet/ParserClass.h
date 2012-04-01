@@ -92,10 +92,17 @@ public:
 
 	/**
 	 * Path to the file in which the error ocurred. 
-	 * This is what was given to the LintFile() method.
+	 * This is what was given to the LintFile() method or ScanFile(std::string, LintResultsClass&) method. 
 	 * For LintString() results this will be the empty string.
 	 */
 	std::string File;
+
+	/**
+	 * Path to the file in which the error ocurred. 
+	 * This is what was given to the LintFile() or ScanFile(FILE*, UnicodeString, LintResultsClass&) method.
+	 * For LintString() results this will be the empty string.
+	 */
+	UnicodeString UnicodeFilename;
 
 	/**
 	 * The line in which the error ocurred. This is 1-based.
@@ -177,11 +184,29 @@ public:
 	 * a class, function, or variable declaration. This means that this
 	 * parser should not be modified in the observer calls.
 	 * 
+	 * This is a convenience method, it does no handle unicode file names. For that,
+	 * see ScanFile(FILE*, UnicodeString, LintResultsClass)
+	 *
 	 * @param file the file to parse.  Must be a full path.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool if file was found and could be parsed successfully
 	 */
 	bool ScanFile(const std::string& file, LintResultsClass& results);
+
+	/**
+	 * Opens and scans the given file; This function will return once the entire
+	 * file has been parsed; it will call the proper observers when it encounters
+	 * a class, function, or variable declaration. This means that this
+	 * parser should not be modified in the observer calls. 
+	 * This method is given a file pointer, it is useful for example when a file
+	 * with a unicode filename is opened by the caller.
+	 * 
+	 * @param file the file to parse, this class will NOT own the file pointer
+	 * @param fileName this is the name that will be set in  results.UnicodeFilename when an error happens
+	 * @param LintResultsClass& results any error message will be populated here
+	 * @return bool if file was found and could be parsed successfully
+	 */
+	bool ScanFile(FILE* file, const UnicodeString& fileName, LintResultsClass& results);
 	
 	/**
 	 * Scans the given string. This function will return once the entire
@@ -243,12 +268,30 @@ public:
 	 * Returns true if the file had no syntax errors. Note that a file that does not have
 	 * any PHP code will be considered a good file (a PHP file that has only HTML is
 	 * considered good and true will be returned).
+	 *
+	 * This is a convenience method; unicode filenames are not handled.
 	 * 
 	 * @param file the file to parse.  Must be a full path.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if file was found and had no syntax errors.
 	 */
 	bool LintFile(const std::string& file, LintResultsClass& results);
+
+	/**
+	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3.
+	 * Note that this is not entirely the same as 'php -l' command; the PHP lint command detects 
+	 * duplicate function  / class names where as this lint check method does not.
+	 *
+	 * Returns true if the file had no syntax errors. Note that a file that does not have
+	 * any PHP code will be considered a good file (a PHP file that has only HTML is
+	 * considered good and true will be returned).
+	 * 
+	 * @param FILE* file the file to parse.  Must be an opened file pointer, this class will NOT own the file pointer
+	 * @param fileName this is the name that will be set in  results.UnicodeFilename when an error happens
+	 * @param LintResultsClass& results any error message will be populated here
+	 * @return bool true if file was found and had no syntax errors.
+	 */
+	bool LintFile(FILE* file, const UnicodeString& filename, LintResultsClass& results);
 	
 	/**
 	 * Perform a syntax check on the given source code. Source code is assumed to be
