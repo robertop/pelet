@@ -231,6 +231,7 @@ void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 
 void pelet::LintResultsClass::Clear() {
 	Error.remove();
+	UnicodeFilename.remove();
 	File = "";
 	LineNumber = 0;
 	CharacterPosition = 0;
