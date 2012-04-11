@@ -26,6 +26,7 @@
 #define __PARSEROBSERVERCLASS_H__
 
 #include <pelet/TokenClass.h>
+#include <pelet/LexicalAnalyzerClass.h>
 #include <unicode/unistr.h>
 #include <pelet/Api.h>
 #include <stack>
@@ -176,7 +177,7 @@ public:
 	 * @param lineNumber the line number (1-based) that the include/ was found in
 	 */
 	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) = 0;
-	
+
 };
 
 /**
@@ -231,6 +232,7 @@ public:
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
 	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) = 0;
+
 };
 
 /**
@@ -660,7 +662,6 @@ public:
 	void FromExpression(const ExpressionClass& expression);
 };
 
-
 /**
  * A data structure that holds all observers.  Each observer may be NULL.
  * This class will NOT own the pointers.
@@ -759,7 +760,6 @@ public:
 	void ClassMemberSetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
 
 	void ClassMemberAppendToComment(SemanticValueClass& commentValue);
-
 
 	/**
 	 * add a new Paramter to the CurrentParametersList 
@@ -925,7 +925,7 @@ public:
 	 * expression. Will NOT push the expression to the ExpressionVariablesList
 	 */
 	void CurrentExpressionPushAsClassConstant(SemanticValueClass& scopeOperatorValue, SemanticValueClass& constantNameValue);
-
+ 	
 	/**
 	 * Adds the current expression to the ExpressionVariables list. This function
 	 * should be called once a variable chain has completed (ie after 
@@ -1018,7 +1018,6 @@ private:
 	 */
 	ExpressionClass CurrentFunctionCallExpression;
 
-
 	/**
 	 * This object will NOT own the pointer
 	 */
@@ -1080,5 +1079,16 @@ private:
 };
 
 }
+
+/**
+ * This function will get the next token from the lexer and will create a new SemanticValue (token + lexeme) 
+ * from it.
+ */
+int NextSemanticValue(pelet::SemanticValueClass* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+
+/**
+ * this function will set the error that comes from bison and put it in the LexicalAnalyzer class.
+ */
+void GrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg);
 
 #endif

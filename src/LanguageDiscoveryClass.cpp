@@ -24,8 +24,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/LanguageDiscoveryClass.h>
-#include <pelet/Php53LexicalAnalyzerImpl.h>
-#include <pelet/Php53ParserImpl.h>
+#include <pelet/TokenClass.h>
 
 #define DISCOVERY_BUFFER_FILL(n) { Buffer.AppendToLexeme(n); }
 

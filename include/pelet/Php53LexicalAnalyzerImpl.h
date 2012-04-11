@@ -26,6 +26,7 @@
 #define __php53lexicalanalyzerimpl_h__
  
 #include <pelet/UCharBufferedFileClass.h>
+#include <pelet/TokenClass.h>
 
 /**
 \page LexerDetailsPage Lexer Details
@@ -68,38 +69,13 @@ By far the most important part to understand is the conditions.  Conditions are 
 us to properly parse strings, comments, and variables. 
 
 This lexer uses essentially the same tokens as the lexer that is included in the PHP source;
-the main difference being that this lexer does not attempt to unescape strings ie turn
-"\x0010" into "\n". 
-*/
+the main differences being 
 
-/**
- * The lexer has different rules based on where in the source code a specific token is.
- * The various states are:
- * 
- * INLINE_HTML: in this state the lexer will skip over all tokens and stop (right before) 
- * the open tag
- * SCRIPT: in this state all of the php keywords and symbols are honored. For example "if" is 
- * an T_IF token and not an identifer.
- * PROPERTY: in this state keywords are NOT honored; any alphanumeric string will labeled as an
- * identifier.  For example; in php an object is allowed to have a property called "list"
- * BACKTICK: in this state the lexer will not honor any keywords or symbols.
- * Note that this is different than the PHP lexer; the PHP lexer handles embedded variables
- * but that functionality is not needed by the editor.
- * 
- */
-enum YYCONDTYPE {
-	yycSCRIPT,
-	yycLINE_COMMENT,
-	yycMULTI_LINE_COMMENT,
-	yycDOC_COMMENT,
-	yycSINGLE_QUOTE_STRING,
-	yycDOUBLE_QUOTE_STRING,
-	yycHEREDOC,
-	yycNOWDOC,
-	yycINLINE_HTML,
-	yycPROPERTY,
-	yycBACKTICK,
-};
+1. this lexer does not attempt to unescape strings ie turn "\x0010" into "\n". 
+2. this lexer treats ALL strings (heredocs, nowdocs, single quotes, double quotes) as single quoted strings; 
+   it won't attempt tokenize T_ENCAPSED_AND_WHITESPACE at all (even though the parser may have such rules, 
+   the lexer will never return the necessary tokens)
+*/
 
 namespace pelet {
 	 
@@ -108,42 +84,14 @@ namespace pelet {
  * need to call pelet::TokenClass::IsTerminatingToken() to ensure that the end of stream
  * has been reached (since a lexer can end with EOF, an unterminated string, or an unterminated comment).
  * 
+ * * This lexer will handle source code for PHP version 5.3
+ * 
  * @param BufferClass* buffer contains the code to be tokenized. This function will NOT own the pointer.
  * @param YYCONDTYPE &condition the current state the the parser is in. this needs 
  * to be an argument to avoid global variables.
  * @return int the next token.
  */
-int NextToken(BufferClass* buffer, YYCONDTYPE &condition);
-
-/**
- * This function will advance the current pointer of the buffer all the way until 
- * it encounters the given identifier on a line. (the end of a heredoc / nowdoc).
- *
- * @param buffer the content being lexed. This function will NOT own the pointer.
- * @param identifier the identifier to look for.
- * @return 0 for success; ERROR_UNTERMINATED_STRING if identifier was not found
- */
-int SkipToIdentifier(BufferClass* buffer, UnicodeString identifier);
-
-/**
- * This function will advance the current pointer of the buffer all the way until
- * it encounters the end of the heredoc. It will leave the ending semicolon in the stream to be consumed
- * next. 
- * 
- * @param buffer the content being lexed. This function will NOT own the pointer.
- * @return int token; could be T_END_OF_FILE or T_ERROR_UNTERMINATED_STRING 
- */
-int HandleNowdoc(BufferClass* buffer);
-
-/**
- * This function will advance the current pointer of the buffer all the way until
- * it encounters the end of the nowdoc. It will leave the ending semicolon in the stream to be consumed
- * next. 
- * 
- * @param buffer the content being lexed. This function will NOT own the pointer.
- * @return int token; could be T_END_OF_FILE or T_ERROR_UNTERMINATED_STRING 
- */
-int HandleHeredoc(BufferClass* buffer);
+int Next53Token(BufferClass* buffer, YYCONDTYPE &condition);
 
 }
 

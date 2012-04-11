@@ -157,7 +157,7 @@ public:
  *
  * Lint functionality
  * 
- * The parser class has the ability to check PHP code for syntax errors. This is done via the Lint() method.
+ * The parser class has the ability to check PHP code for syntax errors. This is done via the LintXXX() methods.
  * 
  * @code
  *   ParserClass parser;
@@ -219,6 +219,12 @@ public:
 	 * @return bool if string could be parsed successfully
 	 */
 	bool ScanString(const UnicodeString& code, LintResultsClass& results);
+	
+	/**
+	 * Change the version that this parser can handle. This needs to be called BEFORE ScanFile() or
+	 * ScanString()
+	 */
+	void SetVersion(Versions version);
 	
 	/**
 	 * Set the class observer.  The observer will get notified when a class is encountered.
@@ -428,6 +434,11 @@ private:
 	 * done by the caller.
 	 */		
 	ExpressionObserverClass* ExpressionObserver;
+	
+	/**
+	 * The PHP version to handle
+	 */
+	Versions Version;
 };
 
 

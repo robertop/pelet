@@ -24,11 +24,8 @@
  * @copyright  2009-2012 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
-#include <pelet/UCharBufferedFileClass.h>
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/ParserObserverClass.h>
-#include <unicode/unistr.h>
-#include <string>
  
  #if defined(_MSC_VER)
     #pragma warning(disable:4065) // Bison generates a switch statement without a case
@@ -36,9 +33,12 @@
  
  
 #define YYSTYPE pelet::SemanticValueClass
- 
-int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
-void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg);
+
+// all PHP parsers will use same lex function
+#define php53lex NextSemanticValue
+
+// all PHP parsers will use the same error function
+#define php53error GrammarError
 
 %}
 
@@ -49,7 +49,7 @@ void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass&
 %destructor { observers.SemanticValueFree($$); } <*>
 
 /**
- * This parser was ripped from the PHP source. All credit goes to them.
+ * This parser was ripped from the PHP source (version 5.3.6). All credit goes to them.
  */
  
 %define api.pure
@@ -81,90 +81,140 @@ void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass&
 %right '~' T_INC T_DEC T_INT_CAST T_DOUBLE_CAST T_STRING_CAST T_ARRAY_CAST T_OBJECT_CAST T_BOOL_CAST T_UNSET_CAST '@'
 %right '['
 %nonassoc T_NEW T_CLONE
-%token T_EXIT
-%token T_IF
 %left T_ELSEIF
 %left T_ELSE
 %left T_ENDIF
-%token T_LNUMBER
-%token T_DNUMBER
-%token T_STRING
-%token T_STRING_VARNAME
-%token T_VARIABLE
-%token T_NUM_STRING
-%token T_INLINE_HTML
-%token T_CHARACTER
-%token T_BAD_CHARACTER
-%token T_ENCAPSED_AND_WHITESPACE
-%token T_CONSTANT_ENCAPSED_STRING
-%token T_ECHO
-%token T_DO
-%token T_WHILE
-%token T_ENDWHILE
-%token T_FOR
-%token T_ENDFOR
-%token T_FOREACH
-%token T_ENDFOREACH
-%token T_DECLARE
-%token T_ENDDECLARE
-%token T_AS
-%token T_SWITCH
-%token T_ENDSWITCH
-%token T_CASE
-%token T_DEFAULT
-%token T_BREAK
-%token T_CONTINUE
-%token T_GOTO
-%token T_FUNCTION
-%token T_CONST
-%token T_RETURN
-%token T_TRY
-%token T_CATCH
-%token T_THROW
-%token T_USE
-%token T_GLOBAL
 %right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC
-%token T_VAR
-%token T_UNSET
-%token T_ISSET
-%token T_EMPTY
-%token T_HALT_COMPILER
-%token T_CLASS
-%token T_INTERFACE
-%token T_EXTENDS
-%token T_IMPLEMENTS
-%token T_OBJECT_OPERATOR
-%token T_DOUBLE_ARROW
-%token T_LIST
-%token T_ARRAY
-%token T_CLASS_C
-%token T_METHOD_C
-%token T_FUNC_C
-%token T_LINE
-%token T_FILE
-%token T_COMMENT
-%token T_DOC_COMMENT
-%token T_OPEN_TAG
-%token T_OPEN_TAG_WITH_ECHO
-%token T_CLOSE_TAG
-%token T_WHITESPACE
-%token T_START_HEREDOC
-%token T_END_HEREDOC
-%token T_DOLLAR_OPEN_CURLY_BRACES
-%token T_CURLY_OPEN
-%token T_PAAMAYIM_NEKUDOTAYIM
-%token T_NAMESPACE
-%token T_NS_C
-%token T_DIR
-%token T_NS_SEPARATOR
 
-
-
-// these tokens are not part of PHP; mvc editor specific
-%token T_END_OF_FILE 0
-%token T_ERROR_UNTERMINATED_COMMENT
-%token T_ERROR_UNTERMINATED_STRING
-%token T_ERROR_UNTERMINATED_BACKTICK
+/*
+ * we want to share the same tokens across the multiple grammars and lexers, but we cannot use
+ * #defines in the %token declaration. These %token declarations were re-constructed
+ * by parsing all tokens out of the original zend_language_parser.y, adding a 'T_', sorting the tokens,
+ * then using the join [linux] program to get the #defines from the TokenClass.h file.
+ */ 
+%token T_ABSTRACT 502
+%token T_AND_EQUAL 503
+%token T_ARRAY 504
+%token T_ARRAY_CAST 505
+%token T_AS 506
+%token T_BAD_CHARACTER 507
+%token T_BOOL_CAST 508
+%token T_BOOLEAN_AND 509
+%token T_BOOLEAN_OR 510
+%token T_BREAK 511
+%token T_CASE 513
+%token T_CATCH 514
+%token T_CHARACTER 515
+%token T_CLASS 516
+%token T_CLASS_C 517
+%token T_CLONE 518
+%token T_CLOSE_TAG 519
+%token T_COMMENT 520
+%token T_CONCAT_EQUAL 521
+%token T_CONST 522
+%token T_CONSTANT_ENCAPSED_STRING 523
+%token T_CONTINUE 524
+%token T_CURLY_OPEN 525
+%token T_DEC 526
+%token T_DECLARE 527
+%token T_DEFAULT 528
+%token T_DIR 529
+%token T_DIV_EQUAL 530
+%token T_DNUMBER 531
+%token T_DO 532
+%token T_DOC_COMMENT 533
+%token T_DOLLAR_OPEN_CURLY_BRACES 534
+%token T_DOUBLE_ARROW 535
+%token T_DOUBLE_CAST 536
+%token T_ECHO 537
+%token T_ELSE 538
+%token T_ELSEIF 539
+%token T_EMPTY 540
+%token T_ENCAPSED_AND_WHITESPACE 541
+%token T_ENDDECLARE 542
+%token T_ENDFOR 543
+%token T_ENDFOREACH 544
+%token T_END_HEREDOC 545
+%token T_ENDIF 546
+%token T_ENDSWITCH 547
+%token T_ENDWHILE 548
+%token T_EVAL 549
+%token T_EXIT 550
+%token T_EXTENDS 551
+%token T_FILE 552
+%token T_FINAL 553
+%token T_FOR 554
+%token T_FOREACH 555
+%token T_FUNC_C 556
+%token T_FUNCTION 557
+%token T_GLOBAL 558
+%token T_GOTO 559
+%token T_HALT_COMPILER 560
+%token T_IF 561
+%token T_IMPLEMENTS 562
+%token T_INC 563
+%token T_INCLUDE 564
+%token T_INCLUDE_ONCE 565
+%token T_INLINE_HTML 566
+%token T_INSTANCEOF 567
+%token T_INT_CAST 569
+%token T_INTERFACE 570
+%token T_IS_EQUAL 571
+%token T_IS_GREATER_OR_EQUAL 572
+%token T_IS_IDENTICAL 573
+%token T_IS_NOT_EQUAL 574
+%token T_IS_NOT_IDENTICAL 575
+%token T_ISSET 576
+%token T_IS_SMALLER_OR_EQUAL 577
+%token T_LINE 578
+%token T_LIST 579
+%token T_LNUMBER 580
+%token T_LOGICAL_AND 581
+%token T_LOGICAL_OR 582
+%token T_LOGICAL_XOR 583
+%token T_METHOD_C 584
+%token T_MINUS_EQUAL 585
+%token T_MOD_EQUAL 586
+%token T_MUL_EQUAL 587
+%token T_NAMESPACE 588
+%token T_NEW 589
+%token T_NS_C 590
+%token T_NS_SEPARATOR 591
+%token T_NUM_STRING 592
+%token T_OBJECT_CAST 593
+%token T_OBJECT_OPERATOR 594
+%token T_OPEN_TAG 595
+%token T_OPEN_TAG_WITH_ECHO 596
+%token T_OR_EQUAL 597
+%token T_PAAMAYIM_NEKUDOTAYIM 598
+%token T_PLUS_EQUAL 599
+%token T_PRINT 600
+%token T_PRIVATE 601
+%token T_PROTECTED 602
+%token T_PUBLIC 603
+%token T_REQUIRE 604
+%token T_REQUIRE_ONCE 605
+%token T_RETURN 606
+%token T_SL 607
+%token T_SL_EQUAL 608
+%token T_SR 609
+%token T_SR_EQUAL 610
+%token T_START_HEREDOC 611
+%token T_STATIC 612
+%token T_STRING 613
+%token T_STRING_CAST 614
+%token T_STRING_VARNAME 615
+%token T_SWITCH 616
+%token T_THROW 617
+%token T_TRY 620
+%token T_UNSET 621
+%token T_UNSET_CAST 622
+%token T_USE 623
+%token T_VAR 624
+%token T_VARIABLE 625
+%token T_WHILE 626
+%token T_WHITESPACE 627
+%token T_XOR_EQUAL 628
 
 /* 
  * differences from PHP parser:
@@ -966,52 +1016,3 @@ class_constant:
 ;
 
 %%
-
-int php53lex(YYSTYPE* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers) {
-	int ret = analyzer.NextToken();
-	observers.SemanticValueInit(*value);
-
-	// ignore these token; there are no parse rules for them
-	if (T_OPEN_TAG == ret) {
-		ret = analyzer.NextToken();
-	}
-	
-	// optimization: SemanticValueInit() method knows when we need to examine
-	// comments and will allocate memory only when needed
-	pelet::SemanticValueClass commentValue;
-	observers.SemanticValueInit(commentValue);
-	if (T_DOC_COMMENT == ret || T_COMMENT == ret) {
-				
-		// advance past all comments (there can be more than one consecutive)
-		// keep /** and /* comments separate; we only want /* comments to 
-		// get type hints for local varibles
-		while (T_DOC_COMMENT == ret || T_COMMENT == ret) {
-			if (T_DOC_COMMENT == ret && value->Comment) {
-				analyzer.GetLexeme(*value->Comment);
-			}
-			else if (T_COMMENT == ret && commentValue.Comment) {
-				analyzer.GetLexeme(*commentValue.Comment);
-			}
-			ret = analyzer.NextToken();
-		}
-	}
-	if (commentValue.Comment && !commentValue.Comment->isEmpty()) {
-		observers.NotifyLocalVariableTypeHint(*commentValue.Comment);
-	}
-	if (T_CLOSE_TAG == ret) {
-		ret = ';';
-	}
-	value->Token = ret;
-	if (value->Lexeme) {
-		analyzer.GetLexeme(*value->Lexeme);	
-	}
-	value->Pos = analyzer.GetCharacterPosition();
-	return ret;
-}
-
-void php53error(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg) {
-	int capacity = msg.length() + 1;
-	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
-	analyzer.ParserError.releaseBuffer(written);
-	observers.SemanticValueFree();
-}

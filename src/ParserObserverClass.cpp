@@ -472,6 +472,7 @@ void pelet::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, bool
 	}
 	CurrentClass.Clear();
 
+	// TODO add trait flag
 	// comment is attached to the first modifier
 	// see php53lex() function
 	CurrentClass.AppendToComment(commentValue);
@@ -1176,7 +1177,8 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, false, lineNumber);
+				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), 
+					pelet::TokenClass::PUBLIC, false, false, lineNumber);
 				memberName.remove();
 				memberType.remove();
 			}
@@ -1218,7 +1220,8 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
 					memberName.remove(memberName.length() - 2, 2);
 				}
-				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), pelet::TokenClass::PUBLIC, false, lineNumber);
+				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), 
+					pelet::TokenClass::PUBLIC, false, lineNumber);
 			}
 			if (!next) {
 				break;
@@ -1388,4 +1391,53 @@ void pelet::ObserverQuadClass::ClassMemberAppendToComment(pelet::SemanticValueCl
 		return;
 	}
 	CurrentMember.AppendToComment(commentValue);
+}
+
+int NextSemanticValue(pelet::SemanticValueClass* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers) {
+	int ret = analyzer.NextToken();
+	observers.SemanticValueInit(*value);
+
+	// ignore these token; there are no parse rules for them
+	if (pelet::T_OPEN_TAG == ret) {
+		ret = analyzer.NextToken();
+	}
+	
+	// optimization: SemanticValueInit() method knows when we need to examine
+	// comments and will allocate memory only when needed
+	pelet::SemanticValueClass commentValue;
+	observers.SemanticValueInit(commentValue);
+	if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
+				
+		// advance past all comments (there can be more than one consecutive)
+		// keep /** and /* comments separate; we only want /* comments to 
+		// get type hints for local varibles
+		while (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
+			if (pelet::T_DOC_COMMENT == ret && value->Comment) {
+				analyzer.GetLexeme(*value->Comment);
+			}
+			else if (pelet::T_COMMENT == ret && commentValue.Comment) {
+				analyzer.GetLexeme(*commentValue.Comment);
+			}
+			ret = analyzer.NextToken();
+		}
+	}
+	if (commentValue.Comment && !commentValue.Comment->isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(*commentValue.Comment);
+	}
+	if (pelet::T_CLOSE_TAG == ret) {
+		ret = ';';
+	}
+	value->Token = ret;
+	if (value->Lexeme) {
+		analyzer.GetLexeme(*value->Lexeme);	
+	}
+	value->Pos = analyzer.GetCharacterPosition();
+	return ret;
+}
+
+void GrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg) {
+	int capacity = msg.length() + 1;
+	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
+	analyzer.ParserError.releaseBuffer(written);
+	observers.SemanticValueFree();
 }

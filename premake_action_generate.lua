@@ -39,6 +39,13 @@ newaction {
 			print("re2c command failed for file src/Php53LexicalAnalyzerImpl.re. Is re2c installed? Is it in the PATH?");	
 		end
 		cmd = "re2c -c -i --no-generation-date " ..
+			"-o " .. normalizepath("src/Php54LexicalAnalyzerImpl.cpp") .. " " ..
+			normalizepath("src/Php54LexicalAnalyzerImpl.re");
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("re2c command failed for file src/Php54LexicalAnalyzerImpl.re. Is re2c installed? Is it in the PATH?");	
+		end
+		cmd = "re2c -c -i --no-generation-date " ..
 			"-o " .. normalizepath("src/LanguageDiscoveryClass.cpp") .. " " ..
 			normalizepath("src/LanguageDiscoveryClass.re");
 		code = os.execute(cmd) 
@@ -46,12 +53,19 @@ newaction {
 			print("re2c command failed for file src/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
 		end
 		code = os.execute(cmd) 
-		cmd = "bison --no-lines --warnings=error --defines=" .. normalizepath("include/pelet/Php53ParserImpl.h") ..
+		cmd = "bison --no-lines --warnings=error " ..
 			" -o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
 			normalizepath("src/Php53ParserImpl.y")
 		code = os.execute(cmd) 
 		if code ~= 0 then
 			print("Bison command failed for file src/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
+		end
+		cmd = "bison --no-lines --warnings=error "  ..
+			" -o " .. normalizepath("src/Php54ParserImpl.cpp") .. " " ..
+			normalizepath("src/Php54ParserImpl.y")
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("Bison command failed for file src/Php54ParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
 	end
 }

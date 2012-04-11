@@ -32,6 +32,7 @@
  * manually make it available here by using "extern"
  */
 extern int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+extern int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 
 pelet::ParserClass::ParserClass()
 	: Lexer()
@@ -40,13 +41,19 @@ pelet::ParserClass::ParserClass()
 	, FunctionObserver(0)
 	, VariableObserver(0)
 	, ExpressionObserver(0) {
+	SetVersion(pelet::PHP_53);
 }
 
 bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -60,7 +67,12 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -74,7 +86,12 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
 		results.LineNumber = Lexer.GetLineNumber();
@@ -82,6 +99,11 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 		Close();
 	}
 	return ret;
+}
+
+void pelet::ParserClass::SetVersion(pelet::Versions version) {
+	Version = version;
+	Lexer.SetVersion(Version);
 }
 
 void pelet::ParserClass::SetClassMemberObserver(ClassMemberObserverClass* observer) {
@@ -108,7 +130,12 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -122,7 +149,12 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -136,7 +168,12 @@ bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass&
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
 		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
-		ret = php53parse(Lexer, observers) == 0;
+		if (pelet::PHP_53 == Version) {
+			ret = php53parse(Lexer, observers) == 0;
+		}
+		else if (pelet::PHP_54 == Version) {
+			ret = php54parse(Lexer, observers) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
 		results.LineNumber = Lexer.GetLineNumber();
@@ -199,6 +236,12 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 	// but we want this method to be able to parse a single variable
 	if (Lexer.OpenString(expression)) {	
   		php53parse(Lexer, observers);
+		if (pelet::PHP_53 == Version) {
+			php53parse(Lexer, observers);
+		}
+		else if (pelet::PHP_54 == Version) {
+			php54parse(Lexer, observers);
+		}
 		Lexer.Close();
 	}
 	if (!localObserver.Expressions.empty()) {

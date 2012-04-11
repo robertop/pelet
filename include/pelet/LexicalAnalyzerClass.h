@@ -29,7 +29,7 @@
 #include <unicode/unistr.h>
 #include <pelet/UCharBufferedFileClass.h>
 #include <pelet/Php53LexicalAnalyzerImpl.h>
-#include <pelet/Php53ParserImpl.h>
+#include <pelet/TokenClass.h>
 #include <pelet/Api.h>
 
 namespace pelet {
@@ -40,6 +40,7 @@ namespace pelet {
  * tokens that can be used to analyze PHP code.
  */
 class PELET_API LexicalAnalyzerClass {
+	
 	public :
 	
 	/**
@@ -49,14 +50,14 @@ class PELET_API LexicalAnalyzerClass {
 	 UnicodeString ParserError;
 
 	/**
-	 * constructor: opens the file with the name given
+	 * constructor: opens the file with the name given, using PHP_53 as the version
 	 * 
 	 * @param file full path of the file to be analyzed.
 	 */
 	LexicalAnalyzerClass(const std::string& filename);
 
 	/**
-	 * default constructor
+	 * default constructor, using PHP_53 as the version
 	 */
 	LexicalAnalyzerClass();
 	
@@ -91,6 +92,12 @@ class PELET_API LexicalAnalyzerClass {
 	 * @return bool true if source could be successfully turned to utf-16
 	 */
 	bool OpenString(const UnicodeString& code);
+	
+	/**
+	 * Change the version that this lexer can handle. This needs to be called BEFORE OpenFile() or
+	 * OpenString()
+	 */
+	void SetVersion(Versions version);
 	
 	/**
 	 * Clean up any resources after lexing
@@ -187,6 +194,11 @@ private:
 	 * rules properly.
 	 */
 	YYCONDTYPE Condition;
+	
+	/**
+	 * The PHP version to handle
+	 */
+	Versions Version;
 	
 };
 

@@ -24,6 +24,7 @@
  */
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/Php53LexicalAnalyzerImpl.h>
+#include <pelet/Php54LexicalAnalyzerImpl.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
@@ -32,7 +33,8 @@ pelet::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName)
 	: ParserError()
 	, Buffer(NULL)
 	, FileName()
-	, Condition(yycINLINE_HTML) {
+	, Condition(yycINLINE_HTML)
+	, Version(PHP_53) {
 	OpenFile(fileName);
 }
 
@@ -40,7 +42,8 @@ pelet::LexicalAnalyzerClass::LexicalAnalyzerClass()
 	: ParserError()
 	, Buffer(NULL)
 	, FileName()
-	, Condition(yycINLINE_HTML) {
+	, Condition(yycINLINE_HTML) 
+	, Version(PHP_53) {
 }
 
 pelet::LexicalAnalyzerClass::~LexicalAnalyzerClass() {
@@ -82,8 +85,17 @@ bool pelet::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
 	return memBuffer->OpenString(code);
 }
 
+void pelet::LexicalAnalyzerClass::SetVersion(Versions version) {
+	Version = version;
+}
+
 int pelet::LexicalAnalyzerClass::NextToken() {
-	return Buffer ? pelet::NextToken(Buffer, Condition) : T_END_OF_FILE;
+	if (PHP_53 == Version) {
+		return Buffer ? pelet::Next53Token(Buffer, Condition) : T_END;
+	}
+	else {
+		return Buffer ? pelet::Next54Token(Buffer, Condition) : T_END;
+	}
 }
 
 bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
