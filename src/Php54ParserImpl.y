@@ -362,10 +362,10 @@ unticked_class_declaration_statement:
 ;
 
 class_entry_type:
-		T_CLASS					{ observers.ClassStart($1, false, false, false); }
-	|	T_ABSTRACT T_CLASS		{ observers.ClassStart($1, true, false, false); }
-	|	T_TRAIT					{ observers.ClassStart($1, false, false, false); }
-	|	T_FINAL T_CLASS			{ observers.ClassStart($1, false, true, false); }
+		T_CLASS					{ observers.ClassStart($1, false, false, false, false); }
+	|	T_ABSTRACT T_CLASS		{ observers.ClassStart($1, true, false, false, false); }
+	|	T_TRAIT					{ observers.ClassStart($1, false, false, false, true); }
+	|	T_FINAL T_CLASS			{ observers.ClassStart($1, false, true, false, false); }
 ;
 
 extends_from:
@@ -375,7 +375,7 @@ extends_from:
 ;
 
 interface_entry:
-	T_INTERFACE		{ observers.ClassStart($1, false, false, true); }
+	T_INTERFACE		{ observers.ClassStart($1, false, false, true, false); }
 ;
 
 interface_extends_list:
@@ -455,31 +455,25 @@ while_statement:
 	|	':' inner_statement_list T_ENDWHILE ';'
 ;
 
-
-
 elseif_list:
 		/* empty */
 	|	elseif_list T_ELSEIF '(' expr ')'  statement 
 ;
-
 
 new_elseif_list:
 		/* empty */
 	|	new_elseif_list T_ELSEIF '(' expr ')' ':'  inner_statement_list 
 ;
 
-
 else_single:
 		/* empty */
 	|	T_ELSE statement
 ;
 
-
 new_else_single:
 		/* empty */
 	|	T_ELSE ':' inner_statement_list
 ;
-
 
 parameter_list:
 		non_empty_parameter_list
@@ -550,19 +544,22 @@ class_statement:
 		method_body											{ observers.ClassMemberClear(); }
 ;
 
-/* TODO notify on the traits */
 trait_use_statement:
-		T_USE trait_list trait_adaptations
+		T_USE												{ observers.QualifiedNameClear(); }
+		trait_list trait_adaptations
 ;
 
 trait_list:
-		fully_qualified_class_name						
-	|	trait_list ',' fully_qualified_class_name		
+		fully_qualified_class_name							{ observers.TraitUseFound(); }
+	|	trait_list ','										{ observers.QualifiedNameClear(); }
+		fully_qualified_class_name							{ observers.TraitUseFound(); }
 ;
 
 trait_adaptations:
 		';'
-	|	'{' trait_adaptation_list '}'
+	|	'{'													{ observers.QualifiedNameClear(); } 
+		trait_adaptation_list 
+		'}'
 ;
 
 trait_adaptation_list:
@@ -571,13 +568,13 @@ trait_adaptation_list:
 ;
 
 non_empty_trait_adaptation_list:
-		trait_adaptation_statement
-	|	non_empty_trait_adaptation_list trait_adaptation_statement
+		trait_adaptation_statement										{ observers.TraitClearAdaptation(); observers.QualifiedNameClear(); }
+	|	non_empty_trait_adaptation_list trait_adaptation_statement		{ observers.TraitClearAdaptation(); observers.QualifiedNameClear(); }
 ;
 
 trait_adaptation_statement:
-		trait_precedence ';'								
-	|	trait_alias ';'										
+		trait_precedence ';'
+	|	trait_alias ';'
 ;
 
 trait_precedence:
@@ -590,17 +587,17 @@ trait_reference_list:
 ;
 
 trait_method_reference:
-		T_STRING													
+		T_STRING													{ observers.TraitAliasMethod($1); }
 	|	trait_method_reference_fully_qualified						
 ;
 
 trait_method_reference_fully_qualified:
-	fully_qualified_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING		
+	fully_qualified_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING		{ observers.TraitAliasMethodFromQualifiedName($3); }
 ;
 
 trait_alias:
-		trait_method_reference T_AS trait_modifiers T_STRING		
-	|	trait_method_reference T_AS member_modifier					
+		trait_method_reference T_AS trait_modifiers T_STRING		{ observers.TraitAliasFound(&$4); }
+	|	trait_method_reference T_AS member_modifier					{ observers.TraitAliasFound(NULL); }
 ;
 
 trait_modifiers:

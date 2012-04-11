@@ -52,6 +52,8 @@ SUITE (Parser54FeaturesTestClass) {
 	
 TEST_FIXTURE(Parser54TestClass, Traits) {
 	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+
 	UnicodeString code = _U(
 		"trait ezcReflectionReturnInfo {"
 		"    function getReturnType() { /*1*/ }"
@@ -70,10 +72,18 @@ TEST_FIXTURE(Parser54TestClass, Traits) {
 		""
 	);
 	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.TraitClassName);
+	CHECK_UNISTR_EQUALS("ezcReflectionMethod", Observer.TraitClassName[0]);
+	CHECK_UNISTR_EQUALS("ezcReflectionFunction", Observer.TraitClassName[1]);
+
+	CHECK_VECTOR_SIZE(2, Observer.TraitUsed);
+	CHECK_UNISTR_EQUALS("ezcReflectionReturnInfo", Observer.TraitUsed[0]);
+	CHECK_UNISTR_EQUALS("ezcReflectionReturnInfo", Observer.TraitUsed[1]);
 }
 
-TEST_FIXTURE(Parser54TestClass, TraitsWithConflicts) {
+TEST_FIXTURE(Parser54TestClass, TraitsWithConflictsAndAlias) {
 	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
 		"trait A {"
 		"    public function smallTalk() {"
@@ -107,9 +117,50 @@ TEST_FIXTURE(Parser54TestClass, TraitsWithConflicts) {
 		"        B::bigTalk as talk;"
 		"   }"
 		"}"
+		" class Private_Talker { "
+		"	use A { "
+		"		smallTalk as private; "
+		"		bigTalk as protected; "
+		"	}"
+		"}"
 		""
 	);
 	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(8, Observer.TraitClassName);
+	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[0]);
+	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[1]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[2]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[3]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[4]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[5]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[6]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[7]);
+
+	CHECK_VECTOR_SIZE(8, Observer.TraitUsed);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[0]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[1]);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[2]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[3]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[4]);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[5]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[6]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[7]);
+	
+	CHECK_VECTOR_SIZE(3, Observer.TraitMethodName);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[0]);
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[1]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[2]);
+
+	CHECK_VECTOR_SIZE(3, Observer.TraitAlias);
+	CHECK_UNISTR_EQUALS("talk", Observer.TraitAlias[0]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[1]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[2]);
+
+	CHECK_VECTOR_SIZE(3, Observer.TraitAliasVisibility);
+	CHECK_EQUAL(pelet::TokenClass::PUBLIC, Observer.TraitAliasVisibility[0]);
+	CHECK_EQUAL(pelet::TokenClass::PRIVATE, Observer.TraitAliasVisibility[1]);
+	CHECK_EQUAL(pelet::TokenClass::PROTECTED, Observer.TraitAliasVisibility[2]);
 }
 
 }

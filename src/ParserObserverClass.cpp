@@ -215,6 +215,20 @@ UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString var
 	return sig;
 }
 
+pelet::TraitAdaptationSymbolClass::TraitAdaptationSymbolClass()
+	: TraitMethodReference()
+	, TraitMethod()
+	, TraitAlias()
+	, MethodVisibility(pelet::TokenClass::PUBLIC) {
+}
+
+void pelet::TraitAdaptationSymbolClass::Clear() {
+	TraitMethodReference.Clear();
+	TraitMethod.remove();
+	TraitAlias.remove();
+	MethodVisibility = pelet::TokenClass::PUBLIC;
+}
+
 pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
 	, Namespaces() {
@@ -466,19 +480,19 @@ pelet::ObserverQuadClass::~ObserverQuadClass() {
 }
 
 void pelet::ObserverQuadClass::ClassStart(SemanticValueClass& commentValue, bool isAbstract, 
-											  bool isFinal, bool isInterface) {
+											  bool isFinal, bool isInterface, bool isTrait) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	CurrentClass.Clear();
 
-	// TODO add trait flag
 	// comment is attached to the first modifier
 	// see php53lex() function
 	CurrentClass.AppendToComment(commentValue);
 	CurrentClass.IsAbstract = isAbstract;
 	CurrentClass.IsFinal = isFinal;
 	CurrentClass.IsInterface = isInterface;
+	CurrentClass.IsTrait = isTrait;
 }
 
 void pelet::ObserverQuadClass::ClassSetName(SemanticValueClass& nameValue) {
@@ -573,6 +587,68 @@ void pelet::ObserverQuadClass::ClassMethodEnd(pelet::SemanticValueClass& value) 
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
 	DoCollectExpressions = true;
+}
+
+void pelet::ObserverQuadClass::TraitUseFound() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Member) {
+		Member->TraitUseFound(CurrentClass.ClassName, CurrentQualifiedName.ToSignature());
+	}
+}
+
+void pelet::ObserverQuadClass::TraitClearAdaptation() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	CurrentTraitAdaptation.Clear();
+}
+
+void pelet::ObserverQuadClass::TraitAliasMethod(SemanticValueClass& traitMethod) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	CurrentTraitAdaptation.TraitMethodReference.Clear();
+	if (traitMethod.Lexeme) {
+		CurrentTraitAdaptation.TraitMethod = *traitMethod.Lexeme;
+	}
+}
+
+void pelet::ObserverQuadClass::TraitAliasMethodFromQualifiedName(SemanticValueClass& traitMethod) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	CurrentTraitAdaptation.TraitMethodReference.Clear();
+	CurrentTraitAdaptation.TraitMethodReference = CurrentQualifiedName;
+	if (traitMethod.Lexeme) {
+		CurrentTraitAdaptation.TraitMethod = *traitMethod.Lexeme;
+	}
+}
+
+void pelet::ObserverQuadClass::TraitAliasFound(SemanticValueClass* traitAlias) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (traitAlias && traitAlias->Lexeme) {
+		CurrentTraitAdaptation.TraitAlias = *traitAlias->Lexeme;
+	}
+	if (CurrentMember.IsPrivateMember) {
+		CurrentTraitAdaptation.MethodVisibility = pelet::TokenClass::PRIVATE;
+	}
+	else if (CurrentMember.IsProtectedMember) {
+		CurrentTraitAdaptation.MethodVisibility = pelet::TokenClass::PROTECTED;
+	}
+	else {
+		CurrentTraitAdaptation.MethodVisibility = pelet::TokenClass::PUBLIC;
+	}
+	if (Member) {
+		Member->TraitAliasFound(CurrentClass.ClassName, 
+			CurrentTraitAdaptation.TraitMethodReference.ToSignature(),
+			CurrentTraitAdaptation.TraitMethod,
+			CurrentTraitAdaptation.TraitAlias, 
+			CurrentTraitAdaptation.MethodVisibility);
+	}
 }
 
 void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment, const int lineNumber) {

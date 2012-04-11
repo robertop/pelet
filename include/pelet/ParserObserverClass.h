@@ -97,7 +97,10 @@ to access variables from sub-rules will result in program crashes.
 The grammar file contains the entire PHP grammar; most of the rules don't have actions because
 we are not interested in them; but the ones we are interested in have actions.  In our case,
 we delegate most of the work to the pelet::ObserverQuadClass and the rules contain just 1-liner
-method calls. This makes the code a bit more IDE-friendly.
+method calls. This makes the code a bit more IDE-friendly. Another reason -  a very important one -
+that the grammar file and ParserObserverClass are designed this way is to make it easy to implement 
+the PHP syntax correctly. Since there is no official PHP language specification, the only sure way to know
+that we implemented the PHP syntax correctly is to use the actual PHP grammar file.
 
 \section ParserImplementationDetailsObserver Observer Quad
 An ObserverQuadClass is an object that holds the observers (the objects that want to be notified
@@ -147,12 +150,12 @@ class PELET_API ClassObserverClass {
 
 public:
 	/**
-	 * Override this method to perform any custom logic when a class is found.
+	 * Override this method to perform any custom logic when a class, interface, or trait is found.
 	 * 
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
 	 *        for example "extends UserClass implements Runnable"
-	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
 	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
@@ -233,6 +236,27 @@ public:
 	 */
 	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) = 0;
 
+	/**
+	 * Override this method to perform custom logic when a trait user statement has been found
+	 *
+	 * @param className the fully qualified name of the class that uses the trait
+	 * @param traitName the fully qualified name of the trait to be used 
+	 */
+	virtual void TraitUseFound(const UnicodeString& className, const UnicodeString& traitName) = 0;
+	
+	/**
+	 * Override this method to perform custom logic when a trait method has been aliased
+	 * 
+	 * @param traitUsedClassName the class name of the trait to be aliased
+	 * @param traitMethodName the fully qualified name of the trait method that is to be aliased (hidden)
+	 *        this may be empty if the trait adaptation only changes the visibility and
+	 *        does not need to resolve a trait conflict
+	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
+	 * @param visibility the visbility of the trait method. may be PUBLIC if the visibility was not changed.
+	 */
+	virtual void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, 
+		const UnicodeString& alias, TokenClass::TokenIds visibility) = 0;
 };
 
 /**
@@ -398,6 +422,7 @@ public:
 	bool IsAbstract;
 	bool IsFinal;
 	bool IsInterface;
+	bool IsTrait;
 
 	ClassSymbolClass();
 
@@ -448,6 +473,46 @@ public:
 	void SetAsProtected();
 	void SetAsPrivate();
 	void Clear();
+};
+
+/**
+ * This is a class that accumulates the trait usage inside of a class. It keeps trait of
+ * aliases.
+ * 
+ * At this point we wont worry about notifying about the usage of the insteadof operator
+ * since the insteadof operator only applies when the method names are identical (and
+ * for our static analysis purposes we wont need to know which method is actually
+ * used). 
+ * TODO: this does not sound right.  ideally we should notify of conflict resolution, it
+ * would help, for example, when we want to navigate "jump" to the proper method.
+ */
+class PELET_API TraitAdaptationSymbolClass {
+	
+public:
+
+	/** 
+	 * the class name of the trait method to be aliased ('old' name) 
+	 * this may be empty if the trait only changes the visibility and
+	 * does not need to resolve a trait conflict
+	 */
+	QualifiedNameClass TraitMethodReference;
+
+	/** the name of the trait method. this is the method to alias ('old' name) */
+	UnicodeString TraitMethod;
+	
+	/** 
+	 * the name of the alias ('new' name for the method). This may be empty if
+	 * only the visibility is changed.
+	 */
+	UnicodeString TraitAlias;
+	
+	/** the visbility to change TraitMethodReference to */
+	TokenClass::TokenIds MethodVisibility;
+	
+	TraitAdaptationSymbolClass();
+	
+	void Clear();
+	
 };
 
 /**
@@ -702,7 +767,7 @@ public:
 	/**
 	 * Initializes class info
 	 */
-	void ClassStart(SemanticValueClass& commentValue, bool isAbstract, bool isFinal, bool isInterface);
+	void ClassStart(SemanticValueClass& commentValue, bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
 
 	/**
 	 * Sets the name property of the class info
@@ -760,6 +825,32 @@ public:
 	void ClassMemberSetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
 
 	void ClassMemberAppendToComment(SemanticValueClass& commentValue);
+
+		
+	/**
+	 * the QualifiedName is a new trait being used in the current class
+	 */
+	void TraitUseFound();
+	
+	void TraitClearAdaptation();
+	
+	/**
+	 * a trait method is being aliased in the current class.
+	 * @param traitMethod the trait method being aliased
+	 */
+	void TraitAliasMethod(SemanticValueClass& traitMethod);
+	
+	/**
+	 * a trait method is being aliased in the current class.
+	 */
+	void TraitAliasMethodFromQualifiedName(SemanticValueClass& traitMethod);
+	
+	/**
+	 * @param traitAlias the name of the alias. the trait method being aliased is stored in QualifiedName
+	 *        traitAlias may be NULL, in this case then only the modifier is being aliased 
+	 *        ie a trait method is being made protected or private
+	 */
+	void TraitAliasFound(SemanticValueClass* traitAlias);
 
 	/**
 	 * add a new Paramter to the CurrentParametersList 
@@ -1017,6 +1108,11 @@ private:
 	 * the class observer.
 	 */
 	ExpressionClass CurrentFunctionCallExpression;
+
+	/**
+	 * The current trait adaptation
+	 */
+	TraitAdaptationSymbolClass CurrentTraitAdaptation;
 
 	/**
 	 * This object will NOT own the pointer

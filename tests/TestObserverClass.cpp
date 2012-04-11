@@ -103,3 +103,18 @@ void TestObserverClass::IncludeFound(const UnicodeString& file, const int lineNu
 	IncludeFile.push_back(file);
 	IncludeLineNumber.push_back(lineNumber);
 }
+
+void TestObserverClass::TraitUseFound(const UnicodeString& className, const UnicodeString& traitName) {
+	TraitClassName.push_back(className);
+	TraitUsed.push_back(traitName);
+}
+	
+void TestObserverClass::TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+										const UnicodeString& traitMethodName, 
+										const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
+	TraitClassName.push_back(className);
+	TraitUsed.push_back(traitUsedClassName);
+	TraitMethodName.push_back(traitMethodName);
+	TraitAlias.push_back(alias);
+	TraitAliasVisibility.push_back(visibility);
+}

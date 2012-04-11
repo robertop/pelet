@@ -3735,17 +3735,17 @@ yyreduce:
 
   case 82:
 
-    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, false); ;}
+    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, false, false); ;}
     break;
 
   case 83:
 
-    { observers.ClassStart((yyvsp[(1) - (2)]), true, false, false); ;}
+    { observers.ClassStart((yyvsp[(1) - (2)]), true, false, false, false); ;}
     break;
 
   case 84:
 
-    { observers.ClassStart((yyvsp[(1) - (2)]), false, true, false); ;}
+    { observers.ClassStart((yyvsp[(1) - (2)]), false, true, false, false); ;}
     break;
 
   case 86:
@@ -3760,7 +3760,7 @@ yyreduce:
 
   case 88:
 
-    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, true); ;}
+    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, true, false); ;}
     break;
 
   case 90:

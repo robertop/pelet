@@ -47,38 +47,45 @@ public:
 						VariableChainList, VariablePhpDocType,
 						DefinedName, DefinedValue, DefinedComment,
 						MethodEndClassName, MethodEndMethodName,
-						IncludeFile;
+						IncludeFile,
+						TraitClassName, TraitUsed, TraitMethodName, TraitAlias;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
-	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility;
+	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
 	std::vector<pelet::SymbolClass::Types> VariableTypes;
 	std::vector<int> MethodEndPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
-	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+	void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
 	
-	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber);
 
-	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
+	void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
 	
-	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+	void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
 			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber);
 	
-	virtual void FunctionFound(const UnicodeString& functionName, 
+	void FunctionFound(const UnicodeString& functionName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber);
 
-	virtual void FunctionEnd(const UnicodeString& functionName, int pos);
+	void FunctionEnd(const UnicodeString& functionName, int pos);
 	
-	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
 		const pelet::SymbolClass& symbol, const UnicodeString& comment);
 	
-	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
 			const UnicodeString& comment, const int lineNumber);
 
-	virtual void IncludeFound(const UnicodeString& file, const int lineNumber);
+	void IncludeFound(const UnicodeString& file, const int lineNumber);
+
+	void TraitUseFound(const UnicodeString& className, const UnicodeString& traitName);
+	
+	void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName, 
+		const UnicodeString& traitMethodName, 
+		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
 };
 
 #endif

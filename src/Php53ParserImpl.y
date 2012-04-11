@@ -392,9 +392,9 @@ unticked_class_declaration_statement:
 ;
 
 class_entry_type:
-		T_CLASS					{ observers.ClassStart($1, false, false, false); }
-	|	T_ABSTRACT T_CLASS		{ observers.ClassStart($1, true, false, false); }
-	|	T_FINAL T_CLASS			{ observers.ClassStart($1, false, true, false); }
+		T_CLASS					{ observers.ClassStart($1, false, false, false, false); }
+	|	T_ABSTRACT T_CLASS		{ observers.ClassStart($1, true, false, false, false); }
+	|	T_FINAL T_CLASS			{ observers.ClassStart($1, false, true, false, false); }
 ;
 
 extends_from:
@@ -404,7 +404,7 @@ extends_from:
 ;
 
 interface_entry:
-	T_INTERFACE		{ observers.ClassStart($1, false, false, true); }
+	T_INTERFACE		{ observers.ClassStart($1, false, false, true, false); }
 ;
 
 interface_extends_list:
