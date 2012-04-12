@@ -158,6 +158,72 @@ public:
 	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
 		
 	}
+
+	/**
+	 * This method gets called when a trait use statement has been found
+	 *
+	 * @param className the fully qualified name of the class that uses the trait
+	 * @param traitName the fully qualified name of the trait to be used 
+	 */
+	virtual void TraitUseFound(const UnicodeString& className, const UnicodeString& traitName) {
+		UFILE* ufout = u_finit(stdout, NULL, NULL);
+		u_fprintf(ufout, "Trait Usage Found in class %.*S. Trait Name %.*S \n", 
+			className.length(), className.getBuffer(), traitName.length(), traitName.getBuffer());
+		u_fclose(ufout);
+	}
+	
+	/**
+	 * Override this method to perform custom logic when a trait method has been aliased
+	 * 
+	 * @param traitUsedClassName the class name of the trait to be aliased
+	 * @param traitMethodName the fully qualified name of the trait method that is to be aliased (hidden)
+	 *        this may be empty if the trait adaptation only changes the visibility and
+	 *        does not need to resolve a trait conflict
+	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
+	 * @param visibility the visbility of the trait method. may be PUBLIC if the visibility was not changed.
+	 */
+	virtual void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, 
+		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
+		UFILE* ufout = u_finit(stdout, NULL, NULL);
+		if (!alias.isEmpty()) {
+			char* visibilityStr;
+			if (pelet::TokenClass::PRIVATE == visibility) {
+				visibilityStr = "private";
+			}
+			else if (pelet::TokenClass::PROTECTED == visibility) {
+				visibilityStr = "protected";
+			}
+			else {
+				visibilityStr = "public";
+			}
+			u_fprintf(ufout, "Trait Alias Found in class %.*S. Trait Class %.*S Trait Method %.*S Trait Alias %.*S New Visibility %s \n", 
+				className.length(), className.getBuffer(), 
+				traitUsedClassName.length(), traitUsedClassName.getBuffer(),
+				traitMethodName.length(), traitMethodName.getBuffer(),
+				alias.length(), alias.getBuffer(),
+				visibilityStr);
+		}
+		else {
+			char* visibilityStr;
+			if (pelet::TokenClass::PRIVATE == visibility) {
+				visibilityStr = "private";
+			}
+			else if (pelet::TokenClass::PROTECTED == visibility) {
+				visibilityStr = "protected";
+			}
+			else {
+				visibilityStr = "public";
+			}
+			u_fprintf(ufout, "Trait Change in visbility Found in class %.*S. Trait Class %.*S Trait Method %.*S New Visibility %s\n", 
+				className.length(), className.getBuffer(), 
+				traitUsedClassName.length(), traitUsedClassName.getBuffer(),
+				traitMethodName.length(), traitMethodName.getBuffer(),
+				visibilityStr
+			);
+		}
+		u_fclose(ufout);
+	}
 	
 	/**
 	 * This method gets called when a function is found.
@@ -267,6 +333,7 @@ int main(int argc, char** argv) {
 	}
 	SampleObserver observer;
 	pelet::ParserClass parser;
+	parser.SetVersion(pelet::PHP_54);
 	parser.SetClassObserver(&observer);
 	parser.SetClassMemberObserver(&observer);
 	parser.SetFunctionObserver(&observer);
