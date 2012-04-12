@@ -86,6 +86,9 @@ public:
 	void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName, 
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
+
+	void TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName);
 };
 
 #endif

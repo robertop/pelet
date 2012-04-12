@@ -247,8 +247,9 @@ public:
 	/**
 	 * Override this method to perform custom logic when a trait method has been aliased
 	 * 
+	 * @param className the fully qualified name of the class that uses the trait
 	 * @param traitUsedClassName the class name of the trait to be aliased
-	 * @param traitMethodName the fully qualified name of the trait method that is to be aliased (hidden)
+	 * @param traitMethodName the name of the trait method that is to be aliased (hidden)
 	 *        this may be empty if the trait adaptation only changes the visibility and
 	 *        does not need to resolve a trait conflict
 	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
@@ -257,6 +258,17 @@ public:
 	virtual void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, TokenClass::TokenIds visibility) = 0;
+
+	/**
+	 * Override this method to perform custom logic when a trait method conflict has been resolved
+	 * (an insteadof operation) 
+	 *
+	 * @param className the fully qualified name of the class that uses the trait
+	 * @param traitUsedClassName the class name of the trait to be used
+	 * @param traitMethodName name of the trait method that is to being resolved
+	 */
+	virtual void TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName) = 0;
 };
 
 /**
@@ -478,13 +490,7 @@ public:
 /**
  * This is a class that accumulates the trait usage inside of a class. It keeps trait of
  * aliases.
- * 
- * At this point we wont worry about notifying about the usage of the insteadof operator
- * since the insteadof operator only applies when the method names are identical (and
- * for our static analysis purposes we wont need to know which method is actually
- * used). 
- * TODO: this does not sound right.  ideally we should notify of conflict resolution, it
- * would help, for example, when we want to navigate "jump" to the proper method.
+ *
  */
 class PELET_API TraitAdaptationSymbolClass {
 	
@@ -844,6 +850,11 @@ public:
 	 * a trait method is being aliased in the current class.
 	 */
 	void TraitAliasMethodFromQualifiedName(SemanticValueClass& traitMethod);
+
+	/**
+	 * notify that a trait conflict has been resolved using the insteadof operator
+	 */
+	void TraitPrecedenceFound();
 	
 	/**
 	 * @param traitAlias the name of the alias. the trait method being aliased is stored in QualifiedName

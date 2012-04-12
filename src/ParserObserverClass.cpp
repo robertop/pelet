@@ -651,6 +651,17 @@ void pelet::ObserverQuadClass::TraitAliasFound(SemanticValueClass* traitAlias) {
 	}
 }
 
+void pelet::ObserverQuadClass::TraitPrecedenceFound() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Member) {	
+		Member->TraitPrecedenceFound(CurrentClass.ClassName, 
+			CurrentTraitAdaptation.TraitMethodReference.ToSignature(),
+			CurrentTraitAdaptation.TraitMethod);
+	}
+}
+
 void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment, const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;

@@ -202,7 +202,8 @@ public:
 				traitUsedClassName.length(), traitUsedClassName.getBuffer(),
 				traitMethodName.length(), traitMethodName.getBuffer(),
 				alias.length(), alias.getBuffer(),
-				visibilityStr);
+				visibilityStr
+			);
 		}
 		else {
 			char* visibilityStr;
@@ -222,6 +223,25 @@ public:
 				visibilityStr
 			);
 		}
+		u_fclose(ufout);
+	}
+
+	/**
+	 * This method gets called whena trait method conflict has been resolved
+	 * (an insteadof operation) 
+	 *
+	 * @param className the fully qualified name of the class that uses the trait
+	 * @param traitUsedClassName the class name of the trait to be used
+	 * @param traitMethodName name of the trait method that is to being resolved
+	 */
+	virtual void TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName) {
+		UFILE* ufout = u_finit(stdout, NULL, NULL);
+		u_fprintf(ufout, "Trait Precedence Found in class %.*S. Trait Class %.*S Trait Method %.*S \n", 
+			className.length(), className.getBuffer(), 
+			traitUsedClassName.length(), traitUsedClassName.getBuffer(),
+			traitMethodName.length(), traitMethodName.getBuffer()
+		);
 		u_fclose(ufout);
 	}
 	

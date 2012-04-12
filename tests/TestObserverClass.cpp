@@ -118,3 +118,10 @@ void TestObserverClass::TraitAliasFound(const UnicodeString& className, const Un
 	TraitAlias.push_back(alias);
 	TraitAliasVisibility.push_back(visibility);
 }
+
+void TestObserverClass::TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+						  const UnicodeString& traitMethodName) {
+	TraitClassName.push_back(className);
+	TraitUsed.push_back(traitUsedClassName);
+	TraitMethodName.push_back(traitMethodName);
+}

@@ -578,7 +578,7 @@ trait_adaptation_statement:
 ;
 
 trait_precedence:
-	trait_method_reference_fully_qualified T_INSTEADOF trait_reference_list	
+	trait_method_reference_fully_qualified T_INSTEADOF trait_reference_list			{ observers.TraitPrecedenceFound(); }
 ;
 
 trait_reference_list:

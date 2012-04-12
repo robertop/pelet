@@ -127,30 +127,46 @@ TEST_FIXTURE(Parser54TestClass, TraitsWithConflictsAndAlias) {
 	);
 	CHECK(Parser.ScanString(code, LintResults));
 	
-	CHECK_VECTOR_SIZE(8, Observer.TraitClassName);
+	CHECK_VECTOR_SIZE(12, Observer.TraitClassName);
 	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[0]);
 	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[1]);
-	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[2]);
-	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[3]);
+	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[2]);
+	CHECK_UNISTR_EQUALS("Talker", Observer.TraitClassName[3]);
 	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[4]);
-	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[5]);
-	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[6]);
-	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[7]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[5]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[6]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[7]);
+	CHECK_UNISTR_EQUALS("Aliased_Talker", Observer.TraitClassName[8]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[9]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[10]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[11]);
 
-	CHECK_VECTOR_SIZE(8, Observer.TraitUsed);
+	CHECK_VECTOR_SIZE(12, Observer.TraitUsed);
 	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[0]);
 	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[1]);
-	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[2]);
-	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[3]);
-	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[4]);
-	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[5]);
-	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[6]);
-	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[7]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[2]);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[3]);
+
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[4]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[5]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[6]);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[7]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitUsed[8]);
+
+	CHECK_UNISTR_EQUALS("A", Observer.TraitUsed[9]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[10]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitUsed[11]);
 	
-	CHECK_VECTOR_SIZE(3, Observer.TraitMethodName);
-	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[0]);
-	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[1]);
-	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[2]);
+	CHECK_VECTOR_SIZE(7, Observer.TraitMethodName);
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[0]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[1]);
+	
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[2]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[3]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[4]);
+
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[5]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[6]);
 
 	CHECK_VECTOR_SIZE(3, Observer.TraitAlias);
 	CHECK_UNISTR_EQUALS("talk", Observer.TraitAlias[0]);
