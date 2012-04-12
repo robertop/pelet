@@ -728,4 +728,36 @@ TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionObjectOperatorWit
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
 }
 
+TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionNewCallWithChaining) {
+	UnicodeString code = _U(
+		"<?php \n"
+		" $expr = new MyClass; \n"
+		"(new Foo)->method"
+	);
+	UnicodeString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("(new Foo)->method"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionArrayDereference) {
+	UnicodeString code = _U(
+		"<?php \n"
+		"$expr1 = array( 0 => new MyClass); \n"
+		"$expr2 = array( 1 => new MyClass); \n"
+		"array_merge($expr1, $expr2)[0]->method"
+	);
+	UnicodeString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("array_merge($expr1, $expr2)[0]->method"), last);
+}
+
+TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionMethodArrayDereference) {
+	UnicodeString code = _U(
+		"<?php \n"
+		"$expr1 = array( 0 => new MyClass); \n"
+		"$expr2 = array( 1 => new MyClass); \n"
+		"$this->func($expr1, $expr2)[0]->method"
+	);
+	UnicodeString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this->func($expr1, $expr2)[0]->method"), last);
+}
+
 }

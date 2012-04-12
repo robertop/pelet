@@ -663,12 +663,9 @@ non_empty_for_expr:
 	|	expr					
 ;
 
-/* TODO chaining arrays, variables, handle them
- * although, I believe the changes will be in LexicalAnalyzerClass and not here
- */
 chaining_method_or_property:
 		chaining_method_or_property variable_property 	
-	|	variable_property 								
+	|	variable_property
 ;
 
 chaining_dereference:
@@ -684,11 +681,11 @@ chaining_instance_call:
 
 instance_call:
 		/* empty */ 		
-	|	chaining_instance_call	
+	|	chaining_instance_call
 ;
 
 new_expr:
-		T_NEW class_name_reference ctor_arguments
+		T_NEW class_name_reference ctor_arguments									{ observers.ExpressionPushNewInstanceCall(); }
 ;
 
 expr_without_variable:
@@ -742,9 +739,8 @@ expr_without_variable:
 	|	expr T_IS_GREATER_OR_EQUAL expr												{ observers.ExpressionPushNewScalar($1); }
 	|	expr T_INSTANCEOF class_name_reference 										{ observers.ExpressionPushNewScalar($1); }
 	|	'(' expr ')' 																{ /* no need to push here as this is recursive */ }
-	|	new_expr																	{ observers.ExpressionPushNewInstanceCall(); }
-	|	'(' new_expr ')'															{ observers.ExpressionPushNewInstanceCall(); }	 
-		instance_call															 															
+	|	new_expr
+	|	'(' new_expr ')' instance_call
 	|	expr '?'
 		expr ':'
 		expr																		{ observers.ExpressionPushNewScalar($1); }
@@ -956,10 +952,9 @@ variable_property:
 		method_or_not						{ observers.CurrentExpressionAppendToChain($1, $2, '(' == $3.Token);  }
 ;
 
-/* TODO handle array dereferencing  in auto complete */
 array_method_dereference:
-		array_method_dereference '[' dim_offset ']'
-	|	method '[' dim_offset ']'
+		array_method_dereference '[' dim_offset ']'				{ observers.ExpressionPop(); }
+	|	method '[' dim_offset ']'								{ observers.ExpressionPop(); }
 ;
 
 method:
@@ -987,9 +982,8 @@ variable_class_name:
 ;
 
 array_function_dereference:
-		array_function_dereference '[' dim_offset ']' {}
-	|	function_call {}
-		'[' dim_offset ']' {}
+		array_function_dereference '[' dim_offset ']'				{ observers.ExpressionPop(); }
+	|	function_call '[' dim_offset ']'							{ observers.ExpressionPop(); }
 ;
 
 base_variable_with_function_calls:

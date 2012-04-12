@@ -960,6 +960,11 @@ public:
 	 * expression to the ExpressionVariables list.
 	 */
 	void ExpressionPushNewInstanceCall();
+
+	/**
+	 * 'undo' the last expression. this method is useful when we want to skip certain expressions.
+	 */
+	void ExpressionPop();
 	
 	/**
 	 * Adds the current expression to the function call arguments list. This function should

@@ -942,6 +942,15 @@ void pelet::ObserverQuadClass::CurrentExpressionPushAsVariable(pelet::SemanticVa
 	ExpressionVariables.push_back(expr);
 }
 
+void pelet::ObserverQuadClass::ExpressionPop() {
+	if (!DoCollectExpressions) {
+		return;
+	}
+	if (!ExpressionVariables.empty()) {
+		ExpressionVariables.pop_back();
+	}
+}
+
 void pelet::ObserverQuadClass::CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod) {
 	if (!DoCollectExpressions) {
 		return;

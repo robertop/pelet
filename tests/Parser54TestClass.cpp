@@ -49,7 +49,7 @@ public:
 };
 
 SUITE (Parser54FeaturesTestClass) {
-	
+
 TEST_FIXTURE(Parser54TestClass, Traits) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
@@ -161,6 +161,46 @@ TEST_FIXTURE(Parser54TestClass, TraitsWithConflictsAndAlias) {
 	CHECK_EQUAL(pelet::TokenClass::PUBLIC, Observer.TraitAliasVisibility[0]);
 	CHECK_EQUAL(pelet::TokenClass::PRIVATE, Observer.TraitAliasVisibility[1]);
 	CHECK_EQUAL(pelet::TokenClass::PROTECTED, Observer.TraitAliasVisibility[2]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithChainConstructor) {
+	UnicodeString code = _U("(new Foo)->method");
+	pelet::SymbolClass symbol;
+	Parser.ParseExpression(code, symbol);
+
+	// lexeme empty because new call is first in the chain
+	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_UNISTR_EQUALS("Foo", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->method", symbol.ChainList[1]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithFunctionArrayDereference) {
+	UnicodeString code = _U("array_merge($expr1, $expr2)[0]->method()");
+	pelet::SymbolClass symbol;
+	Parser.ParseExpression(code, symbol);
+
+	// lexeme empty because new call is first in the chain
+	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_UNISTR_EQUALS("array_merge()", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->method()", symbol.ChainList[1]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithMethodArrayDereference) {
+	UnicodeString code = _U("$this->func($expr1, $expr2)[0]->method()");
+	pelet::SymbolClass symbol;
+	Parser.ParseExpression(code, symbol);
+
+	// lexeme empty because new call is first in the chain
+	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
+	CHECK_VECTOR_SIZE(3, symbol.ChainList);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->func", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->method()", symbol.ChainList[2]);
 }
 
 }

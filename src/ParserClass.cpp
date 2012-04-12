@@ -235,7 +235,6 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 	// the variable observer is only called for assignment expressions
 	// but we want this method to be able to parse a single variable
 	if (Lexer.OpenString(expression)) {	
-  		php53parse(Lexer, observers);
 		if (pelet::PHP_53 == Version) {
 			php53parse(Lexer, observers);
 		}
