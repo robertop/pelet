@@ -187,7 +187,7 @@ public:
 		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		if (!alias.isEmpty()) {
-			char* visibilityStr;
+			const char* visibilityStr;
 			if (pelet::TokenClass::PRIVATE == visibility) {
 				visibilityStr = "private";
 			}
@@ -206,7 +206,7 @@ public:
 			);
 		}
 		else {
-			char* visibilityStr;
+			const char* visibilityStr;
 			if (pelet::TokenClass::PRIVATE == visibility) {
 				visibilityStr = "private";
 			}
