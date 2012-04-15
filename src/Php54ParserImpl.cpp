@@ -4667,6 +4667,11 @@ yyreduce:
     { (yyval).Token = 0; ;}
     break;
 
+  case 398:
+
+    { observers.CurrentExpressionAsStaticMember((yyvsp[(2) - (3)])); ;}
+    break;
+
   case 401:
 
     { observers.ExpressionPop(); ;}

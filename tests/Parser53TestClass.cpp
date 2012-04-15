@@ -35,25 +35,24 @@
 // NOTE: the contents below will be copied from Parser54TestClass.cpp
 // this was the easiest way to 'share' the test cases, since I want to 
 // make use both parsers have the same tests. The only differences are the 
-// define below is set to use the 5.4 parser and the new suite name (so
+// define below is set to use the 5.3 parser and the new suite name (so
 // that tests get run)
-#define TEST_PARSER_VERSION  pelet::PHP_53
 
 /**
  * Some tests use a 'full' sample of PHP code. these will test multiple 
  * artifacts.
  */
-class FullParserTestClass : public FileTestFixtureClass {
+class FullParser53TestClass : public FileTestFixtureClass {
 public:	
 
 	pelet::ParserClass Parser;
 	pelet::LintResultsClass LintResults;
 	TestObserverClass Observer;
 	
-	FullParserTestClass () 
+	FullParser53TestClass () 
 		: FileTestFixtureClass() 
 		, Parser() {
-		Parser.SetVersion(TEST_PARSER_VERSION);
+		Parser.SetVersion(pelet::PHP_53);
 		
 		// this file was carefully crafted to hit all the Observers
 		// class, method, function, and variable Observers
@@ -113,14 +112,14 @@ public:
 	}
 };
 
-class ParserTestClass : public FileTestFixtureClass {
+class Parser53TestClass : public FileTestFixtureClass {
 public:	
-	ParserTestClass () 
+	Parser53TestClass () 
 		: FileTestFixtureClass() 
 		, Parser()
 		, LintResults()
 		, Observer() {
-		Parser.SetVersion(TEST_PARSER_VERSION);
+		Parser.SetVersion(pelet::PHP_53);
 	}
 	
 	pelet::ParserClass Parser;
@@ -130,7 +129,7 @@ public:
 
 SUITE(Parser53TestClass) {
 
-TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyClassObserver) {
+TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyClassObserver) {
 		std::string file = TestProjectDir + "test.php";
 		Parser.SetClassObserver(&Observer);
 		CHECK(Parser.ScanFile(file, LintResults));
@@ -148,7 +147,7 @@ TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyClassObserver) {
 		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a define comment\n */"), Observer.DefinedComment[0]);
 }
 
-TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
+TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyClassMemberObserver) {
 	std::string file = TestProjectDir + "test.php";
 	Parser.SetClassMemberObserver(&Observer);
 	CHECK(Parser.ScanFile(file, LintResults));
@@ -209,7 +208,7 @@ TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyClassMemberObserver) {
 	CHECK_EQUAL(true, Observer.PropertyIsStatic[1]);	
 }
 
-TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyFunctionObserver) {
+TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyFunctionObserver) {
 	std::string file = TestProjectDir + "test.php";
 	Parser.SetFunctionObserver(&Observer);
 	CHECK(Parser.ScanFile(file, LintResults));
@@ -225,7 +224,7 @@ TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyFunctionObserver) {
 	CHECK_UNISTR_EQUALS("boolean", Observer.FunctionReturnType[0]);
 }
 
-TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyVariableObserver) {
+TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyVariableObserver) {
 	std::string file = TestProjectDir + "test.php";
 	Parser.SetVariableObserver(&Observer);
 	CHECK(Parser.ScanFile(file, LintResults));
@@ -273,7 +272,7 @@ TEST_FIXTURE(FullParserTestClass, ScanFileShouldNotifyVariableObserver) {
 	CHECK_UNISTR_EQUALS("$user->getName()", Observer.VariableChainList[6]);
 }
 
-TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
+TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassTypes) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"interface Runnable {}\n"
@@ -294,7 +293,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassTypes) {
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends AbstractRunnable implements MyRunnable", Observer.ClassSignature[3]);
 }
 
-TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
+TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
 		"interface Runnable { const MSG = 'const'; abstract function run();}\n"
@@ -342,7 +341,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	CHECK(Observer.PropertyConsts[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
+TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 	Parser.SetVariableObserver(&Observer);
 
 	// test a global variable
@@ -410,7 +409,7 @@ TEST_FIXTURE(ParserTestClass, ScanStringWithAllPossibleVariableTypes) {
 	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[13]);
 }
 
-TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
+TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetVariableObserver(&Observer);
 
@@ -489,7 +488,7 @@ TEST_FIXTURE(ParserTestClass, ShouldUsePhpDocAnnotations) {
 	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[2]);
 }
 
-TEST_FIXTURE(ParserTestClass, MethodEndPos) {
+TEST_FIXTURE(Parser53TestClass, MethodEndPos) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetFunctionObserver(&Observer);
@@ -506,7 +505,7 @@ TEST_FIXTURE(ParserTestClass, MethodEndPos) {
 	CHECK_EQUAL((16 + 1 + 18 + 4), Observer.MethodEndPos[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, IncludeWithStringConstant) {
+TEST_FIXTURE(Parser53TestClass, IncludeWithStringConstant) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"require ('db_functions_0.php');\n"
@@ -522,7 +521,7 @@ TEST_FIXTURE(ParserTestClass, IncludeWithStringConstant) {
 	CHECK_UNISTR_EQUALS("db_functions_3.php", Observer.IncludeFile[3]);
 }
 
-TEST_FIXTURE(ParserTestClass, IncludeWithExpression) {
+TEST_FIXTURE(Parser53TestClass, IncludeWithExpression) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"@include($file);\n"
@@ -534,7 +533,7 @@ TEST_FIXTURE(ParserTestClass, IncludeWithExpression) {
 	CHECK_UNISTR_EQUALS("", Observer.IncludeFile[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, IncludeWithMagicConstant) {
+TEST_FIXTURE(Parser53TestClass, IncludeWithMagicConstant) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"include (__DIR__ . '/file.php');\n"
@@ -547,7 +546,7 @@ TEST_FIXTURE(ParserTestClass, IncludeWithMagicConstant) {
 
 }
 
-TEST_FIXTURE(ParserTestClass, ClassLineNumber) {
+TEST_FIXTURE(Parser53TestClass, ClassLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
@@ -568,7 +567,7 @@ TEST_FIXTURE(ParserTestClass, ClassLineNumber) {
 	CHECK_EQUAL(4, Observer.ClassLineNumber[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, MethodLineNumber) {
+TEST_FIXTURE(Parser53TestClass, MethodLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
@@ -586,7 +585,7 @@ TEST_FIXTURE(ParserTestClass, MethodLineNumber) {
 	CHECK_EQUAL(3, Observer.MethodLineNumber[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, PropertyLineNumber) {
+TEST_FIXTURE(Parser53TestClass, PropertyLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
@@ -602,7 +601,7 @@ TEST_FIXTURE(ParserTestClass, PropertyLineNumber) {
 	CHECK_EQUAL(2, Observer.PropertyLineNumber[0]);
 }
 
-TEST_FIXTURE(ParserTestClass, IncludeLineNumber) {
+TEST_FIXTURE(Parser53TestClass, IncludeLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"require 'db_functions_0.php';\n"             // line 1
@@ -622,12 +621,12 @@ TEST_FIXTURE(ParserTestClass, IncludeLineNumber) {
 	CHECK_EQUAL(7, Observer.IncludeLineNumber[3]);
 }
 
-TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueOnValidFile) {
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
-TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
 	CreateFixtureFile("testpure.php",
 			"<html> </html>"
 	);
@@ -635,7 +634,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
-TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
 	CreateFixtureFile("testpure.php",
 			"<?php\n"
 			"\techo 'Today is ...'; \n"
@@ -657,7 +656,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenFileHasHtmlWithPhp) {
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
-TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 	CreateFixtureFile("testpure.php",
 			"<?php\n"
 			"/* this is a comment\n"
@@ -672,14 +671,14 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnTrueWhenPhpHasCommentsOnly) {
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
-TEST_FIXTURE(ParserTestClass, LintStringShouldReturnFalseOnBadCode) {
+TEST_FIXTURE(Parser53TestClass, LintStringShouldReturnFalseOnBadCode) {
 	UnicodeString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
 	CHECK_EQUAL(false, Parser.LintString(code, LintResults));
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
 }
 
-TEST_FIXTURE(ParserTestClass, LintFileShouldReturnFalseOnBadCode) {
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnFalseOnBadCode) {
 	CreateFixtureFile("testpure.php", 
 		"<?php $'gag's = 'hello' \"again\" $not gaging;");
 	std::string filename = TestProjectDir + "testpure.php";
@@ -703,7 +702,7 @@ TEST_FIXTURE(ParserTestClass, LintFileShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
 }
 
-TEST_FIXTURE(ParserTestClass, ScanFileShouldReturnFalseOnBadCode) {
+TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnFalseOnBadCode) {
 	CreateFixtureFile("testpure.php", 
 		"<?php $'gag's = 'hello' \"again\" $not gaging;");
 	std::string filename = TestProjectDir + "testpure.php";
@@ -728,14 +727,14 @@ TEST_FIXTURE(ParserTestClass, ScanFileShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
 }
 
-TEST_FIXTURE(ParserTestClass, ParseVariableExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseVariableExpression) {
 	UnicodeString code = _U("$variable");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
 }
 
-TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseObjectExpression) {
 	UnicodeString code = _U("$variable->prop");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
@@ -747,7 +746,7 @@ TEST_FIXTURE(ParserTestClass, ParseObjectExpression) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseObjectWithoutPropertyExpression) {
 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
@@ -763,7 +762,7 @@ TEST_FIXTURE(ParserTestClass, ParseObjectWithoutPropertyExpression) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseStaticWithoutPropertyExpression) {
 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
@@ -779,19 +778,17 @@ TEST_FIXTURE(ParserTestClass, ParseStaticWithoutPropertyExpression) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseStaticExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseStaticExpression) {
 	UnicodeString code = _U("MyClass::$DEFAULT");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
 }
 
-TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseConstantExpression) {
 	UnicodeString code = _U("MyClass::PI;");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
@@ -803,7 +800,7 @@ TEST_FIXTURE(ParserTestClass, ParseConstantExpression) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpression) {
 	UnicodeString code = _U("$variable->func1()->prop2->func3()->prop4");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
@@ -818,7 +815,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpression) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpressionStartsWithFunction) {
 	UnicodeString code = _U("func1()->prop2->prop4");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
@@ -831,7 +828,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionStartsWithFunction) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("$this->propA->func1($a, $b)->prop2->prop4");
@@ -848,7 +845,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithFunctionArguments) {
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("$this->func1($a, $b)->propA->prop2->prop4");
@@ -865,7 +862,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithMethodA
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("func1($a, $b)->propA->func2($c)->prop4");
@@ -883,7 +880,7 @@ TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithChainThatStartsWithFunctio
 	}
 }
 
-TEST_FIXTURE(ParserTestClass, ParseChainExpressionWithWhitespace) {
+TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithWhitespace) {
 	UnicodeString code = _U("$propA->time->time\n->");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);

@@ -973,7 +973,7 @@ variable_without_objects:
 ;
 
 static_member:
-		class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects 
+		class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects 								{ observers.CurrentExpressionAsStaticMember($2); }
 	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects 
 ;
 
