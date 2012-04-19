@@ -24,17 +24,24 @@
  */
 #include <TestObserverClass.h> 
 
-void TestObserverClass::ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+void TestObserverClass::ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) {
+	ClassNamespace.push_back(nameSpace);
 	ClassName.push_back(className);
 	ClassSignature.push_back(signature);
 	ClassComment.push_back(comment);
 	ClassLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+void TestObserverClass::NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias) {
+	NamespaceUseName.push_back(nameSpace);
+	NamespaceAlias.push_back(alias);
+}
+
+void TestObserverClass::MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
+	MethodClassNamespace.push_back(nameSpace);
 	MethodClassName.push_back(className);
 	MethodName.push_back(methodName);
 	MethodSignature.push_back(signature);
@@ -45,15 +52,14 @@ void TestObserverClass::MethodFound(const UnicodeString& className, const Unicod
 	MethodLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) {
-	//MethodEndClassName.push_back(className);
-	//MethodEndMethodName.push_back(methodName);
+void TestObserverClass::MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, int pos) {
 	MethodEndPos.push_back(pos);
 }
 
-void TestObserverClass::PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+void TestObserverClass::PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
+	PropertyClassNamespace.push_back(nameSpace);
 	PropertyClassName.push_back(className);
 	PropertyName.push_back(propertyName);
 	PropertyType.push_back(propertyType);
@@ -64,8 +70,9 @@ void TestObserverClass::PropertyFound(const UnicodeString& className, const Unic
 	PropertyLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionFound(const UnicodeString& functionName, 
+void TestObserverClass::FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
+	FunctionNamespace.push_back(nameSpace);
 	FunctionName.push_back(functionName);
 	FunctionSignature.push_back(signature);
 	FunctionReturnType.push_back(returnType);
@@ -73,12 +80,13 @@ void TestObserverClass::FunctionFound(const UnicodeString& functionName,
 	FunctionLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionEnd(const UnicodeString& functionName, int pos) {
+void TestObserverClass::FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos) {
 	// nothing for now
 }
 
-void TestObserverClass::VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+void TestObserverClass::VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 	const pelet::SymbolClass& symbol, const UnicodeString& comment) {
+	VariableClassNamespace.push_back(nameSpace);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
 	VariableName.push_back(symbol.Lexeme);
@@ -104,14 +112,16 @@ void TestObserverClass::IncludeFound(const UnicodeString& file, const int lineNu
 	IncludeLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::TraitUseFound(const UnicodeString& className, const UnicodeString& traitName) {
+void TestObserverClass::TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitName) {
+	TraitNamespace.push_back(nameSpace);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitName);
 }
 	
-void TestObserverClass::TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+void TestObserverClass::TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 										const UnicodeString& traitMethodName, 
 										const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
+	TraitNamespace.push_back(nameSpace);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
 	TraitMethodName.push_back(traitMethodName);
@@ -119,8 +129,9 @@ void TestObserverClass::TraitAliasFound(const UnicodeString& className, const Un
 	TraitAliasVisibility.push_back(visibility);
 }
 
-void TestObserverClass::TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+void TestObserverClass::TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 						  const UnicodeString& traitMethodName) {
+	TraitNamespace.push_back(nameSpace);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
 	TraitMethodName.push_back(traitMethodName);

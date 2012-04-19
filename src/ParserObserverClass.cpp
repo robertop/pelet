@@ -231,6 +231,7 @@ void pelet::TraitAdaptationSymbolClass::Clear() {
 
 pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
+	, IsAbsolute(false) 
 	, Namespaces() {
 
 }
@@ -244,29 +245,58 @@ void pelet::QualifiedNameClass::GrabNameAndComment(SemanticValueClass& value) {
 
 void pelet::QualifiedNameClass::Clear() {
 	while (!Namespaces.empty()) {
-		Namespaces.pop();
+		Namespaces.pop_back();
 	}
+	IsAbsolute = false;
 }
 
 void pelet::QualifiedNameClass::AddName(SemanticValueClass& value) {
 	if (value.Lexeme) {
-		Namespaces.push(*value.Lexeme);
+		Namespaces.insert(Namespaces.begin(), *value.Lexeme);
 	}
+}
+
+void pelet::QualifiedNameClass::MakeAbsolute() {
+	IsAbsolute = true;
+}
+
+UnicodeString pelet::QualifiedNameClass::Prepend(const pelet::QualifiedNameClass& name) const {
+	UnicodeString fullyQualified;
+	if (IsAbsolute) {
+		fullyQualified = ToAbsoluteSignature();
+	}
+	else {
+		if (name.Namespaces.empty()) {
+			
+			// this branch of  logic is needed when the code does not have any namespaces, do not
+			// add the namespace separator
+			fullyQualified = ToSignature();
+		}
+		else {
+			fullyQualified = name.ToAbsoluteSignature() + UNICODE_STRING_SIMPLE("\\") + ToSignature();
+		}
+	}
+	return fullyQualified;
 }
 
 UnicodeString pelet::QualifiedNameClass::ToSignature() const {
 	UnicodeString ret;
 
 	// create a local copy so that we can pop() from it
-	std::stack<UnicodeString> namespaces = Namespaces;
+	std::vector<UnicodeString> namespaces = Namespaces;
 	while (!namespaces.empty()) {
-		ret.append(namespaces.top());
-		namespaces.pop();
+		ret.append(namespaces.back());
+		namespaces.pop_back();
 		if (!namespaces.empty()) {
 			ret.append(UNICODE_STRING_SIMPLE("\\"));
 		}
 	}
 	return ret;
+}
+
+UnicodeString pelet::QualifiedNameClass::ToAbsoluteSignature() const {
+	UnicodeString sig = UNICODE_STRING_SIMPLE("\\") + ToSignature();
+	return sig;
 }
 
 pelet::ParametersListClass::ParametersListClass()
@@ -462,7 +492,9 @@ pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, C
 	, CurrentMember()
 	, CurrentQualifiedName()
 	, CurrentParametersList()
-	, CurrentFunctionCallExpression() 
+	, CurrentFunctionCallExpression()
+	, CurrentTraitAdaptation()
+	, Namespace()
 	, Class(classObserver)
 	, Member(memberObserver) 
 	, Function(functionObserver) 
@@ -523,7 +555,7 @@ void pelet::ObserverQuadClass::ClassFound(const int lineNumber) {
 		return;
 	}
 	if (Class) {
-		Class->ClassFound(CurrentClass.ClassName, CurrentClass.ToSignature(), CurrentClass.Comment, lineNumber);
+		Class->ClassFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentClass.ToSignature(), CurrentClass.Comment, lineNumber);
 	}
 	if (Member) {
 		NotifyMagicMethodsAndProperties(CurrentClass.Comment, lineNumber);
@@ -557,12 +589,12 @@ void pelet::ObserverQuadClass::ClassMemberFound(bool isProperty, const int lineN
 
 	if (Member && isProperty) {
 		UnicodeString propType = ReturnTypeFromPhpDocComment(comment, true);
-		Member->PropertyFound(className, propName, propType, comment, visibility, isConst, isStatic, lineNumber);
+		Member->PropertyFound(Namespace.ToAbsoluteSignature(), className, propName, propType, comment, visibility, isConst, isStatic, lineNumber);
 	}
 	else if (Member && !isProperty) {
 		UnicodeString propType = ReturnTypeFromPhpDocComment(comment, false);
 		UnicodeString signature = CurrentMember.ToMethodSignature(CurrentParametersList.ToSignature());
-		Member->MethodFound(className, propName, signature, propType, comment, visibility, isStatic, lineNumber); 
+		Member->MethodFound(Namespace.ToAbsoluteSignature(), className, propName, signature, propType, comment, visibility, isStatic, lineNumber); 
 	}
 	if (!isProperty) {
 		NotifyVariablesFromParameterList();
@@ -582,7 +614,7 @@ void pelet::ObserverQuadClass::ClassMethodEnd(pelet::SemanticValueClass& value) 
 		return;
 	}
 	if (Member) {
-		Member->MethodEnd(CurrentClass.ClassName, CurrentMember.MemberName, value.Pos);
+		Member->MethodEnd(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, value.Pos);
 	}
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
@@ -594,7 +626,7 @@ void pelet::ObserverQuadClass::TraitUseFound() {
 		return;
 	}
 	if (Member) {
-		Member->TraitUseFound(CurrentClass.ClassName, CurrentQualifiedName.ToSignature());
+		Member->TraitUseFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentQualifiedName.ToSignature());
 	}
 }
 
@@ -643,7 +675,7 @@ void pelet::ObserverQuadClass::TraitAliasFound(SemanticValueClass* traitAlias) {
 		CurrentTraitAdaptation.MethodVisibility = pelet::TokenClass::PUBLIC;
 	}
 	if (Member) {
-		Member->TraitAliasFound(CurrentClass.ClassName, 
+		Member->TraitAliasFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, 
 			CurrentTraitAdaptation.TraitMethodReference.ToSignature(),
 			CurrentTraitAdaptation.TraitMethod,
 			CurrentTraitAdaptation.TraitAlias, 
@@ -656,9 +688,91 @@ void pelet::ObserverQuadClass::TraitPrecedenceFound() {
 		return;
 	}
 	if (Member) {	
-		Member->TraitPrecedenceFound(CurrentClass.ClassName, 
+		Member->TraitPrecedenceFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, 
 			CurrentTraitAdaptation.TraitMethodReference.ToSignature(),
 			CurrentTraitAdaptation.TraitMethod);
+	}
+}
+
+void pelet::ObserverQuadClass::NamespaceSetCurrent() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	Namespace = CurrentQualifiedName;
+}
+
+void pelet::ObserverQuadClass::NamespaceSetToGlobal() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	Namespace.Clear();
+	CurrentQualifiedName.Clear();
+	
+}
+
+void pelet::ObserverQuadClass::NamespaceUse() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		UnicodeString name = UNICODE_STRING_SIMPLE("\\") + CurrentQualifiedName.ToSignature();
+		int32_t index = name.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
+		
+		//by default alias is the last part of the namespace name
+		UnicodeString alias;
+		if (index >= 0) {
+			alias.setTo(name, index + 1);
+		}
+		Class->NamespaceUseFound(name, alias);
+	}
+}
+
+void pelet::ObserverQuadClass::NamespaceUseAlias(pelet::SemanticValueClass& namespaceAlias) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		UnicodeString name = UNICODE_STRING_SIMPLE("\\") + CurrentQualifiedName.ToSignature();
+		UnicodeString alias;
+		if (namespaceAlias.Lexeme) {
+			alias = *namespaceAlias.Lexeme;
+		}
+		Class->NamespaceUseFound(name, alias);
+	}
+}
+
+void pelet::ObserverQuadClass::NamespaceUseAbsolute() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		
+		// no leading slash, already fully qualified
+		UnicodeString name = CurrentQualifiedName.ToSignature();
+		int32_t index = name.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
+		
+		//by default alias is the last part of the namespace name
+		UnicodeString alias;
+		if (index >= 0) {
+			alias.setTo(name, index + 1);
+		}
+		Class->NamespaceUseFound(name, alias);
+	}
+}
+
+void pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(pelet::SemanticValueClass& namespaceAlias) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		
+		// no leading slash, already absolute
+		UnicodeString name = CurrentQualifiedName.ToSignature();
+		UnicodeString alias;
+		if (namespaceAlias.Lexeme) {
+			alias = *namespaceAlias.Lexeme;
+		}
+		Class->NamespaceUseFound(name, alias);
 	}
 }
 
@@ -724,7 +838,7 @@ void pelet::ObserverQuadClass::FunctionFound(const int lineNumber) {
 	UnicodeString comment = CurrentMember.Comment;
 	UnicodeString returnType = ReturnTypeFromPhpDocComment(comment, false);
 	if (Function) {
-		Function->FunctionFound(functionName, signature, returnType, comment, lineNumber);
+		Function->FunctionFound(Namespace.ToAbsoluteSignature(), functionName, signature, returnType, comment, lineNumber);
 	}
 	NotifyVariablesFromParameterList();
 	DoCollectExpressions = Variable || ExpressionObserver;
@@ -742,7 +856,7 @@ void pelet::ObserverQuadClass::FunctionEnd(pelet::SemanticValueClass& value) {
 		return;
 	}
 	if (Function) {
-		Function->FunctionEnd(CurrentMember.MemberName, value.Pos);
+		Function->FunctionEnd(Namespace.ToAbsoluteSignature(), CurrentMember.MemberName, value.Pos);
 	}
 	CurrentMember.Clear();
 	CurrentParametersList.Clear();
@@ -790,7 +904,7 @@ void pelet::ObserverQuadClass::AssignmentExpressionFound() {
 	// no need to announce class members; they are already taken care of 
 	// by the ClassMember observer
 	if (Variable && symbol.Lexeme.caseCompare(UNICODE_STRING_SIMPLE("$this"), 0) != 0) {
-		Variable->VariableFound(className, functionName, symbol, comment);
+		Variable->VariableFound(Namespace.ToAbsoluteSignature(), className, functionName, symbol, comment);
 	}
 	ExpressionVariables.clear();
 }
@@ -807,12 +921,12 @@ void pelet::ObserverQuadClass::ExceptionCatchFound(pelet::SemanticValueClass& va
 	symbol.SetToObject();
 	symbol.Lexeme = CurrentExpression.Lexeme;
 	symbol.Comment = CurrentExpression.Comment;
-	UnicodeString name = CurrentExpression.Name.ToSignature();
+	UnicodeString name = CurrentExpression.Name.Prepend(Namespace);
 	if (!name.isEmpty()) {
 		symbol.ChainList.push_back(name);
 	}
 	if (Variable) {
-		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+		Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
 	}
 }
 
@@ -826,7 +940,7 @@ void pelet::ObserverQuadClass::GlobalVariableFound(pelet::SemanticValueClass& va
 		symbol.SetToObject();
 		symbol.Lexeme = CurrentExpression.Lexeme;
 		symbol.Comment = CurrentExpression.Comment;
-		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+		Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
 	}
 }
 
@@ -840,7 +954,7 @@ void pelet::ObserverQuadClass::ForeachVariableFound() {
 		symbol.SetToObject();
 		symbol.Lexeme = expr.Lexeme;
 		symbol.Comment = expr.Comment;
-		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+		Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
 	}
 }
 
@@ -854,7 +968,7 @@ void pelet::ObserverQuadClass::StaticVariableFound(pelet::SemanticValueClass& va
 		symbol.SetToObject();
 		symbol.Lexeme = CurrentExpression.Lexeme;
 		symbol.Comment = CurrentExpression.Comment;
-		Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
+		Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, symbol.Comment);
 	}
 }
 
@@ -908,7 +1022,7 @@ void pelet::ObserverQuadClass::ExpressionPushNewInstanceCall() {
 	pelet::ExpressionClass expr;
 	expr.Type = pelet::ExpressionClass::NEW_CALL;
 	expr.Name = CurrentQualifiedName;
-	UnicodeString name = expr.Name.ToSignature();
+	UnicodeString name = expr.Name.Prepend(Namespace);
 	if (!name.isEmpty()) {
 		expr.ChainList.push_back(name);
 	}
@@ -1026,7 +1140,7 @@ void pelet::ObserverQuadClass::CurrentExpressionPushAsFunctionCall() {
 	expr.Comment = CurrentFunctionCallExpression.Comment;
 	expr.CallArguments = CurrentFunctionCallExpression.CallArguments;
 	
-	UnicodeString name = expr.Name.ToSignature();
+	UnicodeString name = expr.Name.Prepend(Namespace);
 	if (!name.isEmpty()) {
 		expr.ChainList.push_back(name + UNICODE_STRING_SIMPLE("()"));
 		ExpressionVariables.push_back(expr);
@@ -1095,7 +1209,7 @@ void pelet::ObserverQuadClass::NotifyVariablesFromParameterList() {
 				symbol.Type = pelet::SymbolClass::OBJECT;
 			}
 			symbol.Lexeme = paramName;
-			Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, comment);
+			Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, comment);
 		}
 	}
 
@@ -1214,7 +1328,7 @@ void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString
 				next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
 				if (!symbol.Lexeme.isEmpty() && !symbol.PhpDocType.isEmpty()) {					
-					Variable->VariableFound(CurrentClass.ClassName, CurrentMember.MemberName, symbol, phpDocComment);
+					Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, phpDocComment);
 					next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				}
 			}
@@ -1273,7 +1387,7 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				Member->PropertyFound(CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), 
+				Member->PropertyFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), 
 					pelet::TokenClass::PUBLIC, false, false, lineNumber);
 				memberName.remove();
 				memberType.remove();
@@ -1316,7 +1430,7 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
 					memberName.remove(memberName.length() - 2, 2);
 				}
-				Member->MethodFound(CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), 
+				Member->MethodFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), 
 					pelet::TokenClass::PUBLIC, false, lineNumber);
 			}
 			if (!next) {
@@ -1395,6 +1509,13 @@ void pelet::ObserverQuadClass::QualifiedNameAddName(pelet::SemanticValueClass& n
 		return;
 	}
 	CurrentQualifiedName.AddName(nameValue);
+}
+
+void pelet::ObserverQuadClass::QualifiedNameMakeAbsolute() {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	CurrentQualifiedName.MakeAbsolute();
 }
 
 void pelet::ObserverQuadClass::ParametersListSetName(pelet::SemanticValueClass& nameValue, bool isReference) {

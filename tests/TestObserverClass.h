@@ -39,41 +39,44 @@ class TestObserverClass :
 public:
 
 	
-	std::vector<UnicodeString> ClassName, ClassSignature, ClassComment,
-						MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
-						PropertyClassName, PropertyName, PropertyType, PropertyComment,
-						FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
-						VariableClassName, VariableMethodName, VariableName, VariableComment,
+	std::vector<UnicodeString> ClassNamespace, ClassName, ClassSignature, ClassComment,
+						NamespaceUseName, NamespaceAlias,
+						MethodClassNamespace, MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
+						PropertyClassNamespace, PropertyClassName, PropertyName, PropertyType, PropertyComment,
+						FunctionNamespace, FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
+						VariableClassNamespace, VariableClassName, VariableMethodName, VariableName, VariableComment,
 						VariableChainList, VariablePhpDocType,
 						DefinedName, DefinedValue, DefinedComment,
-						MethodEndClassName, MethodEndMethodName,
+						MethodEndClassNamespace, MethodEndClassName, MethodEndMethodName,
 						IncludeFile,
-						TraitClassName, TraitUsed, TraitMethodName, TraitAlias;
+						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
 	std::vector<pelet::SymbolClass::Types> VariableTypes;
 	std::vector<int> MethodEndPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
-	void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+	void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
+			
+	void NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias);
 	
-	void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber);
 
-	void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos);
+	void MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, int pos);
 	
-	void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+	void PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
 			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber);
 	
-	void FunctionFound(const UnicodeString& functionName, 
+	void FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber);
 
-	void FunctionEnd(const UnicodeString& functionName, int pos);
+	void FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos);
 	
-	void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+	void VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 		const pelet::SymbolClass& symbol, const UnicodeString& comment);
 	
 	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -81,13 +84,13 @@ public:
 
 	void IncludeFound(const UnicodeString& file, const int lineNumber);
 
-	void TraitUseFound(const UnicodeString& className, const UnicodeString& traitName);
+	void TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitName);
 	
-	void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName, 
+	void TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName, 
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
 
-	void TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+	void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName);
 };
 

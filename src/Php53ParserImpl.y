@@ -251,25 +251,26 @@ top_statement:
 	|	function_declaration_statement
 	|	class_declaration_statement
 	|	T_HALT_COMPILER '(' ')' ';'
-	|	T_NAMESPACE namespace_name ';'
-	|	T_NAMESPACE namespace_name '{'
+	|	T_NAMESPACE namespace_name ';'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); }
+	|	T_NAMESPACE namespace_name '{'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); }
 		top_statement_list '}'
-	|	T_NAMESPACE '{'
+	|	T_NAMESPACE '{'							{ observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); }
 		top_statement_list '}'
 	|	T_USE use_declarations ';'
 	|	constant_declaration ';'
 ;
 
 use_declarations:
-		use_declarations ',' use_declaration
-	|	use_declaration
+		use_declarations ',' 									{ observers.QualifiedNameClear(); }
+		use_declaration											{ observers.QualifiedNameClear(); }
+	|	use_declaration											{ observers.QualifiedNameClear(); }
 ;
 
 use_declaration:
-		namespace_name
-	|	namespace_name T_AS T_STRING
-	|	T_NS_SEPARATOR namespace_name
-	|	T_NS_SEPARATOR namespace_name T_AS T_STRING
+		namespace_name											{ observers.NamespaceUse(); }
+	|	namespace_name T_AS T_STRING							{ observers.NamespaceUseAlias($3); }
+	|	T_NS_SEPARATOR namespace_name							{ observers.NamespaceUseAbsolute(); }
+	|	T_NS_SEPARATOR namespace_name T_AS T_STRING				{ observers.NamespaceUseAbsoluteAlias($3); }
 ;
 
 constant_declaration:
@@ -716,13 +717,13 @@ lexical_var_list:
 ;
 
 function_call:
-		namespace_name '('								{ observers.FunctionCallStart(); }
-		function_call_parameter_list	')'				{ observers.FunctionCallEnd(analyzer.GetLineNumber()); }
-	|	T_NAMESPACE T_NS_SEPARATOR 
-		namespace_name '(' 
-		function_call_parameter_list ')' 
-	|	T_NS_SEPARATOR namespace_name '(' 
-				function_call_parameter_list ')' 
+		namespace_name '('																{ observers.FunctionCallStart(); }
+		function_call_parameter_list	')'												{ observers.FunctionCallEnd(analyzer.GetLineNumber()); }
+	|	T_NAMESPACE T_NS_SEPARATOR 														
+		namespace_name '(' 																{ observers.FunctionCallStart(); }
+		function_call_parameter_list ')' 												{ observers.FunctionCallEnd(analyzer.GetLineNumber()); }
+	|	T_NS_SEPARATOR namespace_name '(' 												{ observers.QualifiedNameMakeAbsolute(); observers.FunctionCallStart(); }
+				function_call_parameter_list ')'										{ observers.FunctionCallEnd(analyzer.GetLineNumber()); } 
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
 			function_call_parameter_list')'
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
@@ -739,13 +740,13 @@ class_name:
 		T_STATIC
 	|	namespace_name
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name
-	|	T_NS_SEPARATOR namespace_name
+	|	T_NS_SEPARATOR namespace_name								{ observers.QualifiedNameMakeAbsolute(); }
 ;
 
 fully_qualified_class_name:
 		namespace_name
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name
-	|	T_NS_SEPARATOR namespace_name
+	|	T_NS_SEPARATOR namespace_name								{ observers.QualifiedNameMakeAbsolute(); }
 ;
 
 class_name_reference:

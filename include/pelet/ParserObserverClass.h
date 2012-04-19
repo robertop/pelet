@@ -152,13 +152,14 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a class, interface, or trait is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
 	 *        for example "extends UserClass implements Runnable"
 	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
-	virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
+	virtual void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) = 0;
 	
 	/**
@@ -180,6 +181,14 @@ public:
 	 * @param lineNumber the line number (1-based) that the include/ was found in
 	 */
 	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) = 0;
+	
+	/**
+	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
+	 * 
+	 * @param UnicodeString nameSpace the fully qualified namespace that is being imported
+	 * @param alias any alias to the nameSpace.  alias may be empty.
+	 */
+	virtual void NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias) = 0;
 
 };
 
@@ -196,6 +205,7 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a class method is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& methodName the name of the method that was found
 	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
@@ -207,13 +217,14 @@ public:
 	 * @param isStatic true if the method is static
 	 * @param lineNumber the line number (1-based) that the method was found in
 	 */
-	virtual void MethodFound(const UnicodeString& className, const UnicodeString& methodName, 
+	virtual void MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
 		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) = 0;
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& propertyName the name of the property that was found
 	 * @param const UnicodeString& propertyType the property's type, as dictated by the PHPDoc comment
@@ -223,30 +234,35 @@ public:
 	 * @param isStatic true if the property is static
 	 * @param lineNumber the line number (1-based) that the propertywas found in
 	 */
-	virtual void PropertyFound(const UnicodeString& className, const UnicodeString& propertyName, 
+	virtual void PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) = 0;
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
 	 *
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& methodName the name of the method that was found
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void MethodEnd(const UnicodeString& className, const UnicodeString& methodName, int pos) = 0;
+	virtual void MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, 
+		const UnicodeString& methodName, int pos) = 0;
 
 	/**
 	 * Override this method to perform custom logic when a trait user statement has been found
 	 *
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class
 	 * @param className the fully qualified name of the class that uses the trait
 	 * @param traitName the fully qualified name of the trait to be used 
 	 */
-	virtual void TraitUseFound(const UnicodeString& className, const UnicodeString& traitName) = 0;
+	virtual void TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, 
+		const UnicodeString& traitName) = 0;
 	
 	/**
 	 * Override this method to perform custom logic when a trait method has been aliased
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that uses the trait
 	 * @param className the fully qualified name of the class that uses the trait
 	 * @param traitUsedClassName the class name of the trait to be aliased
 	 * @param traitMethodName the name of the trait method that is to be aliased (hidden)
@@ -255,7 +271,7 @@ public:
 	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
 	 * @param visibility the visbility of the trait method. may be PUBLIC if the visibility was not changed.
 	 */
-	virtual void TraitAliasFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+	virtual void TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, TokenClass::TokenIds visibility) = 0;
 
@@ -263,11 +279,12 @@ public:
 	 * Override this method to perform custom logic when a trait method conflict has been resolved
 	 * (an insteadof operation) 
 	 *
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param className the fully qualified name of the class that uses the trait
 	 * @param traitUsedClassName the class name of the trait to be used
 	 * @param traitMethodName name of the trait method that is to being resolved
 	 */
-	virtual void TraitPrecedenceFound(const UnicodeString& className, const UnicodeString& traitUsedClassName,
+	virtual void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName) = 0;
 };
 
@@ -283,6 +300,7 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a function is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the function that was found
 	 * @param const UnicodeString& functionName the name of the method that was found
 	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
 	 *        any extra white space is removed, and every token is separated by one space only. ie. for the code
@@ -291,15 +309,17 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 * @param lineNumber the line number (1-based) that the function was found in
 	 */
-	virtual void FunctionFound(const UnicodeString& functionName, 
+	virtual void FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) = 0;
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
+	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the function that was found
 	 * @param const UnicodeString& functionName the name of the method that was found
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void FunctionEnd(const UnicodeString& functionName, int pos) = 0;
+	virtual void FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos) = 0;
 };
 
 /**
@@ -326,6 +346,7 @@ public:
 	 *           the chain list "$this" "->getName()" and "->toString()".
 	 *
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the containing class / function.
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.
 	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
@@ -333,7 +354,7 @@ public:
 	 * @param const SymbolClass& symbol the name  & type of the variable that was found
 	 * @param const UnicodeString& comment PHPDoc attached to the variable
 	 */
-	virtual void VariableFound(const UnicodeString& className, const UnicodeString& methodName, 
+	virtual void VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
 		const SymbolClass& symbol, const UnicodeString& comment) = 0;
 };
 
@@ -397,7 +418,7 @@ public:
 };
 
 /**
- * This represents a fully qualified name; it may have any number of namespaces attached to
+ * This represents a qualified name; it may have any number of namespaces attached to
  * it.
  */
 class PELET_API QualifiedNameClass {
@@ -405,17 +426,41 @@ class PELET_API QualifiedNameClass {
 public:
 
 	UnicodeString Comment;
+	bool IsAbsolute;
 
 	QualifiedNameClass();
 	void Clear();
 	void GrabNameAndComment(SemanticValueClass& value);
 	void AddName(SemanticValueClass& value);
+	void MakeAbsolute();
 
 	UnicodeString ToSignature() const;
+	
+	
+	/** 
+	 * prepends a namespace separator '\' to this namespace name
+	 */
+	UnicodeString ToAbsoluteSignature() const;
+	
+	/**
+	 * @param name the namespace to prepend to this namespace. This is the current namespace
+	 *        that the code belongs to.
+	 * @return concatenation of name and this name, depending on whether this name is already
+	 *         fully qualified (IsAbsolute = true)
+	 * 
+	 * Examples
+	 * if name = "First\Child" and this = "Parent\Classname"
+	 * then this method will return "\First\Child\Parent\Classname"
+	 * 
+	 * if this name IsAbsolute = TRUE and name = "First\Child" and this = "\Parent\Classname"
+	 * then this method will return "\Parent\Classname"
+	 * since this name is absolute no need to prepend the given namespace
+	 */
+	UnicodeString Prepend(const QualifiedNameClass& name) const;
 
 private:
 
-	std::stack<UnicodeString> Namespaces;
+	std::vector<UnicodeString> Namespaces;
 		
 };
 
@@ -443,6 +488,7 @@ public:
 	void Clear();
 
 	UnicodeString ToSignature() const;
+	
 };
 
 /**
@@ -805,6 +851,8 @@ public:
 	void QualifiedNameGrabNameAndComment(SemanticValueClass& nameValue);
 
 	void QualifiedNameAddName(SemanticValueClass& nameValue);
+	
+	void QualifiedNameMakeAbsolute();
 
 	void ParametersListSetName(SemanticValueClass& nameValue, bool isReference);
 
@@ -832,7 +880,6 @@ public:
 
 	void ClassMemberAppendToComment(SemanticValueClass& commentValue);
 
-		
 	/**
 	 * the QualifiedName is a new trait being used in the current class
 	 */
@@ -862,7 +909,37 @@ public:
 	 *        ie a trait method is being made protected or private
 	 */
 	void TraitAliasFound(SemanticValueClass* traitAlias);
+	
+	/**
+	 * Set the 'current' namespace; the namespace declaration
+	 */
+	void NamespaceSetCurrent();
+	
+	/**
+	 * Set the 'current' namespace to be the global namespace
+	 */
+	void NamespaceSetToGlobal();
+	
+	/**
+	 * Notify that a namespace was imported.
+	 */
+	void NamespaceUse();
+	
+	/**
+	 * Notify that a namespace was imported using an alias.
+	 */	
+	void NamespaceUseAlias(SemanticValueClass& namespaceAlias);
 
+	/**
+	 * Notify that an absolute namespace was imported.
+	 */
+	void NamespaceUseAbsolute();
+	
+	/**
+	 * Notify that an absolute namespace was imported with an alias.
+	 */
+	void NamespaceUseAbsoluteAlias(SemanticValueClass& namespaceAlias);
+	
 	/**
 	 * add a new Paramter to the CurrentParametersList 
 	 * using the CurrentQualifiedName as the type
@@ -1032,13 +1109,6 @@ public:
 	 * expression. Will NOT push the expression to the ExpressionVariablesList
 	 */
 	void CurrentExpressionPushAsClassConstant(SemanticValueClass& scopeOperatorValue, SemanticValueClass& constantNameValue);
- 	
-	/**
-	 * Adds the current expression to the ExpressionVariables list. This function
-	 * should be called once a variable chain has completed (ie after 
-	 * "$this->prop1->method1()" 
-	 */
-	//void CurrentVariableComplete();
 
 	/**
 	 * Resets the current expression.
@@ -1130,6 +1200,11 @@ private:
 	 */
 	TraitAdaptationSymbolClass CurrentTraitAdaptation;
 
+	/**
+	 * The current namespace
+	 */
+	QualifiedNameClass Namespace;
+	
 	/**
 	 * This object will NOT own the pointer
 	 */

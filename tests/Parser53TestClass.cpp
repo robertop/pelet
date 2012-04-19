@@ -621,6 +621,74 @@ TEST_FIXTURE(Parser53TestClass, IncludeLineNumber) {
 	CHECK_EQUAL(7, Observer.IncludeLineNumber[3]);
 }
 
+TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetFunctionObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace First;\n"
+		"class MyClass {}\n"
+		"function work() {}\n"
+		"namespace Second {\n"
+		"class MyClass {}\n"
+		"function work() {}"
+		"}\n"
+		"namespace First\\Child {\n"
+		"class MyClass {} \n"
+		"}\n"
+		"namespace {\n"
+		"class MyClass {}\n"
+		"function work() {}"
+		"}\n"
+		"use First\\MyClass as FClass;\n"
+		"use Second\\MyClass;\n"
+		
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.NamespaceUseName);
+	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.NamespaceUseName[0]);
+	CHECK_UNISTR_EQUALS("\\Second\\MyClass", Observer.NamespaceUseName[1]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.NamespaceAlias);
+	CHECK_UNISTR_EQUALS("FClass", Observer.NamespaceAlias[0]);
+	CHECK_UNISTR_EQUALS("MyClass", Observer.NamespaceAlias[1]);
+	
+	CHECK_VECTOR_SIZE(4, Observer.ClassNamespace);
+	CHECK_UNISTR_EQUALS("\\First", Observer.ClassNamespace[0]);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.ClassNamespace[1]);
+	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.ClassNamespace[2]);
+	CHECK_UNISTR_EQUALS("\\", Observer.ClassNamespace[3]);
+	
+	CHECK_VECTOR_SIZE(3, Observer.FunctionNamespace);
+	CHECK_UNISTR_EQUALS("\\First", Observer.FunctionNamespace[0]);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.FunctionNamespace[1]);
+	CHECK_UNISTR_EQUALS("\\", Observer.FunctionNamespace[2]);
+}
+
+TEST_FIXTURE(Parser53TestClass, NamespaceVariables) {
+	Parser.SetVariableObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace First;\n"
+		"$first =  new MyClass();\n"
+		"$second = new ChildNamespace\\MyClass();\n"
+		"$third = new \\MyClass();\n"
+		"$fourth = \\strlen('one'); \n"
+		"$fifth = ChildNamespace\\strlen('one');\n"
+		"$sixth = namespace\\strlen('one');\n"
+		"$seventh = new namespace\\MyClass();\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(7, Observer.VariableTypes);
+	CHECK_VECTOR_SIZE(7, Observer.VariableChainList);
+	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\MyClass", Observer.VariableChainList[1]);
+	CHECK_UNISTR_EQUALS("\\MyClass", Observer.VariableChainList[2]);
+	CHECK_UNISTR_EQUALS("\\strlen()", Observer.VariableChainList[3]);
+	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\strlen()", Observer.VariableChainList[4]);
+	CHECK_UNISTR_EQUALS("\\First\\strlen()", Observer.VariableChainList[5]);
+	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[6]);
+}
+
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	CHECK(Parser.LintFile(file, LintResults));
