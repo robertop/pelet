@@ -365,6 +365,32 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	CHECK(Observer.PropertyConsts[0]);
 }
 
+TEST_FIXTURE(Parser53TestClass, ScanStringWithReturnAnnotationsNamespaces) {
+	Parser.SetClassMemberObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace First;\n"
+		"use Second\\Child as C;"
+		"abstract class MyRunnable implements Runnable { \n"
+		"	/** @return Result */"
+		"	function run() {} \n"
+		""
+		"	/** @return C\\Result */"
+		"	function stop() {} \n"
+		"} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.MethodClassName);
+	CHECK_UNISTR_EQUALS("MyRunnable", Observer.MethodClassName[0]);
+	CHECK_UNISTR_EQUALS("run", Observer.MethodName[0]);
+	CHECK_UNISTR_EQUALS("stop", Observer.MethodName[1]);
+	CHECK_VECTOR_SIZE(2, Observer.MethodReturnType);
+	CHECK_UNISTR_EQUALS("\\First\\Result", Observer.MethodReturnType[0]);
+	CHECK_UNISTR_EQUALS("\\Second\\Child\\Result", Observer.MethodReturnType[1]);
+	CHECK_VECTOR_SIZE(2, Observer.MethodSignature);
+	CHECK_UNISTR_EQUALS("public function run()", Observer.MethodSignature[0]);
+	CHECK_UNISTR_EQUALS("public function stop()", Observer.MethodSignature[1]);
+}
+
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 	Parser.SetVariableObserver(&Observer);
 
@@ -433,6 +459,28 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[13]);
 }
 
+TEST_FIXTURE(Parser53TestClass, ScanStringWithAllTypeHintingNamespaces) {
+	Parser.SetVariableObserver(&Observer);
+
+	UnicodeString code = _U(
+		"namespace First;\n"
+		"function workFunc(Globals $srcGlobal, Second\\Globals $second) {\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.VariableMethodName);
+	for (size_t i = 0; i < 2; ++i) {
+		CHECK_UNISTR_EQUALS("workFunc", Observer.VariableMethodName[i]);
+	}
+	CHECK_VECTOR_SIZE(2, Observer.VariableName);
+	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[0]);
+	CHECK_UNISTR_EQUALS("$second", Observer.VariableName[1]);
+	CHECK_VECTOR_SIZE(2, Observer.VariableChainList);
+	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableChainList[1]);
+}
+
+
 TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetVariableObserver(&Observer);
@@ -462,7 +510,6 @@ TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 		"	 */\n"
 		"	function __call($name, $arg1, $arg2) {\n"
 		"		/* @var $newName NameClass */\n"
-		"		$newName = factoryName();\n"
 		"		return $newName->toString();\n"
 		"	}\n"
 		"}"
@@ -495,21 +542,22 @@ TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	CHECK_UNISTR_EQUALS("NameClass", Observer.PropertyType[2]);
 	CHECK_UNISTR_EQUALS("CName", Observer.PropertyType[3]);
 	
-	// TODO should be 4: 3 function parameters + newName (should not get duplicated)
-	CHECK_VECTOR_SIZE(5, Observer.VariableName);
+	// should be 4: 3 function parameters + newName
+	CHECK_VECTOR_SIZE(4, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[1]);
 	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[2]);
 	CHECK_UNISTR_EQUALS("$newName", Observer.VariableName[3]);
-	CHECK_UNISTR_EQUALS("$newName", Observer.VariableName[4]);
-	CHECK_VECTOR_SIZE(5, Observer.VariableChainList);
-	CHECK_UNISTR_EQUALS("factoryName()", Observer.VariableChainList[4]);
+	CHECK_VECTOR_SIZE(4, Observer.VariableChainList);
+	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariableChainList[3]);
 	
-	// TODO; this is a bug the assertions fail
-	//CHECK_VECTOR_SIZE(5, Observer.VariablePhpDocType);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariablePhpDocType[0]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariablePhpDocType[1]);
-	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[2]);
+	CHECK_VECTOR_SIZE(4, Observer.VariablePhpDocType);
+	
+	// type hints are not read from PHPDoc as of now
+	//CHECK_UNISTR_EQUALS("string", Observer.VariableChainList[0]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[1]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[2]);
+	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[3]);
 }
 
 TEST_FIXTURE(Parser53TestClass, MethodEndPos) {

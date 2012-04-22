@@ -28,6 +28,8 @@ These are the cases that pelet supports
 - Uses proper tokenizing techniques (it will ignore a "class" if it occurs inside of a comment or a string).
 - Parses PHPDoc comments to assign types to class members, function parameters and return values.
 - Can read type hints from a function / method signature
+- Reads namespaces and aliases, can handle qualified, fully qualified, and not qualified namespaces
+- Full PHP 5.4 support; traits, trait aliasing, array dereferencing, and short array syntax.
 - Fully tested (see tests/ subdirectory in the distribution)
 
 Requirements
@@ -99,7 +101,7 @@ when it enounters an artifact.
 
 	// create a class to "observe" for artifacts
 	class SampleObserver : public pelet::ClassObserverClass {
-		virtual void ClassFound(const UnicodeString& className, 
+		virtual void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, 
 			const UnicodeString& signature, const UnicodeString& comment) {
 			// your code to handle new classes goes here
 		}
@@ -140,8 +142,3 @@ Contributing
 -------------
 Contributions will be taken in form of Github pull requests. Before creating a pull request, please 
 verify that your changes do not break the standards outlined in the CODING_STANDARDS file.
-
-TODO
------
-- PHP 5.4 support (array dereferencing, traits)
-- Namespaces: While are captured by the parser, they are not visible to the caller.

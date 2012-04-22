@@ -409,7 +409,7 @@ public:
  * and unions values have to be Plain Old Data types (which UnicodeString is not).
  * Also, this cannot have a non-trival constructor; Init() should be called right
  * after object construction.
- * Be sure to init and free with the ParserObserverClas; that way memory can be 
+ * Be sure to init and free with the ParserObserverClass; that way memory can be 
  * cleaned up correctly.
  */
 class PELET_API SemanticValueClass {
@@ -417,13 +417,13 @@ class PELET_API SemanticValueClass {
 public:
 
 	/**
-	 * The textual value; can be NULL. This object will own the pointer.
+	 * The textual value; can be NULL. This object will NOT own the pointer.
 	 */
 	UnicodeString* Lexeme;
 
 	/**
 	 * This is the **PHPDoc** comment that was immediately before this token.
-	 * This can be NULL. This object will own the pointer.
+	 * This can be NULL. This object will NOT own the pointer.
 	 */
 	UnicodeString* Comment;
 
@@ -1213,6 +1213,17 @@ private:
 	 * @return UnicodeString fully qualified namespace
 	 */
 	UnicodeString AbsoluteNamespaceClass(const QualifiedNameClass& name);
+	
+	/**
+	 * Turn a PHPDoc type into a fully qualified class name. The phpdoc type will get
+	 * qualified according to the same PHP rules as a type hint; the current namespace
+	 * and any aliases will be correctly accounted for.
+	 * 
+	 * @param phpDocType the parsed type in the PHPDoc, ie. in "@return StringClass" then this parameter
+	 *        should be "StringClass"
+	 * @param the fully qualified class name
+	 */
+	UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType);
 
 	/**
 	 * the class that is currently being parsed.

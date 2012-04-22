@@ -888,8 +888,10 @@ void pelet::ObserverQuadClass::FunctionFound(const int lineNumber) {
 void pelet::ObserverQuadClass::CreateParameterWithOptionalClassName() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
-	}
-	CurrentParametersList.CreateWithOptionalType(CurrentQualifiedName.ToSignature());
+	}	
+	CurrentParametersList.CreateWithOptionalType(AbsoluteNamespaceClass(CurrentQualifiedName));
+	CurrentQualifiedName.Clear();
+	
 }
 
 void pelet::ObserverQuadClass::FunctionEnd(pelet::SemanticValueClass& value) {
@@ -1241,9 +1243,9 @@ void pelet::ObserverQuadClass::NotifyVariablesFromParameterList() {
 	if (paramCount > 0 && Variable) {
 		UnicodeString paramName,
 			paramType;
-		pelet::SymbolClass symbol;
 		UnicodeString comment; // no comment it is lost in the variables
 		for (size_t i = 0; i < paramCount; ++i) {
+			pelet::SymbolClass symbol;
 			CurrentParametersList.Param(i, paramName, paramType);
 			if (!paramType.isEmpty()) {
 				symbol.ChainList.push_back(paramType);
@@ -1306,7 +1308,41 @@ UnicodeString pelet::ObserverQuadClass::ReturnTypeFromPhpDocComment(const Unicod
 			++pos;
 		}
 	}
-	return returnType.trim();
+	returnType = returnType.trim();
+	return PhpDocTypeToAbsoluteClassname(returnType);
+	
+}
+
+UnicodeString pelet::ObserverQuadClass::PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType) {
+	
+	// any of the "basic" types will never use the current namespace
+	// these were taken from http://www.phpdoc.org/docs/latest/for-users/types.html
+	if (UNICODE_STRING_SIMPLE("string").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("integer").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("int").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("boolean").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("bool").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("float").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("double").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("object").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("mixed").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("array").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("resource").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("void").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("null").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("callback").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("false").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("true").caseCompare(phpDocType, 0) == 0 ||
+		UNICODE_STRING_SIMPLE("self").caseCompare(phpDocType, 0) == 0) {
+		return phpDocType;
+	}
+	pelet::QualifiedNameClass name;
+	pelet::SemanticValueClass value;
+	
+	// this is OK because SemanticValueClass does not own the pointer
+	value.Lexeme = &phpDocType;
+	name.AddName(value);
+	return AbsoluteNamespaceClass(name);
 }
 
 /**
@@ -1368,7 +1404,10 @@ void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString
 			if (next) {
 				next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				FillNameOrType(next, symbol.Lexeme, symbol.PhpDocType);
-				if (!symbol.Lexeme.isEmpty() && !symbol.PhpDocType.isEmpty()) {					
+				if (!symbol.Lexeme.isEmpty() && !symbol.PhpDocType.isEmpty()) {
+					
+					// handle namespaces in the phpDoc
+					symbol.PhpDocType = PhpDocTypeToAbsoluteClassname(symbol.PhpDocType);
 					Variable->VariableFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, CurrentMember.MemberName, symbol, phpDocComment);
 					next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				}
@@ -1428,6 +1467,9 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 			FillNameOrType(next, memberName, memberType);
 			if (!memberName.isEmpty() && !memberType.isEmpty()) {
+				
+				// handles namespaces in the magic properties
+				memberType = PhpDocTypeToAbsoluteClassname(memberType);
 				Member->PropertyFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""), 
 					pelet::TokenClass::PUBLIC, false, false, lineNumber);
 				memberName.remove();
@@ -1471,6 +1513,9 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
 					memberName.remove(memberName.length() - 2, 2);
 				}
+				
+				// handles namespaces in the magic properties
+				memberType = PhpDocTypeToAbsoluteClassname(memberType);
 				Member->MethodFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""), 
 					pelet::TokenClass::PUBLIC, false, lineNumber);
 			}
@@ -1564,12 +1609,14 @@ void pelet::ObserverQuadClass::ParametersListSetName(pelet::SemanticValueClass& 
 		return;
 	}
 	CurrentParametersList.SetName(nameValue, isReference);
+	CurrentQualifiedName.Clear();
 }
 
 void pelet::ObserverQuadClass::ParametersListCreate() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
+	CurrentQualifiedName.Clear();
 	CurrentParametersList.Create();
 }
 
