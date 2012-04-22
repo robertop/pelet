@@ -3678,17 +3678,17 @@ yyreduce:
 
   case 11:
 
-    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); ;}
+    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
     break;
 
   case 12:
 
-    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); ;}
+    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
     break;
 
   case 14:
 
-    { observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); ;}
+    { observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
     break;
 
   case 18:

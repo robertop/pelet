@@ -293,6 +293,30 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassTypes) {
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends AbstractRunnable implements MyRunnable", Observer.ClassSignature[3]);
 }
 
+
+TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithNamespaces) {
+	Parser.SetClassObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace First;\n"
+		"interface Runnable {}\n"
+		"interface MyRunnable extends Runnable {} \n"
+		"abstract class AbstractRunnable implements Runnable, \\ArrayAccess {}\n"
+		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(4, Observer.ClassName);
+	CHECK_UNISTR_EQUALS("Runnable", Observer.ClassName[0]);
+	CHECK_UNISTR_EQUALS("MyRunnable", Observer.ClassName[1]);
+	CHECK_UNISTR_EQUALS("AbstractRunnable", Observer.ClassName[2]);
+	CHECK_UNISTR_EQUALS("TrueRunnable", Observer.ClassName[3]);
+	CHECK_VECTOR_SIZE(4, Observer.ClassSignature);
+	CHECK_UNISTR_EQUALS("interface Runnable", Observer.ClassSignature[0]);
+	CHECK_UNISTR_EQUALS("interface MyRunnable extends \\First\\Runnable", Observer.ClassSignature[1]);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
+	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
+}
+
+
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	Parser.SetClassMemberObserver(&Observer);
 	UnicodeString code = _U(
@@ -637,20 +661,23 @@ TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
 		"}\n"
 		"namespace {\n"
 		"class MyClass {}\n"
-		"function work() {}"
+		"function work() {}\n"
 		"}\n"
 		"use First\\MyClass as FClass;\n"
 		"use Second\\MyClass;\n"
+		"use \\First\\Child; \n"
 		
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(2, Observer.NamespaceUseName);
+	CHECK_VECTOR_SIZE(3, Observer.NamespaceUseName);
 	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.NamespaceUseName[0]);
 	CHECK_UNISTR_EQUALS("\\Second\\MyClass", Observer.NamespaceUseName[1]);
+	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.NamespaceUseName[2]);
 	
-	CHECK_VECTOR_SIZE(2, Observer.NamespaceAlias);
+	CHECK_VECTOR_SIZE(3, Observer.NamespaceAlias);
 	CHECK_UNISTR_EQUALS("FClass", Observer.NamespaceAlias[0]);
 	CHECK_UNISTR_EQUALS("MyClass", Observer.NamespaceAlias[1]);
+	CHECK_UNISTR_EQUALS("Child", Observer.NamespaceAlias[2]);
 	
 	CHECK_VECTOR_SIZE(4, Observer.ClassNamespace);
 	CHECK_UNISTR_EQUALS("\\First", Observer.ClassNamespace[0]);
@@ -668,6 +695,7 @@ TEST_FIXTURE(Parser53TestClass, NamespaceVariables) {
 	Parser.SetVariableObserver(&Observer);
 	UnicodeString code = _U(
 		"namespace First;\n"
+		"use Second\\Child as C;\n"
 		"$first =  new MyClass();\n"
 		"$second = new ChildNamespace\\MyClass();\n"
 		"$third = new \\MyClass();\n"
@@ -675,11 +703,11 @@ TEST_FIXTURE(Parser53TestClass, NamespaceVariables) {
 		"$fifth = ChildNamespace\\strlen('one');\n"
 		"$sixth = namespace\\strlen('one');\n"
 		"$seventh = new namespace\\MyClass();\n"
+		"$eigth = new C\\MyClass();\n"
 	);
 	
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(7, Observer.VariableTypes);
-	CHECK_VECTOR_SIZE(7, Observer.VariableChainList);
+	CHECK_VECTOR_SIZE(8, Observer.VariableChainList);
 	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[0]);
 	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\MyClass", Observer.VariableChainList[1]);
 	CHECK_UNISTR_EQUALS("\\MyClass", Observer.VariableChainList[2]);
@@ -687,6 +715,7 @@ TEST_FIXTURE(Parser53TestClass, NamespaceVariables) {
 	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\strlen()", Observer.VariableChainList[4]);
 	CHECK_UNISTR_EQUALS("\\First\\strlen()", Observer.VariableChainList[5]);
 	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[6]);
+	CHECK_UNISTR_EQUALS("\\Second\\Child\\MyClass", Observer.VariableChainList[7]);
 }
 
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
@@ -768,6 +797,7 @@ TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnFalseOnBadCode) {
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
+	fclose(file);
 }
 
 TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnFalseOnBadCode) {

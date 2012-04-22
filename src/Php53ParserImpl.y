@@ -251,10 +251,10 @@ top_statement:
 	|	function_declaration_statement
 	|	class_declaration_statement
 	|	T_HALT_COMPILER '(' ')' ';'
-	|	T_NAMESPACE namespace_name ';'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); }
-	|	T_NAMESPACE namespace_name '{'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); }
+	|	T_NAMESPACE namespace_name ';'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); }
+	|	T_NAMESPACE namespace_name '{'			{ observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); }
 		top_statement_list '}'
-	|	T_NAMESPACE '{'							{ observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); }
+	|	T_NAMESPACE '{'							{ observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); }
 		top_statement_list '}'
 	|	T_USE use_declarations ';'
 	|	constant_declaration ';'

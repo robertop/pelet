@@ -31,6 +31,7 @@
 #include <pelet/Api.h>
 #include <stack>
 #include <vector>
+#include <map>
 
 namespace pelet {
 
@@ -139,6 +140,15 @@ the new artifacts to the users of the pelet library.
 class SymbolClass;
 class ExpressionClass;
 
+/**
+ * Case-sensitive string comparator for use as STL Predicate
+ */
+class UnicodeStringComparatorClass {
+public:
+		bool operator()(const UnicodeString& str1, const UnicodeString& str2) const {
+			return (str1.compare(str2) < (int8_t)0) ? true : false;
+		}
+};
 
 /**
  * Interface to inherit from when needing to be notified when a class structure is encountered.
@@ -152,10 +162,13 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a class, interface, or trait is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
+	 * @param const UnicodeString& namespace the fully qualified "declared" namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
-	 *        for example "extends UserClass implements Runnable"
+	 *        for example "extends UserClass implements Runnable".
+	 *        Note that the extends and implements class names are FULLY QUALIFIED in the proper manner using the current
+	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
+	 *        In other words, this is the "unparsed" signature and NOT what was actually in the input source code.
 	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
@@ -185,8 +198,11 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
 	 * 
-	 * @param UnicodeString nameSpace the fully qualified namespace that is being imported
-	 * @param alias any alias to the nameSpace.  alias may be empty.
+	 * @param UnicodeString nameSpace the fully qualified namespace that is being imported. It will 
+	 *        always begin with a leading slash, even if the original source did not include it
+	 * @param alias any alias to the nameSpace. alias will never be empty. If the code does not
+	 *        specify an alias, the alias will be the last part of the namespace.
+	 *        For example the statement "use First\Class;" will result in the  alias being "Class"
 	 */
 	virtual void NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias) = 0;
 
@@ -253,18 +269,22 @@ public:
 	 * Override this method to perform custom logic when a trait user statement has been found
 	 *
 	 * @param const UnicodeString& namespace the fully qualified namespace of the class
-	 * @param className the fully qualified name of the class that uses the trait
-	 * @param traitName the fully qualified name of the trait to be used 
+	 * @param className the name of the class that uses the trait (NOT a fully qualified or qualified name)
+	 * @param traitName the fully qualified name of the trait to be used. FULLY QUALIFIED in the proper manner using the current
+	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
+	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code. 
 	 */
 	virtual void TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, 
-		const UnicodeString& traitName) = 0;
+		const UnicodeString& fullyQualifiedTraitName) = 0;
 	
 	/**
 	 * Override this method to perform custom logic when a trait method has been aliased
 	 * 
 	 * @param const UnicodeString& namespace the fully qualified namespace of the class that uses the trait
-	 * @param className the fully qualified name of the class that uses the trait
-	 * @param traitUsedClassName the class name of the trait to be aliased
+	 * @param className name of the class that uses the trait (NOT a fully qualified or qualified name)
+	 * @param traitUsedClassName the class name of the trait to be aliased. FULLY QUALIFIED in the proper manner using the current
+	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
+	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code. 
 	 * @param traitMethodName the name of the trait method that is to be aliased (hidden)
 	 *        this may be empty if the trait adaptation only changes the visibility and
 	 *        does not need to resolve a trait conflict
@@ -280,8 +300,10 @@ public:
 	 * (an insteadof operation) 
 	 *
 	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
-	 * @param className the fully qualified name of the class that uses the trait
-	 * @param traitUsedClassName the class name of the trait to be used
+	 * @param className the name of the class that uses the trait (NOT a fully qualified or qualified name)
+	 * @param traitUsedClassName the class name of the trait to be used. FULLY QUALIFIED in the proper manner using the current
+	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
+	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code.
 	 * @param traitMethodName name of the trait method that is to being resolved
 	 */
 	virtual void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
@@ -470,12 +492,23 @@ private:
  */
 class PELET_API ClassSymbolClass {
 
-public:
+	public:
 
+	/**
+	 * This is NEVER qualified
+	 */
 	UnicodeString ClassName;
 	UnicodeString Comment;
-	QualifiedNameClass ExtendsFrom;
-	std::vector<QualifiedNameClass> ImplementsList; 
+	
+	/** 
+	 * This is always fully qualified name
+	 */
+	UnicodeString ExtendsFrom;
+	
+	/** 
+	 * These are always fully qualified names
+	 */
+	std::vector<UnicodeString> ImplementsList; 
 	bool IsAbstract;
 	bool IsFinal;
 	bool IsInterface;
@@ -546,8 +579,9 @@ public:
 	 * the class name of the trait method to be aliased ('old' name) 
 	 * this may be empty if the trait only changes the visibility and
 	 * does not need to resolve a trait conflict
+	 * This is ALWAYS FULLY QUALIFIED
 	 */
-	QualifiedNameClass TraitMethodReference;
+	UnicodeString TraitMethodReference;
 
 	/** the name of the trait method. this is the method to alias ('old' name) */
 	UnicodeString TraitMethod;
@@ -578,6 +612,10 @@ public:
 
 	void Create();
 	void CreateWithOptionalType(SemanticValueClass& value);
+	
+	/**
+	 * @param className must be the FULLY QUALIFIED class name
+	 */
 	void CreateWithOptionalType(const UnicodeString& className);
 	void Clear();	
 	void SetName(SemanticValueClass& value, bool isReference);
@@ -941,6 +979,12 @@ public:
 	void NamespaceUseAbsoluteAlias(SemanticValueClass& namespaceAlias);
 	
 	/**
+	 * clear any namespace aliases. This should be called when multiple namespaces
+	 * are declared in a single file
+	 */
+	void NamespaceAliasClear();
+	
+	/**
 	 * add a new Paramter to the CurrentParametersList 
 	 * using the CurrentQualifiedName as the type
 	 */
@@ -1160,6 +1204,15 @@ private:
 	 * declarations.
 	 */
 	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, const int lineNumber);
+	
+	/**
+	 * Make the given class name absolute, taking into account (1) the current namespace, and 
+	 * (2) any aliases that are used.
+	 * 
+	 * @param name a qualified (not fully qualified) class name
+	 * @return UnicodeString fully qualified namespace
+	 */
+	UnicodeString AbsoluteNamespaceClass(const QualifiedNameClass& name);
 
 	/**
 	 * the class that is currently being parsed.
@@ -1204,6 +1257,11 @@ private:
 	 * The current namespace
 	 */
 	QualifiedNameClass Namespace;
+	
+	/**
+	 * A map of the current aliases of the parsed file.
+	 */
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> NamespaceAliases;
 	
 	/**
 	 * This object will NOT own the pointer
