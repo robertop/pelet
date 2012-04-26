@@ -760,4 +760,20 @@ TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionMethodArrayDerefe
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this->func($expr1, $expr2)[0]->method"), last);
 }
 
+TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionNamespaces) {
+	UnicodeString code = _U(
+		"<?php \n"
+		"$obj = new \\op\\child\\MyClass"
+	);
+	UnicodeString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("\\op\\child\\MyClass"), last);
+	
+	code = _U(
+		"<?php \n"
+		"$obj = new child\\MyClass"
+	);
+	last = Lexer.LastExpression(code);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("child\\MyClass"), last);
+}
+
 }

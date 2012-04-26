@@ -373,6 +373,13 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 				done = true;
 			}		
 		}
+		else if ('\\' == c) {
+			
+			// namespace operator; keep it
+			// since we are iterating backwards, put char in the beginning
+			expr.insert(0, c);
+			index--;
+		}
 		else {
 
 			// anything else ignore
