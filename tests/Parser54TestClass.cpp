@@ -1138,11 +1138,9 @@ TEST_FIXTURE(Parser54TestClass, ParseObjectExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);	
-		CHECK_UNISTR_EQUALS("->prop", symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);	
+	CHECK_UNISTR_EQUALS("->prop", symbol.ChainList[1]);	
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseObjectWithoutPropertyExpression) {
@@ -1154,11 +1152,9 @@ TEST_FIXTURE(Parser54TestClass, ParseObjectWithoutPropertyExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$obj", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$obj", symbol.ChainList[0]);	
-		CHECK_UNISTR_EQUALS("->", symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("$obj", symbol.ChainList[0]);	
+	CHECK_UNISTR_EQUALS("->", symbol.ChainList[1]);	
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseStaticWithoutPropertyExpression) {
@@ -1170,11 +1166,9 @@ TEST_FIXTURE(Parser54TestClass, ParseStaticWithoutPropertyExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), symbol.ChainList[1]);	
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseStaticExpression) {
@@ -1182,11 +1176,9 @@ TEST_FIXTURE(Parser54TestClass, ParseStaticExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseConstantExpression) {
@@ -1194,11 +1186,9 @@ TEST_FIXTURE(Parser54TestClass, ParseConstantExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_EQUAL((size_t)2, symbol.ChainList.size());
-	if ((size_t)2 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("::PI"), symbol.ChainList[1]);	
-	}
+	CHECK_VECTOR_SIZE(2, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::PI"), symbol.ChainList[1]);	
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseChainExpression) {
@@ -1206,14 +1196,12 @@ TEST_FIXTURE(Parser54TestClass, ParseChainExpression) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
-	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
-	if ((size_t)5 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[2]);
-		CHECK_UNISTR_EQUALS("->func3()", symbol.ChainList[3]);
-		CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
-	}
+	CHECK_VECTOR_SIZE(5, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->func3()", symbol.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseChainExpressionStartsWithFunction) {
@@ -1221,12 +1209,10 @@ TEST_FIXTURE(Parser54TestClass, ParseChainExpressionStartsWithFunction) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
-	CHECK_EQUAL((size_t)3, symbol.ChainList.size());
-	if ((size_t)3 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[2]);
-	}
+	CHECK_VECTOR_SIZE(3, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[2]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithFunctionArguments) {
@@ -1236,14 +1222,12 @@ TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithFunctionArguments) {
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
-	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
-	if ((size_t)5 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[2]);
-		CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
-		CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
-	}
+	CHECK_VECTOR_SIZE(5, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
@@ -1253,14 +1237,12 @@ TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithChainThatStartsWithMetho
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
-	CHECK_EQUAL((size_t)5, symbol.ChainList.size());
-	if ((size_t)5 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[2]);
-		CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
-		CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
-	}
+	CHECK_VECTOR_SIZE(5, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
@@ -1272,29 +1254,31 @@ TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithChainThatStartsWithFunct
 
 	// lexeme empty because function call is first in the chain
 	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
-	CHECK_EQUAL((size_t)4, symbol.ChainList.size());
-	if ((size_t)4 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->func2()", symbol.ChainList[2]);
-		CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[3]);
-	}
+	CHECK_VECTOR_SIZE(4, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->func2()", symbol.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[3]);
 }
 
-TEST_FIXTURE(Parser54TestClass, ParseChainExpressionWithWhitespace) {
-	UnicodeString code = _U("$propA->time->time\n->");
+TEST_FIXTURE(Parser54TestClass, ParseExpressionWithNamespace) {
+	UnicodeString code = _U("\\First\\Chi");
 	pelet::SymbolClass symbol;
 	Parser.ParseExpression(code, symbol);
 
-	// lexeme empty because function call is first in the chain
-	CHECK_UNISTR_EQUALS("$propA", symbol.Lexeme);
-	CHECK_EQUAL((size_t)4, symbol.ChainList.size());
-	if ((size_t)4 == symbol.ChainList.size()) {
-		CHECK_UNISTR_EQUALS("$propA", symbol.ChainList[0]);
-		CHECK_UNISTR_EQUALS("->time", symbol.ChainList[1]);
-		CHECK_UNISTR_EQUALS("->time", symbol.ChainList[2]);
-		CHECK_UNISTR_EQUALS("->", symbol.ChainList[3]);
-	}
+	CHECK_UNISTR_EQUALS("\\First\\Chi", symbol.Lexeme);
+	CHECK_VECTOR_SIZE(1, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("\\First\\Chi", symbol.ChainList[0]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ParseExpressionWithNamespaceEnd) {
+	UnicodeString code = _U("\\First\\");
+	pelet::SymbolClass symbol;
+	Parser.ParseExpression(code, symbol);
+
+	CHECK_UNISTR_EQUALS("\\First\\", symbol.Lexeme);
+	CHECK_VECTOR_SIZE(1, symbol.ChainList);
+	CHECK_UNISTR_EQUALS("\\First\\", symbol.ChainList[0]);
 }
 
 }

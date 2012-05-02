@@ -212,6 +212,7 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 	// remove the operators if they are at the end; this prevents parse errors
 	bool endsWithObject = false;
 	bool endsWithStatic = false;
+	bool endsWithNamespace = false;
 	if (expression.endsWith(UNICODE_STRING_SIMPLE("->"))) {
 		expression.remove(expression.length() - 2, 2);
 		endsWithObject = true;
@@ -219,6 +220,10 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 	if (expression.endsWith(UNICODE_STRING_SIMPLE("::"))) {
 		expression.remove(expression.length() - 2, 2);
 		endsWithStatic = true;
+	}
+	if (expression.endsWith(UNICODE_STRING_SIMPLE("\\"))) {
+		expression.remove(expression.length() - 1, 1);
+		endsWithNamespace = true;
 	}
 
 	// make it so that the expression observer is always called by terminating the expression
@@ -246,12 +251,28 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 	if (!localObserver.Expressions.empty()) {
 		pelet::ExpressionClass expr = localObserver.Expressions.back();
 		symbol.FromExpression(expr);
+		
+		// if the expression started with a NS operator, add it
+		// the parser observer will not qualify names because it wont see a 
+		// namespace declaration being used
+		if (expression.startsWith(UNICODE_STRING_SIMPLE("\\"))) {
+			symbol.Lexeme = UNICODE_STRING_SIMPLE("\\") + symbol.Lexeme;
+			if (!symbol.ChainList.empty()) {
+				symbol.ChainList[0] = UNICODE_STRING_SIMPLE("\\") + symbol.ChainList[0];
+			}
+		}
 	}
 	if (endsWithObject) {
 		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
 	}
 	if (endsWithStatic) {
 		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
+	}
+	if (endsWithNamespace) {
+		symbol.Lexeme += UNICODE_STRING_SIMPLE("\\");
+		if (!symbol.ChainList.empty()) {
+			symbol.ChainList[0] += UNICODE_STRING_SIMPLE("\\");
+		}
 	}
 }
 
