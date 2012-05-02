@@ -218,6 +218,7 @@ UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString var
 pelet::TraitAdaptationSymbolClass::TraitAdaptationSymbolClass()
 	: TraitMethodReference()
 	, TraitMethod()
+	, InsteadOfList()
 	, TraitAlias()
 	, MethodVisibility(pelet::TokenClass::PUBLIC) {
 }
@@ -225,6 +226,7 @@ pelet::TraitAdaptationSymbolClass::TraitAdaptationSymbolClass()
 void pelet::TraitAdaptationSymbolClass::Clear() {
 	TraitMethodReference.remove();
 	TraitMethod.remove();
+	InsteadOfList.clear();
 	TraitAlias.remove();
 	MethodVisibility = pelet::TokenClass::PUBLIC;
 }
@@ -686,14 +688,19 @@ void pelet::ObserverQuadClass::TraitAliasFound(SemanticValueClass* traitAlias) {
 	}
 }
 
-void pelet::ObserverQuadClass::TraitPrecedenceFound() {
+void pelet::ObserverQuadClass::TraitAddInsteadOf() {
+	CurrentTraitAdaptation.InsteadOfList.push_back(AbsoluteNamespaceClass(CurrentQualifiedName));
+}
+
+void pelet::ObserverQuadClass::TraitInsteadOfFound() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (Member) {	
-		Member->TraitPrecedenceFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, 
+		Member->TraitInsteadOfFound(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, 
 			CurrentTraitAdaptation.TraitMethodReference,
-			CurrentTraitAdaptation.TraitMethod);
+			CurrentTraitAdaptation.TraitMethod,
+			CurrentTraitAdaptation.InsteadOfList);
 	}
 }
 

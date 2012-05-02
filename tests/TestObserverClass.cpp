@@ -129,10 +129,13 @@ void TestObserverClass::TraitAliasFound(const UnicodeString& nameSpace, const Un
 	TraitAliasVisibility.push_back(visibility);
 }
 
-void TestObserverClass::TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-						  const UnicodeString& traitMethodName) {
+void TestObserverClass::TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+						  const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) {
 	TraitNamespace.push_back(nameSpace);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
 	TraitMethodName.push_back(traitMethodName);
+	for (size_t i = 0; i < insteadOfList.size(); ++i) {
+		TraitInsteadOf.push_back(insteadOfList[i]);
+	}
 }

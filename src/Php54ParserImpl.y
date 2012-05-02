@@ -579,12 +579,13 @@ trait_adaptation_statement:
 ;
 
 trait_precedence:
-	trait_method_reference_fully_qualified T_INSTEADOF trait_reference_list			{ observers.TraitPrecedenceFound(); }
+	trait_method_reference_fully_qualified T_INSTEADOF 								{ observers.QualifiedNameClear(); }
+	trait_reference_list															{ observers.TraitInsteadOfFound(); }
 ;
 
 trait_reference_list:
-		fully_qualified_class_name									
-	|	trait_reference_list ',' fully_qualified_class_name			
+		fully_qualified_class_name													{ observers.TraitAddInsteadOf(); observers.QualifiedNameClear(); }
+	|	trait_reference_list ',' fully_qualified_class_name							{ observers.TraitAddInsteadOf(); observers.QualifiedNameClear(); }	
 ;
 
 trait_method_reference:

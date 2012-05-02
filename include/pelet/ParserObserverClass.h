@@ -305,9 +305,10 @@ public:
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
 	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code.
 	 * @param traitMethodName name of the trait method that is to being resolved
+	 * @param insteadOfList the list of fully qualified trait names that are listed after the insteadof operator
 	 */
-	virtual void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName) = 0;
+	virtual void TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) = 0;
 };
 
 /**
@@ -585,6 +586,12 @@ public:
 
 	/** the name of the trait method. this is the method to alias ('old' name) */
 	UnicodeString TraitMethod;
+	
+	/**
+	 * the traits that will NOT be used (insteadof)
+	 * These are always fully qualified
+	 */
+	std::vector<UnicodeString> InsteadOfList;
 	
 	/** 
 	 * the name of the alias ('new' name for the method). This may be empty if
@@ -939,7 +946,7 @@ public:
 	/**
 	 * notify that a trait conflict has been resolved using the insteadof operator
 	 */
-	void TraitPrecedenceFound();
+	void TraitInsteadOfFound();
 	
 	/**
 	 * @param traitAlias the name of the alias. the trait method being aliased is stored in QualifiedName
@@ -947,6 +954,11 @@ public:
 	 *        ie a trait method is being made protected or private
 	 */
 	void TraitAliasFound(SemanticValueClass* traitAlias);
+	
+	/**
+	 * add the current qualified name to the insteadof list of the trait
+	 */
+	void TraitAddInsteadOf();
 	
 	/**
 	 * Set the 'current' namespace; the namespace declaration

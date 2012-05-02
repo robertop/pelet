@@ -316,6 +316,32 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithNamespaces) {
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
 }
 
+TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithMultipleNamespaces) {
+	Parser.SetClassObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace Second {\n"
+		"class SecClass {}\n"
+		"}"
+		"namespace First\\Child { \n"
+		"use Second; \n"
+		"class OtherClass { }\n"
+		"}"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.ClassName);
+	CHECK_UNISTR_EQUALS("SecClass", Observer.ClassName[0]);
+	CHECK_UNISTR_EQUALS("OtherClass", Observer.ClassName[1]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.ClassNamespace);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.ClassNamespace[0]);
+	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.ClassNamespace[1]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.NamespaceUseName);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.NamespaceUseName[0]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.NamespaceAlias);
+	CHECK_UNISTR_EQUALS("Second", Observer.NamespaceAlias[0]);
+}
 
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	Parser.SetClassMemberObserver(&Observer);

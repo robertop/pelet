@@ -49,7 +49,7 @@ public:
 						DefinedName, DefinedValue, DefinedComment,
 						MethodEndClassNamespace, MethodEndClassName, MethodEndMethodName,
 						IncludeFile,
-						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias;
+						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias, TraitInsteadOf;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
 	std::vector<pelet::SymbolClass::Types> VariableTypes;
@@ -90,8 +90,8 @@ public:
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
 
-	void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName);
+	void TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList);
 };
 
 #endif

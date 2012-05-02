@@ -172,6 +172,13 @@ TEST_FIXTURE(Parser54FeaturesTestClass, TraitsWithConflictsAndAlias) {
 	CHECK_UNISTR_EQUALS("talk", Observer.TraitAlias[0]);
 	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[1]);
 	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[2]);
+	
+	CHECK_VECTOR_SIZE(4, Observer.TraitInsteadOf);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitInsteadOf[0]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitInsteadOf[1]);
+	CHECK_UNISTR_EQUALS("A", Observer.TraitInsteadOf[2]);
+	CHECK_UNISTR_EQUALS("B", Observer.TraitInsteadOf[3]);
+	
 
 	CHECK_VECTOR_SIZE(3, Observer.TraitAliasVisibility);
 	CHECK_EQUAL(pelet::TokenClass::PUBLIC, Observer.TraitAliasVisibility[0]);
@@ -514,6 +521,33 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassTypes) {
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends Runnable", Observer.ClassSignature[1]);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements Runnable, ArrayAccess"), Observer.ClassSignature[2]);
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends AbstractRunnable implements MyRunnable", Observer.ClassSignature[3]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithMultipleNamespaces) {
+	Parser.SetClassObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace Second {\n"
+		"class SecClass {}\n"
+		"}"
+		"namespace First\\Child { \n"
+		"use Second; \n"
+		"class OtherClass { }\n"
+		"}"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.ClassName);
+	CHECK_UNISTR_EQUALS("SecClass", Observer.ClassName[0]);
+	CHECK_UNISTR_EQUALS("OtherClass", Observer.ClassName[1]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.ClassNamespace);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.ClassNamespace[0]);
+	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.ClassNamespace[1]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.NamespaceUseName);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.NamespaceUseName[0]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.NamespaceAlias);
+	CHECK_UNISTR_EQUALS("Second", Observer.NamespaceAlias[0]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {

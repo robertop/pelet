@@ -262,23 +262,28 @@ public:
 	}
 
 	/**
-	 * This method gets called whena trait method conflict has been resolved
+	 * This method gets called when a trait method conflict has been resolved
 	 * (an insteadof operation) 
 	 *
-	  @param const UnicodeString& namespace the fully qualified namespace of the class that was found
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param className name of the class that uses the trait
 	 * @param traitUsedClassName the class name of the trait to be used
 	 * @param traitMethodName name of the trait method that is to being resolved
+	 * @param insteadOfList the list of fully qualified trait names that are listed after the insteadof operator
 	 */
-	virtual void TraitPrecedenceFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName) {
+	virtual void TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
-		u_fprintf(ufout, "Trait Precedence Found in class %.*S in namespace %.*S. Trait Class %.*S Trait Method %.*S \n", 
+		u_fprintf(ufout, "Trait InsteadOf Found in class %.*S in namespace %.*S. Trait Class %.*S Trait Method %.*S \n", 
 			className.length(), className.getBuffer(), 
 			nameSpace.length(), nameSpace.getBuffer(),
 			traitUsedClassName.length(), traitUsedClassName.getBuffer(),
 			traitMethodName.length(), traitMethodName.getBuffer()
 		);
+		u_fprint(ufout, "Instead of");
+		for (size_t i = 0; i < insteadOfList.size(); ++i) {
+			u_fprintf(ufout, " %S", insteadOfList[i]);
+		}
 		u_fclose(ufout);
 	}
 	
