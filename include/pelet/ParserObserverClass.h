@@ -173,7 +173,7 @@ public:
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
 	virtual void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment, const int lineNumber) = 0;
+		const UnicodeString& comment, const int lineNumber) { }
 		
 	/**
 	 * Override this method to perform any logic when the class has ended (a closing brace '}' was encountered).
@@ -269,7 +269,7 @@ public:
 	 */
 	virtual void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) = 0;
+		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) { }
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
