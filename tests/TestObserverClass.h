@@ -40,6 +40,7 @@ public:
 
 	
 	std::vector<UnicodeString> ClassNamespace, ClassName, ClassSignature, ClassComment,
+						NamespaceName,
 						NamespaceUseName, NamespaceAlias,
 						MethodClassNamespace, MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
 						PropertyClassNamespace, PropertyClassName, PropertyName, PropertyType, PropertyComment,
@@ -56,27 +57,29 @@ public:
 	std::vector<int> MethodEndPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
-	void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
+	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
 			
-	void NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias);
+	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias);
 	
-	void MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
+	void NamespaceDeclarationFound(const UnicodeString& namespaceName);
+	
+	void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber);
 
-	void MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, int pos);
+	void MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, int pos);
 	
-	void PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
+	void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
 			const UnicodeString& propertyType, const UnicodeString& comment, 
 			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber);
 	
-	void FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
+	void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber);
 
-	void FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos);
+	void FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos);
 	
-	void VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
+	void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const pelet::SymbolClass& symbol, const UnicodeString& comment);
 	
 	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -84,13 +87,13 @@ public:
 
 	void IncludeFound(const UnicodeString& file, const int lineNumber);
 
-	void TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitName);
+	void TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitName);
 	
-	void TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName, 
+	void TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName, 
 		const UnicodeString& traitMethodName, 
 		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
 
-	void TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+	void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList);
 };
 

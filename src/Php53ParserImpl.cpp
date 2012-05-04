@@ -3678,17 +3678,17 @@ yyreduce:
 
   case 11:
 
-    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
+    { observers.NamespaceSetCurrent(); observers.NamespaceDeclarationFound(); ;}
     break;
 
   case 12:
 
-    { observers.NamespaceSetCurrent(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
+    { observers.NamespaceSetCurrent(); observers.NamespaceDeclarationFound(); ;}
     break;
 
   case 14:
 
-    { observers.NamespaceSetToGlobal(); observers.QualifiedNameClear(); observers.NamespaceAliasClear(); ;}
+    { observers.NamespaceSetToGlobal(); observers.NamespaceDeclarationFound(); ;}
     break;
 
   case 18:
@@ -3778,7 +3778,7 @@ yyreduce:
 
   case 81:
 
-    { observers.ClassEnd(analyzer.GetLineNumber()); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(7) - (9)])); ;}
     break;
 
   case 82:
@@ -3793,7 +3793,7 @@ yyreduce:
 
   case 84:
 
-    { observers.ClassEnd(analyzer.GetLineNumber()); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(6) - (8)])); ;}
     break;
 
   case 85:

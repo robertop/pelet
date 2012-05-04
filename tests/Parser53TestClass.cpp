@@ -743,6 +743,13 @@ TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
 		
 	);
 	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(4, Observer.NamespaceName);
+	CHECK_UNISTR_EQUALS("\\First", Observer.NamespaceName[0]);
+	CHECK_UNISTR_EQUALS("\\Second", Observer.NamespaceName[1]);
+	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.NamespaceName[2]);
+	CHECK_UNISTR_EQUALS("\\", Observer.NamespaceName[3]);
+	
 	CHECK_VECTOR_SIZE(3, Observer.NamespaceUseName);
 	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.NamespaceUseName[0]);
 	CHECK_UNISTR_EQUALS("\\Second\\MyClass", Observer.NamespaceUseName[1]);

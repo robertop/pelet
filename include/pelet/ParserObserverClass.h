@@ -172,8 +172,17 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
-	virtual void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
+	virtual void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) = 0;
+		
+	/**
+	 * Override this method to perform any logic when the class has ended (a closing brace '}' was encountered).
+	 *
+	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
+	 * @param const UnicodeString& className the name of the class that was found
+	 * @param pos the character position (of the closing brace '}' original source code)
+	 */
+	virtual void ClassEnd(const UnicodeString& namespaceName, const UnicodeString& className, int pos)  { }
 	
 	/**
 	 * Override this method to perform any custom logic when a define declaration is found.
@@ -184,7 +193,7 @@ public:
 	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
 	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment, const int lineNumber) = 0;
+		const UnicodeString& comment, const int lineNumber) { }
 		
 	/**
 	 * Override this method to perform any custom logic when an include / require / require_once / include_once declaration is found.
@@ -193,18 +202,26 @@ public:
 	 *        is a constant expression. Otherwise, lineNumber will be an empty string 
 	 * @param lineNumber the line number (1-based) that the include/ was found in
 	 */
-	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) = 0;
+	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) { }
+	
+	/**
+	 * Override this method to perform any custom logic when a namespace declaration is found.
+	 * 
+	 * @param const UnicodeString& namespaceName the name of the namespace name. Name will
+	 *        be fully qualified (starts with '\')
+	 */
+	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
 	 * 
-	 * @param UnicodeString nameSpace the fully qualified namespace that is being imported. It will 
+	 * @param UnicodeString namespaceName the fully qualified namespace that is being imported. It will 
 	 *        always begin with a leading slash, even if the original source did not include it
-	 * @param alias any alias to the nameSpace. alias will never be empty. If the code does not
+	 * @param alias any alias to the namespaceName. alias will never be empty. If the code does not
 	 *        specify an alias, the alias will be the last part of the namespace.
 	 *        For example the statement "use First\Class;" will result in the  alias being "Class"
 	 */
-	virtual void NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias) = 0;
+	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias) { }
 
 };
 
@@ -233,9 +250,9 @@ public:
 	 * @param isStatic true if the method is static
 	 * @param lineNumber the line number (1-based) that the method was found in
 	 */
-	virtual void MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
+	virtual void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) = 0;
+		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
@@ -250,7 +267,7 @@ public:
 	 * @param isStatic true if the property is static
 	 * @param lineNumber the line number (1-based) that the propertywas found in
 	 */
-	virtual void PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
+	virtual void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) = 0;
 
@@ -262,8 +279,8 @@ public:
 	 * @param const UnicodeString& methodName the name of the method that was found
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, 
-		const UnicodeString& methodName, int pos) = 0;
+	virtual void MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& methodName, int pos) { }
 
 	/**
 	 * Override this method to perform custom logic when a trait user statement has been found
@@ -274,8 +291,8 @@ public:
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
 	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code. 
 	 */
-	virtual void TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, 
-		const UnicodeString& fullyQualifiedTraitName) = 0;
+	virtual void TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& fullyQualifiedTraitName) { }
 	
 	/**
 	 * Override this method to perform custom logic when a trait method has been aliased
@@ -291,9 +308,9 @@ public:
 	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
 	 * @param visibility the visbility of the trait method. may be PUBLIC if the visibility was not changed.
 	 */
-	virtual void TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+	virtual void TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, 
-		const UnicodeString& alias, TokenClass::TokenIds visibility) = 0;
+		const UnicodeString& alias, TokenClass::TokenIds visibility) { }
 
 	/**
 	 * Override this method to perform custom logic when a trait method conflict has been resolved
@@ -307,8 +324,8 @@ public:
 	 * @param traitMethodName name of the trait method that is to being resolved
 	 * @param insteadOfList the list of fully qualified trait names that are listed after the insteadof operator
 	 */
-	virtual void TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) = 0;
+	virtual void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) { }
 };
 
 /**
@@ -332,8 +349,8 @@ public:
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 * @param lineNumber the line number (1-based) that the function was found in
 	 */
-	virtual void FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) = 0;
+	virtual void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) { }
 
 	/**
 	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
@@ -342,7 +359,7 @@ public:
 	 * @param const UnicodeString& functionName the name of the method that was found
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos) = 0;
+	virtual void FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos) { }
 };
 
 /**
@@ -377,8 +394,8 @@ public:
 	 * @param const SymbolClass& symbol the name  & type of the variable that was found
 	 * @param const UnicodeString& comment PHPDoc attached to the variable
 	 */
-	virtual void VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
-		const SymbolClass& symbol, const UnicodeString& comment) = 0;
+	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+		const SymbolClass& symbol, const UnicodeString& comment) { }
 };
 
 /**
@@ -397,7 +414,7 @@ public:
 	 * 
 	 * @param expression the expression that was parsed.
 	 */
-	virtual void ExpressionFound(const ExpressionClass& expression) = 0;
+	virtual void ExpressionFound(const ExpressionClass& expression) { }
 };
 
 
@@ -860,6 +877,11 @@ public:
 	 * because sometimes we want to cleanup single values (if the parser performs error recovery)
 	 */
 	void SemanticValueFree(SemanticValueClass& value);
+	
+	/**
+	 * Notifies that a namespace was found
+	 */
+	void NamespaceDeclarationFound();
 
 	/**
 	 * Initializes class info
@@ -889,7 +911,7 @@ public:
 	/**
 	 * Will erase the current class info.
 	 */
-	void ClassEnd(const int lineNumber);
+	void ClassEnd(const int lineNumber, SemanticValueClass& value);
 
 	void QualifiedNameClear();
 	

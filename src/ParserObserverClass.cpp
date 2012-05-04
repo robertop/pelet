@@ -566,9 +566,12 @@ void pelet::ObserverQuadClass::ClassFound(const int lineNumber) {
 	CurrentMember.Clear();
 }
 
-void pelet::ObserverQuadClass::ClassEnd(const int lineNumber) {
+void pelet::ObserverQuadClass::ClassEnd(const int lineNumber, pelet::SemanticValueClass& value) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
+	}
+	if (Class) {
+		Class->ClassEnd(Namespace.ToAbsoluteSignature(), CurrentClass.ClassName, value.Pos);
 	}
 	CurrentClass.Clear();
 }
@@ -709,15 +712,26 @@ void pelet::ObserverQuadClass::NamespaceSetCurrent() {
 		return;
 	}
 	Namespace = CurrentQualifiedName;
+	
+	QualifiedNameClear();
+	NamespaceAliasClear();
 }
 
 void pelet::ObserverQuadClass::NamespaceSetToGlobal() {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
+	QualifiedNameClear(); 
+	NamespaceAliasClear();
 	Namespace.Clear();
 	CurrentQualifiedName.Clear();
 	
+}
+
+void pelet::ObserverQuadClass::NamespaceDeclarationFound() {
+	if (Class) {
+		Class->NamespaceDeclarationFound(Namespace.ToAbsoluteSignature());
+	}
 }
 
 void pelet::ObserverQuadClass::NamespaceUse() {

@@ -24,24 +24,28 @@
  */
 #include <TestObserverClass.h> 
 
-void TestObserverClass::ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& signature, 
+void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) {
-	ClassNamespace.push_back(nameSpace);
+	ClassNamespace.push_back(namespaceName);
 	ClassName.push_back(className);
 	ClassSignature.push_back(signature);
 	ClassComment.push_back(comment);
 	ClassLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::NamespaceUseFound(const UnicodeString& nameSpace, const UnicodeString& alias) {
-	NamespaceUseName.push_back(nameSpace);
+void TestObserverClass::NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias) {
+	NamespaceUseName.push_back(namespaceName);
 	NamespaceAlias.push_back(alias);
 }
 
-void TestObserverClass::MethodFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
+void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespaceName) {
+	NamespaceName.push_back(namespaceName);
+}
+
+void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
-	MethodClassNamespace.push_back(nameSpace);
+	MethodClassNamespace.push_back(namespaceName);
 	MethodClassName.push_back(className);
 	MethodName.push_back(methodName);
 	MethodSignature.push_back(signature);
@@ -52,14 +56,14 @@ void TestObserverClass::MethodFound(const UnicodeString& nameSpace, const Unicod
 	MethodLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::MethodEnd(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, int pos) {
+void TestObserverClass::MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, int pos) {
 	MethodEndPos.push_back(pos);
 }
 
-void TestObserverClass::PropertyFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& propertyName, 
+void TestObserverClass::PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
 		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
-	PropertyClassNamespace.push_back(nameSpace);
+	PropertyClassNamespace.push_back(namespaceName);
 	PropertyClassName.push_back(className);
 	PropertyName.push_back(propertyName);
 	PropertyType.push_back(propertyType);
@@ -70,9 +74,9 @@ void TestObserverClass::PropertyFound(const UnicodeString& nameSpace, const Unic
 	PropertyLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionFound(const UnicodeString& nameSpace, const UnicodeString& functionName, 
+void TestObserverClass::FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
-	FunctionNamespace.push_back(nameSpace);
+	FunctionNamespace.push_back(namespaceName);
 	FunctionName.push_back(functionName);
 	FunctionSignature.push_back(signature);
 	FunctionReturnType.push_back(returnType);
@@ -80,13 +84,13 @@ void TestObserverClass::FunctionFound(const UnicodeString& nameSpace, const Unic
 	FunctionLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionEnd(const UnicodeString& nameSpace, const UnicodeString& functionName, int pos) {
+void TestObserverClass::FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos) {
 	// nothing for now
 }
 
-void TestObserverClass::VariableFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& methodName, 
+void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 	const pelet::SymbolClass& symbol, const UnicodeString& comment) {
-	VariableClassNamespace.push_back(nameSpace);
+	VariableClassNamespace.push_back(namespaceName);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
 	VariableName.push_back(symbol.Lexeme);
@@ -112,16 +116,16 @@ void TestObserverClass::IncludeFound(const UnicodeString& file, const int lineNu
 	IncludeLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::TraitUseFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitName) {
-	TraitNamespace.push_back(nameSpace);
+void TestObserverClass::TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitName) {
+	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitName);
 }
 	
-void TestObserverClass::TraitAliasFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+void TestObserverClass::TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 										const UnicodeString& traitMethodName, 
 										const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
-	TraitNamespace.push_back(nameSpace);
+	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
 	TraitMethodName.push_back(traitMethodName);
@@ -129,9 +133,9 @@ void TestObserverClass::TraitAliasFound(const UnicodeString& nameSpace, const Un
 	TraitAliasVisibility.push_back(visibility);
 }
 
-void TestObserverClass::TraitInsteadOfFound(const UnicodeString& nameSpace, const UnicodeString& className, const UnicodeString& traitUsedClassName,
+void TestObserverClass::TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 						  const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) {
-	TraitNamespace.push_back(nameSpace);
+	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
 	TraitMethodName.push_back(traitMethodName);
