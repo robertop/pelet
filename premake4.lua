@@ -164,8 +164,14 @@ solution "pelet"
 		links { "pelet", "unit_test++" }
 		
 		-- dont bother with warnings  with using 'unsafe' fopen
-		defines { "_CRT_SECURE_NO_WARNINGS" }
+		configuration { "vs2008" }
+			defines { "_CRT_SECURE_NO_WARNINGS" }
 		
+		configuration { "gmake or codelite" }
+			
+			-- make it so that the test executable can find the pelet shared lib
+			linkoptions { "-Wl,-rpath=./" }
+
 		configuration "Debug"
 			pickywarnings(_ACTION)
 			icuconfiguration("Debug", _ACTION)
