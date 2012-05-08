@@ -3929,7 +3929,7 @@ yyreduce:
 
   case 83:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(7) - (9)])); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(9) - (9)])); ;}
     break;
 
   case 84:
@@ -3944,7 +3944,7 @@ yyreduce:
 
   case 86:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(6) - (8)])); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(8) - (8)])); ;}
     break;
 
   case 87:
@@ -4170,6 +4170,11 @@ yyreduce:
   case 177:
 
     { observers.TraitUseFound(); ;}
+    break;
+
+  case 178:
+
+    { observers.QualifiedNameClear(); ;}
     break;
 
   case 179:

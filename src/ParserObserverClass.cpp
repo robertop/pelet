@@ -1357,13 +1357,16 @@ UnicodeString pelet::ObserverQuadClass::PhpDocTypeToAbsoluteClassname(UnicodeStr
 		UNICODE_STRING_SIMPLE("self").caseCompare(phpDocType, 0) == 0) {
 		return phpDocType;
 	}
-	pelet::QualifiedNameClass name;
-	pelet::SemanticValueClass value;
-	
-	// this is OK because SemanticValueClass does not own the pointer
-	value.Lexeme = &phpDocType;
-	name.AddName(value);
-	return AbsoluteNamespaceClass(name);
+	if (!phpDocType.isEmpty()) {
+		pelet::QualifiedNameClass name;
+		pelet::SemanticValueClass value;
+		
+		// this is OK because SemanticValueClass does not own the pointer
+		value.Lexeme = &phpDocType;
+		name.AddName(value);
+		return AbsoluteNamespaceClass(name);
+	}
+	return phpDocType;
 }
 
 /**

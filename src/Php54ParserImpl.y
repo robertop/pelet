@@ -356,10 +356,10 @@ unticked_function_declaration_statement:
 unticked_class_declaration_statement:
 		class_entry_type T_STRING			{ observers.ClassSetName($2); }
 		extends_from implements_list		{ observers.ClassFound(analyzer.GetLineNumber()); }
-		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber(), $7); }
+		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber(), $9); }
 	|	interface_entry T_STRING			{ observers.ClassSetName($2); }
 		interface_extends_list				{ observers.ClassFound(analyzer.GetLineNumber()); }
-		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber(), $6); }
+		'{' class_statement_list '}'		{ observers.ClassEnd(analyzer.GetLineNumber(), $8); }
 ;
 
 class_entry_type:
@@ -557,7 +557,7 @@ trait_list:
 ;
 
 trait_adaptations:
-		';'
+		';'													{ observers.QualifiedNameClear(); } 
 	|	'{'													{ observers.QualifiedNameClear(); } 
 		trait_adaptation_list 
 		'}'

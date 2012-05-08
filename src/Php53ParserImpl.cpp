@@ -3778,7 +3778,7 @@ yyreduce:
 
   case 81:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(7) - (9)])); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(9) - (9)])); ;}
     break;
 
   case 82:
@@ -3793,7 +3793,7 @@ yyreduce:
 
   case 84:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(6) - (8)])); ;}
+    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(7) - (8)])); ;}
     break;
 
   case 85:

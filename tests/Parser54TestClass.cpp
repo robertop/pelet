@@ -219,6 +219,29 @@ TEST_FIXTURE(Parser54FeaturesTestClass, TraitsWithNamespaces) {
 	CHECK_UNISTR_EQUALS("\\Second\\ezcReflectionReturnInfo", Observer.TraitUsed[1]);
 }
 
+TEST_FIXTURE(Parser54FeaturesTestClass, TraitWithVariable) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+
+	UnicodeString code = _U(
+		"trait ezcReflectionReturnInfo {"
+		"    function getReturnType() { /*1*/ }"
+		"    function getReturnDescription() { /*2*/ }"
+		"}"
+		"class ezcReflectionMethod {"
+		"    use ezcReflectionReturnInfo;"
+		"    /* ... */"
+		"}"
+		""
+		"$my = new ezcReflectionMethod();"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+
+	CHECK_VECTOR_SIZE(1, Observer.VariableChainList);
+	CHECK_UNISTR_EQUALS("ezcReflectionMethod", Observer.VariableChainList[0]);
+}
+
 
 TEST_FIXTURE(Parser54FeaturesTestClass, ParseChainExpressionWithChainConstructor) {
 	UnicodeString code = _U("(new Foo)->method");
