@@ -274,8 +274,8 @@ use_declaration:
 ;
 
 constant_declaration:
-		constant_declaration ',' T_STRING '=' static_scalar
-	|	T_CONST T_STRING '=' static_scalar
+		constant_declaration ',' T_STRING '=' static_scalar		{ observers.NamespaceConstantFound($3, analyzer.GetLineNumber()); }
+	|	T_CONST T_STRING '=' static_scalar						{ observers.NamespaceConstantFound($2, analyzer.GetLineNumber()); }
 ;
 
 inner_statement_list:

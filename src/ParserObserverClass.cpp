@@ -838,12 +838,22 @@ void pelet::ObserverQuadClass::NamespaceAliasClear() {
 	NamespaceAliases.clear();
 }
 
+void pelet::ObserverQuadClass::NamespaceConstantFound(const pelet::SemanticValueClass& nameValue, const int lineNumber) {
+	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+		return;
+	}
+	if (Class) {
+		Class->DefineDeclarationFound(Namespace.ToAbsoluteSignature(), *nameValue.Lexeme, UNICODE_STRING_SIMPLE(""), 
+			*nameValue.Comment, lineNumber);
+	}
+}
+
 void pelet::ObserverQuadClass::DefineFound(const pelet::ExpressionClass& nameSymbol, const pelet::ExpressionClass& valueSymbol, const UnicodeString& comment, const int lineNumber) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (Class) {
-		Class->DefineDeclarationFound(nameSymbol.Lexeme, valueSymbol.Lexeme, comment, lineNumber);
+		Class->DefineDeclarationFound(Namespace.ToAbsoluteSignature(), nameSymbol.Lexeme, valueSymbol.Lexeme, comment, lineNumber);
 	}
 }
 

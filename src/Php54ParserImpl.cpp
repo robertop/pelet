@@ -3867,6 +3867,16 @@ yyreduce:
     { observers.NamespaceUseAbsoluteAlias((yyvsp[(3) - (4)])); ;}
     break;
 
+  case 25:
+
+    { observers.NamespaceConstantFound((yyvsp[(3) - (5)]), analyzer.GetLineNumber()); ;}
+    break;
+
+  case 26:
+
+    { observers.NamespaceConstantFound((yyvsp[(2) - (4)]), analyzer.GetLineNumber()); ;}
+    break;
+
   case 29:
 
     { observers.ClearExpressions(); ;}

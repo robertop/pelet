@@ -302,6 +302,7 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithNamespaces) {
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, \\ArrayAccess {}\n"
 		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
+		"const MY_CONST = 1;\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
 	CHECK_VECTOR_SIZE(4, Observer.ClassName);
@@ -314,6 +315,10 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithNamespaces) {
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends \\First\\Runnable", Observer.ClassSignature[1]);
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
+	CHECK_VECTOR_SIZE(1, Observer.DefinedNamespaceName);
+	CHECK_UNISTR_EQUALS("\\First", Observer.DefinedNamespaceName[0]);
+	CHECK_VECTOR_SIZE(1, Observer.DefinedName);
+	CHECK_UNISTR_EQUALS("MY_CONST", Observer.DefinedName[0]);
 }
 
 TEST_FIXTURE(Parser53TestClass, ScanStringWithClassesWithMultipleNamespaces) {

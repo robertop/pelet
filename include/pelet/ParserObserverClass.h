@@ -187,12 +187,13 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a define declaration is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace of the define that was found
 	 * @param const UnicodeString& variableName the name of the defined variable
 	 * @param const UnicodeString& variableValue the variable value
 	 * @param const UnicodeString& comment PHPDoc attached to the define
 	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
-	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+	virtual void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 		const UnicodeString& comment, const int lineNumber) { }
 		
 	/**
@@ -1033,6 +1034,11 @@ public:
 	 * Will erase the current method info and notify the method observer
 	 */
 	void ClassMethodEnd(SemanticValueClass& value);
+
+	/**
+	 *  Notifies that a define (constant) has been found.
+	 */	
+	void NamespaceConstantFound(const pelet::SemanticValueClass& nameValue, const int lineNumber);
 
 	/**
 	 *  Notifies that a define (constant) has been found.

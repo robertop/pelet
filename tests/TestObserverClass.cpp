@@ -104,8 +104,9 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	VariablePhpDocType.push_back(symbol.PhpDocType);
 }
 
-void TestObserverClass::DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+void TestObserverClass::DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 		const UnicodeString& comment, const int lineNumber) {
+	DefinedNamespaceName.push_back(namespaceName);
 	DefinedName.push_back(variableName);
 	DefinedValue.push_back(variableValue);
 	DefinedComment.push_back(comment);		

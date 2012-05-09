@@ -47,7 +47,7 @@ public:
 						FunctionNamespace, FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
 						VariableClassNamespace, VariableClassName, VariableMethodName, VariableName, VariableComment,
 						VariableChainList, VariablePhpDocType,
-						DefinedName, DefinedValue, DefinedComment,
+						DefinedNamespaceName, DefinedName, DefinedValue, DefinedComment,
 						MethodEndClassNamespace, MethodEndClassName, MethodEndMethodName,
 						IncludeFile,
 						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias, TraitInsteadOf;
@@ -82,7 +82,7 @@ public:
 	void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const pelet::SymbolClass& symbol, const UnicodeString& comment);
 	
-	void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+	void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 			const UnicodeString& comment, const int lineNumber);
 
 	void IncludeFound(const UnicodeString& file, const int lineNumber);
