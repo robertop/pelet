@@ -69,15 +69,19 @@ public:
 	/**
 	 * This method gets called when a define declaration is found.
 	 * 
+	 * @param const UnicodeString& namespace the fully qualified namespace name that the constant that was found
 	 * @param const UnicodeString& variableName the name of the defined variable
 	 * @param const UnicodeString& variableValue the variable value
 	 * @param const UnicodeString& comment PHPDoc attached to the define
 	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
-	virtual void DefineDeclarationFound(const UnicodeString& variableName, const UnicodeString& variableValue, 
+	virtual void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 		const UnicodeString& comment, const int lineNumber) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
-		u_fprintf(ufout, "Define Found: %.*S on line %d\n", variableName.length(), variableName.getBuffer(), lineNumber);
+		u_fprintf(ufout, "Define Found: %.*S in namespace %.*S on line %d\n", 
+			variableName.length(), variableName.getBuffer(), 
+			namespaceName.length(), namespaceName.getBuffer(), 
+			lineNumber);
 		u_fclose(ufout);
 	}
 	
