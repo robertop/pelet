@@ -257,7 +257,7 @@ public:
  * checks for end of file such as token > 0
  * @return bool if TRUE caller should stop lexing as there is no more input.
  */
-bool IsTerminatingToken(int token);
+bool PELET_API IsTerminatingToken(int token);
 
 /**
  * This function will advance the current pointer of the buffer all the way until 
