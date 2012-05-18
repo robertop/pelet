@@ -93,7 +93,7 @@ public:
 	 * @return TRUE if the Current pointer has reached the end of the input
 	 */
 	virtual bool HasReachedEnd() const = 0;
-	
+		
 	/**
 	 *  the current line number
 	 * 
@@ -242,11 +242,6 @@ private:
 	 * common code that is shared by the public OpenFile() methods
 	 */
 	bool OpenFile(UFILE* file, int statingCapacity = 512);
-	
-	/**
-	 * The name of the file being analyzed
-	 */
-	const char *FileName;
 	
 	/**
 	 * This will store the lexemes.  Since they can be unlimited in length, we need

@@ -314,4 +314,43 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillFromFileAfte
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
 
+TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillBufferWhenItEnds) {
+	std::string fileName = "test_buffer.txt";
+	std::string test = "<?php\r\n'"                      // 7
+	"**************************************************" // 57
+	"**************************************************" // 107
+	"**************************************************" // 207
+	"**************************************************" // 307
+	"**************************************************" // 407
+	"**************************************************" // 507
+	"***\r\necho 'hello';";                              // byte 510 is \r
+	CreateFixtureFile(fileName, test);
+	std::string filePath = TestProjectDir + fileName;
+
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), 512));
+	for (int i = 0; i < 8; i++) {
+		++FileBuffer->Current;
+	}
+	FileBuffer->MarkTokenStart();
+	/*
+	// 503 = 510 - 8
+	for (int i = 0; i < 503; i++) {
+		++FileBuffer->Current;
+	}
+	CHECK_EQUAL(2, FileBuffer->Limit - FileBuffer->Current);
+	
+	//the goal of this test is to setup the newline hitting the buffer boundary
+	FileBuffer->AppendToLexeme(2);
+	CHECK_EQUAL(true, (FileBuffer->Limit - FileBuffer->Current) > 1);
+	CHECK_EQUAL('\r', *FileBuffer->Current++);
+	CHECK_EQUAL('\n', *FileBuffer->Current++);
+	FileBuffer->AppendToLexeme(2);
+	CHECK_EQUAL('e', *FileBuffer->Current++);
+	CHECK_EQUAL('c', *FileBuffer->Current++);
+	FileBuffer->AppendToLexeme(2);
+	CHECK_EQUAL('h', *FileBuffer->Current++);
+	CHECK_EQUAL('o', *FileBuffer->Current++);
+	 * */
+}
+
 }

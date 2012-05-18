@@ -74,7 +74,7 @@ void pelet::BufferClass::Close() {
  *
  * The client code will increment the current position (Current++); it is required that the
  * client perform bounds checking by making sure that Current did not go past the
- * end of the buffer ((Limit - Current) > 0)
+ * end of the buffer ((Limit - Current) > 0). Current == Limit is a valid read
  * Example: After 4 increments (Current++ 4 times)
  *
  *               ------------------------------
@@ -105,7 +105,7 @@ void pelet::BufferClass::Close() {
  * (3) New content from the file is pulled and placed at the end of the current 
  *     token.
  *
- * For example, here Current is at the end of the buffer (Limit - Current == 1)
+ * For example, here Current is at the end of the buffer (Limit == Current)
  * When AppendToLexeme() is called, Buffer[5 ... ] will be copied to the
  * beginning of the buffer, and 
  *
@@ -118,7 +118,7 @@ void pelet::BufferClass::Close() {
  * --------------------------------------------
  *  TokenStart      |   |   |   | ^ |   |   |
  * --------------------------------------------
- *  Limit           |   |   |   |   |   |   | ^
+ *  Limit           |   |   |   |   |   | ^ | 
  * --------------------------------------------
  *
  * Notice that TokenStart and Current point to new positions
@@ -163,8 +163,6 @@ void pelet::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	delete[] Buffer;
 	Buffer = newBuffer;
 	BufferCapacity = newCapacity;
-
-	UnicodeString lexeme(Buffer, BufferCapacity);
 }
 
 void pelet::UCharBufferedFileClass::MarkTokenStart() {
@@ -174,10 +172,10 @@ void pelet::UCharBufferedFileClass::MarkTokenStart() {
 
 void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 	if (NULL != File) {
-
+		//printf("getting extra %d chars\n", minToGet);
 		
-		// since Limit already points PAST the string, we don't do +1 
-		int validContentsCount = Limit - TokenStart; 
+		// since Limit points to the last character of the string (not past), we do +1 
+		int validContentsCount = (Limit - TokenStart + 1); 
 		int charsToGet;
 		UChar* startOfFreeSpace;
 		if (TokenStart > Buffer) {
@@ -188,7 +186,7 @@ void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 		
 		// if, after we removed the slack; we are still close to the edge; grow the buffer
 		// choosing 20 because the longest PHP keywords is about this long
-		if (validContentsCount >= (BufferCapacity - 20)) {
+		if ((Current - Limit) < 20) {
 			int oldCapacity = BufferCapacity;
 			GrowBuffer(2 * oldCapacity);
 			startOfFreeSpace = Buffer + validContentsCount;
@@ -197,20 +195,22 @@ void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 
 		// should read charsToGet bytes from file; not charsToFill
 		// we want to get as much from the file as possible without re-allocation
-		int read = u_file_read(startOfFreeSpace, charsToGet, File);
-		Limit = Buffer + BufferCapacity;		
-		if (read < charsToGet) {
-			HasReachedEof = true;
-			
-			// insert null character as the lexers will look for null characters as EOF
-			startOfFreeSpace[read] = '\0';
-			Eof = startOfFreeSpace + read;
-			u_fclose(File);
-			File = NULL;
+		if (charsToGet > 0) {
+			int read = u_file_read(startOfFreeSpace, charsToGet, File);
+			Limit = Buffer + BufferCapacity - 1;
+			if (read < charsToGet) {
+				HasReachedEof = true;
+				
+				// insert null character as the lexers will look for null characters as EOF
+				startOfFreeSpace[read] = '\0';
+				Eof = startOfFreeSpace + read;
+				u_fclose(File);
+				File = NULL;
+			}
 		}
 	}
 }
-
+\
 bool pelet::UCharBufferedFileClass::HasReachedEnd() const {
 	
 	// if we havent yet read in all of the file from disk then Limit is not really the end of the input
@@ -225,8 +225,8 @@ void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 	CharacterPos += TokenStart - Buffer;
 
 	// copy any good content to the beginning of the buffer
-	// since Limit already points PAST the string, we don't do +1 
-	int goodCount = Limit - TokenStart;
+	// since Limit points to the last character and not PAST the string, we do +1 
+	int goodCount = Limit - TokenStart + 1;
 	int currentIndex = Current - TokenStart;
 	int markerIndex = Marker - TokenStart;
 
@@ -241,7 +241,6 @@ void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 }
 
 bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCapacity) {
-	FileName = newFile;
 	UFILE* uFile = u_fopen(newFile, "rb", NULL, NULL);
 	return OpenFile(uFile);
 }
@@ -259,11 +258,11 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 	if (!Buffer) {
 		LineNumber = 1;
 		Buffer = new UChar[startingCapacity];
+		BufferCapacity = startingCapacity;
 		Current = Buffer;
 		TokenStart = Buffer;
 		Limit = Buffer;
 		Marker = Buffer;
-		BufferCapacity = startingCapacity;
 		HasReachedEof = false;
 		Eof = NULL;
 	}
@@ -277,9 +276,9 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 		Current = Buffer;
 		Limit = Buffer;
 		opened = true;
-		int read = u_file_read(Buffer, startingCapacity, File);
-		Limit = Buffer + BufferCapacity;
-		if (read < startingCapacity) {
+		int read = u_file_read(Buffer, BufferCapacity, File);
+		Limit = Buffer + BufferCapacity - 1;
+		if (read < BufferCapacity) {
 			u_fclose(File);
 			File = NULL;
 			
@@ -294,7 +293,6 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 
 pelet::UCharBufferedFileClass::UCharBufferedFileClass()
 	: BufferClass()
-	, FileName(NULL)
 	, Buffer(NULL)
 	, Eof(NULL)
 	, File(NULL)
@@ -314,7 +312,6 @@ void pelet::UCharBufferedFileClass::Close() {
 		u_fclose(File);
 		File = NULL;
 	}
-	FileName = NULL;
 	Buffer = NULL;
 	Eof = NULL;
 	File = NULL;
