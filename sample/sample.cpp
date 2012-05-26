@@ -381,13 +381,13 @@ public:
 			scope = className + UNICODE_STRING_SIMPLE("::") + methodName;
 		}
 		UnicodeString type;
-		if (pelet::SymbolClass::ARRAY == symbol.Type) {
+		if (pelet::SymbolClass::ARRAY == symbol.SourceType) {
 			type = UNICODE_STRING_SIMPLE("Variable is an array");
 		}
-		else if (pelet::SymbolClass::PRIMITIVE == symbol.Type) {
+		else if (pelet::SymbolClass::PRIMITIVE == symbol.SourceType) {
 			type = UNICODE_STRING_SIMPLE("Variable is a primitive");
 		}
-		else if (pelet::SymbolClass::OBJECT == symbol.Type) {
+		else if (pelet::SymbolClass::OBJECT == symbol.SourceType) {
 			type = UNICODE_STRING_SIMPLE("Variable is the result of an object operation. ");
 			type += UNICODE_STRING_SIMPLE("Chain list is: ");
 			for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
@@ -398,7 +398,7 @@ public:
 			}
 			
 		}
-		else if (pelet::SymbolClass::UNKNOWN == symbol.Type) {
+		else if (pelet::SymbolClass::UNKNOWN == symbol.SourceType	) {
 			type = UNICODE_STRING_SIMPLE("Variable is dynamic variable");
 		}
 		if (!symbol.PhpDocType.isEmpty()) {

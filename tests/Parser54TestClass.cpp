@@ -728,8 +728,8 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleVariableTypes) {
 	CHECK_UNISTR_EQUALS("Globals", Observer.VariableChainList[1]);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableChainList[2]);
 	CHECK_UNISTR_EQUALS("$srcGlobal->name", Observer.VariableChainList[3]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[4]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[5]);
+	CHECK_UNISTR_EQUALS("$k", Observer.VariableChainList[4]);
+	CHECK_UNISTR_EQUALS("$v", Observer.VariableChainList[5]);
 	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[6]);
 	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[7]);
 	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[8]);
@@ -823,21 +823,24 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 	CHECK_UNISTR_EQUALS("CName", Observer.PropertyType[3]);
 	
 	// should be 4: 3 function parameters + newName
+	// note the order: PHPDoc variables first because of the way
+	// the AST is built (ie. source code notifications happen AFTER AST is built)
 	CHECK_VECTOR_SIZE(4, Observer.VariableName);
-	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[0]);
-	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[1]);
-	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[2]);
-	CHECK_UNISTR_EQUALS("$newName", Observer.VariableName[3]);
+	CHECK_UNISTR_EQUALS("$newName", Observer.VariableName[0]);
+	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[1]);
+	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[2]);
+	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[3]);
+	
 	CHECK_VECTOR_SIZE(4, Observer.VariableChainList);
 	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariableChainList[3]);
 	
 	CHECK_VECTOR_SIZE(4, Observer.VariablePhpDocType);
 	
 	// type hints are not read from PHPDoc as of now
-	//CHECK_UNISTR_EQUALS("string", Observer.VariableChainList[0]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[1]);
+	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[0]);
+	//CHECK_UNISTR_EQUALS("string", Observer.VariableChainList[1]);
 	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[2]);
-	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[3]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[3]);
 }
 
 TEST_FIXTURE(Parser54TestClass, MethodEndPos) {

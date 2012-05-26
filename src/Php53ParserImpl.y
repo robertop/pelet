@@ -46,25 +46,9 @@
 %lex-param  { pelet::LexicalAnalyzerClass &analyzer }
 %lex-param { pelet::ObserverQuadClass& observers }
 
-/***
-%union {
-	pelet::StatementListClass *statementList;
-	pelet::QualifiedNameClass *qualifiedName;
-	pelet::ConstantStatementClass *constant;
-	pelet::ClassSymbolClass *classSymbol;
-	pelet::ClassMemberSymbolClass *classMemberSymbol;
-	pelet::ParametersListClass *parametersList;
-	pelet::ExpressionClass *expression;
-	pelet::SemanticValueClass *semanticValue;
-	bool isMethod;
-	bool isComma;
-}
-*/
-
 /**
  * This parser was ripped from the PHP source (version 5.3.6). All credit goes to them.
  */
- 
 %define api.pure
 %error-verbose
 %expect 2
@@ -374,7 +358,7 @@ top_statement_list:
 
 namespace_name:
 		T_STRING								{ $$ = observers.NamespaceNameMake($1); }
-	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = observers.NamespaceNameAppend($1, $3); }
+	|	namespace_name T_NS_SEPARATOR T_STRING		{ $$ = observers.NamespaceNameAppend($1, $3); }
 ;
 
 top_statement:
@@ -683,7 +667,6 @@ non_empty_parameter_list:
 	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = observers.ParametersListAppend($1, $3, $4, false); }
 ;
 
-
 optional_class_type:
 		/* empty */						{ $$ = observers.QualifiedNameNil(); }
 	|	fully_qualified_class_name		{ $$ = $1; }
@@ -979,7 +962,7 @@ static_scalar: /* compile-time evaluated scalars */
 	|	T_NS_SEPARATOR namespace_name						{ $$ = observers.ExpressionMakeNil(); }
 	|	'+' static_scalar									{ $$ = observers.ExpressionMakeNil(); }
 	|	'-' static_scalar									{ $$ = observers.ExpressionMakeNil(); }
-	|	T_ARRAY '(' static_array_pair_list ')'				{ $$ = $1; }
+	|	T_ARRAY '(' static_array_pair_list ')'				{ $$ = observers.ExpressionMakeScalar($3); }
 	|	static_class_constant								
 ;
 
@@ -1165,7 +1148,6 @@ encaps_var_offset:
 	|	T_NUM_STRING				{ $$ = observers.ExpressionMakeNil(); }
 	|	T_VARIABLE					{ $$ = observers.ExpressionMakeNil(); }
 ;
-
 
 internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')'			{ $$ = observers.ExpressionMakeNil(); }

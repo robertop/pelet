@@ -592,7 +592,6 @@ TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	//CHECK_UNISTR_EQUALS("string", Observer.VariableChainList[1]);
 	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[2]);
 	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[3]);
-	
 }
 
 TEST_FIXTURE(Parser53TestClass, MethodEndPos) {

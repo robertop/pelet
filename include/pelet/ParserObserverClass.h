@@ -349,6 +349,109 @@ public:
 	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
 };
 
+class TraitUseClass : public StatementClass {
+	
+public:
+
+	/**
+	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
+	 * namespace only
+	 */
+	UnicodeString NamespaceName;
+	
+	/**
+	 * The class where the traits are being used in. This is the name of the
+	 * class only
+	 */
+	UnicodeString ClassName;
+	
+	/**
+	 * list of the fully qualified names of the traits that are used.
+	 */
+	std::vector<UnicodeString> UsedTraits;
+	
+	TraitUseClass();
+	
+	void AppendUse(UnicodeString trait);
+};
+
+class TraitAliasClass : public StatementClass {
+	
+public:
+	
+	/**
+	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
+	 * namespace only
+	 */
+	UnicodeString NamespaceName;
+	
+	/**
+	 * The class where the traits are being used in. This is the name of the
+	 * class only
+	 */
+	UnicodeString ClassName;
+	
+	/**
+	 * The fully qualified class name of the trait class that is being aliased. This may be empty
+	 * if the source code does not define it (ie. the alias does not need to resolve a conflict)
+	 */
+	UnicodeString TraitUsedClassName;
+	
+	/**
+	 * The name of the method being aliased (the "old" name)
+	 */
+	UnicodeString TraitMethodReferenceName;
+	
+	/**
+	 * the method alias; the "new" name
+	 */
+	UnicodeString Alias;
+	
+	/**
+	 * the new visbility of the alias. If source code does not define it, then this is public.
+	 */
+	pelet::TokenClass::TokenIds Visibility;
+	
+	TraitAliasClass();
+	
+};
+
+class TraitInsteadOfClass : public StatementClass {
+	
+public:
+	
+	/**
+	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
+	 * namespace only
+	 */
+	UnicodeString NamespaceName;
+	
+	/**
+	 * The class where the traits are being used in. This is the name of the
+	 * class only
+	 */
+	UnicodeString ClassName;
+	
+	/**
+	 * The fully qualified class name of the trait class that is being aliased. This may be empty
+	 * if the source code does not define it (ie. the alias does not need to resolve a conflict)
+	 */
+	UnicodeString TraitUsedClassName;
+	
+	/**
+	 * The name of the method being resolved
+	 */
+	UnicodeString TraitMethodReferenceName;
+	
+	/**
+	 * list of fully qualified class names that define the method in question but
+	 * will NOT be used
+	 */
+	std::vector<UnicodeString> InsteadOfList;
+	
+	TraitInsteadOfClass();
+};
+
 /**
  * Case-sensitive string comparator for use as STL Predicate
  */
@@ -813,47 +916,6 @@ public:
 };
 
 /**
- * This is a class that accumulates the trait usage inside of a class. It keeps trait of
- * aliases.
- *
- */
-class PELET_API TraitAdaptationSymbolClass {
-	
-public:
-
-	/** 
-	 * the class name of the trait method to be aliased ('old' name) 
-	 * this may be empty if the trait only changes the visibility and
-	 * does not need to resolve a trait conflict
-	 * This is ALWAYS FULLY QUALIFIED
-	 */
-	UnicodeString TraitMethodReference;
-
-	/** the name of the trait method. this is the method to alias ('old' name) */
-	UnicodeString TraitMethod;
-	
-	/**
-	 * the traits that will NOT be used (insteadof)
-	 * These are always fully qualified
-	 */
-	std::vector<UnicodeString> InsteadOfList;
-	
-	/** 
-	 * the name of the alias ('new' name for the method). This may be empty if
-	 * only the visibility is changed.
-	 */
-	UnicodeString TraitAlias;
-	
-	/** the visbility to change TraitMethodReference to */
-	TokenClass::TokenIds MethodVisibility;
-	
-	TraitAdaptationSymbolClass();
-	
-	void Clear();
-	
-};
-
-/**
  * This class will represent one PHP Expression. An expression is either
  * - a variable ($abc)
  * - a scalar (constant)
@@ -1115,10 +1177,18 @@ public:
 	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, const int endingPosition);
 		
-	/**
-	 *  Notifies that an include has been found.
-	 */
-	pelet::ExpressionClass* IncludeFound(pelet::ExpressionClass* expr, const int lineNumber); //like in include("filename.php")
+	pelet::StatementListClass* TraitUseMake(pelet::TraitUseClass* traitsUsed, pelet::StatementListClass* traitAdaptations);
+	pelet::TraitUseClass* TraitUseStart(pelet::QualifiedNameClass* qualifiedName);
+	pelet::TraitUseClass* TraitUseAppend(pelet::TraitUseClass* traitUse, pelet::QualifiedNameClass* qualifiedName);
+	pelet::TraitInsteadOfClass* TraitInsteadOfMake(pelet::TraitAliasClass* traitMethodReference, pelet::TraitInsteadOfClass* traitInsteadOfList);
+	pelet::TraitInsteadOfClass* TraitInsteadOfMakeReferenceList(pelet::QualifiedNameClass* qualifiedName);
+	pelet::TraitInsteadOfClass* TraitInsteadOfAppendReferenceList(pelet::TraitInsteadOfClass* traitInsteadOf, pelet::QualifiedNameClass* qualifiedName);
+	pelet::TraitAliasClass* TraitAliasMakeMethodReferenceList(pelet::SemanticValueClass* methodName);
+	pelet::TraitAliasClass* TraitAliasMakeMethodReferenceList(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* methodName);
+	pelet::TraitAliasClass* TraitAliasMake(pelet::TraitAliasClass* traitMethodReference, pelet::ClassMemberSymbolClass* traitModifiers, pelet::SemanticValueClass* aliasValue);
+	pelet::TraitAliasClass* TraitAliasMake(pelet::TraitAliasClass* traitMethodReference, pelet::ClassMemberSymbolClass* traitModifiers);
+
+	pelet::ExpressionClass* IncludeFound(pelet::ExpressionClass* expr, const int lineNumber);
 
 	pelet::ExpressionClass* ExpressionMakeAssignmentList(pelet::StatementListClass* assignmentList);
 	pelet::ExpressionClass* AssignmentExpressionFromExpressionFound(pelet::ExpressionClass* variable, pelet::ExpressionClass* expression);
@@ -1155,41 +1225,6 @@ public:
 	pelet::StatementListClass* StatementListMakeAndAppend(pelet::StatementClass* statement);
 	pelet::StatementListClass* StatementListMerge(pelet::StatementListClass* a, pelet::StatementListClass* b); 
 	pelet::StatementListClass* StatementListNil();
-	
-	/**
-	 * the QualifiedName is a new trait being used in the current class
-	 */
-	void TraitUseFound();
-	
-	void TraitClearAdaptation();
-	
-	/**
-	 * a trait method is being aliased in the current class.
-	 * @param traitMethod the trait method being aliased
-	 */
-	void TraitAliasMethod(SemanticValueClass* traitMethod);
-	
-	/**
-	 * a trait method is being aliased in the current class.
-	 */
-	void TraitAliasMethodFromQualifiedName(SemanticValueClass* traitMethod);
-
-	/**
-	 * notify that a trait conflict has been resolved using the insteadof operator
-	 */
-	void TraitInsteadOfFound();
-	
-	/**
-	 * @param traitAlias the name of the alias. the trait method being aliased is stored in QualifiedName
-	 *        traitAlias may be NULL, in this case then only the modifier is being aliased 
-	 *        ie a trait method is being made protected or private
-	 */
-	void TraitAliasFound(SemanticValueClass* traitAlias);
-	
-	/**
-	 * add the current qualified name to the insteadof list of the trait
-	 */
-	void TraitAddInsteadOf();
 			
 	/**
 	 * clear any namespace aliases. This should be called when multiple namespaces
@@ -1285,11 +1320,6 @@ private:
 	QualifiedNameClass CurrentQualifiedName;
 
 	/**
-	 * The current trait adaptation
-	 */
-	TraitAdaptationSymbolClass CurrentTraitAdaptation;
-
-	/**
 	 * The current namespace
 	 */
 	QualifiedNameClass CurrentNamespace;
@@ -1349,6 +1379,9 @@ typedef union ParserType {
 	pelet::ClassMemberSymbolClass *classMemberSymbol;
 	pelet::ParametersListClass *parametersList;
 	pelet::ExpressionClass *expression;
+	pelet::TraitUseClass *traitUse;
+	pelet::TraitAliasClass *traitAlias;
+	pelet::TraitInsteadOfClass *traitInsteadOf;
 	pelet::SemanticValueClass *semanticValue;
 	bool isMethod;
 	bool isComma;
