@@ -139,6 +139,215 @@ the new artifacts to the users of the pelet library.
 // these classes are defined below.
 class SymbolClass;
 class ExpressionClass;
+class StatementClass;
+class SemanticValueClass;
+class ConstantClass;
+class AstItemClass;
+class ParametersListClass;
+
+class AstItemClass {
+	
+	public:
+		
+		AstItemClass();
+		
+		virtual ~AstItemClass();
+};
+
+/**
+ * These are all of the things we extract from PHP source code. An AST artifact
+ * can help development of PHP applications by being able to quickly search for
+ * declarations or extract info from variables.
+ */
+class StatementClass : public AstItemClass {
+	
+public:
+
+	enum Types {
+		NIL = 0,
+		CLASS_DECLARATION,
+		DEFINE_DECLARATION,
+		INCLUDE_STATEMENT,
+		NAMESPACE_DECLARATION,
+		NAMESPACE_USE, // 5
+		
+		METHOD_DECLARATION,
+		PROPERTY_DECLARATION,
+		TRAIT_USE_DECLARATION,
+		TRAIT_ALIAS_DECLARATION,
+		TRAIT_INSTEADOF_DECLARATION,  // 10
+		FUNCTION_DECLARATION,
+		
+		ASSIGNMENT,
+		ASSIGNMENT_LIST,
+		EXPRESSION
+	};
+	
+	Types Type;
+	
+	StatementClass(Types type);
+	
+	virtual ~StatementClass();
+};
+
+/**
+ * A list of statements.  This class can hold both declarations (classes, methods)
+ * or variable assignments and other expressions.
+ * This class will NOT own any of the statement pointers.
+ */
+class StatementListClass : public AstItemClass {
+
+public:
+
+	StatementListClass();
+	
+	size_t Size() const;
+	
+	pelet::StatementClass::Types TypeAt(size_t index) const;
+	
+	pelet::StatementClass* At(size_t index) const;
+
+	/**
+	 * @param statement to add to this list
+	 * This class will NOT own any of the statement pointers.
+	 */
+	void Push(pelet::StatementClass* statement);
+	
+	/**
+	 * @param list of statements to add to this list
+	 * This class will NOT own any of the statement pointers.
+	 */
+	void PushAll(pelet::StatementListClass* statementList);
+	
+private:
+	
+	std::vector<StatementClass*> Statements;
+	
+};
+
+/**
+ * This represents a qualified name; it may have any number of namespaces attached to
+ * it. Note that in PHP speak, a qualified name is NOT the same as a fully qualified
+ * name; ie. a qualified name does not always start at the root namespace.
+ * See http://php.net/manual/en/language.namespaces.rules.php
+ */
+class PELET_API QualifiedNameClass : public AstItemClass {
+
+public:
+
+	/**
+	 * A PHPDoc comment attached to the beginning of this name
+	 */
+	UnicodeString Comment;
+	
+	/**
+	 * If TRUE then this is a fully Qualified namespace name
+	 */
+	bool IsAbsolute;
+
+	QualifiedNameClass();
+	void Clear();
+	void GrabNameAndComment(SemanticValueClass* value);
+	void AddName(SemanticValueClass* value);
+	void MakeAbsolute();
+	
+	/**
+	 * @param name the namespace to prepend to this namespace. This is the current namespace
+	 *        that the code belongs to.
+	 * 
+	 * Examples
+	 * if name = "First\Child" and this = "Parent\Classname"
+	 * then this method will make this namespace be "\First\Child\Parent\Classname"
+	 * 
+	 * if this name IsAbsolute = TRUE and name = "First\Child" and this = "\Parent\Classname"
+	 * then this method will make this namespace be "\Parent\Classname"
+	 * since this name is absolute no need to prepend the given namespace
+	 */
+	void Prepend(const QualifiedNameClass& name);
+
+	UnicodeString ToSignature() const;
+	
+	
+	/** 
+	 * prepends a namespace separator '\' to this namespace name
+	 */
+	UnicodeString ToAbsoluteSignature() const;
+	
+	/**
+	 * @param name the namespace to prepend to this namespace. This is the current namespace
+	 *        that the code belongs to.
+	 * @return concatenation of name and this name, depending on whether this name is already
+	 *         fully qualified (IsAbsolute = true)
+	 * 
+	 * Examples
+	 * if name = "First\Child" and this = "Parent\Classname"
+	 * then this method will return "\First\Child\Parent\Classname"
+	 * 
+	 * if this name IsAbsolute = TRUE and name = "First\Child" and this = "\Parent\Classname"
+	 * then this method will return "\Parent\Classname"
+	 * since this name is absolute no need to prepend the given namespace
+	 */
+	UnicodeString Prepend(const QualifiedNameClass& name) const;
+
+private:
+
+	std::vector<UnicodeString> Namespaces;
+		
+};
+
+/**
+ * A declaration of a constant (through the define() call
+ * or the const keyword)
+ */
+class ConstantStatementClass : public StatementClass {
+	
+	public:
+
+	/**
+	 * The constant's identifier
+	 */
+	UnicodeString Name;
+	
+	/**
+	 * the namespace that the constant was defined in. if constant is 
+	 * in the root namespace, then this will contain "\"
+	 */
+	UnicodeString NamespaceName;
+	
+	UnicodeString Comment;
+	
+	UnicodeString Value;
+	
+	/**
+	 * The line where the constant was defined in
+	 * @see LexicalAnalyzerClass::GetLineNumber()
+	 */
+	int LineNumber;
+	
+	ConstantStatementClass();
+};
+
+class NamespaceDeclarationClass : public StatementClass {
+	
+public:
+	
+	UnicodeString NamespaceName;
+
+	NamespaceDeclarationClass();
+};
+
+class NamespaceUseClass : public StatementClass {
+	
+public:
+	
+	UnicodeString NamespaceName;
+	
+	UnicodeString Alias;
+
+	NamespaceUseClass();
+	
+	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
+};
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -431,7 +640,7 @@ public:
  * Be sure to init and free with the ParserObserverClass; that way memory can be 
  * cleaned up correctly.
  */
-class PELET_API SemanticValueClass {
+class PELET_API SemanticValueClass : public AstItemClass {
 
 public:
 
@@ -456,60 +665,19 @@ public:
 	 * @see LexicalAnalyzerClass::GetCharacterPosition()
 	 */
 	int Pos;
-};
-
-/**
- * This represents a qualified name; it may have any number of namespaces attached to
- * it.
- */
-class PELET_API QualifiedNameClass {
-
-public:
-
-	UnicodeString Comment;
-	bool IsAbsolute;
-
-	QualifiedNameClass();
-	void Clear();
-	void GrabNameAndComment(SemanticValueClass& value);
-	void AddName(SemanticValueClass& value);
-	void MakeAbsolute();
-
-	UnicodeString ToSignature() const;
-	
-	
-	/** 
-	 * prepends a namespace separator '\' to this namespace name
-	 */
-	UnicodeString ToAbsoluteSignature() const;
 	
 	/**
-	 * @param name the namespace to prepend to this namespace. This is the current namespace
-	 *        that the code belongs to.
-	 * @return concatenation of name and this name, depending on whether this name is already
-	 *         fully qualified (IsAbsolute = true)
-	 * 
-	 * Examples
-	 * if name = "First\Child" and this = "Parent\Classname"
-	 * then this method will return "\First\Child\Parent\Classname"
-	 * 
-	 * if this name IsAbsolute = TRUE and name = "First\Child" and this = "\Parent\Classname"
-	 * then this method will return "\Parent\Classname"
-	 * since this name is absolute no need to prepend the given namespace
+	 * The line number that the token was founs in.
+	 * @see LexicalAnalyzerClass::GetLineNumber()
 	 */
-	UnicodeString Prepend(const QualifiedNameClass& name) const;
-
-private:
-
-	std::vector<UnicodeString> Namespaces;
-		
+	int LineNumber;
 };
 
 /**
  * Data structure that will hold the data points we can to keep track of
  * for PHP class structures.
  */
-class PELET_API ClassSymbolClass {
+class PELET_API ClassSymbolClass : public StatementClass {
 
 	public:
 
@@ -517,6 +685,9 @@ class PELET_API ClassSymbolClass {
 	 * This is NEVER qualified
 	 */
 	UnicodeString ClassName;
+	
+	UnicodeString NamespaceName;
+	
 	UnicodeString Comment;
 	
 	/** 
@@ -528,6 +699,9 @@ class PELET_API ClassSymbolClass {
 	 * These are always fully qualified names
 	 */
 	std::vector<UnicodeString> ImplementsList; 
+	
+	int StartingLineNumber, EndingLineNumber;
+	
 	bool IsAbstract;
 	bool IsFinal;
 	bool IsInterface;
@@ -535,8 +709,8 @@ class PELET_API ClassSymbolClass {
 
 	ClassSymbolClass();
 
-	void GrabClassName(SemanticValueClass& value);
-	void AppendToComment(SemanticValueClass& value);
+	void GrabClassName(SemanticValueClass* value);
+	void AppendToComment(SemanticValueClass* value);
 	void Clear();
 
 	UnicodeString ToSignature() const;
@@ -544,10 +718,54 @@ class PELET_API ClassSymbolClass {
 };
 
 /**
+ * This is a list of function / method parameters for a single function / method. It store
+ * the name and type info of each parameter.
+ */
+class PELET_API ParametersListClass : public AstItemClass {
+
+public:
+	ParametersListClass();
+
+	void Create();
+	void CreateWithOptionalType(SemanticValueClass* value);
+	
+	/**
+	 * @param className must be the FULLY QUALIFIED class name
+	 */
+	void CreateWithOptionalType(const UnicodeString& className);
+	void Clear();	
+	void SetName(SemanticValueClass* value, bool isReference);
+
+	/**
+	 * Recreate the source code by 'unparsing' the parameter list
+	 * @return concatenated paramter names; delimited with a comma. Also,
+	 * the returned string will have parenthesis already present.
+	 * For example "($name, $places)"
+	 */
+	UnicodeString ToSignature() const;
+
+	/**
+	 * @return the number of parameters that have been created
+	 */
+	size_t GetCount() const;
+
+	/**
+	 * @param index the parameter to get
+	 * @param the parameter name will be set in this variable
+	 * @param optionalType the parameter's type will be set in this variable
+	 */
+	void Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const;
+
+private:
+	std::vector<UnicodeString> Params;
+	std::vector<UnicodeString> OptionalTypes;
+};
+
+/**
  * Data structure that will hold the data points we can to keep track of
  * for PHP class method & property structures.
  */
-class PELET_API ClassMemberSymbolClass {
+class PELET_API ClassMemberSymbolClass : public StatementClass {
 
 public:
 
@@ -555,7 +773,16 @@ public:
 	 * If this is a property, the MemberName will
 	 * have the siguil ('$')
 	 */
-	UnicodeString MemberName, Comment;
+	UnicodeString MemberName, Comment, NamespaceName, ClassName;
+	
+	ParametersListClass ParametersList;
+	
+	/** line number, 1-based
+	 */
+	int StartingLineNumber;
+	
+	/** character position, 0 based */
+	int EndingPosition;
 
 	bool IsPublicMember;
 	
@@ -574,10 +801,10 @@ public:
 	bool IsReturnReference;
 
 	ClassMemberSymbolClass();
-	void SetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& functionValue);
-	void SetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
+	void SetNameAndReturnReference(SemanticValueClass* nameValue, bool isReturnReference, SemanticValueClass* functionValue);
+	void SetAsConst(SemanticValueClass* nameValue, SemanticValueClass* commentValue);
 	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
-	void AppendToComment(SemanticValueClass& value);
+	void AppendToComment(SemanticValueClass* value);
 	
 	void SetAsPublic();
 	void SetAsProtected();
@@ -627,50 +854,6 @@ public:
 };
 
 /**
- * This is a list of function / method parameters for a single function / method. It store
- * the name and type info of each parameter.
- */
-class PELET_API ParametersListClass {
-
-public:
-	ParametersListClass();
-
-	void Create();
-	void CreateWithOptionalType(SemanticValueClass& value);
-	
-	/**
-	 * @param className must be the FULLY QUALIFIED class name
-	 */
-	void CreateWithOptionalType(const UnicodeString& className);
-	void Clear();	
-	void SetName(SemanticValueClass& value, bool isReference);
-
-	/**
-	 * Recreate the source code by 'unparsing' the parameter list
-	 * @return concatenated paramter names; delimited with a comma. Also,
-	 * the returned string will have parenthesis already present.
-	 * For example "($name, $places)"
-	 */
-	UnicodeString ToSignature() const;
-
-	/**
-	 * @return the number of parameters that have been created
-	 */
-	size_t GetCount() const;
-
-	/**
-	 * @param index the parameter to get
-	 * @param the parameter name will be set in this variable
-	 * @param optionalType the parameter's type will be set in this variable
-	 */
-	void Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const;
-
-private:
-	std::vector<UnicodeString> Params;
-	std::vector<UnicodeString> OptionalTypes;
-};
-
-/**
  * This class will represent one PHP Expression. An expression is either
  * - a variable ($abc)
  * - a scalar (constant)
@@ -681,16 +864,17 @@ private:
  * - a function call
  * - a variable assignment of one variable to an expression
  */
-class PELET_API ExpressionClass {
+class PELET_API ExpressionClass : public StatementClass {
 	
 public:
 
-	enum Types {
+	enum ExpressionTypes {
 		SCALAR,
 		ARRAY,
 		VARIABLE,
 		FUNCTION_CALL,
 		NEW_CALL,
+		ASSIGNMENT_LIST,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -714,6 +898,12 @@ public:
 	 * The comment that is attached to the function call / variable.
 	 */
 	UnicodeString Comment;
+	
+	UnicodeString NamespaceScope;
+	
+	UnicodeString ClassScope;
+	
+	UnicodeString MethodScope;
 
 	/**
 	 * In the case of function calls; this is the arguments of the
@@ -729,8 +919,12 @@ public:
 	 * the chain list "$this" "->name" and "->toString()".
 	 */
 	std::vector<UnicodeString> ChainList;
+	
+	std::vector<UnicodeString> VariablesList;
 
-	Types Type;
+	ExpressionTypes ExpressionType;
+	
+	int LineNumber;
 
 	ExpressionClass();
 
@@ -740,9 +934,10 @@ public:
 	 * @param propertyValue the token of the property/method to chain
 	 * @param isMethod TRUE if the property is a method
 	 */
-	void AppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
+	void AppendToChain(SemanticValueClass* operatorValue, SemanticValueClass* propertyValue, bool isMethod);
 
 	void Clear();
+	void Copy(const ExpressionClass& src);
 
 };
 
@@ -757,17 +952,18 @@ public:
  * will produce one symbol only (called 'name').
  * 
  */
-class PELET_API SymbolClass {
+class PELET_API SymbolClass : public StatementClass {
 
 public:
 	
 	/**
 	 * All the types that are currently being captured.
 	 */
-	enum Types {
+	enum SourceTypes {
 		PRIMITIVE, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
 		ARRAY,
 		OBJECT, // a variable that is an object;
+		ASSIGNMENT_LIST,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 	
@@ -816,10 +1012,19 @@ public:
 	 */
 	std::vector<UnicodeString> ChainList;
 	
+	std::vector<UnicodeString> VariablesList;
+	
+	
+	UnicodeString NamespaceScope;
+	
+	UnicodeString ClassScope;
+	
+	UnicodeString MethodScope;
+	
 	/**
 	 * The symbol type
 	 */
-	Types Type;
+	SourceTypes SourceType;
 	
 	SymbolClass();
 
@@ -828,7 +1033,7 @@ public:
 	 */
 	void Copy(const SymbolClass& src);
 
-	void AppendToComment(SemanticValueClass& value);
+	void AppendToComment(SemanticValueClass* value);
 
 	void SetToPrimitive();
 	void SetToObject();
@@ -865,89 +1070,92 @@ public:
 	 * This method will allocate new string pointers for the Lexeme and Comment;
 	 * It will also keep track of the memory and will delete it SematicValueFree is called.
 	 */
-	void SemanticValueInit(SemanticValueClass& value);
+	pelet::SemanticValueClass* SemanticValueInit();
 
 	/**
 	 * Frees all of the memory allocated by SemanticValueInit().  This method will be called once 
 	 * parsing completes
 	 */
 	void SemanticValueFree();
-
-	/**
-	 * Frees the memory allocated by SemanticValueInit() for this single value.  This method is here
-	 * because sometimes we want to cleanup single values (if the parser performs error recovery)
-	 */
-	void SemanticValueFree(SemanticValueClass& value);
 	
-	/**
-	 * Notifies that a namespace was found
-	 */
-	void NamespaceDeclarationFound();
-
-	/**
-	 * Initializes class info
-	 */
-	void ClassStart(SemanticValueClass& commentValue, bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
-
-	/**
-	 * Sets the name property of the class info
-	 */
-	void ClassSetName(SemanticValueClass& nameValue);
-
-	/**
-	 * Sets the base class name from the CurrentQualifiedName info.
-	 */
-	void ClassSetExtends();
-
-	/**
-	 * Add the current name as an interface that is implemented by the current class.
-	 */
-	void ClassAddToImplements();
-
-	/**
-	 * Notifies that a class was found. The CurrentClass variable should have been filled with the data.
-	 */
-	void ClassFound(const int lineNumber);
-
-	/**
-	 * Will erase the current class info.
-	 */
-	void ClassEnd(const int lineNumber, SemanticValueClass& value);
-
-	void QualifiedNameClear();
+	pelet::SemanticValueClass* SemanticValueNil();
 	
-	void QualifiedNameGrabNameAndComment(SemanticValueClass& nameValue);
-
-	void QualifiedNameAddName(SemanticValueClass& nameValue);
+	pelet::QualifiedNameClass* QualifiedNameCreate(pelet::SemanticValueClass* nameValue);
+	pelet::QualifiedNameClass* QualifiedNameMakeAbsolute(pelet::QualifiedNameClass* qualifiedName);
+	pelet::QualifiedNameClass* QualifiedNameMakeFromCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	pelet::QualifiedNameClass* QualifiedNameNil();
 	
-	void QualifiedNameMakeAbsolute();
+	pelet::StatementListClass* NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName);
+	pelet::StatementListClass* NamespaceGlobalDeclarationFound();
+	pelet::QualifiedNameClass* NamespaceNameAppend(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* nameValue);
+	pelet::QualifiedNameClass* NamespaceNameMake(pelet::SemanticValueClass* nameValue);
+	pelet::StatementListClass* NamespaceUse(pelet::QualifiedNameClass* namespaceName);
+	pelet::StatementListClass* NamespaceUseAbsolute(pelet::QualifiedNameClass* namespaceName);
+	pelet::StatementListClass* NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::StatementListClass* NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	
+	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::QualifiedNameClass* implementsClassName);
+	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName);
+	pelet::ClassSymbolClass* ClassSymbolExtends(pelet::QualifiedNameClass* extendsClassName);
+	pelet::StatementListClass* ClassSymbolMake(pelet::SemanticValueClass* nameValue, pelet::ClassSymbolClass* classTypeSymbol, pelet::ClassSymbolClass* extendsSymbol, pelet::ClassSymbolClass* implementsSymbol, pelet::SemanticValueClass* endToken);
+	pelet::ClassSymbolClass* ClassSymbolStart(pelet::SemanticValueClass* commentValue, bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
+	
+	pelet::ParametersListClass* ParametersListNil();
+	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference);
+	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference); 
 
-	void ParametersListSetName(SemanticValueClass& nameValue, bool isReference);
+	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
+		pelet::ClassMemberSymbolClass* modifiers,
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, const int endingPosition);
+	pelet::StatementListClass* ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
+	pelet::ClassMemberSymbolClass* ClassMemberSymbolMake(pelet::SemanticValueClass* varValue);
+	pelet::StatementListClass* ClassMemberSymbolMakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
+	pelet::ClassMemberSymbolClass* ClassMemberSymbolMakeAsPublicVariable(pelet::SemanticValueClass* varValue);
+	pelet::ClassMemberSymbolClass* ClassMemberSymbolSetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
+	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, const int endingPosition);
+		
+	/**
+	 *  Notifies that an include has been found.
+	 */
+	pelet::ExpressionClass* IncludeFound(pelet::ExpressionClass* expr, const int lineNumber); //like in include("filename.php")
 
-	void ParametersListCreate();
-
-	void ParametersListCreateWithOptionalType(SemanticValueClass& typeValue);
-
-	void ClassMemberClear();
-
-	void ClassMemberSetNameAndReturnReference(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& functionValue);
-
-	void ClassMemberSetAsPublic();
-
-	void ClassMemberSetAsProtected();
-
-	void ClassMemberSetAsPrivate();
-
-	void ClassMemberSetAsStatic();
-
-	void ClassMemberSetAsAbstract();
-
-	void ClassMemberSetAsFinal();
-
-	void ClassMemberSetAsConst(SemanticValueClass& nameValue, SemanticValueClass& commentValue);
-
-	void ClassMemberAppendToComment(SemanticValueClass& commentValue);
-
+	pelet::ExpressionClass* ExpressionMakeAssignmentList(pelet::StatementListClass* assignmentList);
+	pelet::ExpressionClass* AssignmentExpressionFromExpressionFound(pelet::ExpressionClass* variable, pelet::ExpressionClass* expression);
+	pelet::ExpressionClass* AssignmentExpressionFromNewFound(pelet::ExpressionClass* variable, pelet::QualifiedNameClass* className);
+	pelet::ExpressionClass* AssignmentExpressionFromVariableFound(pelet::ExpressionClass* variable, pelet::ExpressionClass* srcVariable);
+	pelet::ExpressionClass* ExpressionMakeAsAssignmentExpression(pelet::ExpressionClass* expression);
+	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, bool isMethod);
+	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* variableProperties, pelet::ExpressionClass* newVariableProperty);
+	pelet::ExpressionClass* ExpressionMakeArray(pelet::StatementListClass* pairStatements);
+	pelet::ExpressionClass* ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName);
+	pelet::ExpressionClass* ExpressionMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::ExpressionClass* ExpressionMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::ExpressionClass* ExpressionMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::ExpressionClass* ExpressionMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::ExpressionClass* ExpressionMakeGlobalVariable(pelet::SemanticValueClass* value);
+	pelet::ExpressionClass* ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className);
+	pelet::ExpressionClass* ExpressionMakeNil();
+	pelet::ExpressionClass* ExpressionMakeObject(pelet::ExpressionClass* srcExpression);
+	pelet::ExpressionClass* ExpressionMakeScalar(pelet::ExpressionClass* srcExpression);
+	pelet::ExpressionClass* ExpressionMakeScalar(pelet::SemanticValueClass* srcValue);
+	pelet::ExpressionClass* ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName);
+	pelet::ExpressionClass* ExpressionMakeStaticMember(pelet::QualifiedNameClass* className, pelet::ExpressionClass* memberName);
+	pelet::ExpressionClass* ExpressionMakeStaticVariable(pelet::SemanticValueClass* nameValue);
+	pelet::ExpressionClass* ExpressionMakeVariable(pelet::SemanticValueClass* variableValue);
+	pelet::ExpressionClass* ExpressionMakeVariable(pelet::ExpressionClass* baseName, pelet::ExpressionClass* firstProperty, bool isFirstPropertyMethod, pelet::ExpressionClass* restProperties);
+	pelet::ExpressionClass* ExpressionNil();
+	
+	void MakeAst(pelet::StatementListClass* statements);
+	
+	pelet::StatementListClass* ConstantMake(pelet::SemanticValueClass* value, int lineNumber);
+	
+	pelet::StatementListClass* StatementListAppend(pelet::StatementListClass* statementList, pelet::StatementClass* statement);
+	pelet::StatementListClass* StatementListMake();
+	pelet::StatementListClass* StatementListMakeAndAppend(pelet::StatementClass* statement);
+	pelet::StatementListClass* StatementListMerge(pelet::StatementListClass* a, pelet::StatementListClass* b); 
+	pelet::StatementListClass* StatementListNil();
+	
 	/**
 	 * the QualifiedName is a new trait being used in the current class
 	 */
@@ -959,12 +1167,12 @@ public:
 	 * a trait method is being aliased in the current class.
 	 * @param traitMethod the trait method being aliased
 	 */
-	void TraitAliasMethod(SemanticValueClass& traitMethod);
+	void TraitAliasMethod(SemanticValueClass* traitMethod);
 	
 	/**
 	 * a trait method is being aliased in the current class.
 	 */
-	void TraitAliasMethodFromQualifiedName(SemanticValueClass& traitMethod);
+	void TraitAliasMethodFromQualifiedName(SemanticValueClass* traitMethod);
 
 	/**
 	 * notify that a trait conflict has been resolved using the insteadof operator
@@ -982,224 +1190,13 @@ public:
 	 * add the current qualified name to the insteadof list of the trait
 	 */
 	void TraitAddInsteadOf();
-	
-	/**
-	 * Set the 'current' namespace; the namespace declaration
-	 */
-	void NamespaceSetCurrent();
-	
-	/**
-	 * Set the 'current' namespace to be the global namespace
-	 */
-	void NamespaceSetToGlobal();
-	
-	/**
-	 * Notify that a namespace was imported.
-	 */
-	void NamespaceUse();
-	
-	/**
-	 * Notify that a namespace was imported using an alias.
-	 */	
-	void NamespaceUseAlias(SemanticValueClass& namespaceAlias);
-
-	/**
-	 * Notify that an absolute namespace was imported.
-	 */
-	void NamespaceUseAbsolute();
-	
-	/**
-	 * Notify that an absolute namespace was imported with an alias.
-	 */
-	void NamespaceUseAbsoluteAlias(SemanticValueClass& namespaceAlias);
-	
+			
 	/**
 	 * clear any namespace aliases. This should be called when multiple namespaces
 	 * are declared in a single file
 	 */
 	void NamespaceAliasClear();
 	
-	/**
-	 * add a new Paramter to the CurrentParametersList 
-	 * using the CurrentQualifiedName as the type
-	 */
-	void CreateParameterWithOptionalClassName();
-
-	/**
-	 * Notifies that a class property / method has been found. The CurrentMember variable should have been filled with the data.
-	 */
-	void ClassMemberFound(bool isProperty, const int lineNumber);
-
-	/**
-	 * Will erase the current method info and notify the method observer
-	 */
-	void ClassMethodEnd(SemanticValueClass& value);
-
-	/**
-	 *  Notifies that a define (constant) has been found.
-	 */	
-	void NamespaceConstantFound(const pelet::SemanticValueClass& nameValue, const int lineNumber);
-
-	/**
-	 *  Notifies that a define (constant) has been found.
-	 */
-	void DefineFound(const ExpressionClass& name, const ExpressionClass& value, const UnicodeString& comment, const int lineNumber);
-	
-	/**
-	 *  Notifies that an include has been found.
-	 */
-	void IncludeFound(const int lineNumber);//like in include("filename.php")
-
-	/**
-	 * Initializes the CurrentMember info.
-	 */
-	void FunctionStart(SemanticValueClass& nameValue, SemanticValueClass& referenceValue, SemanticValueClass& commentValue);
-
-	/**
-	 * Notifies that a stand-alone function has been found.
-	 */
-	void FunctionFound(const int lineNumber);
-
-	/**
-	 * Will erase the current function info and notify the function observer.
-	 */
-	void FunctionEnd(SemanticValueClass& value);
-
-	/**
-	 * Notifies that a variable has been found. This method should be called when an assignment expression has
-	 * been parsed.
-	 */
-	void AssignmentExpressionFound();
-
-	/**
-	 * Notifies than an expression has been parsed. This method should be called when an expression has
-	 * been parsed.
-	 */
-	void ExpressionFound();
-
-	/**
-	 * When a catch block is parsed; notify that a new variable has been found (the exception that
-	 * is catched)
-	 * @param variableValue the catch variable value
-	 */
-	void ExceptionCatchFound(SemanticValueClass& variableValue);
-	
-	/**
-	 * When a global variable is found.
-	 * @param variableValue the global variable value
-	 */
-	void GlobalVariableFound(SemanticValueClass& variableValue);
-
-	/**
-	 * When a static variable is found.
-	 * @param variableValue the global variable value
-	 */
-	void StaticVariableFound(SemanticValueClass& variableValue);
-	
-	/**
-	 * When a variable in a foreach loop is found.
-	 * The most recently parsed variable will be used. This is the one that has 
-	 * been popped into the expression variables list (after a call to CurrentVariableComplete())
-	 */
-	void ForeachVariableFound();
-
-	/**
-	 * Set the current expression to be a scalar value and pushes the 
-	 * expression to the ExpressionVariables list.
-	 */
-	void ExpressionPushNewScalar(SemanticValueClass& value);
-
-	/**
-	 * Set the current expression to be an array value and pushes the 
-	 * expression to the ExpressionVariables list.
-	 */
-	void ExpressionPushNewArray(SemanticValueClass& value);
-
-	/**
-	 * Set the current expression to be a variable value and pushes the 
-	 * expression to the ExpressionVariables list.
-	 */
-	void ExpressionPushNewVariable(SemanticValueClass& value);
-
-	/**
-	 * Set the current expression to be an unknown value and pushes the 
-	 * expression to the ExpressionVariables list.
-	 */
-	void ExpressionPushNewUnknown(SemanticValueClass& value);
-
-	/**
-	 * Set the current expression to be the result of a new PHP object and pushes the 
-	 * expression to the ExpressionVariables list.
-	 */
-	void ExpressionPushNewInstanceCall();
-
-	/**
-	 * 'undo' the last expression. this method is useful when we want to skip certain expressions.
-	 */
-	void ExpressionPop();
-	
-	/**
-	 * Adds the current expression to the function call arguments list. This function should
-	 * be called when the parser has encountered a function call argument (ie for the 
-	 * expression "myFunct($a, $b)" once "$a" has been parsed this function should be
-	 * called, then once "$b" has been parsed this function should be called.
-	 */
-	void ExpressionAsCallArgument();
-
-	/**
-	 * Copies the current qualified name to the FunctionCall expression
-	 */
-	void FunctionCallStart();
-
-	/**
-	 * Checks the current function call that was parsed; will notify the class observer when 
-	 * the define() function was called
-	 */
-	void FunctionCallEnd(const int lineNumber);
-
-	/**
-	 * Saves the current function call to expression to the CurrentExpression.
-	 * Will push the expression to the ExpressionVariables list; it will instead
-	 * push the current expression into the CurrentFunctionCall expression. This function
-	 * should be called when the parser encounters a function call (ie.  "myFunc();".
-	 */
-	void CurrentExpressionPushAsFunctionCall();
-	
-	/**
-	 * Sets the current expression to be a variable. This function should be called
-	 * when parser encounters a variable at the right side of an assignment 
-	 * expression. Will push the expression to the ExpressionVariablesList
-	 */
-	void CurrentExpressionPushAsVariable(pelet::SemanticValueClass& value);
-
-	/**
-	 * Add a property name to the current variable (the one that was last pushed) chain list
-	 * @param operatorValue the token of the operation
-	 * @param propertyValue the token of the property/method to chain
-	 * @param isMethod TRUE if the property is a method
-	 */
-	void CurrentExpressionAppendToChain(SemanticValueClass& operatorValue, SemanticValueClass& propertyValue, bool isMethod);
-
-	/**
-	 * Sets the current expression to be a static member. This function should be called
-	 * when parser encounters a variable at the right side of an assignment 
-	 * expression. Will NOT push the expression to the ExpressionVariablesList
-	 */
-	void CurrentExpressionAsStaticMember(SemanticValueClass& scopeOperatorValue);
-
-	/**
-	 * Sets the current expression to be a class constant. This function should be called
-	 * when parser encounters a variable at the right side of an assignment 
-	 * expression. Will NOT push the expression to the ExpressionVariablesList
-	 */
-	void CurrentExpressionPushAsClassConstant(SemanticValueClass& scopeOperatorValue, SemanticValueClass& constantNameValue);
-
-	/**
-	 * Resets the current expression.
-	 * This function should be called after the end of every statement.
-	 */
-	void ClearExpressions();
-
 	/**
 	 * Will check the given comment for \@var annotations FOR LOCAL VARIABLES ONLY
 	 * and notify the observer.
@@ -1209,7 +1206,13 @@ public:
 	 * http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	 */
 	void NotifyLocalVariableTypeHint(const UnicodeString& comment);
-
+	
+	void SetCurrentClassName(pelet::SemanticValueClass* value);
+	
+	void SetCurrentMemberName(pelet::SemanticValueClass* value);
+	
+	void SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	
 private:
 
 	/**
@@ -1217,7 +1220,7 @@ private:
 	 * of those variables.  This, in essence, allows the creation of parameters as 
 	 * local variables.
 	 */
-	void NotifyVariablesFromParameterList();
+	void NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName);
 
 	/**
 	 * Get the return type from the '\@return' / '\@var' annotation
@@ -1243,7 +1246,7 @@ private:
 	 * \@property, \@property-read, \@property-write, and \@method 
 	 * declarations.
 	 */
-	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, const int lineNumber);
+	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, UnicodeString currentNamespaceName, UnicodeString currentClassName, const int lineNumber);
 	
 	/**
 	 * Make the given class name absolute, taking into account (1) the current namespace, and 
@@ -1268,36 +1271,18 @@ private:
 	/**
 	 * the class that is currently being parsed.
 	 */
-	ClassSymbolClass CurrentClass;
+	UnicodeString CurrentClassName;
 
 	/**
 	 * the class method or property that is currently being parsed. Also, this will hold
 	 * the current stand-alone function that is being parsed as well
 	 */
-	ClassMemberSymbolClass CurrentMember;
+	UnicodeString CurrentMemberName;
 
 	/**
 	 * The current qualified name (namespaces + name) that is being parsed.
 	 */
 	QualifiedNameClass CurrentQualifiedName;
-
-	/**
-	 * This is a list of all the parameters of a function declaration. For example at the
-	 * end of this line
-	 *
-	 *  function work($one, $two)
-	 *
-	 * the CurrentParametersList will have $one and $two as its members
-	 */
-	ParametersListClass CurrentParametersList;
-
-	/**
-	 * The current function CALL (not declaration).
-	 *
-	 * The reason for keeping this is for finding define() calls so that we can notify
-	 * the class observer.
-	 */
-	ExpressionClass CurrentFunctionCallExpression;
 
 	/**
 	 * The current trait adaptation
@@ -1307,7 +1292,7 @@ private:
 	/**
 	 * The current namespace
 	 */
-	QualifiedNameClass Namespace;
+	QualifiedNameClass CurrentNamespace;
 	
 	/**
 	 * A map of the current aliases of the parsed file.
@@ -1340,32 +1325,14 @@ private:
 	ExpressionObserverClass* ExpressionObserver;
 
 	/**
-	 * The current expression that is being parsed. This is a bit tricky since this
-	 *
-	 *  $myString = $another->func()
-	 *
-	 * Is actually 2 parsed as 2 expression rules.  
-	 */
-	ExpressionClass CurrentExpression;
-
-	/**
-	 * Since we want to notify on variable assigments, we need to keep track of previous
-	 * expressions, since an assignment expression is recursively defined as a variable
-	 * followed by an '=' followed by an expression. By having this list, we can store
-	 * the right side of the assignment (the source expression) and then parse the
-	 * left side of the assignment while still having access to the source expression.
-	 * @see CurrentVariableComplete() method; after a variable is parsed the 
-	 * CurrentVariableComplete method will 'save' it into this vector.
-	 */
-	std::vector<ExpressionClass> ExpressionVariables;
-
-	/**
 	 * Keep track of all allocated strings; we do it here because
 	 * we cannot put a constructor/destructor in the SemanticValue class because
 	 * bison will generate a union type and unions cannot have non-POD types or types with
 	 * constructor/destructors
 	 */
 	std::vector<UnicodeString*> AllValues;
+	
+	std::vector<AstItemClass*> AllAstItems;
 
 	/**
 	 * Optimization to not bother collecting expressions when they are not needed (no variable
@@ -1374,13 +1341,26 @@ private:
 	bool DoCollectExpressions;
 };
 
+typedef union ParserType {
+	pelet::StatementListClass *statementList;
+	pelet::QualifiedNameClass *qualifiedName;
+	pelet::ConstantStatementClass *constant;
+	pelet::ClassSymbolClass *classSymbol;
+	pelet::ClassMemberSymbolClass *classMemberSymbol;
+	pelet::ParametersListClass *parametersList;
+	pelet::ExpressionClass *expression;
+	pelet::SemanticValueClass *semanticValue;
+	bool isMethod;
+	bool isComma;
+} ParserType;
+
 }
 
 /**
  * This function will get the next token from the lexer and will create a new SemanticValue (token + lexeme) 
  * from it.
  */
-int NextSemanticValue(pelet::SemanticValueClass* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+int NextSemanticValue(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 
 /**
  * this function will set the error that comes from bison and put it in the LexicalAnalyzer class.

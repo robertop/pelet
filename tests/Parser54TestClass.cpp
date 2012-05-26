@@ -251,7 +251,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, ParseChainExpressionWithChainConstructor
 	// lexeme empty because new call is first in the chain
 	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
 	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.SourceType);
 	CHECK_UNISTR_EQUALS("Foo", symbol.ChainList[0]);
 	CHECK_UNISTR_EQUALS("->method", symbol.ChainList[1]);
 }
@@ -264,7 +264,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, ParseChainExpressionWithFunctionArrayDer
 	// lexeme empty because new call is first in the chain
 	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
 	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.SourceType);
 	CHECK_UNISTR_EQUALS("array_merge()", symbol.ChainList[0]);
 	CHECK_UNISTR_EQUALS("->method()", symbol.ChainList[1]);
 }
@@ -277,7 +277,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, ParseChainExpressionWithMethodArrayDeref
 	// lexeme empty because new call is first in the chain
 	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
 	CHECK_VECTOR_SIZE(3, symbol.ChainList);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.Type);
+	CHECK_EQUAL(pelet::SymbolClass::OBJECT, symbol.SourceType);
 	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
 	CHECK_UNISTR_EQUALS("->func", symbol.ChainList[1]);
 	CHECK_UNISTR_EQUALS("->method()", symbol.ChainList[2]);

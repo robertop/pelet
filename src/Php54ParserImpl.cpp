@@ -85,8 +85,7 @@
     #pragma warning(disable:4065) // Bison generates a switch statement without a case
  #endif
  
- 
-#define YYSTYPE pelet::SemanticValueClass
+#define YYSTYPE pelet::ParserType
 
 // so that both bison parses call the same lex function
 #define php54lex NextSemanticValue
@@ -786,53 +785,53 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   195,   195,   199,   200,   204,   205,   209,   210,   211,
-     212,   213,   214,   214,   216,   216,   218,   219,   223,   223,
-     225,   229,   230,   231,   232,   236,   237,   241,   242,   247,
-     248,   249,   250,   255,   256,   260,   261,   262,   263,   263,
-     264,   264,   265,   274,   275,   276,   277,   278,   279,   280,
-     281,   282,   283,   284,   285,   286,   287,   288,   292,   296,
-     297,   301,   298,   304,   305,   310,   311,   315,   316,   321,
-     321,   327,   328,   332,   336,   340,   345,   346,   351,   352,
-     351,   357,   358,   357,   360,   361,   360,   366,   367,   368,
-     369,   372,   374,   374,   379,   382,   384,   384,   388,   390,
-     390,   395,   396,   399,   401,   405,   406,   410,   411,   416,
-     417,   422,   423,   428,   429,   434,   435,   436,   437,   441,
-     443,   444,   449,   450,   455,   456,   459,   461,   464,   466,
-     469,   471,   474,   476,   480,   481,   485,   486,   487,   488,
-     489,   490,   491,   492,   496,   497,   498,   499,   503,   504,
-     508,   509,   510,   511,   512,   513,   517,   518,   522,   523,
-     524,   528,   529,   530,   531,   535,   536,   540,   541,   542,
-     543,   544,   543,   549,   549,   554,   555,   555,   560,   561,
-     561,   566,   568,   572,   573,   577,   578,   582,   582,   587,
-     588,   592,   593,   597,   601,   602,   605,   607,   611,   612,
-     616,   617,   620,   622,   626,   627,   631,   632,   633,   634,
-     635,   636,   640,   641,   642,   643,   647,   649,   653,   654,
-     658,   660,   664,   665,   669,   670,   674,   675,   679,   680,
-     681,   684,   686,   690,   694,   695,   696,   697,   698,   699,
-     700,   701,   702,   703,   704,   705,   706,   707,   708,   709,
-     710,   711,   712,   713,   714,   715,   716,   717,   718,   719,
-     720,   721,   722,   723,   724,   725,   726,   727,   728,   729,
-     730,   731,   732,   733,   734,   735,   736,   737,   738,   739,
-     740,   741,   742,   743,   744,   745,   746,   749,   751,   752,
-     753,   754,   755,   756,   757,   758,   759,   760,   761,   762,
-     763,   764,   765,   766,   768,   773,   776,   778,   782,   783,
-     784,   785,   789,   789,   792,   791,   794,   794,   796,   798,
-     800,   802,   804,   809,   810,   811,   812,   816,   817,   818,
-     822,   823,   827,   830,   834,   835,   839,   842,   844,   845,
-     848,   850,   851,   854,   856,   860,   861,   862,   863,   864,
-     865,   866,   867,   868,   869,   870,   871,   875,   876,   877,
-     878,   879,   880,   881,   882,   883,   884,   888,   892,   893,
-     894,   895,   896,   897,   898,   899,   900,   903,   905,   908,
-     910,   914,   915,   916,   917,   921,   922,   927,   932,   936,
-     942,   940,   944,   948,   949,   953,   958,   959,   963,   967,
-     968,   969,   973,   974,   978,   979,   983,   987,   988,   992,
-     993,   994,   998,   999,  1000,  1004,  1005,  1006,  1010,  1011,
-    1014,  1016,  1020,  1021,  1025,  1026,  1027,  1031,  1032,  1036,
-    1037,  1041,  1042,  1046,  1047,  1048,  1051,  1053,  1057,  1058,
-    1059,  1060,  1061,  1062,  1063,  1064,  1068,  1069,  1070,  1071,
-    1075,  1076,  1077,  1078,  1079,  1080,  1084,  1085,  1086,  1090,
-    1091,  1092,  1093,  1094,  1095,  1096,  1100,  1101,  1105,  1106
+       0,   193,   193,   197,   198,   202,   203,   207,   208,   209,
+     210,   211,   212,   212,   214,   214,   216,   217,   221,   221,
+     223,   227,   228,   229,   230,   234,   235,   239,   240,   245,
+     246,   247,   248,   253,   254,   258,   259,   260,   261,   261,
+     262,   262,   263,   272,   273,   274,   275,   276,   277,   278,
+     279,   280,   281,   282,   283,   284,   285,   286,   290,   294,
+     295,   299,   296,   302,   303,   308,   309,   313,   314,   319,
+     319,   325,   326,   330,   334,   338,   343,   344,   349,   350,
+     349,   355,   356,   355,   358,   359,   358,   364,   365,   366,
+     367,   370,   372,   372,   377,   380,   382,   382,   386,   388,
+     388,   393,   394,   397,   399,   403,   404,   408,   409,   414,
+     415,   420,   421,   426,   427,   432,   433,   434,   435,   439,
+     441,   442,   447,   448,   453,   454,   457,   459,   462,   464,
+     467,   469,   472,   474,   478,   479,   483,   484,   485,   486,
+     487,   488,   489,   490,   494,   495,   496,   497,   501,   502,
+     506,   507,   508,   509,   510,   511,   515,   516,   520,   521,
+     522,   526,   527,   528,   529,   533,   534,   538,   539,   540,
+     541,   542,   541,   547,   547,   552,   553,   553,   558,   559,
+     559,   564,   566,   570,   571,   575,   576,   580,   580,   585,
+     586,   590,   591,   595,   599,   600,   603,   605,   609,   610,
+     614,   615,   618,   620,   624,   625,   629,   630,   631,   632,
+     633,   634,   638,   639,   640,   641,   645,   647,   651,   652,
+     656,   658,   662,   663,   667,   668,   672,   673,   677,   678,
+     679,   682,   684,   688,   692,   693,   694,   695,   696,   697,
+     698,   699,   700,   701,   702,   703,   704,   705,   706,   707,
+     708,   709,   710,   711,   712,   713,   714,   715,   716,   717,
+     718,   719,   720,   721,   722,   723,   724,   725,   726,   727,
+     728,   729,   730,   731,   732,   733,   734,   735,   736,   737,
+     738,   739,   740,   741,   742,   743,   744,   747,   749,   750,
+     751,   752,   753,   754,   755,   756,   757,   758,   759,   760,
+     761,   762,   763,   764,   766,   771,   774,   776,   780,   781,
+     782,   783,   787,   787,   790,   789,   792,   792,   794,   796,
+     798,   800,   802,   807,   808,   809,   810,   814,   815,   816,
+     820,   821,   825,   828,   832,   833,   837,   840,   842,   843,
+     846,   848,   849,   852,   854,   858,   859,   860,   861,   862,
+     863,   864,   865,   866,   867,   868,   869,   873,   874,   875,
+     876,   877,   878,   879,   880,   881,   882,   886,   890,   891,
+     892,   893,   894,   895,   896,   897,   898,   901,   903,   906,
+     908,   912,   913,   914,   915,   919,   920,   925,   930,   934,
+     940,   938,   942,   946,   947,   951,   956,   957,   961,   965,
+     966,   967,   971,   972,   976,   977,   981,   985,   986,   990,
+     991,   992,   996,   997,   998,  1002,  1003,  1004,  1008,  1009,
+    1012,  1014,  1018,  1019,  1023,  1024,  1025,  1029,  1030,  1034,
+    1035,  1039,  1040,  1044,  1045,  1046,  1049,  1051,  1055,  1056,
+    1057,  1058,  1059,  1060,  1061,  1062,  1066,  1067,  1068,  1069,
+    1073,  1074,  1075,  1076,  1077,  1078,  1082,  1083,  1084,  1088,
+    1089,  1090,  1091,  1092,  1093,  1094,  1098,  1099,  1103,  1104
 };
 #endif
 
@@ -3804,82 +3803,82 @@ yyreduce:
     {
         case 5:
 
-    { observers.QualifiedNameGrabNameAndComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 6:
 
-    { observers.QualifiedNameAddName((yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
   case 7:
 
-    { observers.ClearExpressions(); ;}
+    {;}
     break;
 
   case 11:
 
-    { observers.NamespaceSetCurrent(); observers.NamespaceDeclarationFound(); ;}
+    {;}
     break;
 
   case 12:
 
-    { observers.NamespaceSetCurrent(); observers.NamespaceDeclarationFound(); ;}
+    {;}
     break;
 
   case 14:
 
-    { observers.NamespaceSetToGlobal(); observers.NamespaceDeclarationFound(); ;}
+    {;}
     break;
 
   case 18:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 19:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 20:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 21:
 
-    { observers.NamespaceUse(); ;}
+    {;}
     break;
 
   case 22:
 
-    { observers.NamespaceUseAlias((yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
   case 23:
 
-    { observers.NamespaceUseAbsolute(); ;}
+    {;}
     break;
 
   case 24:
 
-    { observers.NamespaceUseAbsoluteAlias((yyvsp[(3) - (4)])); ;}
+    {;}
     break;
 
   case 25:
 
-    { observers.NamespaceConstantFound((yyvsp[(3) - (5)]), analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 26:
 
-    { observers.NamespaceConstantFound((yyvsp[(2) - (4)]), analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 29:
 
-    { observers.ClearExpressions(); ;}
+    {;}
     break;
 
   case 38:
@@ -3894,962 +3893,962 @@ yyreduce:
 
   case 61:
 
-    { observers.ExceptionCatchFound((yyvsp[(8) - (9)])); ;}
+    {;}
     break;
 
   case 69:
 
-    { observers.ExceptionCatchFound((yyvsp[(4) - (5)])); ;}
+    {;}
     break;
 
   case 76:
 
-    { (yyval).Token = 0; ;}
+    {;}
     break;
 
   case 77:
 
-    { (yyval) = (yyvsp[(1) - (1)]); ;}
+    {;}
     break;
 
   case 78:
 
-    { observers.FunctionStart((yyvsp[(3) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 79:
 
-    { observers.FunctionFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 80:
 
-    { observers.FunctionEnd((yyvsp[(11) - (11)])); ;}
+    {;}
     break;
 
   case 81:
 
-    { observers.ClassSetName((yyvsp[(2) - (2)])); ;}
+    {;}
     break;
 
   case 82:
 
-    { observers.ClassFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 83:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(9) - (9)])); ;}
+    {;}
     break;
 
   case 84:
 
-    { observers.ClassSetName((yyvsp[(2) - (2)])); ;}
+    {;}
     break;
 
   case 85:
 
-    { observers.ClassFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 86:
 
-    { observers.ClassEnd(analyzer.GetLineNumber(), (yyvsp[(8) - (8)])); ;}
+    {;}
     break;
 
   case 87:
 
-    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, false, false); ;}
+    {;}
     break;
 
   case 88:
 
-    { observers.ClassStart((yyvsp[(1) - (2)]), true, false, false, false); ;}
+    {;}
     break;
 
   case 89:
 
-    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, false, true); ;}
+    {;}
     break;
 
   case 90:
 
-    { observers.ClassStart((yyvsp[(1) - (2)]), false, true, false, false); ;}
+    {;}
     break;
 
   case 92:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 93:
 
-    { observers.ClassSetExtends(); ;}
+    {;}
     break;
 
   case 94:
 
-    { observers.ClassStart((yyvsp[(1) - (1)]), false, false, true, false); ;}
+    {;}
     break;
 
   case 96:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 99:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 101:
 
-    { observers.ClassAddToImplements(); ;}
+    {;}
     break;
 
   case 102:
 
-    { observers.ClassAddToImplements(); ;}
+    {;}
     break;
 
   case 105:
 
-    { observers.ForeachVariableFound(); ;}
+    {;}
     break;
 
   case 106:
 
-    { observers.ForeachVariableFound(); ;}
+    {;}
     break;
 
   case 136:
 
-    { observers.ParametersListSetName((yyvsp[(2) - (2)]), false); ;}
+    {;}
     break;
 
   case 137:
 
-    { observers.ParametersListSetName((yyvsp[(3) - (3)]), true); ;}
+    {;}
     break;
 
   case 138:
 
-    { observers.ParametersListSetName((yyvsp[(3) - (5)]), true);;}
+    {;}
     break;
 
   case 139:
 
-    { observers.ParametersListSetName((yyvsp[(2) - (4)]), false); ;}
+    {;}
     break;
 
   case 140:
 
-    { observers.ParametersListSetName((yyvsp[(4) - (4)]), false); ;}
+    {;}
     break;
 
   case 141:
 
-    { observers.ParametersListSetName((yyvsp[(5) - (5)]), true); ;}
+    {;}
     break;
 
   case 142:
 
-    { observers.ParametersListSetName((yyvsp[(5) - (7)]), true); ;}
+    {;}
     break;
 
   case 143:
 
-    { observers.ParametersListSetName((yyvsp[(4) - (6)]), false); ;}
+    {;}
     break;
 
   case 144:
 
-    { observers.ParametersListCreate(); ;}
+    {;}
     break;
 
   case 145:
 
-    { observers.ParametersListCreateWithOptionalType((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 146:
 
-    { observers.ParametersListCreateWithOptionalType((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 147:
 
-    { observers.CreateParameterWithOptionalClassName(); ;}
+    {;}
     break;
 
   case 150:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 151:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 152:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 153:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 154:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 155:
 
-    { observers.ExpressionAsCallArgument(); ;}
+    {;}
     break;
 
   case 158:
 
-    { observers.GlobalVariableFound((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 161:
 
-    { observers.StaticVariableFound((yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
   case 162:
 
-    { observers.StaticVariableFound((yyvsp[(3) - (5)])); ;}
+    {;}
     break;
 
   case 163:
 
-    { observers.StaticVariableFound((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 164:
 
-    { observers.StaticVariableFound((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 167:
 
-    { observers.ClassMemberClear(); ;}
+    {;}
     break;
 
   case 168:
 
-    { observers.ClassMemberClear(); ;}
+    {;}
     break;
 
   case 170:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(4) - (4)]), (yyvsp[(3) - (4)]), (yyvsp[(2) - (4)])); ;}
+    {;}
     break;
 
   case 171:
 
-    { observers.ClassMemberFound(false, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 172:
 
-    { observers.ClassMemberClear(); ;}
+    {;}
     break;
 
   case 173:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 175:
 
-    { observers.TraitUseFound(); ;}
+    {;}
     break;
 
   case 176:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 177:
 
-    { observers.TraitUseFound(); ;}
+    {;}
     break;
 
   case 178:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 179:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 183:
 
-    { observers.TraitClearAdaptation(); observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 184:
 
-    { observers.TraitClearAdaptation(); observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 187:
 
-    { observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 188:
 
-    { observers.TraitInsteadOfFound(); ;}
+    {;}
     break;
 
   case 189:
 
-    { observers.TraitAddInsteadOf(); observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 190:
 
-    { observers.TraitAddInsteadOf(); observers.QualifiedNameClear(); ;}
+    {;}
     break;
 
   case 191:
 
-    { observers.TraitAliasMethod((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 193:
 
-    { observers.TraitAliasMethodFromQualifiedName((yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
   case 194:
 
-    { observers.TraitAliasFound(&(yyvsp[(4) - (4)])); ;}
+    {;}
     break;
 
   case 195:
 
-    { observers.TraitAliasFound(NULL); ;}
+    {;}
     break;
 
   case 198:
 
-    { observers.ClassMethodEnd((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 199:
 
-    { observers.ClassMethodEnd((yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
   case 201:
 
-    { observers.ClassMemberSetAsPublic();  observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 206:
 
-    { observers.ClassMemberSetAsPublic(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 207:
 
-    { observers.ClassMemberSetAsProtected(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 208:
 
-    { observers.ClassMemberSetAsPrivate(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)]));;}
+    {;}
     break;
 
   case 209:
 
-    { observers.ClassMemberSetAsStatic(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 210:
 
-    { observers.ClassMemberSetAsAbstract(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 211:
 
-    { observers.ClassMemberSetAsFinal(); observers.ClassMemberAppendToComment((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 212:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (3)]), (yyvsp[(3) - (3)]), (yyvsp[(3) - (3)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 213:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 214:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (1)]), (yyvsp[(1) - (1)]), (yyvsp[(1) - (1)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 215:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(1) - (3)]), (yyvsp[(1) - (3)]), (yyvsp[(1) - (3)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 216:
 
-    { observers.ClassMemberSetNameAndReturnReference((yyvsp[(3) - (5)]), (yyvsp[(3) - (5)]), (yyvsp[(3) - (5)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 217:
 
-    { observers.ClassMemberSetAsConst((yyvsp[(2) - (4)]), (yyvsp[(1) - (4)])); observers.ClassMemberFound(true, analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 233:
 
-    { observers.ExpressionPushNewInstanceCall(); ;}
+    {;}
     break;
 
   case 235:
 
-    { observers.AssignmentExpressionFound(); ;}
+    {;}
     break;
 
   case 236:
 
-    { observers.AssignmentExpressionFound(); ;}
+    {;}
     break;
 
   case 237:
 
-    { observers.ExpressionPushNewInstanceCall(); observers.AssignmentExpressionFound(); ;}
+    {;}
     break;
 
   case 238:
 
-    { observers.ExpressionPushNewVariable((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 239:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 240:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 241:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 242:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 243:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 244:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 245:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 246:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 247:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 248:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 249:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 250:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 251:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 252:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 253:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 254:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 255:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 256:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 257:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 258:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 259:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 260:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 261:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 262:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 263:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 264:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 265:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 266:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 267:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 268:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 269:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 270:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 271:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 272:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 273:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 274:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 275:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 276:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 277:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 278:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 279:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 280:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 281:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 282:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 283:
 
-    { /* no need to push here as this is recursive */ ;}
+    {;}
     break;
 
   case 286:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (5)])); ;}
+    {;}
     break;
 
   case 287:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (4)])); ;}
+    {;}
     break;
 
   case 288:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 289:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 290:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 291:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 292:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 293:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 294:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 299:
 
-    { observers.ExpressionPushNewArray((yyvsp[(1) - (4)])); ;}
+    {;}
     break;
 
   case 300:
 
-    { observers.ExpressionPushNewArray((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 301:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); /* results of backtick operator is a string */ ;}
+    {;}
     break;
 
   case 303:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (9)])); ;}
+    {;}
     break;
 
   case 304:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (10)])); ;}
+    {;}
     break;
 
   case 312:
 
-    { observers.FunctionCallStart(); ;}
+    {;}
     break;
 
   case 313:
 
-    { observers.FunctionCallEnd(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 314:
 
-    { observers.FunctionCallStart(); ;}
+    {;}
     break;
 
   case 315:
 
-    { observers.FunctionCallEnd(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 316:
 
-    { observers.QualifiedNameMakeAbsolute(); observers.FunctionCallStart(); ;}
+    {;}
     break;
 
   case 317:
 
-    { observers.FunctionCallEnd(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 326:
 
-    { observers.QualifiedNameMakeAbsolute(); ;}
+    {;}
     break;
 
   case 329:
 
-    { observers.QualifiedNameMakeAbsolute(); ;}
+    {;}
     break;
 
   case 345:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 346:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 347:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 348:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 349:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 350:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 351:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 352:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 353:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 354:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 355:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (3)])); ;}
+    {;}
     break;
 
   case 356:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (2)])); ;}
+    {;}
     break;
 
   case 366:
 
-    { observers.ExpressionPushNewScalar((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 385:
 
-    { observers.ExpressionFound(); ;}
+    {;}
     break;
 
   case 386:
 
-    { observers.ExpressionFound(); ;}
+    {;}
     break;
 
   case 390:
 
-    { observers.CurrentExpressionAppendToChain((yyvsp[(2) - (4)]), (yyvsp[(3) - (4)]), '(' == (yyvsp[(4) - (4)]).Token); ;}
+    {;}
     break;
 
   case 395:
 
-    { observers.CurrentExpressionAppendToChain((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), '(' == (yyvsp[(3) - (3)]).Token);  ;}
+    {;}
     break;
 
   case 396:
 
-    { observers.ExpressionPop(); ;}
+    {;}
     break;
 
   case 397:
 
-    { observers.ExpressionPop(); ;}
+    {;}
     break;
 
   case 398:
 
-    { (yyval) = (yyvsp[(1) - (3)]); ;}
+    {;}
     break;
 
   case 399:
 
-    { (yyval) = (yyvsp[(1) - (1)]); ;}
+    {;}
     break;
 
   case 400:
 
-    { (yyval).Token = 0; ;}
+    {;}
     break;
 
   case 401:
 
-    { (yyval).Token = 0; ;}
+    {;}
     break;
 
   case 404:
 
-    { observers.CurrentExpressionAsStaticMember((yyvsp[(2) - (3)])); ;}
+    {;}
     break;
 
   case 407:
 
-    { observers.ExpressionPop(); ;}
+    {;}
     break;
 
   case 408:
 
-    { observers.ExpressionPop(); ;}
+    {;}
     break;
 
   case 410:
 
-    { observers.CurrentExpressionPushAsFunctionCall(); ;}
+    {;}
     break;
 
   case 411:
 
-    { observers.CurrentExpressionPushAsFunctionCall(); ;}
+    {;}
     break;
 
   case 418:
 
-    { observers.CurrentExpressionPushAsVariable((yyvsp[(1) - (1)])); ;}
+    {;}
     break;
 
   case 433:
 
-    { observers.ForeachVariableFound(); ;}
+    {;}
     break;
 
   case 461:
 
-    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 462:
 
-    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 464:
 
-    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 465:
 
-    { observers.IncludeFound(analyzer.GetLineNumber()); ;}
+    {;}
     break;
 
   case 468:
 
-    { observers.CurrentExpressionPushAsClassConstant((yyvsp[(2) - (3)]), (yyvsp[(3) - (3)])); ;}
+    {;}
     break;
 
 

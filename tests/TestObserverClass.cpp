@@ -95,7 +95,7 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	VariableMethodName.push_back(methodName);
 	VariableName.push_back(symbol.Lexeme);
 	VariableComment.push_back(symbol.Comment);
-	VariableTypes.push_back(symbol.Type);
+	VariableTypes.push_back(symbol.SourceType);
 	UnicodeString typeString;
 	for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
 		typeString.append(symbol.ChainList[i]);

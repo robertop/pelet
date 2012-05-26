@@ -53,7 +53,7 @@ public:
 						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias, TraitInsteadOf;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
-	std::vector<pelet::SymbolClass::Types> VariableTypes;
+	std::vector<pelet::SymbolClass::SourceTypes> VariableTypes;
 	std::vector<int> MethodEndPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
