@@ -785,56 +785,56 @@ expr_without_variable:
 	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ $$ = observers.AssignmentExpressionFromNewFound($1, $5); }
 	|	T_NEW class_name_reference ctor_arguments					{ $$ = observers.ExpressionMakeNewInstanceCall($2); }
 	|	T_CLONE expr												{ $$ = $2; }
-	|	variable T_PLUS_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_MINUS_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_MUL_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_DIV_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_CONCAT_EQUAL expr								{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_MOD_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_AND_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_OR_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_XOR_EQUAL expr 									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_SL_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	variable T_SR_EQUAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	rw_variable T_INC 											{ $$ = observers.ExpressionMakeNil(); }
-	|	T_INC rw_variable 											{ $$ = observers.ExpressionMakeNil(); }
-	|	rw_variable T_DEC 											{ $$ = observers.ExpressionMakeNil(); }
-	|	T_DEC rw_variable 											{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_BOOLEAN_OR expr										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_BOOLEAN_AND expr										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_LOGICAL_OR expr 										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_LOGICAL_AND expr										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_LOGICAL_XOR expr										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '|' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '&' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '^' expr 												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '.' expr 												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '+' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '-' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '*' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '/' expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '%' expr 												{ $$ = observers.ExpressionMakeNil(); }
-	| 	expr T_SL expr 												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_SR expr												{ $$ = observers.ExpressionMakeNil(); }
-	|	'+' expr %prec T_INC										{ $$ = observers.ExpressionMakeNil(); }
-	|	'-' expr %prec T_INC										{ $$ = observers.ExpressionMakeNil(); }
-	|	'!' expr													{ $$ = observers.ExpressionMakeNil(); }
-	|	'~' expr													{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_IDENTICAL expr									{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_NOT_IDENTICAL expr 								{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_EQUAL expr										{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_NOT_EQUAL expr 									{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '<' expr 												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_SMALLER_OR_EQUAL expr								{ $$ = observers.ExpressionMakeNil(); }
-	|	expr '>' expr 												{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_IS_GREATER_OR_EQUAL expr								{ $$ = observers.ExpressionMakeNil(); }
-	|	expr T_INSTANCEOF class_name_reference						{ $$ = observers.ExpressionMakeNil(); }
+	|	variable T_PLUS_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_MINUS_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_MUL_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_DIV_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_CONCAT_EQUAL expr								{ $$ = observers.ExpressionNil(); }
+	|	variable T_MOD_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_AND_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_OR_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_XOR_EQUAL expr 									{ $$ = observers.ExpressionNil(); }
+	|	variable T_SL_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	variable T_SR_EQUAL expr									{ $$ = observers.ExpressionNil(); }
+	|	rw_variable T_INC 											{ $$ = observers.ExpressionNil(); }
+	|	T_INC rw_variable 											{ $$ = observers.ExpressionNil(); }
+	|	rw_variable T_DEC 											{ $$ = observers.ExpressionNil(); }
+	|	T_DEC rw_variable 											{ $$ = observers.ExpressionNil(); }
+	|	expr T_BOOLEAN_OR expr										{ $$ = observers.ExpressionNil(); }
+	|	expr T_BOOLEAN_AND expr										{ $$ = observers.ExpressionNil(); }
+	|	expr T_LOGICAL_OR expr 										{ $$ = observers.ExpressionNil(); }
+	|	expr T_LOGICAL_AND expr										{ $$ = observers.ExpressionNil(); }
+	|	expr T_LOGICAL_XOR expr										{ $$ = observers.ExpressionNil(); }
+	|	expr '|' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '&' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '^' expr 												{ $$ = observers.ExpressionNil(); }
+	|	expr '.' expr 												{ $$ = observers.ExpressionNil(); }
+	|	expr '+' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '-' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '*' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '/' expr												{ $$ = observers.ExpressionNil(); }
+	|	expr '%' expr 												{ $$ = observers.ExpressionNil(); }
+	| 	expr T_SL expr 												{ $$ = observers.ExpressionNil(); }
+	|	expr T_SR expr												{ $$ = observers.ExpressionNil(); }
+	|	'+' expr %prec T_INC										{ $$ = observers.ExpressionNil(); }
+	|	'-' expr %prec T_INC										{ $$ = observers.ExpressionNil(); }
+	|	'!' expr													{ $$ = observers.ExpressionNil(); }
+	|	'~' expr													{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_IDENTICAL expr									{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_NOT_IDENTICAL expr 								{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_EQUAL expr										{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_NOT_EQUAL expr 									{ $$ = observers.ExpressionNil(); }
+	|	expr '<' expr 												{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_SMALLER_OR_EQUAL expr								{ $$ = observers.ExpressionNil(); }
+	|	expr '>' expr 												{ $$ = observers.ExpressionNil(); }
+	|	expr T_IS_GREATER_OR_EQUAL expr								{ $$ = observers.ExpressionNil(); }
+	|	expr T_INSTANCEOF class_name_reference						{ $$ = observers.ExpressionNil(); }
 	|	'(' expr ')'  												{ $$ = $2; }
 	|	expr '?' 
 		expr ':' 
-		expr														{ $$ = observers.ExpressionMakeNil(); }
+		expr														{ $$ = observers.ExpressionNil(); }
 	|	expr '?' ':' 
-		expr     													{ $$ = observers.ExpressionMakeNil(); }
+		expr     													{ $$ = observers.ExpressionNil(); }
 	|	internal_functions_in_yacc									{ $$ = $1; }
 	|	T_INT_CAST expr 											{ $$ = observers.ExpressionMakeScalar($2); }
 	|	T_DOUBLE_CAST expr  										{ $$ = observers.ExpressionMakeScalar($2); }
@@ -924,15 +924,15 @@ dynamic_class_name_variable_property:
 ;
 
 exit_expr:
-		/* empty */						{ $$ = observers.ExpressionMakeNil(); }
-	|	'(' ')'							{ $$ = observers.ExpressionMakeNil(); }
+		/* empty */						{ $$ = observers.ExpressionNil(); }
+	|	'(' ')'							{ $$ = observers.ExpressionNil(); }
 	|	'(' expr ')'					{ $$ = $2; }
 ;
 
 backticks_expr:
-		/* empty */						{ $$ = observers.ExpressionMakeNil(); }
-	|	T_ENCAPSED_AND_WHITESPACE		{ $$ = observers.ExpressionMakeNil(); }
-	|	encaps_list						{ $$ = observers.ExpressionMakeNil(); }
+		/* empty */						{ $$ = observers.ExpressionNil(); }
+	|	T_ENCAPSED_AND_WHITESPACE		{ $$ = observers.ExpressionNil(); }
+	|	encaps_list						{ $$ = observers.ExpressionNil(); }
 ;
 
 ctor_arguments:
@@ -956,12 +956,12 @@ common_scalar:
 ;
 
 static_scalar: /* compile-time evaluated scalars */
-		common_scalar										{ $$ = observers.ExpressionMakeNil(); }
-	|	namespace_name										{ $$ = observers.ExpressionMakeNil(); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name			{ $$ = observers.ExpressionMakeNil(); }
-	|	T_NS_SEPARATOR namespace_name						{ $$ = observers.ExpressionMakeNil(); }
-	|	'+' static_scalar									{ $$ = observers.ExpressionMakeNil(); }
-	|	'-' static_scalar									{ $$ = observers.ExpressionMakeNil(); }
+		common_scalar										{ $$ = observers.ExpressionNil(); }
+	|	namespace_name										{ $$ = observers.ExpressionNil(); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name			{ $$ = observers.ExpressionNil(); }
+	|	T_NS_SEPARATOR namespace_name						{ $$ = observers.ExpressionNil(); }
+	|	'+' static_scalar									{ $$ = observers.ExpressionNil(); }
+	|	'-' static_scalar									{ $$ = observers.ExpressionNil(); }
 	|	T_ARRAY '(' static_array_pair_list ')'				{ $$ = observers.ExpressionMakeScalar($3); }
 	|	static_class_constant								
 ;
@@ -1025,7 +1025,7 @@ variable:
 
 variable_properties:
 		variable_properties variable_property		{ $$ = observers.ExpressionAppendToChain($1, $2); }
-	|	/* empty */									{ $$ = observers.ExpressionMakeNil(); }
+	|	/* empty */									{ $$ = observers.ExpressionNil(); }
 ;
 
 variable_property:
@@ -1045,7 +1045,7 @@ variable_without_objects:
 
 static_member:
 		class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects					{ $$ = observers.ExpressionMakeStaticMember($1, $3); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects			{ $$ = observers.ExpressionMakeNil(); }
+	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects			{ $$ = observers.ExpressionNil(); }
 ;
 
 variable_class_name:
@@ -1064,19 +1064,19 @@ base_variable:
 ;
 
 reference_variable:
-		reference_variable '[' dim_offset ']'		{ $$ = observers.ExpressionMakeNil(); }
-	|	reference_variable '{' expr '}'				{ $$ = observers.ExpressionMakeNil(); }
+		reference_variable '[' dim_offset ']'		{ $$ = observers.ExpressionNil(); }
+	|	reference_variable '{' expr '}'				{ $$ = observers.ExpressionNil(); }
 	|	compound_variable
 ;
 
 compound_variable:
 		T_VARIABLE			{ $$ = observers.ExpressionMakeVariable($1); }
-	|	'$' '{' expr '}' 	{ $$ = observers.ExpressionMakeNil(); }
+	|	'$' '{' expr '}' 	{ $$ = observers.ExpressionNil(); }
 ;
 
 dim_offset:
-		/* empty */		{ $$ = observers.ExpressionMakeNil(); }
-	|	expr			{ $$ = observers.ExpressionMakeNil(); }
+		/* empty */		{ $$ = observers.ExpressionNil(); }
+	|	expr			{ $$ = observers.ExpressionNil(); }
 ;
 
 object_property:
@@ -1085,14 +1085,14 @@ object_property:
 ;
 
 object_dim_list:
-		object_dim_list '[' dim_offset ']'			{ $$ = observers.ExpressionMakeNil(); }
-	|	object_dim_list '{' expr '}'				{ $$ = observers.ExpressionMakeNil(); }
+		object_dim_list '[' dim_offset ']'			{ $$ = observers.ExpressionNil(); }
+	|	object_dim_list '{' expr '}'				{ $$ = observers.ExpressionNil(); }
 	|	variable_name								{ $$ = $1; }
 ;
 
 variable_name:
 		T_STRING					{  $$ = observers.ExpressionMakeVariable($1); }
-	|	'{' expr '}'				{ $$ = observers.ExpressionMakeNil(); }
+	|	'{' expr '}'				{ $$ = observers.ExpressionNil(); }
 ;
 
 simple_indirect_reference:
@@ -1135,38 +1135,38 @@ encaps_list:
 ;
 
 encaps_var:
-		T_VARIABLE														{ $$ = observers.ExpressionMakeNil(); }
-	|	T_VARIABLE '[' encaps_var_offset ']'							{ $$ = observers.ExpressionMakeNil(); }
-	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING							{ $$ = observers.ExpressionMakeNil(); }
-	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'								{ $$ = observers.ExpressionMakeNil(); }
-	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'	{ $$ = observers.ExpressionMakeNil(); }
-	|	T_CURLY_OPEN variable '}'										{ $$ = observers.ExpressionMakeNil(); }
+		T_VARIABLE														{ $$ = observers.ExpressionNil(); }
+	|	T_VARIABLE '[' encaps_var_offset ']'							{ $$ = observers.ExpressionNil(); }
+	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING							{ $$ = observers.ExpressionNil(); }
+	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'								{ $$ = observers.ExpressionNil(); }
+	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'	{ $$ = observers.ExpressionNil(); }
+	|	T_CURLY_OPEN variable '}'										{ $$ = observers.ExpressionNil(); }
 ;
 
 encaps_var_offset:
-		T_STRING					{ $$ = observers.ExpressionMakeNil(); }
-	|	T_NUM_STRING				{ $$ = observers.ExpressionMakeNil(); }
-	|	T_VARIABLE					{ $$ = observers.ExpressionMakeNil(); }
+		T_STRING					{ $$ = observers.ExpressionNil(); }
+	|	T_NUM_STRING				{ $$ = observers.ExpressionNil(); }
+	|	T_VARIABLE					{ $$ = observers.ExpressionNil(); }
 ;
 
 internal_functions_in_yacc:
-		T_ISSET '(' isset_variables ')'			{ $$ = observers.ExpressionMakeNil(); }
-	|	T_EMPTY '(' variable ')'				{ $$ = observers.ExpressionMakeNil(); }
+		T_ISSET '(' isset_variables ')'			{ $$ = observers.ExpressionNil(); }
+	|	T_EMPTY '(' variable ')'				{ $$ = observers.ExpressionNil(); }
 	|	T_INCLUDE expr  						{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 	|	T_INCLUDE_ONCE expr 					{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
-	|	T_EVAL '(' expr ')' 					{ $$ = observers.ExpressionMakeNil(); }
+	|	T_EVAL '(' expr ')' 					{ $$ = observers.ExpressionNil(); }
 	|	T_REQUIRE expr  						{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 	|	T_REQUIRE_ONCE expr 					{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 ;
 
 isset_variables:
-		variable							{ $$ = observers.ExpressionMakeNil(); }
-	|	isset_variables ',' variable		{ $$ = observers.ExpressionMakeNil(); }
+		variable							{ $$ = observers.ExpressionNil(); }
+	|	isset_variables ',' variable		{ $$ = observers.ExpressionNil(); }
 ;
 
 class_constant:
 		class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING					{ $$ = observers.ExpressionMakeClassConstant($1, $3); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING			{ $$ = observers.ExpressionMakeNil(); }
+	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING			{ $$ = observers.ExpressionNil(); }
 ;
 
 %%

@@ -27,625 +27,6 @@
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
-pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
-	: AstItemClass()
-	, Type(type) {
-
-}
-
-pelet::StatementClass::~StatementClass() {
-
-}
-
-pelet::AstItemClass::AstItemClass() {
-
-}
-
-pelet::AstItemClass::~AstItemClass() {
-
-}
-
-pelet::StatementListClass::StatementListClass()
-	: Statements() {
-
-}
-
-pelet::ConstantStatementClass::ConstantStatementClass()
-	: StatementClass(pelet::StatementClass::DEFINE_DECLARATION)
-	, Name()
-	, NamespaceName()
-	, Comment()
-	, Value()
-	, LineNumber(0) {
-
-}
-
-size_t pelet::StatementListClass::Size() const {
-	return Statements.size();
-}
-
-pelet::StatementClass::Types pelet::StatementListClass::TypeAt(size_t index) const {
-	if (index < Statements.size()) {
-		return Statements[index]->Type;
-	}
-	return pelet::StatementClass::NIL;
-}
-
-pelet::StatementClass* pelet::StatementListClass::At(size_t index) const {
-	if (index < Statements.size()) {
-		return Statements[index];
-	}
-	return NULL;
-}
-
-void pelet::StatementListClass::Push(pelet::StatementClass* statement) {
-	Statements.push_back(statement);
-}
-
-void pelet::StatementListClass::PushAll(pelet::StatementListClass* statements) {
-	for (size_t i = 0; i < statements->Statements.size(); ++i) {
-		Statements.push_back(statements->Statements[i]);
-	}
-}
-
-pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
-	: StatementClass(pelet::StatementClass::NAMESPACE_DECLARATION)
-	, NamespaceName() {
-
-}
-
-pelet::NamespaceUseClass::NamespaceUseClass()
-	: StatementClass(pelet::StatementClass::NAMESPACE_USE)
-	, NamespaceName()
-	, Alias() {
-
-}
-
-UnicodeString pelet::NamespaceUseClass::Set(pelet::QualifiedNameClass* qualifiedName, UnicodeString alias) {
-	UnicodeString fullyQualifiedNamespace = qualifiedName->ToAbsoluteSignature();
-	if (alias.isEmpty()) {
-		int32_t index = fullyQualifiedNamespace.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
-
-		//by default alias is the last part of the namespace name
-		if (index >= 0) {
-			alias.setTo(fullyQualifiedNamespace, index + 1);
-		}
-	}
-	NamespaceName = fullyQualifiedNamespace;
-	Alias = alias;
-
-	return Alias;
-}
-
-pelet::TraitUseClass::TraitUseClass()
-	: StatementClass(pelet::StatementClass::TRAIT_USE_DECLARATION)
-	, NamespaceName()
-	, ClassName()
-	, UsedTraits() {
-}
-
-void pelet::TraitUseClass::AppendUse(UnicodeString trait) {
-	UsedTraits.push_back(trait);
-}
-
-pelet::TraitInsteadOfClass::TraitInsteadOfClass()
-	: StatementClass(pelet::StatementClass::TRAIT_INSTEADOF_DECLARATION)
-	, NamespaceName()
-	, ClassName()
-	, TraitUsedClassName()
-	, TraitMethodReferenceName()
-	, InsteadOfList() {
-		
-}
-
-pelet::TraitAliasClass::TraitAliasClass()
-	: StatementClass(pelet::StatementClass::TRAIT_ALIAS_DECLARATION)
-	, NamespaceName()
-	, ClassName()
-	, TraitUsedClassName()
-	, TraitMethodReferenceName()
-	, Alias()
-	, Visibility(pelet::TokenClass::PUBLIC) {
-}
-
-pelet::ClassSymbolClass::ClassSymbolClass()
-	: StatementClass(pelet::StatementClass::CLASS_DECLARATION)
-	, ClassName()
-	, Comment()
-	, ExtendsFrom()
-	, ImplementsList()
-	, StartingLineNumber(0)
-	, EndingLineNumber(0)
-	, IsAbstract(false)
-	, IsFinal(false)
-	, IsInterface(false) {
-
-}
-
-void pelet::ClassSymbolClass::GrabClassName(pelet::SemanticValueClass* value) {
-	if (value->Lexeme) {
-		ClassName = *value->Lexeme;
-	}
-}
-
-void pelet::ClassSymbolClass::AppendToComment(pelet::SemanticValueClass* value) {
-	if (value->Comment) {
-		Comment.append(*value->Comment);
-	}
-}
-
-void pelet::ClassSymbolClass::Clear() {
-	ClassName.remove();
-	Comment.remove();
-	ExtendsFrom.remove();
-	ImplementsList.clear();
-	StartingLineNumber = 0;
-	EndingLineNumber = 0;
-	IsAbstract = false;
-	IsFinal = false;
-	IsInterface = false;
-}
-
-UnicodeString pelet::ClassSymbolClass::ToSignature() const {
-	UnicodeString sig;
-	if (!IsInterface && !IsAbstract) {
-		sig.append(UNICODE_STRING_SIMPLE("class "));
-	} else if (!IsInterface && IsAbstract) {
-		sig.append(UNICODE_STRING_SIMPLE("abstract class "));
-	} else {
-		sig.append(UNICODE_STRING_SIMPLE("interface "));
-	}
-
-	sig.append(ClassName);
-	UnicodeString extends = ExtendsFrom;
-	if (!extends.isEmpty()) {
-		sig.append(UNICODE_STRING_SIMPLE(" extends "));
-		sig.append(extends);
-	}
-	if (!ImplementsList.empty()) {
-		if (IsInterface) {
-			sig.append(UNICODE_STRING_SIMPLE(" extends "));
-		} else {
-			sig.append(UNICODE_STRING_SIMPLE(" implements "));
-		}
-		for (size_t i = 0; i < ImplementsList.size(); ++i) {
-			sig.append(ImplementsList[i]);
-			if (i < (ImplementsList.size() - 1)) {
-				sig.append(UNICODE_STRING_SIMPLE(", "));
-			}
-		}
-	}
-	return sig;
-}
-
-pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
-	: StatementClass(pelet::StatementClass::METHOD_DECLARATION)
-	, MemberName()
-	, Comment()
-	, NamespaceName()
-	, ClassName()
-	, ParametersList()
-	, StartingLineNumber(0)
-	, EndingPosition(0)
-
-	// PHP default access mode is TRUE
-	, IsPublicMember(true)
-	, IsProtectedMember(false)
-	, IsPrivateMember(false)
-	, IsStaticMember(false)
-	, IsConstMember(false)
-	, IsAbstractMember(false)
-	, IsFinalMember(false)
-	, IsReturnReference(false) {
-
-}
-
-void pelet::ClassMemberSymbolClass::SetNameAndReturnReference(pelet::SemanticValueClass* nameValue, bool isReturnReference, pelet::SemanticValueClass* functionValue) {
-	if (nameValue->Lexeme) {
-		MemberName = *nameValue->Lexeme;
-	}
-	IsReturnReference = isReturnReference;
-
-	// a comment may be attached to the function keyword.
-	// see php53lex() function
-	if (functionValue->Comment) {
-		Comment.append(*functionValue->Comment);
-	}
-}
-
-void pelet::ClassMemberSymbolClass::SetAsConst(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue) {
-	IsPublicMember = true;
-	IsProtectedMember = false;
-	IsPrivateMember = false;
-	IsStaticMember = true;
-	IsConstMember = true;
-	IsAbstractMember = false;
-	IsFinalMember = false;
-	IsReturnReference = false;
-	if (nameValue->Lexeme) {
-		MemberName = *nameValue->Lexeme;
-	}
-
-	// a comment may be attached to the const keyword.
-	// see php53lex() function
-	if (commentValue->Comment) {
-		Comment.append(*commentValue->Comment);
-	}
-}
-
-void pelet::ClassMemberSymbolClass::AppendToComment(SemanticValueClass* value) {
-	if (value->Comment) {
-		Comment.append(*value->Comment);
-	}
-}
-
-void pelet::ClassMemberSymbolClass::SetAsPublic() {
-	IsPublicMember = true;
-	IsProtectedMember = false;
-	IsPrivateMember = false;
-}
-
-void pelet::ClassMemberSymbolClass::SetAsProtected() {
-	IsPublicMember = false;
-	IsProtectedMember = true;
-	IsPrivateMember = false;
-}
-void pelet::ClassMemberSymbolClass::SetAsPrivate() {
-	IsPublicMember = false;
-	IsProtectedMember = false;
-	IsPrivateMember = true;
-}
-
-void pelet::ClassMemberSymbolClass::Clear() {
-	MemberName.remove();
-	Comment.remove();
-	NamespaceName.remove();
-	ClassName.remove();
-	ParametersList.Clear();
-	StartingLineNumber = 0;
-	EndingPosition = 0;
-
-	// PHP default access mode is TRUE
-	IsPublicMember = true;
-	IsProtectedMember = false;
-	IsPrivateMember = false;
-	IsStaticMember = false;
-	IsConstMember = false;
-	IsAbstractMember = false;
-	IsFinalMember = false;
-	IsReturnReference = false;
-}
-
-UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString variablesSignature) const {
-	UnicodeString sig;
-
-	// methods cannot be const
-	if (IsPublicMember) {
-		sig.append(UNICODE_STRING_SIMPLE("public "));
-	}
-	if (IsProtectedMember) {
-		sig.append(UNICODE_STRING_SIMPLE("protected "));
-	}
-	if (IsPrivateMember) {
-		sig.append(UNICODE_STRING_SIMPLE("private "));
-	}
-	if (IsStaticMember) {
-		sig.append(UNICODE_STRING_SIMPLE("static "));
-	}
-	if (IsAbstractMember) {
-		sig.append(UNICODE_STRING_SIMPLE("abstract "));
-	}
-	if (IsFinalMember) {
-		sig.append(UNICODE_STRING_SIMPLE("final "));
-	}
-	if (IsReturnReference) {
-		sig.append(UNICODE_STRING_SIMPLE("function& "));
-	} else {
-		sig.append(UNICODE_STRING_SIMPLE("function "));
-	}
-	sig.append(MemberName);
-	sig.append(variablesSignature);
-	return sig;
-}
-
-pelet::QualifiedNameClass::QualifiedNameClass()
-	: Comment()
-	, IsAbsolute(false)
-	, Namespaces() {
-
-}
-
-void pelet::QualifiedNameClass::GrabNameAndComment(SemanticValueClass* value) {
-	if (value->Comment) {
-		Comment.setTo(*value->Comment);
-	}
-	AddName(value);
-}
-
-void pelet::QualifiedNameClass::Clear() {
-	while (!Namespaces.empty()) {
-		Namespaces.pop_back();
-	}
-	IsAbsolute = false;
-}
-
-void pelet::QualifiedNameClass::AddName(SemanticValueClass* value) {
-	if (value->Lexeme) {
-		Namespaces.insert(Namespaces.begin(), *value->Lexeme);
-	}
-}
-
-void pelet::QualifiedNameClass::MakeAbsolute() {
-	IsAbsolute = true;
-}
-
-void pelet::QualifiedNameClass::Prepend(const QualifiedNameClass& name) {
-	std::vector<UnicodeString> newNamespaces;
-	newNamespaces.resize(name.Namespaces.size() + Namespaces.size());
-	std::copy(name.Namespaces.begin(), name.Namespaces.end(), newNamespaces.begin());
-	std::copy(Namespaces.begin(), Namespaces.end(), newNamespaces.begin() + name.Namespaces.size());
-}
-
-UnicodeString pelet::QualifiedNameClass::Prepend(const pelet::QualifiedNameClass& name) const {
-	UnicodeString fullyQualified;
-	if (IsAbsolute) {
-		fullyQualified = ToAbsoluteSignature();
-	} else {
-		if (name.Namespaces.empty()) {
-
-			// this branch of  logic is needed when the code does not have any namespaces, do not
-			// add the namespace separator
-			fullyQualified = ToSignature();
-		} else {
-			fullyQualified = name.ToAbsoluteSignature() + UNICODE_STRING_SIMPLE("\\") + ToSignature();
-		}
-	}
-	return fullyQualified;
-}
-
-UnicodeString pelet::QualifiedNameClass::ToSignature() const {
-	UnicodeString ret;
-
-	// create a local copy so that we can pop() from it
-	std::vector<UnicodeString> namespaces = Namespaces;
-	while (!namespaces.empty()) {
-		ret.append(namespaces.back());
-		namespaces.pop_back();
-		if (!namespaces.empty()) {
-			ret.append(UNICODE_STRING_SIMPLE("\\"));
-		}
-	}
-	return ret;
-}
-
-UnicodeString pelet::QualifiedNameClass::ToAbsoluteSignature() const {
-	UnicodeString sig = UNICODE_STRING_SIMPLE("\\") + ToSignature();
-	return sig;
-}
-
-pelet::ParametersListClass::ParametersListClass()
-	: Params()
-	, OptionalTypes() {
-
-}
-
-void pelet::ParametersListClass::Create() {
-	Params.push_back(UNICODE_STRING_SIMPLE(""));
-	OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
-}
-
-void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClass* typeValue) {
-	Params.push_back(UNICODE_STRING_SIMPLE(""));
-	if (typeValue->Lexeme) {
-		OptionalTypes.push_back(*typeValue->Lexeme);
-	} else {
-		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
-	}
-}
-
-void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
-	Params.push_back(UNICODE_STRING_SIMPLE(""));
-	if (!className.isEmpty()) {
-		OptionalTypes.push_back(className);
-	} else {
-		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
-	}
-}
-
-
-void pelet::ParametersListClass::Clear() {
-	Params.clear();
-	OptionalTypes.clear();
-}
-
-void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isReference) {
-	if (value->Lexeme) {
-		Params.back().setTo(*value->Lexeme);
-		if (isReference) {
-			Params.back().insert(0, UNICODE_STRING_SIMPLE("&"));
-		}
-	}
-}
-
-UnicodeString pelet::ParametersListClass::ToSignature() const {
-	UnicodeString signature = UNICODE_STRING_SIMPLE("(");
-	size_t i = 0;
-	for (; i < Params.size(); ++i) {
-		if (!OptionalTypes[i].isEmpty()) {
-			signature.append(OptionalTypes[i]);
-			signature.append(UNICODE_STRING_SIMPLE(" "));
-		}
-		signature.append(Params[i]);
-		if (i < (Params.size() - 1)) {
-			signature.append(UNICODE_STRING_SIMPLE(", "));
-		}
-	}
-	signature.append(UNICODE_STRING_SIMPLE(")"));
-	return signature;
-}
-
-size_t pelet::ParametersListClass::GetCount() const {
-	return Params.size();
-}
-
-void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const {
-	if (index < Params.size()) {
-		param.setTo(Params[index]);
-	}
-	if (index < OptionalTypes.size()) {
-		optionalType.setTo(OptionalTypes[index]);
-	}
-}
-
-pelet::ExpressionClass::ExpressionClass()
-	: StatementClass(pelet::StatementClass::EXPRESSION)
-	, Name()
-	, Lexeme()
-	, Comment()
-	, NamespaceScope()
-	, ClassScope()
-	, MethodScope()
-	, CallArguments()
-	, ChainList()
-	, VariablesList()
-	, ExpressionType(SCALAR)
-	, LineNumber(0) {
-}
-
-void pelet::ExpressionClass::Clear() {
-	Name.Clear();
-	Lexeme.remove();
-	Comment.remove();
-	NamespaceScope.remove();
-	ClassScope.remove();
-	MethodScope.remove();
-	CallArguments.clear();
-	ChainList.clear();
-	VariablesList.clear();
-	ExpressionType = pelet::ExpressionClass::SCALAR;
-	LineNumber = 0;
-}
-
-void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
-	Name = src.Name;
-	Lexeme = src.Lexeme;
-	Comment = src.Comment;
-	NamespaceScope = src.NamespaceScope;
-	ClassScope = src.ClassScope;
-	MethodScope = src.MethodScope;
-	CallArguments = src.CallArguments;
-	ChainList = src.ChainList;
-	VariablesList = src.VariablesList;
-	ExpressionType = src.ExpressionType;
-	Type = src.Type;
-	LineNumber = src.LineNumber;
-}
-
-
-void pelet::ExpressionClass::AppendToChain(pelet::SemanticValueClass* operatorValue, pelet::SemanticValueClass* propertyValue, bool isMethod) {
-	UnicodeString objectCall;
-	if (operatorValue->Lexeme) {
-		objectCall.append(*operatorValue->Lexeme);
-	}
-	if (propertyValue->Lexeme) {
-		objectCall.append(*propertyValue->Lexeme);
-	}
-	if (isMethod) {
-		objectCall.append(UNICODE_STRING_SIMPLE("()"));
-	}
-	ChainList.push_back(objectCall);
-}
-
-pelet::SymbolClass::SymbolClass()
-	: StatementClass(pelet::StatementClass::ASSIGNMENT)
-	, Lexeme()
-	, Comment()
-	, PhpDocType()
-	, ChainList()
-	, VariablesList()
-	, NamespaceScope()
-	, ClassScope()
-	, MethodScope()
-	, SourceType(PRIMITIVE) {
-}
-
-void pelet::SymbolClass::Copy(const pelet::SymbolClass& src) {
-	Lexeme = src.Lexeme;
-	Comment = src.Comment;
-	PhpDocType = src.PhpDocType;
-	ChainList = src.ChainList;
-	Type = src.Type;
-	SourceType = src.SourceType;
-	VariablesList = src.VariablesList;
-	NamespaceScope = src.NamespaceScope;
-	ClassScope = src.ClassScope;
-	MethodScope = src.MethodScope;
-}
-
-void pelet::SymbolClass::AppendToComment(pelet::SemanticValueClass* value) {
-	if (value->Comment) {
-		Comment.append(*value->Comment);
-	}
-}
-
-void pelet::SymbolClass::SetToPrimitive() {
-	SourceType = pelet::SymbolClass::PRIMITIVE;
-}
-
-void pelet::SymbolClass::SetToObject() {
-	SourceType = pelet::SymbolClass::OBJECT;
-}
-
-void pelet::SymbolClass::SetToArray() {
-	SourceType = pelet::SymbolClass::ARRAY;
-}
-
-void pelet::SymbolClass::SetToUnknown() {
-	SourceType = pelet::SymbolClass::UNKNOWN;
-}
-
-void pelet::SymbolClass::Clear() {
-	Lexeme.remove();
-	Comment.remove();
-	PhpDocType.remove();
-	ChainList.clear();
-	VariablesList.clear();
-	NamespaceScope.remove();
-	ClassScope.remove();
-	MethodScope.remove();
-	SourceType = pelet::SymbolClass::PRIMITIVE;
-}
-
-void pelet::SymbolClass::FromExpression(const pelet::ExpressionClass& expression) {
-	if (pelet::ExpressionClass::ARRAY == expression.ExpressionType) {
-		SetToArray();
-	} else if (pelet::ExpressionClass::FUNCTION_CALL == expression.ExpressionType) {
-		SetToObject();
-	} else if (pelet::ExpressionClass::NEW_CALL == expression.ExpressionType) {
-		SetToObject();
-	} else if (pelet::ExpressionClass::SCALAR == expression.ExpressionType) {
-		SetToPrimitive();
-	} else if (pelet::ExpressionClass::UNKNOWN == expression.ExpressionType) {
-		SetToUnknown();
-	} else if (pelet::ExpressionClass::VARIABLE == expression.ExpressionType) {
-		SetToObject();
-	}
-	Comment = expression.Comment;
-	Lexeme = expression.Lexeme;
-	ChainList = expression.ChainList;
-	VariablesList = expression.VariablesList;
-	NamespaceScope = expression.NamespaceScope;
-	ClassScope = expression.ClassScope;
-	MethodScope = expression.MethodScope;
-	if (expression.Lexeme.isEmpty() && expression.ChainList.empty()) {
-
-		// when a static property; the "namespace_name" parser rule
-		// is triggered
-		Lexeme = expression.Name.ToSignature();
-		ChainList.insert(ChainList.begin(), Lexeme);
-	}
-}
-
 pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
         FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver,
         ExpressionObserverClass* expressionObserver)
@@ -658,10 +39,7 @@ pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, C
 	, Function(functionObserver)
 	, Variable(variableObserver)
 	, ExpressionObserver(expressionObserver)
-	, AllValues()
 	, AllAstItems() {
-
-	DoCollectExpressions = classObserver || memberObserver || functionObserver || variableObserver || expressionObserver;
 }
 
 pelet::ObserverQuadClass::~ObserverQuadClass() {
@@ -775,9 +153,7 @@ UnicodeString pelet::ObserverQuadClass::PhpDocTypeToAbsoluteClassname(UnicodeStr
 	if (!phpDocType.isEmpty()) {
 		pelet::QualifiedNameClass name;
 		pelet::SemanticValueClass value;
-
-		// this is OK because SemanticValueClass does not own the pointer
-		value.Lexeme = &phpDocType;
+		value.Lexeme = phpDocType;
 		name.AddName(&value);
 		return AbsoluteNamespaceClass(name);
 	}
@@ -967,36 +343,12 @@ void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeStri
 }
 
 pelet::SemanticValueClass* pelet::ObserverQuadClass::SemanticValueInit() {
-	/*if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
-		return NULL;
-	}
-	if (!DoCollectExpressions) {
-		return NULL;
-	}*/
-
 	pelet::SemanticValueClass* value = new pelet::SemanticValueClass;
 	AllAstItems.push_back(value);
-	value->Token = 0;
-	value->Lexeme = NULL;
-	value->Comment = NULL;
-	value->Pos = 0;
-
-	UnicodeString* lexeme = new UnicodeString();
-	UnicodeString* comment = new UnicodeString();
-	value->Lexeme = lexeme;
-	value->Comment = comment;
-	AllValues.push_back(lexeme);
-	AllValues.push_back(comment);
-
 	return value;
 }
 
 void pelet::ObserverQuadClass::SemanticValueFree() {
-	for (size_t i = 0; i < AllValues.size(); ++i) {
-		delete AllValues[i];
-	}
-	AllValues.clear();
-
 	for (size_t i = 0; i < AllAstItems.size(); ++i) {
 		delete AllAstItems[i];
 	}
@@ -1015,36 +367,28 @@ int NextSemanticValue(pelet::ParserType* value, pelet::LexicalAnalyzerClass &ana
 	// optimization: SemanticValueInit() method knows when we need to examine
 	// comments and will allocate memory only when needed
 	pelet::SemanticValueClass commentValue;
-	UnicodeString comment;
-	UnicodeString lexeme;
-
-	// should be OK since SemanticValue does not own the pointers
-	commentValue.Comment = &comment;
-	commentValue.Lexeme = &lexeme;
 	if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
 
 		// advance past all comments (there can be more than one consecutive)
 		// keep /** and /* comments separate; we only want /* comments to
 		// get type hints for local varibles
 		while (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
-			if (pelet::T_DOC_COMMENT == ret && value->semanticValue->Comment) {
-				analyzer.GetLexeme(*value->semanticValue->Comment);
-			} else if (pelet::T_COMMENT == ret && commentValue.Comment) {
-				analyzer.GetLexeme(*commentValue.Comment);
+			if (pelet::T_DOC_COMMENT == ret) {
+				analyzer.GetLexeme(value->semanticValue->Comment);
+			} else if (pelet::T_COMMENT == ret) {
+				analyzer.GetLexeme(commentValue.Comment);
 			}
 			ret = analyzer.NextToken();
 		}
 	}
-	if (commentValue.Comment && !commentValue.Comment->isEmpty()) {
-		observers.NotifyLocalVariableTypeHint(*commentValue.Comment);
+	if (!commentValue.Comment.isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(commentValue.Comment);
 	}
 	if (pelet::T_CLOSE_TAG == ret) {
 		ret = ';';
 	}
 	value->semanticValue->Token = ret;
-	if (value->semanticValue->Lexeme) {
-		analyzer.GetLexeme(*value->semanticValue->Lexeme);
-	}
+	analyzer.GetLexeme(value->semanticValue->Lexeme);
 	value->semanticValue->Pos = analyzer.GetCharacterPosition();
 	value->semanticValue->LineNumber = analyzer.GetLineNumber();
 	return ret;
@@ -1117,8 +461,8 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::AssignmentExpressionFromVariab
 pelet::ClassMemberSymbolClass* pelet::ObserverQuadClass::ClassMemberSymbolMake(pelet::SemanticValueClass* varValue) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	newMember->Type = pelet::StatementClass::METHOD_DECLARATION;
-	if (varValue && varValue->Comment) {
-		newMember->Comment = *varValue->Comment;
+	if (varValue) {
+		newMember->Comment = varValue->Comment;
 		newMember->StartingLineNumber = varValue->LineNumber;
 	}
 	newMember->IsAbstractMember = varValue && pelet::T_ABSTRACT == varValue->Token;
@@ -1212,8 +556,8 @@ pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeVariab
 	newMember->SetAsPublic();
 
 	newMember->StartingLineNumber = startingLineNumber;
-	if (nameValue->Lexeme) {
-		newMember->EndingPosition = nameValue->Pos + nameValue->Lexeme->length();
+	if (nameValue) {
+		newMember->EndingPosition = nameValue->Pos + nameValue->Lexeme.length();
 	}
 	AllAstItems.push_back(newMember);
 	return StatementListMakeAndAppend(newMember);
@@ -1317,11 +661,11 @@ pelet::ClassSymbolClass* pelet::ObserverQuadClass::ClassSymbolStart(pelet::Seman
 
 pelet::StatementListClass* pelet::ObserverQuadClass::ConstantMake(pelet::SemanticValueClass* value, int lineNumber) {
 	pelet::ConstantStatementClass* constant = new pelet::ConstantStatementClass();
-	if (value->Lexeme) {
-		constant->Name = *value->Lexeme;
+	if (value) {
+		constant->Name = value->Lexeme;
 	}
-	if (value->Comment) {
-		constant->Comment = *value->Comment;
+	if (value) {
+		constant->Comment = value->Comment;
 	}
 	constant->LineNumber = lineNumber;
 	constant->NamespaceName = CurrentNamespace.ToAbsoluteSignature();
@@ -1389,8 +733,8 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeClassConstant(pe
 	newExpr->Name = *className;
 	newExpr->Lexeme = AbsoluteNamespaceClass(*className);
 	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
-	if (constantName->Lexeme) {
-		newExpr->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + *constantName->Lexeme);
+	if (constantName) {
+		newExpr->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + constantName->Lexeme);
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1458,8 +802,8 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeGlobalVariable(p
 	newExpr->ClassScope = CurrentClassName;
 	newExpr->MethodScope = CurrentMemberName;
 
-	if (value->Lexeme) {
-		newExpr->Lexeme = *value->Lexeme;
+	if (value) {
+		newExpr->Lexeme = value->Lexeme;
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1470,13 +814,6 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeNewInstanceCall(
 	newExpr->ExpressionType = pelet::ExpressionClass::NEW_CALL;
 	newExpr->Name = *className;
 	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
-	AllAstItems.push_back(newExpr);
-	return newExpr;
-}
-
-pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeNil() {
-	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass();
-	newExpr->Type = pelet::StatementClass::NIL;
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -1500,11 +837,11 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalar(pelet::Ex
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalar(pelet::SemanticValueClass* srcValue) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass();
 	newExpr->ExpressionType = pelet::ExpressionClass::SCALAR;
-	if (srcValue->Comment) {
-		newExpr->Comment = *srcValue->Comment;
+	if (srcValue) {
+		newExpr->Comment = srcValue->Comment;
 	}
-	if (srcValue->Lexeme) {
-		newExpr->Lexeme = *srcValue->Lexeme;
+	if (srcValue) {
+		newExpr->Lexeme = srcValue->Lexeme;
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1538,8 +875,8 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeStaticMethodCall
 	newExpr->ExpressionType = pelet::ExpressionClass::FUNCTION_CALL;
 	newExpr->Name = *className;
 	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
-	if (methodName->Lexeme) {
-		newExpr->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + *methodName->Lexeme + UNICODE_STRING_SIMPLE("()"));
+	if (methodName) {
+		newExpr->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + methodName->Lexeme + UNICODE_STRING_SIMPLE("()"));
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1553,8 +890,8 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeStaticVariable(p
 	newExpr->ClassScope = CurrentClassName;
 	newExpr->MethodScope = CurrentMemberName;
 
-	if (nameValue->Lexeme) {
-		newExpr->Lexeme = *nameValue->Lexeme;
+	if (nameValue) {
+		newExpr->Lexeme = nameValue->Lexeme;
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1579,12 +916,12 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeVariable(pelet::
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeVariable(pelet::SemanticValueClass* variableValue) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass();
 	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
-	if (variableValue->Comment) {
-		newExpr->Comment = *variableValue->Comment;
+	if (variableValue) {
+		newExpr->Comment = variableValue->Comment;
 	}
-	if (variableValue->Lexeme) {
-		newExpr->Lexeme = *variableValue->Lexeme;
-		newExpr->ChainList.push_back(*variableValue->Lexeme);
+	if (variableValue) {
+		newExpr->Lexeme = variableValue->Lexeme;
+		newExpr->ChainList.push_back(variableValue->Lexeme);
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1858,8 +1195,8 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(p
 	namespaceName->MakeAbsolute();
 
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
-	if (aliasValue->Lexeme) {
-		UnicodeString alias = useStatement->Set(namespaceName, *aliasValue->Lexeme);
+	if (aliasValue) {
+		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
 		NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
@@ -1870,8 +1207,8 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(p
 
 pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* aliasValue) {
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
-	if (aliasValue->Lexeme) {
-		UnicodeString alias = useStatement->Set(namespaceName, *aliasValue->Lexeme);
+	if (aliasValue) {
+		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
 		NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
@@ -1947,12 +1284,6 @@ pelet::QualifiedNameClass* pelet::ObserverQuadClass::QualifiedNameNil() {
 
 pelet::SemanticValueClass* pelet::ObserverQuadClass::SemanticValueNil() {
 	pelet::SemanticValueClass* value = new pelet::SemanticValueClass;
-	value->Comment = NULL;
-	value->Lexeme = NULL;
-	value->LineNumber = -1;
-	value->Pos = -1;
-	value->Token = -1;
-
 	AllAstItems.push_back(value);
 	return value;
 }
@@ -1988,11 +1319,11 @@ pelet::StatementListClass* pelet::ObserverQuadClass::StatementListNil() {
 }
 
 void pelet::ObserverQuadClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
-	CurrentClassName = value && value->Lexeme ? *value->Lexeme : UNICODE_STRING_SIMPLE("");
+	CurrentClassName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
 }
 
 void pelet::ObserverQuadClass::SetCurrentMemberName(pelet::SemanticValueClass* value) {
-	CurrentMemberName = value && value->Lexeme ? *value->Lexeme : UNICODE_STRING_SIMPLE("");
+	CurrentMemberName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
 }
 
 void pelet::ObserverQuadClass::SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName) {
@@ -2043,8 +1374,8 @@ pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMake(pelet::TraitAli
 	else if (traitModifiers->IsPrivateMember) {
 		newAlias->Visibility = pelet::TokenClass::PRIVATE;
 	}
-	if (aliasValue->Lexeme) {
-		newAlias->Alias = *aliasValue->Lexeme;
+	if (aliasValue) {
+		newAlias->Alias = aliasValue->Lexeme;
 	}
 	AllAstItems.push_back(newAlias);
 	return newAlias;
@@ -2053,8 +1384,8 @@ pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMake(pelet::TraitAli
 pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMakeMethodReferenceList(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* methodName) {
 	pelet::TraitAliasClass* newAlias = new pelet::TraitAliasClass;
 	newAlias->TraitUsedClassName = AbsoluteNamespaceClass(*qualifiedName);
-	if (methodName->Lexeme) {
-		newAlias->TraitMethodReferenceName = *methodName->Lexeme;
+	if (methodName) {
+		newAlias->TraitMethodReferenceName = methodName->Lexeme;
 	}
 	AllAstItems.push_back(newAlias);
 	return newAlias;
@@ -2062,8 +1393,8 @@ pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMakeMethodReferenceL
 
 pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMakeMethodReferenceList(pelet::SemanticValueClass* methodName) {
 	pelet::TraitAliasClass* newAlias = new pelet::TraitAliasClass;
-	if (methodName->Lexeme) {
-		newAlias->TraitMethodReferenceName = *methodName->Lexeme;
+	if (methodName) {
+		newAlias->TraitMethodReferenceName = methodName->Lexeme;
 	}
 	AllAstItems.push_back(newAlias);
 	return newAlias;
