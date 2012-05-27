@@ -85,8 +85,8 @@
 // run all tests
 int main(int argc, char **argv) {
 	// change if you want to run only one test
-	bool runAll = false;
-	const char* suiteToRun = "Parser53TestClass";
+	bool runAll = true;
+	const char* suiteToRun = "Parser54TestClass";
 	int ret = 0;
 	if (runAll) {
 		ret = UnitTest::RunAllTests();

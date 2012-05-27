@@ -24,6 +24,7 @@
  */
 #include <pelet/ParserClass.h>
 #include <pelet/TokenClass.h>
+#include <pelet/ParserTypeClass.h>
 #include <unicode/unistr.h>
 #include <unicode/ustdio.h>
 
@@ -345,30 +346,37 @@ public:
 		
 	}
 	
-	/**
-	 * This method gets called when a variable assignment is found. Note that the same 
+	/** 
+	 * Override this method to perform any custom logic when a variable assignment is found. Note that the same 
 	 * variable may be assigned different values at different times within the same function.
 	 * The symbol will be constructed in the following way:
 	 *
 	 * Example assignment:  $name = $this->getName()->toString();
 	 *
-	 * Lexeme: lexeme will contain the variable's name (ie $name)
+	 * Variable: The variable's ChainList will contain the variable's name in index 0: "$name"
 	 * ChainList: This is a list of  properties / methods
 	 *            that were successively invoked.
 	 *            In this example, the expression chain list will have 3 items in
 	 *           the chain list "$this" "->getName()" and "->toString()".
 	 *
-	 *
+	 * The variable itself may contain an array key in it; like so: $person['name'] = $this->getName()->toString();
+	 * In this case, Variable ChainList will contain 1 item: "$name" and the Variable Array Key will contain "name"
+	 * 
+	 * 
 	 * @param const UnicodeString& namespace the fully qualified namespace of the containing class / function.
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.
 	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
 	 *        variable is globally scoped.
-	 * @param const SymbolClass& symbol the name  & type of the variable that was found
+	 * @param const VariableClass& variable the name of the variable that was found, along with any array keys that were used
+	 *       in the left hand of the assignment. 
+	 * @param const ExpressionClass& expression the expression assigned to the variable
 	 * @param const UnicodeString& comment PHPDoc attached to the variable
+	 * 
+	 * @see pelet::VariableClass
 	 */
 	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-			const pelet::SymbolClass& symbol, const UnicodeString& comment) {
+		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		UnicodeString scope;
 		if (className.isEmpty() && methodName.isEmpty()) {
@@ -381,32 +389,32 @@ public:
 			scope = className + UNICODE_STRING_SIMPLE("::") + methodName;
 		}
 		UnicodeString type;
-		if (pelet::SymbolClass::ARRAY == symbol.SourceType) {
+		if (pelet::ExpressionClass::ARRAY == expression.ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is an array");
 		}
-		else if (pelet::SymbolClass::PRIMITIVE == symbol.SourceType) {
+		else if (pelet::ExpressionClass::SCALAR == expression.ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is a primitive");
 		}
-		else if (pelet::SymbolClass::OBJECT == symbol.SourceType) {
-			type = UNICODE_STRING_SIMPLE("Variable is the result of an object operation. ");
+		else if (pelet::ExpressionClass::VARIABLE == expression.ExpressionType) {
+			type = UNICODE_STRING_SIMPLE("Variable is a variable expression. ");
 			type += UNICODE_STRING_SIMPLE("Chain list is: ");
-			for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
-				type += symbol.ChainList[i];
-				if (i < (symbol.ChainList.size() - 1)) {
+			for (size_t i = 0; i < expression.ChainList.size(); ++i) {
+				type += expression.ChainList[i];
+				if (i < (expression.ChainList.size() - 1)) {
 					type += UNICODE_STRING_SIMPLE(", ");
 				}
 			}
 			
 		}
-		else if (pelet::SymbolClass::UNKNOWN == symbol.SourceType	) {
-			type = UNICODE_STRING_SIMPLE("Variable is dynamic variable");
+		else if (pelet::ExpressionClass::UNKNOWN == expression.ExpressionType) {
+			type = UNICODE_STRING_SIMPLE("Variable is of unknown type.");
 		}
-		if (!symbol.PhpDocType.isEmpty()) {
+		if (!variable.PhpDocType.isEmpty()) {
 			type += UNICODE_STRING_SIMPLE("Variable is decorated with a PHPDoc comment: ");
-			type += symbol.PhpDocType;
+			type += variable.PhpDocType;
 		}
 		u_fprintf(ufout, "Variable Found: %.*S in scope %S. %S\n", 
-				symbol.Lexeme.length(), symbol.Lexeme.getBuffer(),
+				variable.ChainList[0].length(), variable.ChainList[0].getBuffer(),
 				scope.getTerminatedBuffer(),
 				type.getTerminatedBuffer());
 	}

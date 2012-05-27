@@ -1,0 +1,30 @@
+Notable changes of the pelet library
+====================================
+
+Current Version: 1.1
+
+version 1.1
+===========
+The variable observer now gets two items; a variable and an expression.  The observer method signature has changed
+from
+
+    VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+	  const pelet::SymbolClass& symbol, const UnicodeString& comment);
+
+to
+
+    VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+	    const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment);
+
+The previous SymbolClass was not capable of representing both sides of an assignment expression in a sane manner. 
+
+The new classes (VariableClass and ExpressionClass) make it possible for users of the library to figure out any
+hard-coded array keys or assigned array keys. For example, a user is now able to inspect a file of PHP
+source code and list all array keys that are used in a file.
+
+Because  of these changes; the Observers will only get notified when a file has been successfully parsed.
+
+
+version 1.0
+============
+Initial version; full PHP 5.3 and PHP 5.4 support

@@ -144,7 +144,7 @@ solution "pelet"
 	project "pelet"
 		language "C++"
 		kind "SharedLib"
-		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md" }
+		files { "src/*", "include/**", "*.lua", "src/**.re", "src/**.y", "README.md", "ChangeLog" }
 		includedirs { "include" }
 		defines { "PELET_MAKING_DLL" }
 		pickywarnings(_ACTION)

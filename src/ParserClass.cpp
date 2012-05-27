@@ -206,40 +206,40 @@ public:
 };
 }
 
-void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::SymbolClass& symbol) {
-	expression.trim();
+void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::ExpressionClass& expression) {
+	expressionString.trim();
 
 	// remove the operators if they are at the end; this prevents parse errors
 	bool endsWithObject = false;
 	bool endsWithStatic = false;
 	bool endsWithNamespace = false;
-	if (expression.endsWith(UNICODE_STRING_SIMPLE("->"))) {
-		expression.remove(expression.length() - 2, 2);
+	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("->"))) {
+		expressionString.remove(expressionString.length() - 2, 2);
 		endsWithObject = true;
 	}
-	if (expression.endsWith(UNICODE_STRING_SIMPLE("::"))) {
-		expression.remove(expression.length() - 2, 2);
+	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("::"))) {
+		expressionString.remove(expressionString.length() - 2, 2);
 		endsWithStatic = true;
 	}
-	if (expression.endsWith(UNICODE_STRING_SIMPLE("\\"))) {
-		expression.remove(expression.length() - 1, 1);
+	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("\\"))) {
+		expressionString.remove(expressionString.length() - 1, 1);
 		endsWithNamespace = true;
 	}
 
 	// make it so that the expression observer is always called by terminating the expression
-	if (!expression.endsWith(UNICODE_STRING_SIMPLE(";"))) {
-		expression += UNICODE_STRING_SIMPLE(";");
+	if (!expressionString.endsWith(UNICODE_STRING_SIMPLE(";"))) {
+		expressionString += UNICODE_STRING_SIMPLE(";");
 	}
-	symbol.Clear();
+	expression.Clear();
 
 	pelet::ParserVariableObserverClass localObserver;
 	pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, &localObserver);
 
 	// parse the given expression code snippet
-	// most of the time, the variable observer will NOT be called because 
-	// the variable observer is only called for assignment expressions
-	// but we want this method to be able to parse a single variable
-	if (Lexer.OpenString(expression)) {	
+	// most of the time, the expression observer will NOT be called because 
+	// the expression observer is only called for assignment expressions
+	// but we want this method to be able to parse a single expression
+	if (Lexer.OpenString(expressionString)) {	
 		if (pelet::PHP_53 == Version) {
 			php53parse(Lexer, observers);
 		}
@@ -249,29 +249,28 @@ void pelet::ParserClass::ParseExpression(UnicodeString expression, pelet::Symbol
 		Lexer.Close();
 	}
 	if (!localObserver.Expressions.empty()) {
-		pelet::ExpressionClass expr = localObserver.Expressions.back();
-		symbol.FromExpression(expr);
+		expression = localObserver.Expressions.back();
 		
 		// if the expression started with a NS operator, add it
 		// the parser observer will not qualify names because it wont see a 
 		// namespace declaration being used
-		if (expression.startsWith(UNICODE_STRING_SIMPLE("\\"))) {
-			symbol.Lexeme = UNICODE_STRING_SIMPLE("\\") + symbol.Lexeme;
-			if (!symbol.ChainList.empty()) {
-				symbol.ChainList[0] = UNICODE_STRING_SIMPLE("\\") + symbol.ChainList[0];
+		if (expressionString.startsWith(UNICODE_STRING_SIMPLE("\\"))) {
+			///expression.Lexeme = UNICODE_STRING_SIMPLE("\\") + expression.Lexeme;
+			if (!expression.ChainList.empty()) {
+				expression.ChainList[0] = UNICODE_STRING_SIMPLE("\\") + expression.ChainList[0];
 			}
 		}
 	}
 	if (endsWithObject) {
-		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
+		expression.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
 	}
 	if (endsWithStatic) {
-		symbol.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
+		expression.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
 	}
 	if (endsWithNamespace) {
-		symbol.Lexeme += UNICODE_STRING_SIMPLE("\\");
-		if (!symbol.ChainList.empty()) {
-			symbol.ChainList[0] += UNICODE_STRING_SIMPLE("\\");
+		///expression.Lexeme += UNICODE_STRING_SIMPLE("\\");
+		if (!expression.ChainList.empty()) {
+			expression.ChainList[0] += UNICODE_STRING_SIMPLE("\\");
 		}
 	}
 }

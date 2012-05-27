@@ -127,6 +127,22 @@ public:
 	TestObserverClass Observer;
 };
 
+class Parser53ExpressionTestClass {
+
+public:
+	
+	pelet::ParserClass Parser;
+	pelet::ScopeClass Scope;
+	pelet::ExpressionClass Expr;
+	
+	Parser53ExpressionTestClass() 
+		: Parser()
+		, Scope() 
+		, Expr(Scope) {
+		Parser.SetVersion(pelet::PHP_53);
+	}
+};
+
 SUITE(Parser53TestClass) {
 
 TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyClassObserver) {
@@ -252,24 +268,24 @@ TEST_FIXTURE(FullParser53TestClass, ScanFileShouldNotifyVariableObserver) {
 	CHECK_UNISTR_EQUALS("showUser", Observer.VariableMethodName[4]);
 	CHECK_UNISTR_EQUALS("showUser", Observer.VariableMethodName[5]);
 	CHECK_UNISTR_EQUALS("showUser", Observer.VariableMethodName[6]);
-	CHECK_VECTOR_SIZE(7, Observer.VariableTypes);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, Observer.VariableTypes[0]);
-	CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, Observer.VariableTypes[1]);
+	CHECK_VECTOR_SIZE(7, Observer.VariableExpressionTypes);
+	CHECK_EQUAL(pelet::ExpressionClass::NEW_CALL, Observer.VariableExpressionTypes[0]);
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, Observer.VariableExpressionTypes[1]);
 
 	// cannot resolve variables that are assigned 
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, Observer.VariableTypes[2]);
-	CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, Observer.VariableTypes[3]);
-	CHECK_EQUAL(pelet::SymbolClass::PRIMITIVE, Observer.VariableTypes[4]);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, Observer.VariableTypes[5]);
-	CHECK_EQUAL(pelet::SymbolClass::OBJECT, Observer.VariableTypes[6]);
-	CHECK_VECTOR_SIZE(7, Observer.VariableChainList);
-	CHECK_UNISTR_EQUALS("Blog", Observer.VariableChainList[0]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[1]);
-	CHECK_UNISTR_EQUALS("$msg", Observer.VariableChainList[2]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[3]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[4]);
-	CHECK_UNISTR_EQUALS("factory()", Observer.VariableChainList[5]);
-	CHECK_UNISTR_EQUALS("$user->getName()", Observer.VariableChainList[6]);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, Observer.VariableExpressionTypes[2]);
+	CHECK_EQUAL(pelet::ExpressionClass::UNKNOWN, Observer.VariableExpressionTypes[3]);
+	CHECK_EQUAL(pelet::ExpressionClass::UNKNOWN, Observer.VariableExpressionTypes[4]);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, Observer.VariableExpressionTypes[5]);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, Observer.VariableExpressionTypes[6]);
+	CHECK_VECTOR_SIZE(7, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("Blog", Observer.VariableExpressionChainList[0]);
+	CHECK_UNISTR_EQUALS("created a new blog", Observer.VariableExpressionChainList[1]);
+	CHECK_UNISTR_EQUALS("$msg", Observer.VariableExpressionChainList[2]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[3]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[4]);
+	CHECK_UNISTR_EQUALS("factory()", Observer.VariableExpressionChainList[5]);
+	CHECK_UNISTR_EQUALS("$user->getName()", Observer.VariableExpressionChainList[6]);
 }
 
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassTypes) {
@@ -422,7 +438,7 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithReturnAnnotationsNamespaces) {
 	CHECK_UNISTR_EQUALS("public function stop()", Observer.MethodSignature[1]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
+TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableExpressionTypes) {
 	Parser.SetVariableObserver(&Observer);
 
 	// test a global variable
@@ -434,6 +450,8 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 	// a catch block
 	// a global declaration
 	// a static declaration
+	// an assignment with an array expression
+	// an assignment with a variable that has an array key
 	UnicodeString code = _U(
 		"$glob = new Globals();\n"
 		"function workFunc(Globals $srcGlobal) {\n"
@@ -450,15 +468,21 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 		"   }\n"
 		"   global $glob; \n"
 		"   static $stat = 1; \n"
+		"   $samples = array("
+		"      'one' => 1,\n"
+		"       'two' => 2"
+		"   );\n"
+		"	$samples['three'] = 3;\n"
 		"}"
 	);
+	int expectedVariableCount = 16;
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(14, Observer.VariableMethodName);
+	CHECK_VECTOR_SIZE(expectedVariableCount, Observer.VariableMethodName);
 	CHECK_UNISTR_EQUALS("", Observer.VariableMethodName[0]);
-	for (size_t i = 1; i < 14; ++i) {
+	for (int i = 1; i < expectedVariableCount; ++i) {
 		CHECK_UNISTR_EQUALS("workFunc", Observer.VariableMethodName[i]);
 	}
-	CHECK_VECTOR_SIZE(14, Observer.VariableName);
+	CHECK_VECTOR_SIZE(expectedVariableCount, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$glob", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[1]);
 	CHECK_UNISTR_EQUALS("$local", Observer.VariableName[2]);
@@ -473,21 +497,32 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableTypes) {
 	CHECK_UNISTR_EQUALS("$baseException", Observer.VariableName[11]);
 	CHECK_UNISTR_EQUALS("$glob", Observer.VariableName[12]);
 	CHECK_UNISTR_EQUALS("$stat", Observer.VariableName[13]);
-	CHECK_VECTOR_SIZE(14, Observer.VariableChainList);
-	CHECK_UNISTR_EQUALS("Globals", Observer.VariableChainList[0]);
-	CHECK_UNISTR_EQUALS("Globals", Observer.VariableChainList[1]);
-	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableChainList[2]);
-	CHECK_UNISTR_EQUALS("$srcGlobal->name", Observer.VariableChainList[3]);
-	CHECK_UNISTR_EQUALS("$k", Observer.VariableChainList[4]);
-	CHECK_UNISTR_EQUALS("$v", Observer.VariableChainList[5]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[6]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[7]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[8]);
-	CHECK_UNISTR_EQUALS("Globals", Observer.VariableChainList[9]);
-	CHECK_UNISTR_EQUALS("SpecificException", Observer.VariableChainList[10]);
-	CHECK_UNISTR_EQUALS("Exception", Observer.VariableChainList[11]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[12]);
-	CHECK_UNISTR_EQUALS("", Observer.VariableChainList[13]);
+	CHECK_UNISTR_EQUALS("$samples", Observer.VariableName[14]);
+	CHECK_UNISTR_EQUALS("$samples", Observer.VariableName[15]);
+	CHECK_VECTOR_SIZE(expectedVariableCount, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("Globals", Observer.VariableExpressionChainList[0]);
+	CHECK_UNISTR_EQUALS("Globals", Observer.VariableExpressionChainList[1]);
+	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableExpressionChainList[2]);
+	CHECK_UNISTR_EQUALS("$srcGlobal->name", Observer.VariableExpressionChainList[3]);
+	CHECK_UNISTR_EQUALS("$k", Observer.VariableExpressionChainList[4]);
+	CHECK_UNISTR_EQUALS("$v", Observer.VariableExpressionChainList[5]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[6]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[7]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[8]);
+	CHECK_UNISTR_EQUALS("Globals", Observer.VariableExpressionChainList[9]);
+	CHECK_UNISTR_EQUALS("SpecificException", Observer.VariableExpressionChainList[10]);
+	CHECK_UNISTR_EQUALS("Exception", Observer.VariableExpressionChainList[11]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[12]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[13]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[14]);
+	CHECK_UNISTR_EQUALS("3", Observer.VariableExpressionChainList[15]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.VariableExpressionArrayKeys);
+	CHECK_UNISTR_EQUALS("one", Observer.VariableExpressionArrayKeys[0]);
+	CHECK_UNISTR_EQUALS("two", Observer.VariableExpressionArrayKeys[1]);
+	
+	CHECK_VECTOR_SIZE(expectedVariableCount, Observer.VariableArrayKeys);
+	CHECK_UNISTR_EQUALS("three", Observer.VariableArrayKeys[15]);
 }
 
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllTypeHintingNamespaces) {
@@ -506,9 +541,9 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllTypeHintingNamespaces) {
 	CHECK_VECTOR_SIZE(2, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$second", Observer.VariableName[1]);
-	CHECK_VECTOR_SIZE(2, Observer.VariableChainList);
-	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableChainList[0]);
-	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableChainList[1]);
+	CHECK_VECTOR_SIZE(2, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableExpressionChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableExpressionChainList[1]);
 }
 
 
@@ -582,16 +617,16 @@ TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[2]);
 	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[3]);
 	
-	CHECK_VECTOR_SIZE(4, Observer.VariableChainList);
-	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariableChainList[3]);
+	CHECK_VECTOR_SIZE(4, Observer.VariableExpressionChainList);
+	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariableExpressionChainList[3]);
 	
 	CHECK_VECTOR_SIZE(4, Observer.VariablePhpDocType);
 	
 	// type hints are not read from PHPDoc as of now
 	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[0]);
-	//CHECK_UNISTR_EQUALS("string", Observer.VariableChainList[1]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[2]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableChainList[3]);
+	//CHECK_UNISTR_EQUALS("string", Observer.VariableExpressionChainList[1]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableExpressionChainList[2]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableExpressionChainList[3]);
 }
 
 TEST_FIXTURE(Parser53TestClass, MethodEndPos) {
@@ -796,15 +831,15 @@ TEST_FIXTURE(Parser53TestClass, NamespaceVariables) {
 	);
 	
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(8, Observer.VariableChainList);
-	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[0]);
-	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\MyClass", Observer.VariableChainList[1]);
-	CHECK_UNISTR_EQUALS("\\MyClass", Observer.VariableChainList[2]);
-	CHECK_UNISTR_EQUALS("\\strlen()", Observer.VariableChainList[3]);
-	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\strlen()", Observer.VariableChainList[4]);
-	CHECK_UNISTR_EQUALS("\\First\\strlen()", Observer.VariableChainList[5]);
-	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableChainList[6]);
-	CHECK_UNISTR_EQUALS("\\Second\\Child\\MyClass", Observer.VariableChainList[7]);
+	CHECK_VECTOR_SIZE(8, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableExpressionChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\MyClass", Observer.VariableExpressionChainList[1]);
+	CHECK_UNISTR_EQUALS("\\MyClass", Observer.VariableExpressionChainList[2]);
+	CHECK_UNISTR_EQUALS("\\strlen()", Observer.VariableExpressionChainList[3]);
+	CHECK_UNISTR_EQUALS("\\First\\ChildNamespace\\strlen()", Observer.VariableExpressionChainList[4]);
+	CHECK_UNISTR_EQUALS("\\First\\strlen()", Observer.VariableExpressionChainList[5]);
+	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableExpressionChainList[6]);
+	CHECK_UNISTR_EQUALS("\\Second\\Child\\MyClass", Observer.VariableExpressionChainList[7]);
 }
 
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
@@ -914,159 +949,145 @@ TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseVariableExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseVariableExpression) {
 	UnicodeString code = _U("$variable");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseObjectExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseObjectExpression) {
 	UnicodeString code = _U("$variable->prop");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);	
-	CHECK_UNISTR_EQUALS("->prop", symbol.ChainList[1]);	
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(2, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("$variable", Expr.ChainList[0]);	
+	CHECK_UNISTR_EQUALS("->prop", Expr.ChainList[1]);	
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseObjectWithoutPropertyExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseObjectWithoutPropertyExpression) {
 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
 	UnicodeString code = _U("$obj->");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$obj", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("$obj", symbol.ChainList[0]);	
-	CHECK_UNISTR_EQUALS("->", symbol.ChainList[1]);	
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$obj", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(2, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("$obj", Expr.ChainList[0]);	
+	CHECK_UNISTR_EQUALS("->", Expr.ChainList[1]);	
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseStaticWithoutPropertyExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseStaticWithoutPropertyExpression) {
 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
 	UnicodeString code = _U("MyClass::");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), symbol.ChainList[1]);	
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(2, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::"), Expr.ChainList[1]);	
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseStaticExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseStaticExpression) {
 	UnicodeString code = _U("MyClass::$DEFAULT");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), symbol.ChainList[1]);	
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(2, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::$DEFAULT"), Expr.ChainList[1]);	
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseConstantExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseConstantExpression) {
 	UnicodeString code = _U("MyClass::PI;");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(2, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("MyClass", symbol.ChainList[0]);	
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::PI"), symbol.ChainList[1]);	
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(2, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("MyClass", Expr.ChainList[0]);	
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("::PI"), Expr.ChainList[1]);	
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseChainExpression) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseChainExpression) {
 	UnicodeString code = _U("$variable->func1()->prop2->func3()->prop4");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$variable", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(5, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("$variable", symbol.ChainList[0]);
-	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
-	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[2]);
-	CHECK_UNISTR_EQUALS("->func3()", symbol.ChainList[3]);
-	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(5, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("$variable", Expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->func1()", Expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->prop2", Expr.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->func3()", Expr.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", Expr.ChainList[4]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseChainExpressionStartsWithFunction) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseChainExpressionStartsWithFunction) {
 	UnicodeString code = _U("func1()->prop2->prop4");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(3, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
-	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[1]);
-	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[2]);
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("func1()", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(3, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("func1()", Expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->prop2", Expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->prop4", Expr.ChainList[2]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithFunctionArguments) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseChainExpressionWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("$this->propA->func1($a, $b)->prop2->prop4");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(5, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
-	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
-	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[2]);
-	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
-	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$this", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(5, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("$this", Expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->propA", Expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->func1()", Expr.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop2", Expr.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", Expr.ChainList[4]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("$this->func1($a, $b)->propA->prop2->prop4");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
-	CHECK_UNISTR_EQUALS("$this", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(5, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("$this", symbol.ChainList[0]);
-	CHECK_UNISTR_EQUALS("->func1()", symbol.ChainList[1]);
-	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[2]);
-	CHECK_UNISTR_EQUALS("->prop2", symbol.ChainList[3]);
-	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[4]);
+	Parser.ParseExpression(code, Expr);
+	CHECK_UNISTR_EQUALS("$this", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(5, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("$this", Expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->func1()", Expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->propA", Expr.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop2", Expr.ChainList[3]);
+	CHECK_UNISTR_EQUALS("->prop4", Expr.ChainList[4]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
 	UnicodeString code = _U("func1($a, $b)->propA->func2($c)->prop4");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
+	Parser.ParseExpression(code, Expr);
 
-	// lexeme empty because function call is first in the chain
-	CHECK_UNISTR_EQUALS("", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(4, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("func1()", symbol.ChainList[0]);
-	CHECK_UNISTR_EQUALS("->propA", symbol.ChainList[1]);
-	CHECK_UNISTR_EQUALS("->func2()", symbol.ChainList[2]);
-	CHECK_UNISTR_EQUALS("->prop4", symbol.ChainList[3]);
+	CHECK_UNISTR_EQUALS("func1()", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(4, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("func1()", Expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->propA", Expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->func2()", Expr.ChainList[2]);
+	CHECK_UNISTR_EQUALS("->prop4", Expr.ChainList[3]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseExpressionWithNamespace) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseExpressionWithNamespace) {
 	UnicodeString code = _U("\\First\\Chi");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
+	Parser.ParseExpression(code, Expr);
 
-	CHECK_UNISTR_EQUALS("\\First\\Chi", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(1, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("\\First\\Chi", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\Chi", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(1, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("\\First\\Chi", Expr.ChainList[0]);
 }
 
-TEST_FIXTURE(Parser53TestClass, ParseExpressionWithNamespaceEnd) {
+TEST_FIXTURE(Parser53ExpressionTestClass, ParseExpressionWithNamespaceEnd) {
 	UnicodeString code = _U("\\First\\");
-	pelet::SymbolClass symbol;
-	Parser.ParseExpression(code, symbol);
+	Parser.ParseExpression(code, Expr);
 
-	CHECK_UNISTR_EQUALS("\\First\\", symbol.Lexeme);
-	CHECK_VECTOR_SIZE(1, symbol.ChainList);
-	CHECK_UNISTR_EQUALS("\\First\\", symbol.ChainList[0]);
+	CHECK_UNISTR_EQUALS("\\First\\", Expr.FirstValue());
+	CHECK_VECTOR_SIZE(1, Expr.ChainList);
+	CHECK_UNISTR_EQUALS("\\First\\", Expr.ChainList[0]);
 }
 
 }

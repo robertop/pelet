@@ -248,7 +248,7 @@
 %type <statementList> non_empty_additional_catches
 %type <statementList> additional_catch
 %type <statementList> unset_variables
-%type <expression> unset_variable
+%type <variable> unset_variable
 %type <statementList> function_declaration_statement
 %type <statementList> class_declaration_statement
 %type <isMethod> is_reference
@@ -298,7 +298,7 @@
 %type <semanticValue> function
 %type <statementList> lexical_vars
 %type <statementList> lexical_var_list
-%type <expression> function_call
+%type <variable> function_call
 %type <qualifiedName> class_name
 %type <qualifiedName> fully_qualified_class_name
 %type <qualifiedName> class_name_reference
@@ -316,24 +316,24 @@
 %type <isComma> possible_comma
 %type <semanticValue> non_empty_static_array_pair_list
 %type <expression> expr
-%type <expression> r_variable
-%type <expression> w_variable
-%type <expression> rw_variable
-%type <expression> variable
-%type <expression> variable_properties
-%type <expression> variable_property
+%type <variable> r_variable
+%type <variable> w_variable
+%type <variable> rw_variable
+%type <variable> variable
+%type <variable> variable_properties
+%type <variable> variable_property
 %type <isMethod> method_or_not
-%type <expression> variable_without_objects
-%type <expression> static_member
+%type <variable> variable_without_objects
+%type <variable> static_member
 %type <semanticValue> variable_class_name
-%type <expression> base_variable_with_function_calls
-%type <expression> base_variable
-%type <expression> reference_variable
-%type <expression> compound_variable
+%type <variable> base_variable_with_function_calls
+%type <variable> base_variable
+%type <variable> reference_variable
+%type <variable> compound_variable
 %type <expression> dim_offset
-%type <expression> object_property
-%type <expression> object_dim_list
-%type <expression> variable_name
+%type <variable> object_property
+%type <variable> object_dim_list
+%type <variable> variable_name
 %type <semanticValue> simple_indirect_reference
 %type <statementList> assignment_list
 %type <statementList> assignment_list_element
@@ -454,8 +454,7 @@ unticked_statement:
 	|	T_FOREACH '(' expr_without_variable T_AS
 		variable foreach_optional_arg ')'
 		foreach_statement																			{ $$ = observers.StatementListMake();
-																									  $5 = observers.ExpressionMakeAsAssignmentExpression($5);
-																									  $$ = observers.StatementListAppend($$, $5);
+																									  $$ = observers.StatementListAppend($$, observers.ExpressionMakeAsAssignmentExpression($5));
 																									  $$ = observers.StatementListAppend($$, $6);
 																									  $$ = observers.StatementListMerge($$, $8); }
 	|	T_DECLARE '(' declare_list ')' declare_statement											{ $$ = observers.StatementListNil(); }
@@ -465,7 +464,7 @@ unticked_statement:
 		'{' inner_statement_list '}'
 		additional_catches																			{ $$ = observers.StatementListAppend($3, 
 																											observers.AssignmentExpressionFromNewFound(
-																											observers.ExpressionMakeVariable($8), 
+																											observers.VariableStart($8), 
 																											$7));
 																									  $$ = observers.StatementListMerge($$, $11);
 																									  $$ = observers.StatementListMerge($$, $13); }
@@ -486,7 +485,7 @@ non_empty_additional_catches:
 additional_catch:
 	T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'				
 	'{' inner_statement_list '}'										{ $$ = observers.StatementListMakeAndAppend(observers.AssignmentExpressionFromNewFound(
-																			   observers.ExpressionMakeVariable($4), 
+																			   observers.VariableStart($4), 
 																			   $3));
 																		  observers.StatementListMerge($$, $7); }
 ;
@@ -576,8 +575,8 @@ foreach_optional_arg:
 ;
 
 foreach_variable:
-		variable									{ $1 = observers.ExpressionMakeAsAssignmentExpression($1); $$ = $1; }
-	|	'&' variable								{ $2 = observers.ExpressionMakeAsAssignmentExpression($2); $$ = $2; }
+		variable									{ $$ = observers.ExpressionMakeAsAssignmentExpression($1); }
+	|	'&' variable								{ $$ = observers.ExpressionMakeAsAssignmentExpression($2); }
 ;
 
 for_statement:
@@ -775,7 +774,7 @@ for_expr:
 
 non_empty_for_expr:
 		non_empty_for_expr ',' expr		{ $$ =  observers.StatementListAppend($1, $3); }
-	|	expr							{ $1 = observers.ExpressionMakeAsAssignmentExpression($1); $$ = observers.StatementListMakeAndAppend($1); }
+	|	expr							{ $$ = observers.StatementListMakeAndAppend($1); }
 ;
 
 expr_without_variable:
@@ -872,22 +871,22 @@ lexical_var_list:
 
 function_call:
 		namespace_name '('															
-		function_call_parameter_list	')'												{ $$ = observers.ExpressionMakeFunctionCall($1, $3, analyzer.GetLineNumber()); }
+		function_call_parameter_list	')'												{ $$ = observers.VariableMakeFunctionCall($1, $3, analyzer.GetLineNumber()); }
 	|	T_NAMESPACE T_NS_SEPARATOR 														
 		namespace_name '(' 																
-		function_call_parameter_list ')' 												{ $$ = observers.ExpressionMakeFunctionCallFromCurrentNamespace($3, $5, analyzer.GetLineNumber()); }
+		function_call_parameter_list ')' 												{ $$ = observers.VariableMakeFunctionCallFromCurrentNamespace($3, $5, analyzer.GetLineNumber()); }
 	|	T_NS_SEPARATOR namespace_name '(' 												
-				function_call_parameter_list ')'										{ $$ = observers.ExpressionMakeFunctionCallFromAbsoluteNamespace($2, $4, analyzer.GetLineNumber()); }
+				function_call_parameter_list ')'										{ $$ = observers.VariableMakeFunctionCallFromAbsoluteNamespace($2, $4, analyzer.GetLineNumber()); }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
-			function_call_parameter_list')'												{ $$ = observers.ExpressionMakeStaticMethodCall($1, $3, $5, analyzer.GetLineNumber()); }
+			function_call_parameter_list')'												{ $$ = observers.VariableMakeStaticMethodCall($1, $3, $5, analyzer.GetLineNumber()); }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
-			function_call_parameter_list ')'											{ $$ = observers.ExpressionNil(); }
+			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
 	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '('
-			function_call_parameter_list ')'											{ $$ = observers.ExpressionNil(); }
+			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
 	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
-			function_call_parameter_list ')'											{ $$ = observers.ExpressionNil(); }
+			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
 	|	variable_without_objects  '('
-			function_call_parameter_list ')'											{ $$ = observers.ExpressionNil(); }       
+			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }       
 ;
 
 class_name:
@@ -999,7 +998,7 @@ non_empty_static_array_pair_list:
 ;
 
 expr:
-		r_variable
+		r_variable					{ $$ = observers.ExpressionMakeFromVariable($1); }
 	|	expr_without_variable
 ;
 
@@ -1019,18 +1018,18 @@ variable:
 		base_variable_with_function_calls 
 		T_OBJECT_OPERATOR object_property 
 		method_or_not							
-		variable_properties						{ $$ = observers.ExpressionMakeVariable($1, $3, $4, $5); }
-	|	base_variable_with_function_calls		{ $$ = observers.ExpressionMakeVariable($1, NULL, false, NULL); }
+		variable_properties						{ $$ = observers.VariableMake($1, $3, $4, $5); }
+	|	base_variable_with_function_calls		{ $$ = observers.VariableMake($1, NULL, false, NULL); }
 ;
 
 variable_properties:
-		variable_properties variable_property		{ $$ = observers.ExpressionAppendToChain($1, $2); }
-	|	/* empty */									{ $$ = observers.ExpressionNil(); }
+		variable_properties variable_property		{ $$ = observers.VariableAppendToChain($1, $2); }
+	|	/* empty */									{ $$ = observers.VariableNil(); }
 ;
 
 variable_property:
 		T_OBJECT_OPERATOR object_property
-		method_or_not								{ $$ = observers.ExpressionAppendToChain($2, $3);  }
+		method_or_not								{ $$ = observers.VariableAppendToChain($2, $3);  }
 ;
 
 method_or_not:
@@ -1044,8 +1043,8 @@ variable_without_objects:
 ;
 
 static_member:
-		class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects					{ $$ = observers.ExpressionMakeStaticMember($1, $3); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects			{ $$ = observers.ExpressionNil(); }
+		class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects					{ $$ = observers.VariableStartStaticMember($1, $3); }
+	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects			{ $$ = observers.VariableNil(); }
 ;
 
 variable_class_name:
@@ -1064,19 +1063,19 @@ base_variable:
 ;
 
 reference_variable:
-		reference_variable '[' dim_offset ']'		{ $$ = observers.ExpressionNil(); }
-	|	reference_variable '{' expr '}'				{ $$ = observers.ExpressionNil(); }
+		reference_variable '[' dim_offset ']'		{ $$ = observers.VariableAppendArrayOffset($1, $3); }
+	|	reference_variable '{' expr '}'				{ $$ = observers.VariableNil(); }
 	|	compound_variable
 ;
 
 compound_variable:
-		T_VARIABLE			{ $$ = observers.ExpressionMakeVariable($1); }
-	|	'$' '{' expr '}' 	{ $$ = observers.ExpressionNil(); }
+		T_VARIABLE			{ $$ = observers.VariableStart($1); }
+	|	'$' '{' expr '}' 	{ $$ = observers.VariableNil(); }
 ;
 
 dim_offset:
 		/* empty */		{ $$ = observers.ExpressionNil(); }
-	|	expr			{ $$ = observers.ExpressionNil(); }
+	|	expr			{ $$ = $1; }
 ;
 
 object_property:
@@ -1085,14 +1084,14 @@ object_property:
 ;
 
 object_dim_list:
-		object_dim_list '[' dim_offset ']'			{ $$ = observers.ExpressionNil(); }
-	|	object_dim_list '{' expr '}'				{ $$ = observers.ExpressionNil(); }
+		object_dim_list '[' dim_offset ']'			{ $$ = observers.VariableNil(); }
+	|	object_dim_list '{' expr '}'				{ $$ = observers.VariableNil(); }
 	|	variable_name								{ $$ = $1; }
 ;
 
 variable_name:
-		T_STRING					{  $$ = observers.ExpressionMakeVariable($1); }
-	|	'{' expr '}'				{ $$ = observers.ExpressionNil(); }
+		T_STRING					{  $$ = observers.VariableStart($1); }
+	|	'{' expr '}'				{ $$ = observers.VariableNil(); }
 ;
 
 simple_indirect_reference:

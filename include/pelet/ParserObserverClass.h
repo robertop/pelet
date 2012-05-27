@@ -255,30 +255,35 @@ public:
 	pelet::ExpressionClass* IncludeFound(pelet::ExpressionClass* expr, const int lineNumber);
 
 	pelet::ExpressionClass* ExpressionMakeAssignmentList(pelet::StatementListClass* assignmentList);
-	pelet::ExpressionClass* AssignmentExpressionFromExpressionFound(pelet::ExpressionClass* variable, pelet::ExpressionClass* expression);
-	pelet::ExpressionClass* AssignmentExpressionFromNewFound(pelet::ExpressionClass* variable, pelet::QualifiedNameClass* className);
-	pelet::ExpressionClass* AssignmentExpressionFromVariableFound(pelet::ExpressionClass* variable, pelet::ExpressionClass* srcVariable);
-	pelet::ExpressionClass* ExpressionMakeAsAssignmentExpression(pelet::ExpressionClass* expression);
-	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, bool isMethod);
-	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* variableProperties, pelet::ExpressionClass* newVariableProperty);
+	pelet::ExpressionClass* AssignmentExpressionFromExpressionFound(pelet::VariableClass* variable, pelet::ExpressionClass* expression);
+	pelet::ExpressionClass* AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className);
+	pelet::ExpressionClass* AssignmentExpressionFromVariableFound(pelet::VariableClass* variable, pelet::VariableClass* srcVariable);
+	pelet::ExpressionClass* ExpressionMakeAsAssignmentExpression(pelet::VariableClass* variable);
 	pelet::ExpressionClass* ExpressionMakeArray(pelet::StatementListClass* pairStatements);
 	pelet::ExpressionClass* ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName);
-	pelet::ExpressionClass* ExpressionMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-	pelet::ExpressionClass* ExpressionMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-	pelet::ExpressionClass* ExpressionMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-	pelet::ExpressionClass* ExpressionMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::ExpressionClass* ExpressionMakeGlobalVariable(pelet::SemanticValueClass* value);
 	pelet::ExpressionClass* ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className);
-	pelet::ExpressionClass* ExpressionMakeNil();
 	pelet::ExpressionClass* ExpressionMakeObject(pelet::ExpressionClass* srcExpression);
 	pelet::ExpressionClass* ExpressionMakeScalar(pelet::ExpressionClass* srcExpression);
 	pelet::ExpressionClass* ExpressionMakeScalar(pelet::SemanticValueClass* srcValue);
 	pelet::ExpressionClass* ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName);
-	pelet::ExpressionClass* ExpressionMakeStaticMember(pelet::QualifiedNameClass* className, pelet::ExpressionClass* memberName);
 	pelet::ExpressionClass* ExpressionMakeStaticVariable(pelet::SemanticValueClass* nameValue);
-	pelet::ExpressionClass* ExpressionMakeVariable(pelet::SemanticValueClass* variableValue);
-	pelet::ExpressionClass* ExpressionMakeVariable(pelet::ExpressionClass* baseName, pelet::ExpressionClass* firstProperty, bool isFirstPropertyMethod, pelet::ExpressionClass* restProperties);
+	pelet::ExpressionClass* ExpressionMakeFromVariable(pelet::VariableClass* variableValue);
+	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::VariableClass* variableValue);
+	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::ExpressionClass* restExpression);
 	pelet::ExpressionClass* ExpressionNil();
+	
+	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, bool isFirstPropertyMethod, pelet::VariableClass* restProperties);
+	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue);
+	pelet::VariableClass* VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName);
+	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);
+	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variable, bool isMethod);
+	pelet::VariableClass* VariableAppendArrayOffset(pelet::VariableClass* variable, pelet::ExpressionClass* offsetExpr);
+	pelet::VariableClass* VariableNil();
 	
 	void MakeAst(pelet::StatementListClass* statements);
 	
@@ -368,20 +373,9 @@ private:
 	UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType);
 
 	/**
-	 * the class that is currently being parsed.
+	 * the class, method, and namespace that are currently being parsed.
 	 */
-	UnicodeString CurrentClassName;
-
-	/**
-	 * the class method or property that is currently being parsed. Also, this will hold
-	 * the current stand-alone function that is being parsed as well
-	 */
-	UnicodeString CurrentMemberName;
-
-	/**
-	 * The current qualified name (namespaces + name) that is being parsed.
-	 */
-	QualifiedNameClass CurrentQualifiedName;
+	ScopeClass Scope;
 
 	/**
 	 * The current namespace

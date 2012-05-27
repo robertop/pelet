@@ -53,16 +53,30 @@ newaction {
 			print("re2c command failed for file src/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
 		end
 		code = os.execute(cmd) 
-		cmd = "bison --no-lines --warnings=error " ..
-			" -o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
-			normalizepath("src/Php53ParserImpl.y")
+		if os.is("windows") then
+			-- in windows line macros dont work correctly
+			cmd = "bison --no-lines --warnings=error " ..
+				" -o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
+				normalizepath("src/Php53ParserImpl.y")
+		else 
+			cmd = "bison  --warnings=error " ..
+				" -o " .. normalizepath("src/Php53ParserImpl.cpp") .. " " ..
+				normalizepath("src/Php53ParserImpl.y")
+		end
 		code = os.execute(cmd) 
 		if code ~= 0 then
 			print("Bison command failed for file src/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
-		cmd = "bison --no-lines --warnings=error "  ..
-			" -o " .. normalizepath("src/Php54ParserImpl.cpp") .. " " ..
-			normalizepath("src/Php54ParserImpl.y")
+		if os.is("windows") then
+			-- in windows line macros dont work correctly
+			cmd = "bison --no-lines --warnings=error "  ..
+				" -o " .. normalizepath("src/Php54ParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54ParserImpl.y")
+		else
+			cmd = "bison --warnings=error "  ..
+				" -o " .. normalizepath("src/Php54ParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54ParserImpl.y")
+		end
 		code = os.execute(cmd) 
 		if code ~= 0 then
 			print("Bison command failed for file src/Php54ParserImpl.y. Is bison installed? Is it in the PATH?");	

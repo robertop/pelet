@@ -386,9 +386,9 @@ public:
 	 *        MyClass::
 	 * In this case, the operator will be added the chain list; this way the client code can determine that
 	 * the variable name actually ended.
-	 * @param symbol the expression's name and "chain" list. The  properties of this object will be reset every call.
+	 * @param expression the expression's name and "chain" list. The  properties of this object will be reset every call.
 	 */
-	void ParseExpression(UnicodeString expression, SymbolClass& symbol);
+	void ParseExpression(UnicodeString expressionString, ExpressionClass& expression);
 	
 private:
 

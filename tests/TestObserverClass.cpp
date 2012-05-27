@@ -89,19 +89,23 @@ void TestObserverClass::FunctionEnd(const UnicodeString& namespaceName, const Un
 }
 
 void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-	const pelet::SymbolClass& symbol, const UnicodeString& comment) {
+	const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment) {
 	VariableClassNamespace.push_back(namespaceName);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
-	VariableName.push_back(symbol.Lexeme);
-	VariableComment.push_back(symbol.Comment);
-	VariableTypes.push_back(symbol.SourceType);
+	VariableName.push_back(variable.ChainList[0]);
+	VariableComment.push_back(variable.Comment);
+	VariableArrayKeys.push_back(variable.ArrayKey);
+	VariableExpressionTypes.push_back(expression.ExpressionType);
 	UnicodeString typeString;
-	for (size_t i = 0; i < symbol.ChainList.size(); ++i) {
-		typeString.append(symbol.ChainList[i]);
+	for (size_t i = 0; i < expression.ChainList.size(); ++i) {
+		typeString.append(expression.ChainList[i]);
 	}
-	VariableChainList.push_back(typeString);
-	VariablePhpDocType.push_back(symbol.PhpDocType);
+	VariableExpressionChainList.push_back(typeString);
+	VariablePhpDocType.push_back(variable.PhpDocType);
+	for (size_t i = 0; i < expression.ArrayKeys.size(); ++i) {
+		VariableExpressionArrayKeys.push_back(expression.ArrayKeys[i]);
+	}
 }
 
 void TestObserverClass::DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 

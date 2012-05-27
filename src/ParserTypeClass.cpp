@@ -481,48 +481,44 @@ void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, Unico
 }
 
 
-pelet::ExpressionClass::ExpressionClass()
+pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
 	: StatementClass(pelet::StatementClass::EXPRESSION)
-	, Name()
-	, Lexeme()
 	, Comment()
-	, NamespaceScope()
-	, ClassScope()
-	, MethodScope()
+	, Scope(scope)
 	, CallArguments()
 	, ChainList()
-	, VariablesList()
+	, ArrayKeys()
 	, ExpressionType(SCALAR)
 	, LineNumber(0) {
 }
 
 void pelet::ExpressionClass::Clear() {
-	Name.Clear();
-	Lexeme.remove();
 	Comment.remove();
-	NamespaceScope.remove();
-	ClassScope.remove();
-	MethodScope.remove();
+	Scope.Clear();
 	CallArguments.clear();
 	ChainList.clear();
-	VariablesList.clear();
+	ArrayKeys.clear();
 	ExpressionType = pelet::ExpressionClass::SCALAR;
 	LineNumber = 0;
 }
 
 void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
-	Name = src.Name;
-	Lexeme = src.Lexeme;
 	Comment = src.Comment;
-	NamespaceScope = src.NamespaceScope;
-	ClassScope = src.ClassScope;
-	MethodScope = src.MethodScope;
+	Scope = src.Scope;
 	CallArguments = src.CallArguments;
 	ChainList = src.ChainList;
-	VariablesList = src.VariablesList;
+	ArrayKeys = src.ArrayKeys;
 	ExpressionType = src.ExpressionType;
 	Type = src.Type;
 	LineNumber = src.LineNumber;
+}
+
+UnicodeString pelet::ExpressionClass::FirstValue() const {
+	UnicodeString str;
+	if (!ChainList.empty()) {
+		str = ChainList.front();
+	}
+	return str;
 }
 
 
@@ -540,94 +536,42 @@ void pelet::ExpressionClass::AppendToChain(pelet::SemanticValueClass* operatorVa
 	ChainList.push_back(objectCall);
 }
 
-pelet::SymbolClass::SymbolClass()
-	: StatementClass(pelet::StatementClass::ASSIGNMENT)
-	, Lexeme()
+pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
+	: StatementClass(pelet::StatementClass::VARIABLE)
 	, Comment()
 	, PhpDocType()
 	, ChainList()
-	, VariablesList()
-	, NamespaceScope()
-	, ClassScope()
-	, MethodScope()
-	, SourceType(PRIMITIVE) {
+	, ArrayKey()
+	, Scope(scope)
+	, CallArguments()
+	, LineNumber(0) {
 }
 
-void pelet::SymbolClass::Copy(const pelet::SymbolClass& src) {
-	Lexeme = src.Lexeme;
+void pelet::VariableClass::Copy(const pelet::VariableClass& src) {
 	Comment = src.Comment;
 	PhpDocType = src.PhpDocType;
 	ChainList = src.ChainList;
 	Type = src.Type;
-	SourceType = src.SourceType;
-	VariablesList = src.VariablesList;
-	NamespaceScope = src.NamespaceScope;
-	ClassScope = src.ClassScope;
-	MethodScope = src.MethodScope;
+	ArrayKey = src.ArrayKey;
+	Scope = src.Scope;
+	CallArguments = src.CallArguments;
+	LineNumber = src.LineNumber;
 }
 
-void pelet::SymbolClass::AppendToComment(pelet::SemanticValueClass* value) {
+void pelet::VariableClass::AppendToComment(pelet::SemanticValueClass* value) {
 	if (value) {
 		Comment.append(value->Comment);
 	}
 }
 
-void pelet::SymbolClass::SetToPrimitive() {
-	SourceType = pelet::SymbolClass::PRIMITIVE;
-}
-
-void pelet::SymbolClass::SetToObject() {
-	SourceType = pelet::SymbolClass::OBJECT;
-}
-
-void pelet::SymbolClass::SetToArray() {
-	SourceType = pelet::SymbolClass::ARRAY;
-}
-
-void pelet::SymbolClass::SetToUnknown() {
-	SourceType = pelet::SymbolClass::UNKNOWN;
-}
-
-void pelet::SymbolClass::Clear() {
-	Lexeme.remove();
+void pelet::VariableClass::Clear() {
 	Comment.remove();
 	PhpDocType.remove();
 	ChainList.clear();
-	VariablesList.clear();
-	NamespaceScope.remove();
-	ClassScope.remove();
-	MethodScope.remove();
-	SourceType = pelet::SymbolClass::PRIMITIVE;
-}
-
-void pelet::SymbolClass::FromExpression(const pelet::ExpressionClass& expression) {
-	if (pelet::ExpressionClass::ARRAY == expression.ExpressionType) {
-		SetToArray();
-	} else if (pelet::ExpressionClass::FUNCTION_CALL == expression.ExpressionType) {
-		SetToObject();
-	} else if (pelet::ExpressionClass::NEW_CALL == expression.ExpressionType) {
-		SetToObject();
-	} else if (pelet::ExpressionClass::SCALAR == expression.ExpressionType) {
-		SetToPrimitive();
-	} else if (pelet::ExpressionClass::UNKNOWN == expression.ExpressionType) {
-		SetToUnknown();
-	} else if (pelet::ExpressionClass::VARIABLE == expression.ExpressionType) {
-		SetToObject();
-	}
-	Comment = expression.Comment;
-	Lexeme = expression.Lexeme;
-	ChainList = expression.ChainList;
-	VariablesList = expression.VariablesList;
-	NamespaceScope = expression.NamespaceScope;
-	ClassScope = expression.ClassScope;
-	MethodScope = expression.MethodScope;
-	if (expression.Lexeme.isEmpty() && expression.ChainList.empty()) {
-
-		// when a static property; the "namespace_name" parser rule
-		// is triggered
-		Lexeme = expression.Name.ToSignature();
-		ChainList.insert(ChainList.begin(), Lexeme);
-	}
+	ArrayKey.remove();
+	Scope.Clear();
+	CallArguments.clear();
+	LineNumber = 0;
 }
 
 pelet::SemanticValueClass::SemanticValueClass() 
@@ -639,3 +583,50 @@ pelet::SemanticValueClass::SemanticValueClass()
 	, LineNumber(0) {
 		
 }
+
+pelet::AssignmentExpressionClass::AssignmentExpressionClass(const pelet::ScopeClass& scope)
+	: ExpressionClass(scope)
+	, Destination(scope) {
+	Type = pelet::StatementClass::ASSIGNMENT;
+}
+
+void pelet::AssignmentExpressionClass::Set(pelet::ExpressionClass& src) {
+	Copy(src);
+	
+	// copy method will ovewrite the type property put it back to normal
+	Type = pelet::StatementClass::ASSIGNMENT;
+}
+
+pelet::AssignmentListExpressionClass::AssignmentListExpressionClass(const pelet::ScopeClass& scope)
+	: ExpressionClass(scope)
+	, Destinations() {
+	Type = pelet::StatementClass::ASSIGNMENT_LIST;
+}
+
+void pelet::AssignmentListExpressionClass::Set(pelet::ExpressionClass& src) {
+	Copy(src);
+	
+	// copy method will ovewrite the type property put it back to normal
+	Type = pelet::StatementClass::ASSIGNMENT_LIST;
+}
+
+pelet::ScopeClass::ScopeClass()
+	: NamespaceName()
+	, ClassName()
+	, MethodName()
+{
+}
+
+pelet::ScopeClass::ScopeClass(const pelet::ScopeClass& src)
+	: NamespaceName(src.NamespaceName)
+	, ClassName(src.ClassName)
+	, MethodName(src.MethodName)
+{
+}
+
+void pelet::ScopeClass::Clear() {
+	NamespaceName.remove();
+	ClassName.remove();
+	MethodName.remove();
+}
+

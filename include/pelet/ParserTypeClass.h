@@ -39,7 +39,7 @@ class ConstantClass;
 class AstItemClass;
 class ParametersListClass;
 class ExpressionClass;
-class SymbolClass;
+class VariableClass;
 
 /**
  * Interface to inherit from when needing to be notified when a class structure is encountered.
@@ -271,23 +271,30 @@ public:
 	 *
 	 * Example assignment:  $name = $this->getName()->toString();
 	 *
-	 * Lexeme: lexeme will contain the variable's name (ie $name)
+	 * Variable: The variable's ChainList will contain the variable's name in index 0: "$name"
 	 * ChainList: This is a list of  properties / methods
 	 *            that were successively invoked.
 	 *            In this example, the expression chain list will have 3 items in
 	 *           the chain list "$this" "->getName()" and "->toString()".
 	 *
+	 * The variable itself may contain an array key in it; like so: $person['name'] = $this->getName()->toString();
+	 * In this case, Variable ChainList will contain 1 item: "$name" and the Variable Array Key will contain "name"
+	 * 
 	 * 
 	 * @param const UnicodeString& namespace the fully qualified namespace of the containing class / function.
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.
 	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
 	 *        variable is globally scoped.
-	 * @param const SymbolClass& symbol the name  & type of the variable that was found
+	 * @param const VariableClass& variable the name of the variable that was found, along with any array keys that were used
+	 *       in the left hand of the assignment. 
+	 * @param const ExpressionClass& expression the expression assigned to the variable
 	 * @param const UnicodeString& comment PHPDoc attached to the variable
+	 * 
+	 * @see pelet::VariableClass
 	 */
 	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const SymbolClass& symbol, const UnicodeString& comment) { }
+		const VariableClass& variable, const ExpressionClass& expression, const UnicodeString& comment) { }
 };
 
 /**
@@ -304,9 +311,40 @@ public:
 	/**
 	 * Override this method to get the pseudo-parse tree for a single expression.
 	 * 
-	 * @param expression the expression that was parsed.
+	 * @param expression the expression that was parsed
+	 * @see pelet::ExpressionClass
 	 */
 	virtual void ExpressionFound(const ExpressionClass& expression) { }
+};
+
+/**
+ * This class represents a scope of a variable: ie the containing namespace, class, and function name.
+ */
+class PELET_API ScopeClass {
+
+public:
+	
+	/**
+	 * The fully qualified namespace; "" (empty string) for the root namespace
+	 */
+	UnicodeString NamespaceName;
+	
+	/**
+	 * The class name only
+	 * Could be empty if the scope is a function
+	 */
+	UnicodeString ClassName;
+	
+	/**
+	 * The method or function name only.
+	 */
+	UnicodeString MethodName;
+
+	ScopeClass();
+	
+	ScopeClass(const pelet::ScopeClass& src);
+	
+	void Clear();
 };
 
 /** 
@@ -348,7 +386,8 @@ public:
 		
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
-		EXPRESSION
+		EXPRESSION,
+		VARIABLE		// 15
 	};
 	
 	Types Type;
@@ -430,55 +469,43 @@ private:
 
 /**
  * This class will represent one PHP Expression. An expression is either
+ * - a scalar ("name", 123, 123.43)
+ * - an array ( array(1, 2, 3) , [1, 2, 3], array("one" => 1), [ "one" => 1] ) ***
  * - a variable ($abc)
- * - a scalar (constant)
- * - an operation between 2 variables  (arithmetic, boolean, bitwise)
- * - an operation between 1 variables  and another expression
  * - an operation of 1 variable (increment, decrement, cast, error suppression, clone)
- * - a "new" object construction
- * - a function call
- * - a variable assignment of one variable to an expression
+ * - a "new" object construction (new MyClass())
+ * - a function call (myFunct(), myFunct(1, 'one'))
+ * - a long variable property / method chain   ($this->getName()->toString()->trim()->length)
+ *
+ * The following are currently not supported:
+ * - an operation between 2 variables (arithmetic, boolean, bitwise)
+ * - an operation between 1 variables and another expression
+ * 
+ * 
+ * *** Note that simple array syntax is only possible in the PHP 5.4 parser.
  */
 class PELET_API ExpressionClass : public StatementClass {
 	
 public:
 
 	enum ExpressionTypes {
-		SCALAR,
+		SCALAR, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
 		ARRAY,
 		VARIABLE,
 		FUNCTION_CALL,
 		NEW_CALL,
-		ASSIGNMENT_LIST,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
-
-	/**
-	 * In the case of a function call; this is the name of the function that
-	 * was called. In the case of a NEW_CALL, then name is the
-	 * name of the class that was instantiated. For all other types; this is empty.
-	 */
-	QualifiedNameClass Name;
-
-	/**
-	 * In the case of a scalar; this is the token text (actual string or
-	 * int value). In the case of a variable; this is the variable name.
-	 * In the case of a variable that chains object operations ($this->name->toString)
-	 * then the lexeme is the value of the first variable in the chain ("$this" in
-	 * the example above).
-	 */
-	UnicodeString Lexeme;
 
 	/**
 	 * The comment that is attached to the function call / variable.
 	 */
 	UnicodeString Comment;
 	
-	UnicodeString NamespaceScope;
-	
-	UnicodeString ClassScope;
-	
-	UnicodeString MethodScope;
+	/**
+	 * The function where this expression is located.
+	 */
+	ScopeClass Scope;
 
 	/**
 	 * In the case of function calls; this is the arguments of the
@@ -495,13 +522,26 @@ public:
 	 */
 	std::vector<UnicodeString> ChainList;
 	
-	std::vector<UnicodeString> VariablesList;
+	/**
+	 * In case this expression is an array declaration, this list will contain the
+	 * array keys of the declared array. For example, for the expression:
+	 * array('one' => 1, 'two' => 2)
+	 * then ArrayKeys will contain 2 items: "one" and "two"
+	 * Note that only scalar keys are supported for now
+	 * Also note that if the source code does not define keys then this list will be empty
+	 * as well; for example array(1, 2) will not produce any array keys.
+	 */
+	std::vector<UnicodeString> ArrayKeys;
 
 	ExpressionTypes ExpressionType;
 	
+	/**
+	 * The line in the source where the expression was located. 
+	 * @see LexicalAnalyzerClass::GetLineNumber
+	 */
 	int LineNumber;
 
-	ExpressionClass();
+	ExpressionClass(const pelet::ScopeClass& scope);
 
 	/**
 	 * Add a property name to the variable chain list
@@ -513,47 +553,26 @@ public:
 
 	void Clear();
 	void Copy(const ExpressionClass& src);
+	
+	UnicodeString FirstValue() const;
 
 };
 
 /**
- * The SymbolClass represents one symbol; the 'creation' of a variable in the code, along with the type
- * information associated with that variable. There will be one symbol created when a variable
- * This is not quite an AST; one symbol will represent an entire expression; for example the
- * line 
+ * The SymbolClass represents one PHP variable. This is different from an expression, as scalars and arrays are not variables.
+ * A variable is:
+ * 
+ * - a simple variable ($name)
+ * - a function call  (myFunct())
+ * - an array access  ($person['name'])
+ * - a long property chain ($this->myFunct()->name->first)
+ * - a static member (MyClass::$instance)
  *
- * $name = $this->myFunc()->name->fix()
- *
- * will produce one symbol only (called 'name').
  * 
  */
-class PELET_API SymbolClass : public StatementClass {
+class PELET_API VariableClass : public StatementClass {
 
 public:
-	
-	/**
-	 * All the types that are currently being captured.
-	 */
-	enum SourceTypes {
-		PRIMITIVE, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
-		ARRAY,
-		OBJECT, // a variable that is an object;
-		ASSIGNMENT_LIST,
-		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
-	};
-	
-	/**
-	 * The variable's name. The variable name WILL have the siguil ('$').
-	 *
-	 * Examples:
-	 * 
-	 * $this
-	 * self
-	 * parent
-	 * $aVariable
-	 *
-	 */
-	UnicodeString Lexeme;
 
 	/**
 	 * Any PHP doc comment that was attached to this variable (appeared immediately before).
@@ -562,19 +581,19 @@ public:
 
 	/**
 	 * The name of the "type" of this variable that was parsed out of the PHPDoc. For example
-	 * when a variable is decorated with "/* @var $var TypeClass * /" comments
+	 * when a variable is decorated with " \@var $var TypeClass" comments
 	 */
 	UnicodeString PhpDocType;
 	
 	/**
 	 * The list of methods and properties that were called in order to create this variable. For instance,
-	 * for the expression 
-	 *   "$name = $this->myFunc()->name->fix() "
+	 * for the variable 
+	 *   "$this->myFunc()->name->fix() "
 	 * the ChainList will be
 	 *   0)  $this
 	 *   1)  ->myFunct()
-	 *   1)  ->name
-	 *   2)  ->fix
+	 *   2)  ->name
+	 *   3)  ->fix()
 	 *
 	 * A variable's type can then be resolved by  going down the list in order;
 	 * getting the type for item (0) then looking up the result of type for item (0) and item (1) [in this case
@@ -582,44 +601,45 @@ public:
 	 * "fix" property of item 1's type ]
 	 *
 	 * Any arguments to any of the calling functions will be ignored (since they do not contribute to the type info).
-	 * Note that the ChainList may be empty in the case of primitives or 'simple' variables. 
+	 * Note that the ChainList contains only 1 item, then this variable is a "simple" variable ie."$name".
 	 *
 	 */
 	std::vector<UnicodeString> ChainList;
 	
-	std::vector<UnicodeString> VariablesList;
-	
-	
-	UnicodeString NamespaceScope;
-	
-	UnicodeString ClassScope;
-	
-	UnicodeString MethodScope;
+	/**
+	 * If this variable is an array, then the ArrayKey is the key that is assigned
+	 * For example, for the variable $samples['one'], 'one' is the ArrayKey
+	 */
+	UnicodeString ArrayKey;
 	
 	/**
-	 * The symbol type
+	 * The function where this variable is located.
 	 */
-	SourceTypes SourceType;
+	ScopeClass Scope;
 	
-	SymbolClass();
+	/**
+	 * In the case of function calls; this is the arguments of the
+	 * function call (each of which could be the results of other
+	 * function calls).
+	 */
+	std::vector<ExpressionClass> CallArguments;
+	
+	/**
+	 * The line number in the source code where the variable was located in
+	 * @see LexicalAnalyzerClass::GetLineNumber
+	 */
+	int LineNumber;
+		
+	VariableClass(const pelet::ScopeClass& scope);
 
 	/**
 	 * Copies all symbol properties from src to this object.
 	 */
-	void Copy(const SymbolClass& src);
+	void Copy(const VariableClass& src);
 
 	void AppendToComment(SemanticValueClass* value);
 
-	void SetToPrimitive();
-	void SetToObject();
-	void SetToArray();
-	void SetToUnknown();
 	void Clear();
-	
-	/**
-	 * Turns the given expression into this symbol
-	 */
-	void FromExpression(const ExpressionClass& expression);
 };
 
 /**
@@ -812,6 +832,56 @@ public:
 	std::vector<UnicodeString> InsteadOfList;
 	
 	TraitInsteadOfClass();
+};
+
+/**
+ * Holds both sides of an assignment statement in the form
+ * 
+ * variable = expression
+ * 
+ * The right hand side of the equals sign (the value to assign) will be stored
+ * in the properties inherited from the expression class
+ */
+class PELET_API AssignmentExpressionClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * The left hand side of the equals sign; the variable being assigned
+	 */
+	VariableClass Destination;
+
+	AssignmentExpressionClass(const pelet::ScopeClass& scope);
+
+	/**
+	 * Copies the expression properties from src.
+	 */
+	void Set(pelet::ExpressionClass& src);	
+};
+
+/**
+ * Holds both sides of an assignment statement in the form
+ * 
+ * list(variable1, variable2, variable3) = expression
+ * 
+ * The right hand side of the equals sign (the value to assign) will be stored
+ * in the properties inherited from the expression class
+ */
+class PELET_API AssignmentListExpressionClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * The left hand side of the equals sign; the variable being assigned
+	 */
+	std::vector<VariableClass> Destinations;
+
+	AssignmentListExpressionClass(const pelet::ScopeClass& scope);
+
+	/**
+	 * Copies the expression properties from src.
+	 */
+	void Set(pelet::ExpressionClass& src);	
 };
 
 /**
@@ -1009,7 +1079,10 @@ public:
 	void Clear();
 };
 
-
+/**
+ * This is the parser type that the bison parser uses. A grammar rules outputs
+ * to exactly ONE of these properties
+ */
 typedef union ParserType {
 	pelet::StatementListClass *statementList;
 	pelet::QualifiedNameClass *qualifiedName;
@@ -1018,6 +1091,7 @@ typedef union ParserType {
 	pelet::ClassMemberSymbolClass *classMemberSymbol;
 	pelet::ParametersListClass *parametersList;
 	pelet::ExpressionClass *expression;
+	pelet::VariableClass *variable;
 	pelet::TraitUseClass *traitUse;
 	pelet::TraitAliasClass *traitAlias;
 	pelet::TraitInsteadOfClass *traitInsteadOf;

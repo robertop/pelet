@@ -45,15 +45,16 @@ public:
 						MethodClassNamespace, MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
 						PropertyClassNamespace, PropertyClassName, PropertyName, PropertyType, PropertyComment,
 						FunctionNamespace, FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
-						VariableClassNamespace, VariableClassName, VariableMethodName, VariableName, VariableComment,
-						VariableChainList, VariablePhpDocType,
+						VariableClassNamespace, VariableClassName, VariableMethodName, VariableName, VariableComment, VariableArrayKeys,
+						VariableExpressionChainList, VariablePhpDocType,
+						VariableExpressionArrayKeys,
 						DefinedNamespaceName, DefinedName, DefinedValue, DefinedComment,
 						MethodEndClassNamespace, MethodEndClassName, MethodEndMethodName,
 						IncludeFile,
 						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias, TraitInsteadOf;
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
-	std::vector<pelet::SymbolClass::SourceTypes> VariableTypes;
+	std::vector<pelet::ExpressionClass::ExpressionTypes> VariableExpressionTypes;
 	std::vector<int> MethodEndPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	
@@ -80,7 +81,7 @@ public:
 	void FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos);
 	
 	void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const pelet::SymbolClass& symbol, const UnicodeString& comment);
+		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment);
 	
 	void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 			const UnicodeString& comment, const int lineNumber);
