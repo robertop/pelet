@@ -568,6 +568,7 @@ public:
 
 	void Clear();
 	void Copy(const ExpressionClass& src);
+	void Copy(const VariableClass& variable);
 	
 	UnicodeString FirstValue() const;
 

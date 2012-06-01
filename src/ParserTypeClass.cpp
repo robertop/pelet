@@ -521,6 +521,19 @@ void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
 	LineNumber = src.LineNumber;
 }
 
+void pelet::ExpressionClass::Copy(const pelet::VariableClass& variable) {
+	Comment = variable.Comment;
+	Scope = variable.Scope;
+	CallArguments = variable.CallArguments;
+	ChainList = variable.ChainList;
+	ArrayKeys.clear();
+	if (!variable.ArrayKey.isEmpty()) {
+		ArrayKeys.push_back(variable.ArrayKey);
+	}
+	ExpressionType = pelet::ExpressionClass::VARIABLE;
+	LineNumber = variable.LineNumber;	
+}
+
 UnicodeString pelet::ExpressionClass::FirstValue() const {
 	UnicodeString str;
 	if (!ChainList.empty()) {

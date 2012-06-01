@@ -725,6 +725,12 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCall(pelet::
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			newVar->CallArguments.push_back(*singleExpr);
 		}
+		else if (pelet::StatementClass::VARIABLE == type) {
+			pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
+			pelet::ExpressionClass singleExpr(var->Scope);
+			singleExpr.Copy(*var);
+			newVar->CallArguments.push_back(singleExpr);
+		}
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -1390,11 +1396,7 @@ pelet::TraitUseClass* pelet::ObserverQuadClass::TraitUseStart(pelet::QualifiedNa
 }
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeFromVariable(pelet::VariableClass* variableValue) {
 	pelet::ExpressionClass* expr = new pelet::ExpressionClass(Scope);
-	expr->ExpressionType = pelet::ExpressionClass::VARIABLE;
-	expr->ChainList = variableValue->ChainList;
-	expr->CallArguments = variableValue->CallArguments;
-	expr->LineNumber = variableValue->LineNumber;
-	expr->Comment = variableValue->Comment;
+	expr->Copy(*variableValue);
 	AllAstItems.push_back(expr);
 	return expr;
 }

@@ -152,3 +152,8 @@ void TestObserverClass::TraitInsteadOfFound(const UnicodeString& namespaceName, 
 		TraitInsteadOf.push_back(insteadOfList[i]);
 	}
 }
+
+void TestObserverClass::ExpressionFound(const pelet::ExpressionClass& expression) {
+	Expressions.push_back(expression);
+}
+

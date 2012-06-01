@@ -1089,6 +1089,50 @@ TEST_FIXTURE(Parser54TestClass, NamespaceVariables) {
 	CHECK_UNISTR_EQUALS("\\Second\\Child\\MyClass", Observer.VariableExpressionChainList[7]);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserver) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"myFunct('one', $arr); \n"
+		"anotherFunc(myFunct('three', $four), myFunct(array('key_one' => 1)));\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.Expressions);
+	CHECK_VECTOR_SIZE(1, Observer.Expressions[0].ChainList);
+	
+	// the first line
+	pelet::ExpressionClass expr = Observer.Expressions[0];
+	CHECK_UNISTR_EQUALS("myFunct()", expr.ChainList[0]);
+	CHECK_VECTOR_SIZE(2, Observer.Expressions[0].CallArguments);
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, expr.CallArguments[0].ExpressionType);
+	CHECK_UNISTR_EQUALS("one", expr.CallArguments[0].ChainList[0]);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, expr.CallArguments[1].ExpressionType);
+	CHECK_UNISTR_EQUALS("$arr", expr.CallArguments[1].ChainList[0]);
+	
+	// the second line big expression here....
+	expr = Observer.Expressions[1];
+	// 1. the outermost expression (call to anotherFunc)
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, expr.ExpressionType);
+	CHECK_UNISTR_EQUALS("anotherFunc()", expr.ChainList[0]);
+	CHECK_VECTOR_SIZE(2, expr.CallArguments);
+	
+	// 2. the first arg to anotherFunc (call to myFunct with 2 arguments)
+	pelet::ExpressionClass arg1 = expr.CallArguments[0];
+	CHECK_UNISTR_EQUALS("myFunct()", arg1.ChainList[0]);
+	CHECK_VECTOR_SIZE(2, arg1.CallArguments);
+	CHECK_UNISTR_EQUALS("three", arg1.CallArguments[0].ChainList[0]);
+	CHECK_UNISTR_EQUALS("$four", arg1.CallArguments[1].ChainList[0]);
+	
+	
+	// 3. second arg to anotherFunc (call with 1 argument)
+	pelet::ExpressionClass arg2 = expr.CallArguments[1];
+	CHECK_UNISTR_EQUALS("myFunct()", arg2.ChainList[0]);
+	CHECK_VECTOR_SIZE(1, arg2.CallArguments);
+	CHECK_EQUAL(pelet::ExpressionClass::ARRAY, arg2.CallArguments[0].ExpressionType);
+	CHECK_VECTOR_SIZE(1, arg2.CallArguments[0].ArrayKeys);
+	CHECK_UNISTR_EQUALS("key_one", arg2.CallArguments[0].ArrayKeys[0]);
+}
+
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	CHECK(Parser.LintFile(file, LintResults));

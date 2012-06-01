@@ -34,7 +34,8 @@
  */
 class TestObserverClass : 
 	public pelet::ClassObserverClass, public pelet::ClassMemberObserverClass, 
-	public pelet::FunctionObserverClass, public pelet::VariableObserverClass {
+	public pelet::FunctionObserverClass, public pelet::VariableObserverClass,
+	public pelet::ExpressionObserverClass {
 
 public:
 
@@ -59,6 +60,7 @@ public:
 					MethodStartingPos, MethodEndingPos,
 					FunctionStartingPos, FunctionEndingPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
+	std::vector<pelet::ExpressionClass> Expressions;
 	
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
@@ -99,6 +101,8 @@ public:
 
 	void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList);
+		
+	void ExpressionFound(const pelet::ExpressionClass& expression);
 };
 
 #endif
