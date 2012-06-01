@@ -1,9 +1,9 @@
 Notable changes of the pelet library
 ====================================
 
-Current Version: 1.1
+Current Version: 2.0
 
-version 1.1
+version 2.0
 ===========
 Change 1:
 The variable observer now gets two items; a variable and an expression.  The observer method signature has changed
@@ -24,7 +24,7 @@ hard-coded array keys or assigned array keys. For example, a user is now able to
 source code and list all array keys that are used in a file.
 
 Change 2:
-The way to acquire the starting and ending positions of methods has changed from
+The way to acquire the starting and ending positions of method / function bodies has changed from
 
     class ClassMemberObserverClass { 
 
@@ -70,6 +70,30 @@ This was done to make it easier to know where the function body begins and ends
 
 Because  of these changes; the Observers will only get notified when a file has been successfully parsed.
 
+Change 3:
+The way to acquire the starting and ending positions of method / function bodies has changed from
+
+    class ClassObserverClass { 
+
+        // ....
+ 
+        virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName) { }
+        
+        // ...
+    }
+
+to 
+
+    class ClassObserverClass { 
+
+        // ....
+ 
+        virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) { }
+        
+        // ...
+    }
+
+This was done to make it easier to know where the namespace body begins and ends
 
 
 version 1.0

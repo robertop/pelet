@@ -3845,7 +3845,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 354 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54ParserImpl.y"
-    { (yyval.statementList) = observers.NamespaceDeclarationFound((yyvsp[(2) - (3)].qualifiedName)); observers.SetCurrentNamespace((yyvsp[(2) - (3)].qualifiedName)); ;}
+    { (yyval.statementList) = observers.NamespaceDeclarationFound((yyvsp[(2) - (3)].qualifiedName), (yyvsp[(1) - (3)].semanticValue)); observers.SetCurrentNamespace((yyvsp[(2) - (3)].qualifiedName)); ;}
     break;
 
   case 12:
@@ -3859,7 +3859,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 356 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54ParserImpl.y"
-    { (yyval.statementList) = observers.NamespaceDeclarationFound((yyvsp[(2) - (6)].qualifiedName)); (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(5) - (6)].statementList)); ;}
+    { (yyval.statementList) = observers.NamespaceDeclarationFound((yyvsp[(2) - (6)].qualifiedName), (yyvsp[(1) - (6)].semanticValue)); (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(5) - (6)].statementList)); ;}
     break;
 
   case 14:
@@ -3873,7 +3873,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 358 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54ParserImpl.y"
-    {  (yyval.statementList) = observers.NamespaceGlobalDeclarationFound(); (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(4) - (5)].statementList)); ;}
+    {  (yyval.statementList) = observers.NamespaceGlobalDeclarationFound((yyvsp[(1) - (5)].semanticValue)); (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(4) - (5)].statementList)); ;}
     break;
 
   case 16:

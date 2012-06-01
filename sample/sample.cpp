@@ -91,8 +91,10 @@ public:
 	 * 
 	 * @param const UnicodeString& namespaceName the name of the namespace name. Name will
 	 *        be fully qualified (starts with '\')
+	 * @param startingPos the character position (of the 'namespace' keyword in the original source code)
+	 *         this is 0-based
 	 */
-	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName) { 
+	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) { 
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		u_fprintf(ufout, "Namespace Declaration Found: %.*S \n", namespaceName.length(), namespaceName.getBuffer());
 		u_fclose(ufout);

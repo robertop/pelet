@@ -351,11 +351,11 @@ top_statement:
 	|	function_declaration_statement			{ $$ = $1; }
 	|	class_declaration_statement				{ $$ = $1; }
 	|	T_HALT_COMPILER '(' ')' ';'				{ $$ = observers.StatementListMake(); }
-	|	T_NAMESPACE namespace_name ';'			{ $$ = observers.NamespaceDeclarationFound($2); observers.SetCurrentNamespace($2); }
+	|	T_NAMESPACE namespace_name ';'			{ $$ = observers.NamespaceDeclarationFound($2, $1); observers.SetCurrentNamespace($2); }
 	|	T_NAMESPACE namespace_name '{'			{ observers.SetCurrentNamespace($2); }
-		top_statement_list '}'					{ $$ = observers.NamespaceDeclarationFound($2); $$ = observers.StatementListMerge($$, $5); }
+		top_statement_list '}'					{ $$ = observers.NamespaceDeclarationFound($2, $1); $$ = observers.StatementListMerge($$, $5); }
 	|	T_NAMESPACE '{'							{ observers.SetCurrentNamespace(NULL); }
-		top_statement_list '}'					{  $$ = observers.NamespaceGlobalDeclarationFound(); $$ = observers.StatementListMerge($$, $4); }
+		top_statement_list '}'					{  $$ = observers.NamespaceGlobalDeclarationFound($1); $$ = observers.StatementListMerge($$, $4); }
 	|	T_USE use_declarations ';'				{ $$ = $2; }
 	|	constant_declaration ';'				{ $$ = $1; }
 ;

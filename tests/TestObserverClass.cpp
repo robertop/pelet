@@ -38,7 +38,7 @@ void TestObserverClass::NamespaceUseFound(const UnicodeString& namespaceName, co
 	NamespaceAlias.push_back(alias);
 }
 
-void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespaceName) {
+void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) {
 	NamespaceName.push_back(namespaceName);
 }
 

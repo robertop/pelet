@@ -997,7 +997,7 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 		case pelet::StatementClass::NAMESPACE_DECLARATION:
 			if (Class) {
 				pelet::NamespaceDeclarationClass* declaration = (pelet::NamespaceDeclarationClass*) stmt;
-				Class->NamespaceDeclarationFound(declaration->NamespaceName);
+				Class->NamespaceDeclarationFound(declaration->NamespaceName, declaration->StartingPosition);
 			}
 			break;
 		case pelet::StatementClass::NAMESPACE_USE:
@@ -1059,16 +1059,17 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 	}
 }
 
-pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName) {
+pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* namespaceTokenValue) {
 	pelet::NamespaceDeclarationClass* newNamespace = new pelet::NamespaceDeclarationClass();
 	newNamespace->NamespaceName = namespaceName->ToAbsoluteSignature();
-
+	newNamespace->StartingPosition = namespaceTokenValue->Pos;
 	AllAstItems.push_back(newNamespace);
 	return StatementListMakeAndAppend(newNamespace);
 }
 
-pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceGlobalDeclarationFound() {
+pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceGlobalDeclarationFound(pelet::SemanticValueClass* namespaceTokenValue) {
 	pelet::NamespaceDeclarationClass* newNamespace = new pelet::NamespaceDeclarationClass();
+	newNamespace->StartingPosition = namespaceTokenValue->Pos;
 	newNamespace->NamespaceName = UNICODE_STRING_SIMPLE("\\");
 	AllAstItems.push_back(newNamespace);
 	return StatementListMakeAndAppend(newNamespace);

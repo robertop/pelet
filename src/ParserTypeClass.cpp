@@ -91,7 +91,8 @@ void pelet::StatementListClass::Clear() {
 
 pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
 	: StatementClass(pelet::StatementClass::NAMESPACE_DECLARATION)
-	, NamespaceName() {
+	, NamespaceName() 
+	, StartingPosition(0) {
 
 }
 

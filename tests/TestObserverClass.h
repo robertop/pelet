@@ -64,7 +64,7 @@ public:
 			
 	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias);
 	
-	void NamespaceDeclarationFound(const UnicodeString& namespaceName);
+	void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos);
 	
 	void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,

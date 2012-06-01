@@ -211,8 +211,8 @@ public:
 	pelet::QualifiedNameClass* QualifiedNameMakeFromCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
 	pelet::QualifiedNameClass* QualifiedNameNil();
 	
-	pelet::StatementListClass* NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName);
-	pelet::StatementListClass* NamespaceGlobalDeclarationFound();
+	pelet::StatementListClass* NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* namespaceTokenValue);
+	pelet::StatementListClass* NamespaceGlobalDeclarationFound(pelet::SemanticValueClass* namespaceTokenValue);
 	pelet::QualifiedNameClass* NamespaceNameAppend(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* nameValue);
 	pelet::QualifiedNameClass* NamespaceNameMake(pelet::SemanticValueClass* nameValue);
 	pelet::StatementListClass* NamespaceUse(pelet::QualifiedNameClass* namespaceName);

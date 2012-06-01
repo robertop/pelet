@@ -101,8 +101,10 @@ public:
 	 * 
 	 * @param const UnicodeString& namespaceName the name of the namespace name. Name will
 	 *        be fully qualified (starts with '\')
+	 * @param startingPos the character position (of the 'namespace' keyword in the original source code)
+	 *        this is 0-based
 	 */
-	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName) { }
+	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
@@ -157,7 +159,7 @@ public:
 	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
 	 * @param bool isConst true if property is a constant
 	 * @param isStatic true if the property is static
-	 * @param lineNumber the line number (1-based) that the propertywas found in
+	 * @param lineNumber the line number (1-based) that the property was found in
 	 */
 	virtual void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
 		const UnicodeString& propertyType, const UnicodeString& comment, 
@@ -724,6 +726,13 @@ class PELET_API NamespaceDeclarationClass : public StatementClass {
 public:
 	
 	UnicodeString NamespaceName;
+	
+	/**
+	 * Character position where the 'namespace' keyword starts. This number is 
+	 * 0-based.
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	int StartingPosition;
 
 	NamespaceDeclarationClass();
 };
