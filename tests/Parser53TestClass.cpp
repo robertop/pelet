@@ -629,7 +629,7 @@ TEST_FIXTURE(Parser53TestClass, ShouldUsePhpDocAnnotations) {
 	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableExpressionChainList[3]);
 }
 
-TEST_FIXTURE(Parser53TestClass, MethodEndPos) {
+TEST_FIXTURE(Parser53TestClass, MethodScope) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetFunctionObserver(&Observer);
@@ -642,8 +642,9 @@ TEST_FIXTURE(Parser53TestClass, MethodEndPos) {
 		"}"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK(!Observer.MethodEndPos.empty());
-	CHECK_EQUAL((16 + 1 + 18 + 4), Observer.MethodEndPos[0]);
+	CHECK(!Observer.MethodEndingPos.empty());
+	CHECK_EQUAL((16 + 1 + 16), Observer.MethodStartingPos[0]);
+	CHECK_EQUAL((16 + 1 + 18 + 4), Observer.MethodEndingPos[0]);
 }
 
 TEST_FIXTURE(Parser53TestClass, IncludeWithStringConstant) {

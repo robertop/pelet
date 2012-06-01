@@ -468,7 +468,8 @@ pelet::ClassMemberSymbolClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeAs
 }
 
 pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, bool isReference,
-        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, const int endingPosition) {
+        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
+		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	newMember->Type = pelet::StatementClass::FUNCTION_DECLARATION;
 	newMember->SetNameAndReturnReference(nameValue, isReference, functionValue);
@@ -478,13 +479,15 @@ pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeFuncti
 		newMember->ParametersList = *parameters;
 	}
 	newMember->StartingLineNumber = nameValue->LineNumber;
-	newMember->EndingPosition = endingPosition;
+	newMember->StartingPosition = startingBodyTokenValue->Pos;
+	newMember->EndingPosition = endingBodyTokenValue->Pos;
 	AllAstItems.push_back(newMember);
 	return StatementListMakeAndAppend(newMember);
 }
 
 pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, pelet::ClassMemberSymbolClass* modifiers,
-        bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, const int endingPosition) {
+        bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::ClassMemberSymbolClass* methodBody) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	newMember->Type = pelet::StatementClass::METHOD_DECLARATION;
 	newMember->SetNameAndReturnReference(nameValue, isReference, functionValue);
@@ -513,9 +516,21 @@ pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeMethod
 		newMember->SetAsPrivate();
 	}
 	newMember->StartingLineNumber = nameValue->LineNumber;
-	newMember->EndingPosition = endingPosition;
+	newMember->StartingPosition = methodBody->StartingPosition;
+	newMember->EndingPosition = methodBody->EndingPosition;
 	AllAstItems.push_back(newMember);
-	return StatementListMakeAndAppend(newMember);
+	pelet::StatementListClass* list = StatementListMakeAndAppend(newMember);
+	return StatementListMerge(list, &methodBody->MethodStatements);
+}
+
+pelet::ClassMemberSymbolClass* pelet::ObserverQuadClass::ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
+	pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue) {
+	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
+	newMember->MethodStatements = *bodyStatements;
+	newMember->StartingPosition = startingPositionTokenValue->Pos;
+	newMember->EndingPosition = endingPositionTokenValue->Pos;
+	AllAstItems.push_back(newMember);
+	return newMember;
 }
 
 pelet::StatementListClass* pelet::ObserverQuadClass::ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue,
@@ -922,7 +937,8 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
 				}
 				if (Function) {
-					Function->FunctionEnd(memberSymbol->NamespaceName, memberSymbol->MemberName, memberSymbol->EndingPosition);
+					Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
+						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 				}
 			}
 			break;
@@ -973,7 +989,8 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
 				}
 				if (Member) {
-					Member->MethodEnd(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, memberSymbol->EndingPosition);
+					Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
+						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 				}
 			}
 			break;

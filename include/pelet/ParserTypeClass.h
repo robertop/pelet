@@ -164,15 +164,18 @@ public:
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) { }
 
 	/**
-	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
+	 * Override this method to perform any logic when the method body has ended (a closing brace '}' was encountered).
 	 *
 	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
 	 * @param const UnicodeString& methodName the name of the method that was found
-	 * @param pos the character position (of the closing brace '}' original source code)
+	 * @param startingPos the character position (of the closing brace '{' original source code)
+	 *        In case of an abstract method, startingPos is the position of the semicolon ';'
+	 * @param endingPos the character position (of the closing brace '}' original source code)
+	 *        In case of an abstract method, endingPos is the position of the semicolon ';'
 	 */
-	virtual void MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, 
-		const UnicodeString& methodName, int pos) { }
+	virtual void MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& methodName, int startingPos, int endingPos) { }
 
 	/**
 	 * Override this method to perform custom logic when a trait user statement has been found
@@ -245,13 +248,14 @@ public:
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) { }
 
 	/**
-	 * Override this method to perform any logic when the function has ended (a closing brace '}' was encountered).
+	 * Override this method to perform any logic when the function body has ended (a closing brace '}' was encountered).
 	 * 
 	 * @param const UnicodeString& namespace the fully qualified namespace of the function that was found
 	 * @param const UnicodeString& functionName the name of the method that was found
-	 * @param pos the character position (of the closing brace '}' original source code)
+	 * @param startingPos the character position (of the closing brace '{' original source code)
+	 * @param endingPos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos) { }
+	virtual void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) { }
 };
 
 /**
@@ -671,6 +675,12 @@ public:
 	 */
 	void PushAll(pelet::StatementListClass* statementList);
 	
+	/**
+	 * removes all of the items in this list. Note that the pointers
+	 * themselves are NOT deleted.
+	 */
+	void Clear();
+	
 private:
 	
 	std::vector<StatementClass*> Statements;
@@ -1044,11 +1054,27 @@ public:
 	
 	ParametersListClass ParametersList;
 	
+	/**
+	 * This class will NOT own the statement pointers in the list
+	 */
+	StatementListClass MethodStatements;
+	
 	/** line number, 1-based
 	 */
 	int StartingLineNumber;
 	
-	/** character position, 0 based */
+	/** 
+	 * character position of method body, 0 based 
+	 * In the case of abstract methods, StartingPosition is the position of the semicolon
+	 * Otherwise StartingPosition is the position of the start brace '{'
+	 */
+	int StartingPosition;
+	
+	/** 
+	 * character position of method body, 0 based 
+	 * In the case of abstract methods, EndingPosition is the position of the semicolon
+	 * Otherwise EndingPosition is the position of the start brace '{' 
+	 */
 	int EndingPosition;
 
 	bool IsPublicMember;

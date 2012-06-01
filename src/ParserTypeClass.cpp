@@ -85,6 +85,10 @@ void pelet::StatementListClass::PushAll(pelet::StatementListClass* statements) {
 	}
 }
 
+void pelet::StatementListClass::Clear() {
+	Statements.clear();
+}
+
 pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
 	: StatementClass(pelet::StatementClass::NAMESPACE_DECLARATION)
 	, NamespaceName() {
@@ -218,6 +222,7 @@ pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 	, NamespaceName()
 	, ClassName()
 	, ParametersList()
+	, MethodStatements()
 	, StartingLineNumber(0)
 	, EndingPosition(0)
 
@@ -285,6 +290,7 @@ void pelet::ClassMemberSymbolClass::Clear() {
 	NamespaceName.remove();
 	ClassName.remove();
 	ParametersList.Clear();
+	MethodStatements.Clear();
 	StartingLineNumber = 0;
 	EndingPosition = 0;
 

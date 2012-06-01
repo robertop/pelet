@@ -56,8 +56,10 @@ void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const Un
 	MethodLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, int pos) {
-	MethodEndPos.push_back(pos);
+void TestObserverClass::MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+		int startingPos, int endingPos) {
+	MethodStartingPos.push_back(startingPos);
+	MethodEndingPos.push_back(endingPos);
 }
 
 void TestObserverClass::PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
@@ -84,8 +86,9 @@ void TestObserverClass::FunctionFound(const UnicodeString& namespaceName, const 
 	FunctionLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos) {
-	// nothing for now
+void TestObserverClass::FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) {
+	FunctionStartingPos.push_back(startingPos);
+	FunctionEndingPos.push_back(endingPos);
 }
 
 void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 

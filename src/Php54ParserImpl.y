@@ -260,7 +260,7 @@
 %type <traitAlias> trait_method_reference_fully_qualified
 %type <traitAlias> trait_alias
 %type <classMemberSymbol> trait_modifiers
-%type <statementList> method_body
+%type <classMemberSymbol> method_body
 %type <classMemberSymbol> variable_modifiers
 %type <classMemberSymbol> method_modifiers
 %type <classMemberSymbol> non_empty_member_modifiers
@@ -500,7 +500,7 @@ is_reference:
 unticked_function_declaration_statement:
 		function is_reference T_STRING
 		'(' parameter_list ')'				{ observers.SetCurrentMemberName($3); }
-		'{' inner_statement_list '}'		{ $$ = observers.ClassMemberSymbolMakeFunction($3, $2, $1, $5, $10->Pos);
+		'{' inner_statement_list '}'		{ $$ = observers.ClassMemberSymbolMakeFunction($3, $2, $1, $5, $8, $10);
 											  observers.StatementListMerge($$, $9); 
 											  observers.SetCurrentMemberName(NULL);
 											}
@@ -701,9 +701,8 @@ class_statement:
 	|	class_constant_declaration ';'						{ $$ = $1; }
 	|	trait_use_statement									{ $$ = $1; }
 	|	method_modifiers function is_reference T_STRING
-		'('	parameter_list  ')'								{observers.SetCurrentMemberName($4); }
-		method_body											{ $$ = observers.ClassMemberSymbolMakeMethod($4, $1, $3, $2, $6, analyzer.GetCharacterPosition()); 
-															  observers.StatementListMerge($$, $9); 
+		'('	parameter_list  ')'								{ observers.SetCurrentMemberName($4); }
+		method_body											{ $$ = observers.ClassMemberSymbolMakeMethod($4, $1, $3, $2, $6, $9);
 															  observers.SetCurrentMemberName(NULL);
 															}
 ;
@@ -771,8 +770,8 @@ trait_modifiers:
 ;
 
 method_body:
-		';' /* abstract method */			{ $$ = observers.StatementListNil(); }
-	|	'{' inner_statement_list '}'		{ $$ = $2; }
+		';' /* abstract method */			{ $$ = observers.ClassMemberMakeBody(observers.StatementListNil(), $1, $1); }
+	|	'{' inner_statement_list '}'		{ $$ = observers.ClassMemberMakeBody($2, $1, $3); }
 ;
 
 variable_modifiers:

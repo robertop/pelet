@@ -5,6 +5,7 @@ Current Version: 1.1
 
 version 1.1
 ===========
+Change 1:
 The variable observer now gets two items; a variable and an expression.  The observer method signature has changed
 from
 
@@ -22,7 +23,53 @@ The new classes (VariableClass and ExpressionClass) make it possible for users o
 hard-coded array keys or assigned array keys. For example, a user is now able to inspect a file of PHP
 source code and list all array keys that are used in a file.
 
+Change 2:
+The way to acquire the starting and ending positions of methods has changed from
+
+    class ClassMemberObserverClass { 
+
+        // ....
+ 
+        virtual void MethodEnd(const UnicodeString& namespaceName, const UnicodeString& className, 
+            const UnicodeString& methodName, int pos) { }
+        
+        // ...
+    }
+
+    class FunctionObserverClass { 
+
+        //...
+
+        virtual void FunctionEnd(const UnicodeString& namespaceName, const UnicodeString& functionName, int pos) { }
+
+        //...
+    }
+
+to 
+
+    class ClassMemberObserverClass { 
+
+        // ....
+ 
+        virtual void MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, 
+            const UnicodeString& methodName, int startingPos, int endingPos) { }
+        
+        // ...
+    }
+
+    class FunctionObserverClass { 
+
+        //...
+
+        virtual void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) { }
+
+        //...
+    }
+	
+This was done to make it easier to know where the function body begins and ends
+
 Because  of these changes; the Observers will only get notified when a file has been successfully parsed.
+
 
 
 version 1.0
