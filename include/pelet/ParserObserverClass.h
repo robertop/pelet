@@ -219,6 +219,7 @@ public:
 	pelet::StatementListClass* NamespaceUseAbsolute(pelet::QualifiedNameClass* namespaceName);
 	pelet::StatementListClass* NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::StatementListClass* NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::StatementListClass* NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, pelet::SemanticValueClass* useToken);
 	
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::QualifiedNameClass* implementsClassName);
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName);

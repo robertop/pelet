@@ -116,12 +116,22 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
 	 * 
-	 * @param UnicodeString namespaceName the fully qualified namespace that is being imported
-	 * @param alias any alias to the namespaceName.  alias will never be empty. If the code does not
+	 * @param UnicodeString namespaceName the fully qualified namespace that is being imported. It will 
+	 *        always begin with a leading slash, even if the original source did not include it
+	 * @param alias any alias to the namespaceName. alias will never be empty. If the code does not
 	 *        specify an alias, the alias will be the last part of the namespace.
 	 *        For example the statement "use First\Class;" will result in the  alias being "Class"
-	 */
-	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias) {
+	 * @param startingPos
+	 *        Character position where the namespace use statement starts. This number is 
+	 *        0-based. It is the position where the "use" token starts. For example,
+	 *        in the statement "use \First\Child" then StartingPosition is the position of "use"
+	 *        Even in the case of where a use statement has commas, then StartingPosition is the 
+	 *        position of the namespace token. For example, in the statement
+	 *        "use \First\Child, \Sec\Child" then StartingPosition for 
+	 *        the namespace \Sec\Child is the position of "use"
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */	
+	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		u_fprintf(ufout, "Namespace Import (Use) Found: %.*S alias %d\n", namespaceName.length(), namespaceName.getBuffer(), 
 			alias.length(), alias.getBuffer());

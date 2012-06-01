@@ -356,7 +356,7 @@ top_statement:
 		top_statement_list '}'					{ $$ = observers.NamespaceDeclarationFound($2, $1); $$ = observers.StatementListMerge($$, $5); }
 	|	T_NAMESPACE '{'							{ observers.SetCurrentNamespace(NULL); }
 		top_statement_list '}'					{  $$ = observers.NamespaceGlobalDeclarationFound($1); $$ = observers.StatementListMerge($$, $4); }
-	|	T_USE use_declarations ';'				{ $$ = $2; }
+	|	T_USE use_declarations ';'				{ $$ = observers.NamespaceUseSetStartingPos($2, $1); }
 	|	constant_declaration ';'				{ $$ = $1; }
 ;
 

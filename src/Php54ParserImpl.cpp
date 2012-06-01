@@ -3880,7 +3880,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 359 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54ParserImpl.y"
-    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
+    { (yyval.statementList) = observers.NamespaceUseSetStartingPos((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].semanticValue)); ;}
     break;
 
   case 17:

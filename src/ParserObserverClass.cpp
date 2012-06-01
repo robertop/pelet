@@ -1003,7 +1003,7 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 		case pelet::StatementClass::NAMESPACE_USE:
 			if (Class) {
 				pelet::NamespaceUseClass* namespaceUse = (pelet::NamespaceUseClass*) stmt;
-				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias);
+				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->StartingPos);
 			}
 			break;
 		case pelet::StatementClass::NIL:
@@ -1111,7 +1111,8 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsolute(pelet:
 	return StatementListMakeAndAppend(useStatement);
 }
 
-pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* aliasValue) {
+pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, 
+		pelet::SemanticValueClass* aliasValue) {
 	namespaceName->MakeAbsolute();
 
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
@@ -1125,7 +1126,8 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(p
 	return StatementListMakeAndAppend(useStatement);
 }
 
-pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* aliasValue) {
+pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, 
+		pelet::SemanticValueClass* aliasValue) {
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
 	if (aliasValue) {
 		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
@@ -1135,6 +1137,17 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAlias(pelet::Qu
 	}
 	AllAstItems.push_back(useStatement);
 	return StatementListMakeAndAppend(useStatement);
+}
+
+pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, pelet::SemanticValueClass* useToken) {
+	for (size_t i = 0; i < namespaceStatements->Size(); ++i) {
+		pelet::StatementClass::Types type = namespaceStatements->TypeAt(i);
+		if (pelet::StatementClass::NAMESPACE_USE == type) {
+			pelet::NamespaceUseClass* useStmt = (pelet::NamespaceUseClass*) namespaceStatements->At(i);
+			useStmt->StartingPos = useToken->Pos;
+		}
+	}
+	return namespaceStatements;
 }
 
 pelet::ParametersListClass* pelet::ObserverQuadClass::ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference) {

@@ -99,7 +99,8 @@ pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
 pelet::NamespaceUseClass::NamespaceUseClass()
 	: StatementClass(pelet::StatementClass::NAMESPACE_USE)
 	, NamespaceName()
-	, Alias() {
+	, Alias()
+	, StartingPos(0) {
 
 }
 

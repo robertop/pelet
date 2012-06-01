@@ -804,6 +804,11 @@ TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
 	CHECK_UNISTR_EQUALS("MyClass", Observer.NamespaceAlias[1]);
 	CHECK_UNISTR_EQUALS("Child", Observer.NamespaceAlias[2]);
 	
+	CHECK_VECTOR_SIZE(3, Observer.NamespaceUseStartingPos);
+	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use First\\MyClass")), Observer.NamespaceUseStartingPos[0]);
+	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use Second\\MyClass")), Observer.NamespaceUseStartingPos[1]);
+	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use \\First\\Child")), Observer.NamespaceUseStartingPos[2]);
+	
 	CHECK_VECTOR_SIZE(4, Observer.ClassNamespace);
 	CHECK_UNISTR_EQUALS("\\First", Observer.ClassNamespace[0]);
 	CHECK_UNISTR_EQUALS("\\Second", Observer.ClassNamespace[1]);
