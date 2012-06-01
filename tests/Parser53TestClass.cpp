@@ -892,6 +892,25 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserver) {
 	CHECK_UNISTR_EQUALS("key_one", arg2.CallArguments[0].ArrayKeys[0]);
 }
 
+TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithObjects) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$this->load->view('one', $arr); \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.Expressions);
+	CHECK_VECTOR_SIZE(3, Observer.Expressions[0].ChainList);
+	
+	pelet::ExpressionClass expr = Observer.Expressions[0];
+	CHECK_VECTOR_SIZE(3, expr.ChainList);
+	CHECK_UNISTR_EQUALS("$this", expr.ChainList[0]);
+	CHECK_UNISTR_EQUALS("->load", expr.ChainList[1]);
+	CHECK_UNISTR_EQUALS("->view()", expr.ChainList[2]);
+	
+	// TODO: fix this
+	///CHECK_VECTOR_SIZE(2, expr.CallArguments);
+}
+
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	CHECK(Parser.LintFile(file, LintResults));
