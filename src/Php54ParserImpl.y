@@ -305,7 +305,7 @@
 %type <variable> variable_property
 %type <variable> array_method_dereference
 %type <variable> method
-%type <isMethod> method_or_not
+%type <variable> method_or_not
 %type <variable> variable_without_objects
 %type <variable> static_member
 %type <semanticValue> variable_class_name
@@ -1110,7 +1110,7 @@ variable_properties:
 
 variable_property:
 		T_OBJECT_OPERATOR object_property
-		method_or_not								{ $$ = observers.VariableAppendToChain($2, $3);  }
+		method_or_not								{ $$ = observers.VariableAppendToChain($2, $3, $1);  }
 ;
 
 array_method_dereference:
@@ -1119,13 +1119,13 @@ array_method_dereference:
 ;
 
 method:
-		'(' function_call_parameter_list ')'					{ $$ = observers.VariableNil(); } 
+		'(' function_call_parameter_list ')'					{ $$ = observers.VariableMakeAndAppendFunctionCall($2, true); } 
 ;
 
 method_or_not:
-		method						{ $$ = true; } 
-	|	array_method_dereference	{ $$ = false; }
-	|	/* empty */ 				{ $$ = false; }
+		method						{ $$ = $1; } 
+	|	array_method_dereference	{ $$ = observers.VariableNil(); }
+	|	/* empty */ 				{ $$ = observers.VariableNil(); }
 ;
 
 variable_without_objects:

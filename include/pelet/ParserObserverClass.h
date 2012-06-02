@@ -278,7 +278,7 @@ public:
 	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::ExpressionClass* restExpression);
 	pelet::ExpressionClass* ExpressionNil();
 	
-	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, bool isFirstPropertyMethod, pelet::VariableClass* restProperties);
+	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);
 	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
@@ -286,7 +286,8 @@ public:
 	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue);
 	pelet::VariableClass* VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);
-	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variable, bool isMethod);
+	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variable, pelet::VariableClass* callArguments, pelet::SemanticValueClass* operatorValue);
+	pelet::VariableClass* VariableMakeAndAppendFunctionCall(pelet::StatementListClass* callArguments, bool isMethod);
 	pelet::VariableClass* VariableAppendArrayOffset(pelet::VariableClass* variable, pelet::ExpressionClass* offsetExpr);
 	pelet::VariableClass* VariableNil();
 	

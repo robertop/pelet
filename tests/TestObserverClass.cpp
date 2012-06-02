@@ -97,13 +97,24 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	VariableClassNamespace.push_back(namespaceName);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
-	VariableName.push_back(variable.ChainList[0]);
+	VariableName.push_back(variable.ChainList[0].Name);
 	VariableComment.push_back(variable.Comment);
 	VariableArrayKeys.push_back(variable.ArrayKey);
 	VariableExpressionTypes.push_back(expression.ExpressionType);
 	UnicodeString typeString;
 	for (size_t i = 0; i < expression.ChainList.size(); ++i) {
-		typeString.append(expression.ChainList[i]);
+		UnicodeString prop;
+		if (expression.ChainList[i].IsStatic && i > 0) {
+			prop = UNICODE_STRING_SIMPLE("::");
+		}
+		else if (i > 0) {
+			prop = UNICODE_STRING_SIMPLE("->");
+		}
+		prop.append(expression.ChainList[i].Name);
+		if (expression.ChainList[i].IsFunction) {
+			prop.append(UNICODE_STRING_SIMPLE("()"));
+		}
+		typeString.append(prop);
 	}
 	VariableExpressionChainList.push_back(typeString);
 	VariablePhpDocType.push_back(variable.PhpDocType);

@@ -483,6 +483,46 @@ private:
 };
 
 /**
+ * The VariablePropertyClass represents a single object property of a variable.
+ * For example, the variable $this->myFunct()->name->first will have 
+ * 4 VariableProperty objects: 
+ * $this
+ * myFunct()
+ * name
+ * first
+ * 
+ */
+class PELET_API VariablePropertyClass {
+	
+	public:
+
+	/**
+	 * The method or property name being called. It may also be the variable name itself.
+	 */
+	UnicodeString Name;
+	
+	/**
+	 * If this property is a method, then this vector will contain the function call
+	 * arguments.
+	 */
+	std::vector<pelet::ExpressionClass> CallArguments;
+
+	/**
+	 * If TRUE then this property is  a function call.
+	 */
+	bool IsFunction;
+	
+	/**
+	 * If TRUE then this property was accessed with the static operator ('::')
+	 * If FALSE then this property was accessed with the object operator ('->')
+	 */
+	bool IsStatic;
+	
+	VariablePropertyClass();
+};
+
+
+/**
  * This class will represent one PHP Expression. An expression is either
  * - a scalar ("name", 123, 123.43)
  * - an array ( array(1, 2, 3) , [1, 2, 3], array("one" => 1), [ "one" => 1] ) ***
@@ -523,19 +563,12 @@ public:
 	ScopeClass Scope;
 
 	/**
-	 * In the case of function calls; this is the arguments of the
-	 * function call (each of which could be the results of other
-	 * function calls).
-	 */
-	std::vector<ExpressionClass> CallArguments;
-
-	/**
 	 * In the case of a variable; this is the list of  properties / methods
 	 * that were successively invoked.
 	 * For example; the expression "$this->name->toString()" will have 3 items in
 	 * the chain list "$this" "->name" and "->toString()".
 	 */
-	std::vector<UnicodeString> ChainList;
+	std::vector<pelet::VariablePropertyClass> ChainList;
 	
 	/**
 	 * In case this expression is an array declaration, this list will contain the
@@ -559,17 +592,37 @@ public:
 	ExpressionClass(const pelet::ScopeClass& scope);
 
 	/**
-	 * Add a property name to the variable chain list
-	 * @param operatorValue the token of the operation
+	 * Add a property to the variable chain list
+	 
 	 * @param propertyValue the token of the property/method to chain
+	 * @param callArguments if property is a function call, this is the
+	 *        arguments to that call
 	 * @param isMethod TRUE if the property is a method
+	 * @param operatorValue the token of the operation, used to determine if this is a static call '::'
 	 */
-	void AppendToChain(SemanticValueClass* operatorValue, SemanticValueClass* propertyValue, bool isMethod);
+	void AppendToChain(SemanticValueClass* propertyValue,
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, SemanticValueClass* operatorValue);
+		
+	/**
+	 * Add a property to the variable chain list
+	 
+	 * @param propertyName the lexeme of the property/method to chain
+	 * @param callArguments if property is a function call, this is the
+	 *        arguments to that call
+	 * @param isMethod TRUE if the property is a method
+	 * @param isStatic TRUE if this is a static operation '::'
+	*/
+	void AppendToChain(const UnicodeString& propertyName, 
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
 
 	void Clear();
 	void Copy(const ExpressionClass& src);
 	void Copy(const VariableClass& variable);
-	
+	void ToNewCall(const UnicodeString& className);
+	void ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& functionName, bool isMethod);
+	void ToVariable(const UnicodeString& variableName);
+	void ToScalar(const UnicodeString& scalarValue);
+	void ToConstant(const UnicodeString& className, const UnicodeString& constantName);
 	UnicodeString FirstValue() const;
 
 };
@@ -584,7 +637,6 @@ public:
  * - a long property chain ($this->myFunct()->name->first)
  * - a static member (MyClass::$instance)
  *
- * 
  */
 class PELET_API VariableClass : public StatementClass {
 
@@ -620,7 +672,7 @@ public:
 	 * Note that the ChainList contains only 1 item, then this variable is a "simple" variable ie."$name".
 	 *
 	 */
-	std::vector<UnicodeString> ChainList;
+	std::vector<pelet::VariablePropertyClass> ChainList;
 	
 	/**
 	 * If this variable is an array, then the ArrayKey is the key that is assigned
@@ -632,14 +684,7 @@ public:
 	 * The function where this variable is located.
 	 */
 	ScopeClass Scope;
-	
-	/**
-	 * In the case of function calls; this is the arguments of the
-	 * function call (each of which could be the results of other
-	 * function calls).
-	 */
-	std::vector<ExpressionClass> CallArguments;
-	
+		
 	/**
 	 * The line number in the source code where the variable was located in
 	 * @see LexicalAnalyzerClass::GetLineNumber
@@ -656,6 +701,23 @@ public:
 	void AppendToComment(SemanticValueClass* value);
 
 	void Clear();
+	
+	/**
+	 * Add a property to the variable chain list
+	 * @param propertyValue the lexeme of the property/method to chain
+	 */
+	void AppendToChain(const UnicodeString& propertyValue);
+	
+	/**
+	 * Add a property to the variable chain list
+	 * @param operatorLexeme the lexeme of the operation
+	 * @param callArguments if property is a function call, this is the
+	 *        arguments to that call
+	 * @param isMethod TRUE if the property is a method
+	 * @param isStatic if TRUE if the property is accessed statically ('::')
+	 */
+	void AppendToChain(const UnicodeString& propertyValue, 
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
 };
 
 /**

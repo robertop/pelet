@@ -414,7 +414,16 @@ public:
 			type = UNICODE_STRING_SIMPLE("Variable is a variable expression. ");
 			type += UNICODE_STRING_SIMPLE("Chain list is: ");
 			for (size_t i = 0; i < expression.ChainList.size(); ++i) {
-				type += expression.ChainList[i];
+				if (expression.ChainList[i].IsStatic && i > 0) {
+					type += UNICODE_STRING_SIMPLE("::");
+				}
+				else if (i > 0) {
+					type += UNICODE_STRING_SIMPLE("->");
+				}
+				type += expression.ChainList[i].Name;
+				if (expression.ChainList[i].IsFunction) {
+					type += UNICODE_STRING_SIMPLE("()");
+				}
 				if (i < (expression.ChainList.size() - 1)) {
 					type += UNICODE_STRING_SIMPLE(", ");
 				}
@@ -429,7 +438,7 @@ public:
 			type += variable.PhpDocType;
 		}
 		u_fprintf(ufout, "Variable Found: %.*S in scope %S. %S\n", 
-				variable.ChainList[0].length(), variable.ChainList[0].getBuffer(),
+				variable.ChainList[0].Name.length(), variable.ChainList[0].Name.getBuffer(),
 				scope.getTerminatedBuffer(),
 				type.getTerminatedBuffer());
 	}

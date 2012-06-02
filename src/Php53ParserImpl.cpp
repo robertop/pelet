@@ -5805,7 +5805,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1020 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53ParserImpl.y"
-    { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (5)].variable), (yyvsp[(3) - (5)].variable), (yyvsp[(4) - (5)].isMethod), (yyvsp[(5) - (5)].variable)); ;}
+    { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (5)].variable), (yyvsp[(3) - (5)].variable), (yyvsp[(4) - (5)].variable), (yyvsp[(5) - (5)].variable)); ;}
     break;
 
   case 332:
@@ -5833,21 +5833,21 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1031 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53ParserImpl.y"
-    { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(2) - (3)].variable), (yyvsp[(3) - (3)].isMethod));  ;}
+    { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(2) - (3)].variable), (yyvsp[(3) - (3)].variable), (yyvsp[(1) - (3)].semanticValue));  ;}
     break;
 
   case 336:
 
 /* Line 1455 of yacc.c  */
 #line 1035 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53ParserImpl.y"
-    { (yyval.isMethod) = true; ;}
+    { (yyval.variable) = observers.VariableMakeAndAppendFunctionCall((yyvsp[(2) - (3)].statementList), true); ;}
     break;
 
   case 337:
 
 /* Line 1455 of yacc.c  */
 #line 1036 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53ParserImpl.y"
-    { (yyval.isMethod) = false; ;}
+    { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 339:

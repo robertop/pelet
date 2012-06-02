@@ -255,22 +255,22 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 		// the parser observer will not qualify names because it wont see a 
 		// namespace declaration being used
 		if (expressionString.startsWith(UNICODE_STRING_SIMPLE("\\"))) {
-			///expression.Lexeme = UNICODE_STRING_SIMPLE("\\") + expression.Lexeme;
 			if (!expression.ChainList.empty()) {
-				expression.ChainList[0] = UNICODE_STRING_SIMPLE("\\") + expression.ChainList[0];
+				expression.ChainList[0].Name = UNICODE_STRING_SIMPLE("\\") + expression.ChainList[0].Name;
 			}
 		}
 	}
 	if (endsWithObject) {
-		expression.ChainList.push_back(UNICODE_STRING_SIMPLE("->"));
+		std::vector<pelet::ExpressionClass> args;
+		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, false);
 	}
 	if (endsWithStatic) {
-		expression.ChainList.push_back(UNICODE_STRING_SIMPLE("::"));
+		std::vector<pelet::ExpressionClass> args;
+		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, true);
 	}
 	if (endsWithNamespace) {
-		///expression.Lexeme += UNICODE_STRING_SIMPLE("\\");
 		if (!expression.ChainList.empty()) {
-			expression.ChainList[0] += UNICODE_STRING_SIMPLE("\\");
+			expression.ChainList[0].Name += UNICODE_STRING_SIMPLE("\\");
 		}
 	}
 }

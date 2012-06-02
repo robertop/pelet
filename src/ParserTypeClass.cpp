@@ -493,7 +493,6 @@ pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
 	: StatementClass(pelet::StatementClass::EXPRESSION)
 	, Comment()
 	, Scope(scope)
-	, CallArguments()
 	, ChainList()
 	, ArrayKeys()
 	, ExpressionType(SCALAR)
@@ -503,7 +502,6 @@ pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
 void pelet::ExpressionClass::Clear() {
 	Comment.remove();
 	Scope.Clear();
-	CallArguments.clear();
 	ChainList.clear();
 	ArrayKeys.clear();
 	ExpressionType = pelet::ExpressionClass::SCALAR;
@@ -513,7 +511,6 @@ void pelet::ExpressionClass::Clear() {
 void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
 	Comment = src.Comment;
 	Scope = src.Scope;
-	CallArguments = src.CallArguments;
 	ChainList = src.ChainList;
 	ArrayKeys = src.ArrayKeys;
 	ExpressionType = src.ExpressionType;
@@ -524,7 +521,6 @@ void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
 void pelet::ExpressionClass::Copy(const pelet::VariableClass& variable) {
 	Comment = variable.Comment;
 	Scope = variable.Scope;
-	CallArguments = variable.CallArguments;
 	ChainList = variable.ChainList;
 	ArrayKeys.clear();
 	if (!variable.ArrayKey.isEmpty()) {
@@ -537,25 +533,97 @@ void pelet::ExpressionClass::Copy(const pelet::VariableClass& variable) {
 UnicodeString pelet::ExpressionClass::FirstValue() const {
 	UnicodeString str;
 	if (!ChainList.empty()) {
-		str = ChainList.front();
+		str = ChainList.front().Name;
 	}
 	return str;
 }
 
+void pelet::ExpressionClass::AppendToChain(pelet::SemanticValueClass* propertyValue,
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, pelet::SemanticValueClass* operatorValue) {
+	if (propertyValue && operatorValue) {
+		bool isStatic = T_PAAMAYIM_NEKUDOTAYIM == operatorValue->Token;
+		AppendToChain(propertyValue->Lexeme, callArguments, isMethod, isStatic);
+	}
+}
 
-void pelet::ExpressionClass::AppendToChain(pelet::SemanticValueClass* operatorValue, pelet::SemanticValueClass* propertyValue, bool isMethod) {
-	UnicodeString objectCall;
-	if (operatorValue) {
-		objectCall.append(operatorValue->Lexeme);
-	}
-	if (propertyValue) {
-		objectCall.append(propertyValue->Lexeme);
-	}
-	if (isMethod) {
-		objectCall.append(UNICODE_STRING_SIMPLE("()"));
-	}
+void pelet::ExpressionClass::AppendToChain(const UnicodeString& propertyName,
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic) {
+	pelet::VariablePropertyClass objectCall;
+	objectCall.IsStatic = isStatic;
+	objectCall.Name = propertyName;
+	objectCall.IsFunction = isMethod;
+	objectCall.CallArguments = callArguments;
 	ChainList.push_back(objectCall);
 }
+
+void pelet::ExpressionClass::ToNewCall(const UnicodeString& className) {
+	Clear();
+	ExpressionType = NEW_CALL;
+	pelet::VariablePropertyClass objectCall;
+	objectCall.Name = className;
+	ChainList.push_back(objectCall);
+}
+
+void pelet::ExpressionClass::ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& propertyName, bool isMethod) {
+	Clear();
+	ExpressionType = FUNCTION_CALL;
+	if (!className.isEmpty()) {
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = className;
+		ChainList.push_back(objectCall);
+	}
+	if (!propertyName.isEmpty()) {
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = propertyName;
+		objectCall.IsFunction = isMethod;
+		objectCall.IsStatic = true;
+		ChainList.push_back(objectCall);
+	}
+}
+
+void pelet::ExpressionClass::ToVariable(const UnicodeString& variableName) {
+	Clear();
+	ExpressionType = VARIABLE;
+	pelet::VariablePropertyClass objectCall;
+	objectCall.Name = variableName;
+	objectCall.IsFunction = false;
+	objectCall.IsStatic = false;
+	ChainList.push_back(objectCall);
+}
+
+void pelet::ExpressionClass::ToScalar(const UnicodeString& scalarValue) {
+	Clear();
+	ExpressionType = SCALAR;
+	pelet::VariablePropertyClass objectCall;
+	objectCall.Name = scalarValue;
+	objectCall.IsFunction = false;
+	objectCall.IsStatic = false;
+	ChainList.push_back(objectCall);
+}
+
+void pelet::ExpressionClass::ToConstant(const UnicodeString& className, const UnicodeString& constantName) {
+	Clear();
+	ExpressionType = FUNCTION_CALL;
+	if (!className.isEmpty()) {
+		pelet::VariablePropertyClass classCall;
+		classCall.Name = className;
+		ChainList.push_back(classCall);
+		
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = constantName;
+		objectCall.IsFunction = false;
+		objectCall.IsStatic = true;
+		ChainList.push_back(objectCall);
+	}
+	else {
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = constantName;
+		objectCall.IsFunction = false;
+		objectCall.IsStatic = false;
+		ChainList.push_back(objectCall);
+	}
+}
+
 
 pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
 	: StatementClass(pelet::StatementClass::VARIABLE)
@@ -564,7 +632,6 @@ pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
 	, ChainList()
 	, ArrayKey()
 	, Scope(scope)
-	, CallArguments()
 	, LineNumber(0) {
 }
 
@@ -575,7 +642,6 @@ void pelet::VariableClass::Copy(const pelet::VariableClass& src) {
 	Type = src.Type;
 	ArrayKey = src.ArrayKey;
 	Scope = src.Scope;
-	CallArguments = src.CallArguments;
 	LineNumber = src.LineNumber;
 }
 
@@ -591,8 +657,25 @@ void pelet::VariableClass::Clear() {
 	ChainList.clear();
 	ArrayKey.remove();
 	Scope.Clear();
-	CallArguments.clear();
 	LineNumber = 0;
+}
+
+void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue) {
+	pelet::VariablePropertyClass prop;
+	prop.Name = propertyValue;
+	prop.IsFunction = false;
+	prop.IsStatic = false;
+	ChainList.push_back(prop);	
+}
+
+void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue,
+		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic) {
+	pelet::VariablePropertyClass prop;
+	prop.Name = propertyValue;
+	prop.CallArguments = callArguments;
+	prop.IsFunction = isMethod;
+	prop.IsStatic = isStatic;
+	ChainList.push_back(prop);	
 }
 
 pelet::SemanticValueClass::SemanticValueClass() 
@@ -649,5 +732,12 @@ void pelet::ScopeClass::Clear() {
 	NamespaceName.remove();
 	ClassName.remove();
 	MethodName.remove();
+}
+
+pelet::VariablePropertyClass::VariablePropertyClass()
+	: Name()
+	, CallArguments()
+	, IsFunction(false)
+	, IsStatic(false) {
 }
 

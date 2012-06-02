@@ -322,7 +322,7 @@
 %type <variable> variable
 %type <variable> variable_properties
 %type <variable> variable_property
-%type <isMethod> method_or_not
+%type <variable> method_or_not
 %type <variable> variable_without_objects
 %type <variable> static_member
 %type <semanticValue> variable_class_name
@@ -1028,12 +1028,12 @@ variable_properties:
 
 variable_property:
 		T_OBJECT_OPERATOR object_property
-		method_or_not								{ $$ = observers.VariableAppendToChain($2, $3);  }
+		method_or_not								{ $$ = observers.VariableAppendToChain($2, $3, $1);  }
 ;
 
 method_or_not:
-		'(' function_call_parameter_list ')'			{ $$ = true; } 
-	|	/* empty */										{ $$ = false; }
+		'(' function_call_parameter_list ')'			{ $$ = observers.VariableMakeAndAppendFunctionCall($2, true); } 
+	|	/* empty */										{ $$ = observers.VariableNil(); }
 ;
 
 variable_without_objects:

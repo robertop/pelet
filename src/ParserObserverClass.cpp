@@ -86,12 +86,11 @@ void pelet::ObserverQuadClass::NotifyVariablesFromParameterList(pelet::Parameter
 			pelet::ExpressionClass expression(Scope);
 			parameters.Param(i, paramName, paramType);
 			if (!paramType.isEmpty()) {
-				expression.ChainList.push_back(paramType);
-				expression.ExpressionType = pelet::ExpressionClass::VARIABLE;
+				expression.ToNewCall(paramType);
 			} else {
 				expression.ExpressionType = pelet::ExpressionClass::UNKNOWN;
 			}
-			variable.ChainList.push_back(paramName);
+			variable.AppendToChain(paramName);
 			Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, variable, expression, comment);
 		}
 	}
@@ -223,7 +222,7 @@ void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString
 
 					// handle namespaces in the phpDoc
 					variable.PhpDocType = PhpDocTypeToAbsoluteClassname(variable.PhpDocType);
-					variable.ChainList.push_back(variableName);
+					variable.AppendToChain(variableName);
 					Variable->VariableFound(CurrentNamespace.ToAbsoluteSignature(), Scope.ClassName, Scope.MethodName, variable, expression, phpDocComment);
 					next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				}
@@ -413,10 +412,9 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::AssignmentExpressionFromExpres
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className) {
 	pelet::AssignmentExpressionClass* newExpr =  new pelet::AssignmentExpressionClass(Scope);
+	newExpr->ToNewCall(AbsoluteNamespaceClass(*className));
 	newExpr->Destination = *variable;
 
-	newExpr->ExpressionType = pelet::ExpressionClass::NEW_CALL;
-	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -701,11 +699,12 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeAssignmentList(p
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::FUNCTION_CALL;
-	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
+	UnicodeString fullClassName = AbsoluteNamespaceClass(*className);
+	UnicodeString constantNameString;
 	if (constantName) {
-		newExpr->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + constantName->Lexeme);
+		constantNameString = constantName->Lexeme;
 	}
+	newExpr->ToStaticFunctionCall(fullClassName, constantNameString, false);
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -717,21 +716,24 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCall(pelet::
 	if (functionName) {
 		newVar->Comment = functionName->Comment;
 	}
-	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
-	newVar->ChainList.push_back(AbsoluteNamespaceClass(*functionName) + UNICODE_STRING_SIMPLE("()"));
+	std::vector<pelet::ExpressionClass> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-			newVar->CallArguments.push_back(*singleExpr);
+			varCallArguments.push_back(*singleExpr);
 		}
 		else if (pelet::StatementClass::VARIABLE == type) {
 			pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
 			pelet::ExpressionClass singleExpr(var->Scope);
 			singleExpr.Copy(*var);
-			newVar->CallArguments.push_back(singleExpr);
+			varCallArguments.push_back(singleExpr);
 		}
 	}
+	
+	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
+	UnicodeString fullFunctionName = AbsoluteNamespaceClass(*functionName);
+	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
 }
@@ -739,28 +741,32 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCall(pelet::
 pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	functionName->MakeAbsolute();
-	newVar->ChainList.push_back(functionName->ToAbsoluteSignature() + UNICODE_STRING_SIMPLE("()"));
+	std::vector<pelet::ExpressionClass> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-			newVar->CallArguments.push_back(*singleExpr);
+			varCallArguments.push_back(*singleExpr);
 		}
 	}
+	UnicodeString fullFunctionName = functionName->ToAbsoluteSignature() ;
+	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
 }
 
 pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-	newVar->ChainList.push_back(AbsoluteNamespaceClass(*functionName) + UNICODE_STRING_SIMPLE("()"));
+	std::vector<pelet::ExpressionClass> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-			newVar->CallArguments.push_back(*singleExpr);
+			varCallArguments.push_back(*singleExpr);
 		}
 	}
+	UnicodeString fullFunctionName = AbsoluteNamespaceClass(*functionName);
+	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
 }
@@ -769,7 +775,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeGlobalVariable(p
 	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
 	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
 	if (value) {
-		newExpr->Destination.ChainList.push_back(value->Lexeme);
+		newExpr->Destination.AppendToChain(value->Lexeme);
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -777,8 +783,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeGlobalVariable(p
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::NEW_CALL;
-	newExpr->ChainList.push_back(AbsoluteNamespaceClass(*className));
+	newExpr->ToNewCall(AbsoluteNamespaceClass(*className));
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -801,12 +806,9 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalar(pelet::Ex
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalar(pelet::SemanticValueClass* srcValue) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::SCALAR;
 	if (srcValue) {
+		newExpr->ToScalar(srcValue->Lexeme);
 		newExpr->Comment = srcValue->Comment;
-	}
-	if (srcValue) {
-		newExpr->ChainList.push_back(srcValue->Lexeme);
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -814,17 +816,26 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalar(pelet::Se
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::FUNCTION_CALL;
-	newExpr->ChainList.push_back(constantName->ToSignature());
+	newExpr->ToConstant(UNICODE_STRING_SIMPLE(""), constantName->ToSignature());
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
 
-pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
+pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
+		pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-	newVar->ChainList.push_back(AbsoluteNamespaceClass(*className));
+	std::vector<pelet::ExpressionClass> varCallArguments;
+	for (size_t i = 0; i < callArguments->Size(); ++i) {
+		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
+		if (pelet::StatementClass::EXPRESSION == type) {
+			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
+			varCallArguments.push_back(*singleExpr);
+		}
+	}
+	
+	newVar->AppendToChain(AbsoluteNamespaceClass(*className));
 	if (methodName) {
-		newVar->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + methodName->Lexeme + UNICODE_STRING_SIMPLE("()"));
+		newVar->AppendToChain(methodName->Lexeme, varCallArguments, true, true);
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -834,7 +845,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeStaticVariable(p
 	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
 	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
 	if (nameValue) {
-		newExpr->Destination.ChainList.push_back(nameValue->Lexeme);
+		newExpr->Destination.AppendToChain(nameValue->Lexeme);
 	}
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -913,12 +924,12 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 
 				// check for define() function calls, these are constants
 				pelet::ExpressionClass * expr = (pelet::ExpressionClass*)stmt;
-				if (expr->CallArguments.size() == (size_t)2 && expr->ChainList.size() == 1) {
-					if (expr->ChainList[0].caseCompare(UNICODE_STRING_SIMPLE("define()"), 0) == 0) {
-						Class->DefineDeclarationFound(UNICODE_STRING_SIMPLE(""), expr->CallArguments[0].FirstValue(),
-						                              expr->CallArguments[1].FirstValue(),
-						                              expr->Comment, expr->LineNumber);
-					}
+				if (expr->ChainList.size() == 1 &&
+						expr->ChainList[0].Name.caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0 && 
+						2 == expr->ChainList[0].CallArguments.size()) {
+					Class->DefineDeclarationFound(UNICODE_STRING_SIMPLE(""), expr->ChainList[0].CallArguments[0].FirstValue(),
+												  expr->ChainList[0].CallArguments[1].FirstValue(),
+												  expr->Comment, expr->LineNumber);
 				}
 			}
 			break;
@@ -1283,7 +1294,6 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeAsAssignmentExpr
 	newExpr->Comment = variable->Comment;
 	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
 	newExpr->ChainList = variable->ChainList;
-	newExpr->CallArguments = variable->CallArguments;
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -1410,23 +1420,40 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionAppendToChain(pelet:
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::ExpressionClass* restExpression) {
 	for (size_t i = 0; i < restExpression->ChainList.size(); ++i) {
-		UnicodeString prop;
-		if (i == 0) {
-			prop = UNICODE_STRING_SIMPLE("->") + restExpression->ChainList[i];
-		}
-		else {
-			prop = restExpression->ChainList[i];
-		}
-		expression->ChainList.push_back(prop);
+		expression->ChainList.push_back(restExpression->ChainList[i]);
 	}
 	return expression;
 }
 
-pelet::VariableClass* pelet::ObserverQuadClass::VariableAppendToChain(pelet::VariableClass* variable, bool isMethod) {
-	if (!variable->ChainList.empty() && isMethod) {
-		variable->ChainList.back().append(UNICODE_STRING_SIMPLE("()"));
+pelet::VariableClass* pelet::ObserverQuadClass::VariableAppendToChain(pelet::VariableClass* variable, pelet::VariableClass* callArguments, 
+		pelet::SemanticValueClass* operatorValue) {
+	if (variable && callArguments && !variable->ChainList.empty() && !callArguments->ChainList.empty()) {
+		variable->ChainList.back().CallArguments = callArguments->ChainList[0].CallArguments;
+		variable->ChainList.back().IsFunction = callArguments->ChainList[0].IsFunction;
+		variable->ChainList.back().IsStatic = false;
 	}
 	return variable;
+}
+
+pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeAndAppendFunctionCall(pelet::StatementListClass* callArguments, bool isMethod) {
+	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
+	std::vector<pelet::ExpressionClass> varCallArguments;
+	for (size_t i = 0; i < callArguments->Size(); ++i) {
+		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
+		if (pelet::StatementClass::EXPRESSION == type) {
+			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
+			varCallArguments.push_back(*singleExpr);
+		}
+		else if (pelet::StatementClass::VARIABLE == type) {
+			pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
+			pelet::ExpressionClass singleExpr(var->Scope);
+			singleExpr.Copy(*var);
+			varCallArguments.push_back(singleExpr);
+		}
+	}
+	newVar->AppendToChain(UNICODE_STRING_SIMPLE(""), varCallArguments, isMethod, false);
+	AllAstItems.push_back(newVar);
+	return newVar;
 }
 
 pelet::VariableClass* pelet::ObserverQuadClass::VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty) {
@@ -1436,17 +1463,21 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableAppendToChain(pelet::Var
 	return variableProperties;
 }
 
-pelet::VariableClass* pelet::ObserverQuadClass::VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, bool isFirstPropertyMethod, pelet::VariableClass* restProperties) {
-	if (firstProperty && !firstProperty->ChainList.empty()) {
-		UnicodeString prop = UNICODE_STRING_SIMPLE("->") + firstProperty->ChainList[0];
-		if (isFirstPropertyMethod) {
-			prop = UNICODE_STRING_SIMPLE("->") + firstProperty->ChainList[0] + UNICODE_STRING_SIMPLE("()");
-		}
-		baseName->ChainList.push_back(prop);
+pelet::VariableClass* pelet::ObserverQuadClass::VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, 
+		pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties) {
+	if (firstProperty && firstPropertyCallArguments && !firstProperty->ChainList.empty() && !firstPropertyCallArguments->ChainList.empty()) {
+		baseName->AppendToChain(firstProperty->ChainList[0].Name, firstPropertyCallArguments->ChainList[0].CallArguments, 
+			firstPropertyCallArguments->ChainList[0].IsFunction, firstPropertyCallArguments->ChainList[0].IsStatic);
+	}
+	else if (firstProperty && !firstProperty->ChainList.empty()) {
+		
+		// a property not a function call
+		baseName->AppendToChain(firstProperty->ChainList[0].Name, firstProperty->ChainList[0].CallArguments, 
+			false, false);
 	}
 	if (restProperties) {
 		for (size_t i = 0; i < restProperties->ChainList.size(); ++i) {
-			baseName->ChainList.push_back(UNICODE_STRING_SIMPLE("->") + restProperties->ChainList[i]);
+			baseName->ChainList.push_back(restProperties->ChainList[i]);
 		}
 	}
 	return baseName;
@@ -1461,7 +1492,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableNil() {
 pelet::VariableClass* pelet::ObserverQuadClass::VariableStart(pelet::SemanticValueClass* variableValue) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (variableValue) {
-		newVar->ChainList.push_back(variableValue->Lexeme);
+		newVar->AppendToChain(variableValue->Lexeme);
 		newVar->Comment = variableValue->Comment;
 		newVar->LineNumber = variableValue->LineNumber;
 	}
@@ -1472,9 +1503,12 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableStart(pelet::SemanticVal
 pelet::VariableClass* pelet::ObserverQuadClass::VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (className && memberName) {
-		newVar->ChainList.push_back(AbsoluteNamespaceClass(*className));
+		newVar->AppendToChain(AbsoluteNamespaceClass(*className));
+		
+		// dont handle variable static members for now ClassName::${$varName}
 		if (memberName->ChainList.size() == 1) {
-			newVar->ChainList.push_back(UNICODE_STRING_SIMPLE("::") + memberName->ChainList[0]);
+			std::vector<pelet::ExpressionClass> args;
+			newVar->AppendToChain(memberName->ChainList[0].Name, args, false, true);
 		}
 	}
 	AllAstItems.push_back(newVar);
