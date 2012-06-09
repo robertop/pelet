@@ -110,7 +110,7 @@ of the statement grammar rule is this:
 
 top_statement_list:
 		top_statement_list top_statement		{ $$ = observers.StatementListMerge($1, $2); }
-	|	/* empty * /							{ $$ = observers.StatementListMake(); }
+	|	/ * empty * /							{ $$ = observers.StatementListMake(); }
 ;
 
 top_statement:
@@ -311,7 +311,7 @@ public:
 	 * Will check the given comment for \@var annotations FOR LOCAL VARIABLES ONLY
 	 * and notify the observer.
 	 * assuming that comment for local variables look like this
-	 *  /* \@var $dog Dog * /
+	 *  \@var $dog Dog
 	 * people got used to doing it this way
 	 * http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	 */
@@ -344,7 +344,7 @@ private:
 	/**
 	 * Parses any variable type hints from the given PHPDoc and notifies the variable observer. In this case, the annotation will
 	 * contain the variable name AND the variable type as in:
-	 *   /* \@var $myvar VarTypeClass * /
+	 *   \@var $myvar VarTypeClass
 	 *
 	 * The comment may contain more than on name-type pair
 	 * @param phpDocComment the entire comment
