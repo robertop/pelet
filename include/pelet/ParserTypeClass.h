@@ -29,6 +29,7 @@
 #include <pelet/TokenClass.h>
 #include <unicode/unistr.h>
 #include <vector>
+#include <map>
 
 namespace pelet {
 
@@ -40,6 +41,16 @@ class AstItemClass;
 class ParametersListClass;
 class ExpressionClass;
 class VariableClass;
+
+/**
+ * Case-sensitive string comparator for use as STL Predicate
+ */
+class UnicodeStringComparatorClass {
+public:
+		bool operator()(const UnicodeString& str1, const UnicodeString& str2) const {
+			return (str1.compare(str2) < (int8_t)0) ? true : false;
+		}
+};
 
 /**
  * Interface to inherit from when needing to be notified when a class structure is encountered.
@@ -354,12 +365,28 @@ public:
 	 * The method or function name only.
 	 */
 	UnicodeString MethodName;
+	
+	/**
+	 * A map of the current aliases of the parsed file.
+	 * The imported namespaces "use Name\Name as Alias;"
+	 * If the import statement does not use an explicit alias, them it implicity
+	 * uses the last namespace name as the alias.
+	 * "use Name\Child" the Child is the alias.
+	 * Note that no check is done to ensure aliases are unique.
+	 */
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> NamespaceAliases;
 
 	ScopeClass();
 	
 	ScopeClass(const pelet::ScopeClass& src);
 	
 	void Clear();
+	
+	void Copy(const pelet::ScopeClass& src);
+	
+	bool IsGlobalScope() const;
+	
+	bool IsGlobalNamespace() const;
 };
 
 /** 
@@ -984,16 +1011,6 @@ class PELET_API AssignmentListExpressionClass : public ExpressionClass {
 	 * Copies the expression properties from src.
 	 */
 	void Set(pelet::ExpressionClass& src);	
-};
-
-/**
- * Case-sensitive string comparator for use as STL Predicate
- */
-class UnicodeStringComparatorClass {
-public:
-		bool operator()(const UnicodeString& str1, const UnicodeString& str2) const {
-			return (str1.compare(str2) < (int8_t)0) ? true : false;
-		}
 };
 
 /**

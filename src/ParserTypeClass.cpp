@@ -718,20 +718,39 @@ pelet::ScopeClass::ScopeClass()
 	: NamespaceName()
 	, ClassName()
 	, MethodName()
+	, NamespaceAliases()
 {
 }
 
 pelet::ScopeClass::ScopeClass(const pelet::ScopeClass& src)
-	: NamespaceName(src.NamespaceName)
-	, ClassName(src.ClassName)
-	, MethodName(src.MethodName)
+	: NamespaceName()
+	, ClassName()
+	, MethodName()
+	, NamespaceAliases()
 {
+	Copy(src);
 }
 
 void pelet::ScopeClass::Clear() {
 	NamespaceName.remove();
 	ClassName.remove();
 	MethodName.remove();
+	NamespaceAliases.clear();
+}
+
+void pelet::ScopeClass::Copy(const pelet::ScopeClass& src) {
+	NamespaceName = src.NamespaceName;
+	ClassName = src.ClassName;
+	MethodName = src.MethodName;
+	NamespaceAliases = src.NamespaceAliases;
+}
+
+bool pelet::ScopeClass::IsGlobalScope() const {
+	return ClassName.isEmpty() && MethodName.isEmpty();
+}
+
+bool pelet::ScopeClass::IsGlobalNamespace() const {
+	return UNICODE_STRING_SIMPLE("\\").compare(NamespaceName) == 0 || NamespaceName.isEmpty();
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass()

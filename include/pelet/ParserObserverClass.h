@@ -33,7 +33,6 @@
 
 #include <stack>
 #include <vector>
-#include <map>
 
 namespace pelet {
 
@@ -393,11 +392,6 @@ private:
 	 * The current namespace
 	 */
 	QualifiedNameClass CurrentNamespace;
-	
-	/**
-	 * A map of the current aliases of the parsed file.
-	 */
-	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> NamespaceAliases;
 	
 	/**
 	 * This object will NOT own the pointer
