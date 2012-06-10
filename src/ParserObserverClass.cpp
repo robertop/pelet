@@ -1514,3 +1514,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableStartStaticMember(pelet:
 	AllAstItems.push_back(newVar);
 	return newVar;
 }
+
+pelet::ScopeClass pelet::ObserverQuadClass::CurrentScope() {
+	return Scope;
+}

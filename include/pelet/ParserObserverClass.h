@@ -323,6 +323,12 @@ public:
 	
 	void SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
 	
+	/**
+	 * @return Scope that is filled in *as the source is being parsed*. This is 
+	 * useful to get the last good scope when a parse error occurs.
+	 */
+	pelet::ScopeClass CurrentScope();
+	
 private:
 
 	/**

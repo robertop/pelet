@@ -1017,6 +1017,38 @@ TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnFalseOnBadCode) {
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
 }
 
+TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnScopeBadCode) {
+	CreateFixtureFile("testpure.php", 
+		"<?php "
+		"class MyClass { "
+		" function myFunct() { "
+		"   $'gag's = 'hello' \"again\" $not gaging; "
+		" }"
+		"}");
+	std::string filename = TestProjectDir + "testpure.php";
+	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
+	int charCount = filename.length();
+	UErrorCode status = U_ZERO_ERROR;
+	UnicodeString uni;
+	int actualCount = 0;
+	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
+	if (U_SUCCESS(status)) {
+		ufilename.releaseBuffer(actualCount + 0);	
+	}
+	else {
+		ufilename.releaseBuffer(0);
+	}
+
+	FILE* file = fopen(filename.c_str(), "rb");
+	CHECK_EQUAL(false, Parser.ScanFile(file, ufilename, LintResults));
+	fclose(file);
+	CHECK(LintResults.Error.length() > 0);
+	CHECK(LintResults.LineNumber > 0);
+	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+}
+
 TEST_FIXTURE(Parser53ExpressionTestClass, ParseVariableExpression) {
 	UnicodeString code = _U("$variable");
 	Parser.ParseExpression(code, Expr);

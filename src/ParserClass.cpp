@@ -75,6 +75,7 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
+		results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
@@ -94,6 +95,7 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
+		results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
@@ -139,6 +141,7 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
+		results.Scope = observers.CurrentScope();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
 	}
@@ -157,6 +160,7 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
+		results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
@@ -176,6 +180,7 @@ bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass&
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
+		results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
@@ -279,6 +284,7 @@ pelet::LintResultsClass::LintResultsClass()
 	: Error()
 	, File()
 	, UnicodeFilename()
+	, Scope()
 	, LineNumber(0)
 	, CharacterPosition(0) {
 }
@@ -287,6 +293,7 @@ void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 	Error = other.Error;
 	File = other.File;
 	UnicodeFilename = other.UnicodeFilename;
+	Scope = other.Scope;
 	LineNumber = other.LineNumber;
 	CharacterPosition = other.CharacterPosition;
 }
@@ -294,6 +301,7 @@ void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 void pelet::LintResultsClass::Clear() {
 	Error.remove();
 	UnicodeFilename.remove();
+	Scope.Clear();
 	File = "";
 	LineNumber = 0;
 	CharacterPosition = 0;

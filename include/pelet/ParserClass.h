@@ -103,6 +103,12 @@ public:
 	 * For LintString() results this will be the empty string.
 	 */
 	UnicodeString UnicodeFilename;
+	
+	/**
+	 * If the parser encountered a syntax error, then this object will be filled with 
+	 * the last known class/method/function where the error occurred.
+	 */
+	pelet::ScopeClass Scope;
 
 	/**
 	 * The line in which the error ocurred. This is 1-based.
