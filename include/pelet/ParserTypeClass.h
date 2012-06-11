@@ -45,7 +45,7 @@ class VariableClass;
 /**
  * Case-sensitive string comparator for use as STL Predicate
  */
-class UnicodeStringComparatorClass {
+class PELET_API UnicodeStringComparatorClass {
 public:
 		bool operator()(const UnicodeString& str1, const UnicodeString& str2) const {
 			return (str1.compare(str2) < (int8_t)0) ? true : false;
