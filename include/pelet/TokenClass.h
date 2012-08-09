@@ -199,6 +199,14 @@ enum Tokens {
  * the open tag
  * SCRIPT: in this state all of the php keywords and symbols are honored. For example "if" is 
  * an T_IF token and not an identifer.
+ * LINE_COMMENT: single line comment
+ * MULTI_LINE_COMMENT: multi line comments that do not start with "/" "*" "*"
+ * DOC_COMMENT:  multi line comments that start with "/" "*" "*"
+ * SINGLE_QUOTE_STRING: string constants enclosed with single quotes
+ * DOUBLE_QUOTE_STRING: string constants enclosed with double quotes
+ * DOUBLE_QUOTE_STRING_VARIABLE: a variable inside of a double-quoted string
+ * HEREDOC: string constant
+ * NOWDOC: string constant
  * PROPERTY: in this state keywords are NOT honored; any alphanumeric string will labeled as an
  * identifier.  For example; in php an object is allowed to have a property called "list"
  * BACKTICK: in this state the lexer will not honor any keywords or symbols.
@@ -213,6 +221,7 @@ enum YYCONDTYPE {
 	yycDOC_COMMENT,
 	yycSINGLE_QUOTE_STRING,
 	yycDOUBLE_QUOTE_STRING,
+	yycDOUBLE_QUOTE_STRING_VARIABLE,
 	yycHEREDOC,
 	yycNOWDOC,
 	yycINLINE_HTML,

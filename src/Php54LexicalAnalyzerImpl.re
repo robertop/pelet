@@ -318,10 +318,21 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
  */
 <DOUBLE_QUOTE_STRING> [\\]["] { goto php_54_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> [\\][\\] { goto php_54_lexical_analyzer_next_char; } 
+<DOUBLE_QUOTE_STRING> "${" {  condition = yycDOUBLE_QUOTE_STRING_VARIABLE; goto php_54_lexical_analyzer_next_char;  }
+<DOUBLE_QUOTE_STRING> "{" { condition = yycDOUBLE_QUOTE_STRING_VARIABLE; goto php_54_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> '"' { condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 <DOUBLE_QUOTE_STRING> EOF { return T_ERROR_UNTERMINATED_STRING; }
 <DOUBLE_QUOTE_STRING> NEWLINE { buffer->IncrementLine(); goto php_54_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> ANY { goto php_54_lexical_analyzer_next_char; }
+
+/*!ignore:re2c
+ * this state is just to handle the string interprolation. We will back out of
+ * this state when we encounter a closing curly brace.
+ */
+<DOUBLE_QUOTE_STRING_VARIABLE> "}" { condition = yycDOUBLE_QUOTE_STRING; goto php_54_lexical_analyzer_next_char;}
+<DOUBLE_QUOTE_STRING_VARIABLE> NEWLINE { buffer->IncrementLine(); goto php_54_lexical_analyzer_next_char; }
+<DOUBLE_QUOTE_STRING_VARIABLE> EOF { return T_ERROR_UNTERMINATED_STRING; }
+<DOUBLE_QUOTE_STRING_VARIABLE> ANY { goto php_54_lexical_analyzer_next_char; }
 
 /*!ignore:re2c
  * heredoc and nowdoc strings; all of the processing will be done by the function

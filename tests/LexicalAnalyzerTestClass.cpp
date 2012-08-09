@@ -550,6 +550,24 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 	CHECK_TOKEN(pelet::T_END);
 }
 
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleStringWithInterprolatedArrays) {
+
+	// heredocs follow the same escaping rules as double quoted strings.
+	// except that double quotes do not have to be escaped.
+	// this is what we want the string to be:  this is an "escaped" string
+	CreateFixtureFile("test.php", 
+		"<?php\n"
+		"$s = \"{$arrRow[\"FirstName\"]} ({$arrRow[\"LastName\"]})\"; \n"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
+	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("{$arrRow[\"FirstName\"]} ({$arrRow[\"LastName\"]})"));
+}
+
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {
 	CreateFixtureFile("test.php", 
 		"<?php\r\n" // length= 6
