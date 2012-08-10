@@ -53,12 +53,12 @@ UnicodeString pelet::ObserverQuadClass::AbsoluteNamespaceClass(const QualifiedNa
 	if (index > 0) {
 		alias.setTo(qualified, 0, index);
 	}
-	const std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = Scope.NamespaceAliases.find(alias);
-	if (it != Scope.NamespaceAliases.end()) {
+	UnicodeString fullNamespace = Scope.GetFullNamespace(alias);
+	if (!fullNamespace.isEmpty()) {
 
 		// substitute alias with namespace
 		fullyQualified.setTo(qualified, index + 1);
-		fullyQualified = it->second + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
+		fullyQualified = fullNamespace + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
 	} else {
 
 		// no alias, prepend the curent namespace
@@ -68,7 +68,7 @@ UnicodeString pelet::ObserverQuadClass::AbsoluteNamespaceClass(const QualifiedNa
 }
 
 void pelet::ObserverQuadClass::NamespaceAliasClear() {
-	Scope.NamespaceAliases.clear();
+	Scope.ClearAliases();
 }
 
 void pelet::ObserverQuadClass::NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName) {
@@ -1108,7 +1108,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUse(pelet::Qualifi
 	UnicodeString alias = useStatement->Set(namespaceName, UNICODE_STRING_SIMPLE(""));
 
 	// dont worry about duplicate aliases, since its incorrect PHP
-	Scope.NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
+	Scope.AddNamespace(namespaceName->ToAbsoluteSignature(), alias);
 
 	AllAstItems.push_back(useStatement);
 	return StatementListMakeAndAppend(useStatement);
@@ -1121,7 +1121,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsolute(pelet:
 	UnicodeString alias = useStatement->Set(namespaceName, UNICODE_STRING_SIMPLE(""));
 
 	// dont worry about duplicate aliases, since its incorrect PHP
-	Scope.NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
+	Scope.AddNamespace(namespaceName->ToAbsoluteSignature(), alias);
 
 	AllAstItems.push_back(useStatement);
 	return StatementListMakeAndAppend(useStatement);
@@ -1136,7 +1136,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAbsoluteAlias(p
 		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
-		Scope.NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
+		Scope.AddNamespace(namespaceName->ToAbsoluteSignature(), alias);
 	}
 	AllAstItems.push_back(useStatement);
 	return StatementListMakeAndAppend(useStatement);
@@ -1149,7 +1149,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseAlias(pelet::Qu
 		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
-		Scope.NamespaceAliases[alias] = namespaceName->ToAbsoluteSignature();
+		Scope.AddNamespace(namespaceName->ToAbsoluteSignature(), alias);
 	}
 	AllAstItems.push_back(useStatement);
 	return StatementListMakeAndAppend(useStatement);
@@ -1276,7 +1276,7 @@ void pelet::ObserverQuadClass::SetCurrentMemberName(pelet::SemanticValueClass* v
 }
 
 void pelet::ObserverQuadClass::SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName) {
-	Scope.NamespaceAliases.clear();
+	Scope.ClearAliases();
 	if (qualifiedName) {
 		CurrentNamespace = *qualifiedName;
 		Scope.NamespaceName = qualifiedName->ToAbsoluteSignature();

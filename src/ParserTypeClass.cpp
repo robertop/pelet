@@ -718,15 +718,22 @@ pelet::ScopeClass::ScopeClass()
 	: NamespaceName()
 	, ClassName()
 	, MethodName()
-	, NamespaceAliases()
+	, NamespaceAliases(NULL)
 {
 }
+
+pelet::ScopeClass::~ScopeClass() {
+	if (NamespaceAliases) {
+		delete NamespaceAliases;
+	}
+}
+
 
 pelet::ScopeClass::ScopeClass(const pelet::ScopeClass& src)
 	: NamespaceName()
 	, ClassName()
 	, MethodName()
-	, NamespaceAliases()
+	, NamespaceAliases(NULL)
 {
 	Copy(src);
 }
@@ -735,14 +742,34 @@ void pelet::ScopeClass::Clear() {
 	NamespaceName.remove();
 	ClassName.remove();
 	MethodName.remove();
-	NamespaceAliases.clear();
+	if (NamespaceAliases) {
+		NamespaceAliases->clear();
+	}
+}
+
+void pelet::ScopeClass::ClearAliases() {
+	if (NamespaceAliases) {
+		NamespaceAliases->clear();
+	}
 }
 
 void pelet::ScopeClass::Copy(const pelet::ScopeClass& src) {
 	NamespaceName = src.NamespaceName;
 	ClassName = src.ClassName;
 	MethodName = src.MethodName;
-	NamespaceAliases = src.NamespaceAliases;
+	if (!NamespaceAliases && src.NamespaceAliases) {
+		NamespaceAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>(*src.NamespaceAliases);
+	}
+	else if (NamespaceAliases && !src.NamespaceAliases) {
+		NamespaceAliases->clear();
+	}
+	else if (NamespaceAliases && src.NamespaceAliases) {
+		*NamespaceAliases = *src.NamespaceAliases;
+	}
+}
+
+void pelet::ScopeClass::operator =(const pelet::ScopeClass& scope) {
+	Copy(scope);
 }
 
 bool pelet::ScopeClass::IsGlobalScope() const {
@@ -751,6 +778,32 @@ bool pelet::ScopeClass::IsGlobalScope() const {
 
 bool pelet::ScopeClass::IsGlobalNamespace() const {
 	return UNICODE_STRING_SIMPLE("\\").compare(NamespaceName) == 0 || NamespaceName.isEmpty();
+}
+
+void pelet::ScopeClass::AddNamespace(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias) {
+	if (!NamespaceAliases) {
+		NamespaceAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>();
+	}
+	(*NamespaceAliases)[namespaceAlias] = namespaceName;
+}
+
+UnicodeString pelet::ScopeClass::GetFullNamespace(const UnicodeString& alias) const {
+	UnicodeString fullName;
+	if (NamespaceAliases) {
+		std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = NamespaceAliases->find(alias);
+		if (it != NamespaceAliases->end()) {
+			fullName = it->second;
+		}
+	}
+	return fullName;
+}
+
+std::map<UnicodeString, UnicodeString, pelet::UnicodeStringComparatorClass> pelet::ScopeClass::GetNamespaceAliases() const {
+	std::map<UnicodeString, UnicodeString, pelet::UnicodeStringComparatorClass> map;
+	if (NamespaceAliases) {
+		map.insert(NamespaceAliases->begin(), NamespaceAliases->end());
+	}
+	return map;
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass()

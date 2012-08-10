@@ -366,6 +366,28 @@ public:
 	 */
 	UnicodeString MethodName;
 	
+	ScopeClass();
+
+	~ScopeClass();
+	
+	ScopeClass(const pelet::ScopeClass& src);
+	
+	/**
+	 * empties all attributes, class, method, namespaces and all aliases
+	 */
+	void Clear();
+
+	/**
+	 * empties the namespace aliases only
+	 */
+	void ClearAliases();
+	
+	void Copy(const pelet::ScopeClass& src);
+	
+	bool IsGlobalScope() const;
+	
+	bool IsGlobalNamespace() const;
+
 	/**
 	 * A map of the current aliases of the parsed file.
 	 * The imported namespaces "use Name\Name as Alias;"
@@ -374,19 +396,24 @@ public:
 	 * "use Name\Child" the Child is the alias.
 	 * Note that no check is done to ensure aliases are unique.
 	 */
-	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> NamespaceAliases;
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> GetNamespaceAliases() const;
 
-	ScopeClass();
-	
-	ScopeClass(const pelet::ScopeClass& src);
-	
-	void Clear();
-	
-	void Copy(const pelet::ScopeClass& src);
-	
-	bool IsGlobalScope() const;
-	
-	bool IsGlobalNamespace() const;
+	void AddNamespace(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias);
+
+	UnicodeString GetFullNamespace(const UnicodeString& alias) const;
+
+	void operator=(const pelet::ScopeClass& scope);
+
+private:
+
+	/**
+	 * Using a pointer here; if a file does not use namespaces then this 
+	 * property will never get used.
+	 * This object will own this pointer; thus we need to make sure that it
+	 * gets copied when an instance of this object is copied.
+	 */
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* NamespaceAliases;
+
 };
 
 /** 
