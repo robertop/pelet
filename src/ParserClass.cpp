@@ -34,6 +34,9 @@
 extern int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 extern int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
 
+extern int php53_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
+extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
+
 pelet::ParserClass::ParserClass()
 	: Lexer()
 	, ClassObserver(0)
@@ -131,17 +134,16 @@ void pelet::ParserClass::SetExpressionObserver(ExpressionObserverClass* observer
 bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		if (pelet::PHP_53 == Version) {
-			ret = php53parse(Lexer, observers) == 0;
+			ret = php53_lint_parse(Lexer) == 0;
 		}
 		else if (pelet::PHP_54 == Version) {
-			ret = php54parse(Lexer, observers) == 0;
+			ret = php54_lint_parse(Lexer) == 0;
 		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
-		results.Scope = observers.CurrentScope();
+		///results.Scope = observers.CurrentScope();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
 	}
@@ -151,16 +153,15 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		if (pelet::PHP_53 == Version) {
-			ret = php53parse(Lexer, observers) == 0;
+			ret = php53_lint_parse(Lexer) == 0;
 		}
 		else if (pelet::PHP_54 == Version) {
-			ret = php54parse(Lexer, observers) == 0;
+			ret = php54_lint_parse(Lexer) == 0;
 		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
-		results.Scope = observers.CurrentScope();
+		///results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();
@@ -171,16 +172,15 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, NULL);
 		if (pelet::PHP_53 == Version) {
-			ret = php53parse(Lexer, observers) == 0;
+			ret = php53_lint_parse(Lexer) == 0;
 		}
 		else if (pelet::PHP_54 == Version) {
-			ret = php54parse(Lexer, observers) == 0;
+			ret = php54_lint_parse(Lexer) == 0;
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
-		results.Scope = observers.CurrentScope();
+		///results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Lexer.Close();

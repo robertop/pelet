@@ -1153,7 +1153,9 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithObjects) {
 
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
-	CHECK(Parser.LintFile(file, LintResults));
+	bool isGood = Parser.LintFile(file, LintResults);
+	CHECK_UNISTR_EQUALS("", LintResults.Error);
+	CHECK(isGood);
 }
 
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueWhenFileIsOnlyHtml) {

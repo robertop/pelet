@@ -67,6 +67,22 @@ newaction {
 		if code ~= 0 then
 			print("Bison command failed for file src/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
+		
+		if os.is("windows") then
+			-- in windows line macros dont work correctly
+			cmd = "bison --no-lines --warnings=error " ..
+				" -o " .. normalizepath("src/Php53LintParserImpl.cpp") .. " " ..
+				normalizepath("src/Php53LintParserImpl.y")
+		else 
+			cmd = "bison  --warnings=error " ..
+				" -o " .. normalizepath("src/Php53LintParserImpl.cpp") .. " " ..
+				normalizepath("src/Php53LintParserImpl.y")
+		end
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("Bison command failed for file src/Php53ParserImpl.y. Is bison installed? Is it in the PATH?");	
+		end
+		
 		if os.is("windows") then
 			-- in windows line macros dont work correctly
 			cmd = "bison --no-lines --warnings=error "  ..
@@ -80,6 +96,21 @@ newaction {
 		code = os.execute(cmd) 
 		if code ~= 0 then
 			print("Bison command failed for file src/Php54ParserImpl.y. Is bison installed? Is it in the PATH?");	
+		end
+		
+		if os.is("windows") then
+			-- in windows line macros dont work correctly
+			cmd = "bison --no-lines --warnings=error "  ..
+				" -o " .. normalizepath("src/Php54LintParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54LintParserImpl.y")
+		else
+			cmd = "bison --warnings=error "  ..
+				" -o " .. normalizepath("src/Php54LintParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54LintParserImpl.y")
+		end
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("Bison command failed for file src/Php54LintParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
 	end
 }
