@@ -42,11 +42,6 @@ pelet::AstItemClass::~AstItemClass() {
 
 }
 
-pelet::StatementListClass::StatementListClass()
-	: Statements() {
-
-}
-
 pelet::ConstantStatementClass::ConstantStatementClass()
 	: StatementClass(pelet::StatementClass::DEFINE_DECLARATION)
 	, Name()
@@ -55,6 +50,28 @@ pelet::ConstantStatementClass::ConstantStatementClass()
 	, Value()
 	, LineNumber(0) {
 
+}
+
+void pelet::ConstantStatementClass::Init(pelet::SemanticValueClass* value, int lineNumber, const pelet::QualifiedNameClass& currentNamespace) {
+	if (value) {
+		Name = value->Lexeme;
+		Comment = value->Comment;
+	}
+	LineNumber = lineNumber;
+	NamespaceName = currentNamespace.ToAbsoluteSignature();
+}
+
+pelet::StatementListClass::StatementListClass()
+	: Statements() {
+
+}
+
+void pelet::StatementListClass::Init(pelet::StatementClass* statement) {
+	Push(statement);
+}
+
+void pelet::StatementListClass::Init(pelet::StatementListClass* statementList) {
+	PushAll(statementList);
 }
 
 size_t pelet::StatementListClass::Size() const {
@@ -93,7 +110,16 @@ pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
 	: StatementClass(pelet::StatementClass::NAMESPACE_DECLARATION)
 	, NamespaceName() 
 	, StartingPosition(0) {
+}
 
+void pelet::NamespaceDeclarationClass::Init(pelet::QualifiedNameClass* namespaceName, const pelet::TokenPositionClass& startingPosition) {
+	NamespaceName = namespaceName->ToAbsoluteSignature();
+	StartingPosition = startingPosition.Pos;
+}
+
+void pelet::NamespaceDeclarationClass::Init(const pelet::TokenPositionClass& startingPosition) {
+	NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	StartingPosition = startingPosition.Pos;
 }
 
 pelet::NamespaceUseClass::NamespaceUseClass()
@@ -102,6 +128,17 @@ pelet::NamespaceUseClass::NamespaceUseClass()
 	, Alias()
 	, StartingPos(0) {
 
+}
+
+void pelet::NamespaceUseClass::Init(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* aliasValue, bool isAbsolute) {
+	if (isAbsolute) {
+		qualifiedName->MakeAbsolute();
+	}
+	UnicodeString alias;
+	if (aliasValue) {
+		alias = aliasValue->Lexeme;
+	}
+	Set(qualifiedName, alias);
 }
 
 UnicodeString pelet::NamespaceUseClass::Set(pelet::QualifiedNameClass* qualifiedName, UnicodeString alias) {
@@ -215,6 +252,54 @@ UnicodeString pelet::ClassSymbolClass::ToSignature() const {
 		}
 	}
 	return sig;
+}
+
+pelet::ClassSymbolClass* pelet::ClassSymbolClass::AddToImplements(pelet::QualifiedNameClass* implementsClassName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	ImplementsList.push_back(scope.AbsoluteNamespaceClass(*implementsClassName, currentNamespace));
+	return this;
+}
+
+pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetExtends(pelet::QualifiedNameClass* extendsClassName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	ExtendsFrom = scope.AbsoluteNamespaceClass(*extendsClassName, currentNamespace);
+	return this;
+}
+
+pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetAll(pelet::SemanticValueClass* nameValue, 
+														   pelet::ClassSymbolClass* classTypeSymbol, 
+														   pelet::ClassSymbolClass* extendsSymbol, 
+														   pelet::ClassSymbolClass* implementsSymbol, 
+														   const pelet::TokenPositionClass& endToken) {
+	if (nameValue) {
+		GrabClassName(nameValue);
+		StartingLineNumber = nameValue->LineNumber;
+	}
+	if (classTypeSymbol) {
+		Comment = classTypeSymbol->Comment;
+		IsAbstract = classTypeSymbol->IsAbstract;
+		IsFinal = classTypeSymbol->IsFinal;
+		IsInterface = classTypeSymbol->IsInterface;
+		IsTrait = classTypeSymbol->IsTrait;
+	}
+	if (extendsSymbol) {
+		ExtendsFrom = extendsSymbol->ExtendsFrom;
+	}
+	if (implementsSymbol) {
+		ImplementsList = implementsSymbol->ImplementsList;
+	}	
+	EndingLineNumber = endToken.LineNumber;
+	return this;
+}
+
+pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetFlags(pelet::SemanticValueClass* commentValue, 
+																   bool isAbstract, bool isFinal, bool isInterface, bool isTrait) {
+	if (commentValue) {
+		AppendToComment(commentValue);
+	}
+	IsAbstract = isAbstract;
+	IsFinal = isFinal;
+	IsInterface = isInterface;
+	IsTrait = isTrait;
+	return this;
 }
 
 pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
@@ -339,6 +424,156 @@ UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString var
 	return sig;
 }
 
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeBody(pelet::StatementListClass* bodyStatements, 
+	const pelet::TokenPositionClass& startingPositionTokenValue, const pelet::TokenPositionClass& endingPositionTokenValue) {
+	if (bodyStatements) {
+		MethodStatements = *bodyStatements;
+	}
+	StartingPosition = startingPositionTokenValue.Pos;
+	EndingPosition = endingPositionTokenValue.Pos;
+	return this;
+}
+
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::Make(pelet::SemanticValueClass* varValue) {
+	Type = pelet::StatementClass::METHOD_DECLARATION;
+	if (varValue) {
+		Comment = varValue->Comment;
+		StartingLineNumber = varValue->LineNumber;
+	}
+	IsAbstractMember = varValue && pelet::T_ABSTRACT == varValue->Token;
+	IsFinalMember = varValue && pelet::T_FINAL == varValue->Token;
+	IsConstMember = varValue && pelet::T_CONST == varValue->Token;
+	IsStaticMember = varValue && pelet::T_STATIC == varValue->Token;
+	if (varValue && pelet::T_PUBLIC == varValue->Token) {
+		SetAsPublic();
+	} else if (varValue && pelet::T_PROTECTED == varValue->Token) {
+		SetAsProtected();
+	} else if (varValue && pelet::T_PRIVATE == varValue->Token) {
+		SetAsPrivate();
+	}
+	return this;
+}
+
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeAsPublicVariable(pelet::SemanticValueClass* varValue) {
+	Type = pelet::StatementClass::PROPERTY_DECLARATION;
+	SetNameAndReturnReference(varValue, false, varValue);
+	ClassName = Scope.ClassName;
+	SetAsPublic();
+	StartingLineNumber = varValue->LineNumber;
+	return this;
+}
+
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeFunction(pelet::SemanticValueClass* nameValue, bool isReference,
+        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
+		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue) {
+	Type = pelet::StatementClass::FUNCTION_DECLARATION;
+	SetNameAndReturnReference(nameValue, isReference, functionValue);
+	NamespaceName = CurrentNamespace.ToAbsoluteSignature();
+	ClassName = Scope.ClassName;
+	if (parameters) {
+		ParametersList = *parameters;
+	}
+	StartingLineNumber = nameValue->LineNumber;
+	StartingPosition = startingBodyTokenValue.Pos;
+	EndingPosition = endingBodyTokenValue.Pos;
+	return this;
+}
+
+pelet::StatementListClass* pelet::ClassMemberSymbolClass::ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, pelet::ClassMemberSymbolClass* modifiers,
+        bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::ClassMemberSymbolClass* methodBody) {
+	Type = pelet::StatementClass::METHOD_DECLARATION;
+	SetNameAndReturnReference(nameValue, isReference, functionValue);
+	NamespaceName = CurrentNamespace.ToAbsoluteSignature();
+	ClassName = Scope.ClassName;
+	if (parameters) {
+		ParametersList = *parameters;
+	}
+	IsAbstractMember = modifiers->IsAbstractMember;
+	IsFinalMember = modifiers->IsFinalMember;
+	IsConstMember = modifiers->IsConstMember;
+	IsStaticMember = modifiers->IsStaticMember;
+
+	// comment can only be attached to the modifiers or the function keyword
+	// the method may not have any modifiers
+	if (Comment.isEmpty() && !modifiers->Comment.isEmpty()) {
+		Comment = modifiers->Comment;
+	}
+	if (modifiers->IsPublicMember) {
+		SetAsPublic();
+	}
+	if (modifiers->IsProtectedMember) {
+		SetAsProtected();
+	}
+	if (modifiers->IsPrivateMember) {
+		SetAsPrivate();
+	}
+	StartingLineNumber = nameValue->LineNumber;
+	StartingPosition = methodBody->StartingPosition;
+	EndingPosition = methodBody->EndingPosition;
+	return this;
+}
+
+pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue,
+        bool isConstant, const int startingLineNumber) {
+	Type = pelet::StatementClass::PROPERTY_DECLARATION;
+	if (isConstant) {
+		SetAsConst(nameValue, commentValue);
+	} else {
+		SetNameAndReturnReference(nameValue, false, commentValue);
+	}
+	NamespaceName = CurrentNamespace.ToAbsoluteSignature();
+	ClassName = Scope.ClassName;
+	SetAsPublic();
+	StartingLineNumber = startingLineNumber;
+	if (nameValue) {
+		EndingPosition = nameValue->Pos + nameValue->Lexeme.length();
+	}
+	AllStatements.push_back(newMember);
+	return StatementListMakeAndAppend(newMember);
+}
+
+pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers) {
+
+	// set the modifiers on all of the given property declarations
+	for (size_t i = 0; i < variableStatements->Size(); ++i) {
+		pelet::StatementClass::Types type = variableStatements->TypeAt(i);
+		if (pelet::StatementClass::PROPERTY_DECLARATION == type) {
+			pelet::ClassMemberSymbolClass* member = (pelet::ClassMemberSymbolClass*)variableStatements->At(i);
+			member->IsAbstractMember = modifiers->IsAbstractMember;
+			member->IsFinalMember = modifiers->IsFinalMember;
+			member->IsConstMember = modifiers->IsConstMember;
+			member->IsStaticMember = modifiers->IsStaticMember;
+			member->Comment = modifiers->Comment;
+			if (modifiers->IsPublicMember) {
+				member->SetAsPublic();
+			}
+			if (modifiers->IsProtectedMember) {
+				member->SetAsProtected();
+			}
+			if (modifiers->IsPrivateMember) {
+				member->SetAsPrivate();
+			}
+		}
+	}
+	return variableStatements;
+}
+
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::SetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue) {
+	IsAbstractMember = pelet::T_ABSTRACT == modifierValue->Token;
+	IsFinalMember = pelet::T_FINAL == modifierValue->Token;
+	IsConstMember = pelet::T_CONST == modifierValue->Token;
+	IsStaticMember = pelet::T_STATIC == modifierValue->Token;
+	if (pelet::T_PUBLIC == modifierValue->Token) {
+		SetAsPublic();
+	} else if (pelet::T_PROTECTED == modifierValue->Token) {
+		SetAsProtected();
+	} else if (pelet::T_PRIVATE == modifierValue->Token) {
+		SetAsPrivate();
+	}
+	return this;
+}
+
 pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
 	, IsAbsolute(false)
@@ -346,7 +581,7 @@ pelet::QualifiedNameClass::QualifiedNameClass()
 
 }
 
-void pelet::QualifiedNameClass::GrabNameAndComment(SemanticValueClass* value) {
+void pelet::QualifiedNameClass::Init(SemanticValueClass* value) {
 	if (value) {
 		Comment.setTo(value->Comment);
 		AddName(value);
@@ -366,8 +601,9 @@ void pelet::QualifiedNameClass::AddName(SemanticValueClass* value) {
 	}
 }
 
-void pelet::QualifiedNameClass::MakeAbsolute() {
+pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeAbsolute() {
 	IsAbsolute = true;
+	return this;
 }
 
 void pelet::QualifiedNameClass::Prepend(const QualifiedNameClass& name) {
@@ -409,6 +645,17 @@ UnicodeString pelet::QualifiedNameClass::ToSignature() const {
 	return ret;
 }
 
+void pelet::QualifiedNameClass::Init(const UnicodeString& name) {
+	Namespaces.insert(Namespaces.begin(), name);
+}
+
+pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromCurrentNamespace(pelet::QualifiedNameClass* currentNamespace) {
+	if (currentNamespace) {
+		Prepend(*currentNamespace);
+	}
+	return this;
+}
+
 UnicodeString pelet::QualifiedNameClass::ToAbsoluteSignature() const {
 	UnicodeString sig = UNICODE_STRING_SIMPLE("\\") + ToSignature();
 	return sig;
@@ -442,7 +689,6 @@ void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& cla
 		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	}
 }
-
 
 void pelet::ParametersListClass::Clear() {
 	Params.clear();
@@ -488,6 +734,35 @@ void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, Unico
 	}
 }
 
+pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	UnicodeString typeString = scope.AbsoluteNamespaceClass(*type, currentNamespace);
+	if (typeString == UNICODE_STRING_SIMPLE("\\")) {
+		typeString = UNICODE_STRING_SIMPLE("");
+	}
+	if (typeString == UNICODE_STRING_SIMPLE("\\array")) {
+		typeString = UNICODE_STRING_SIMPLE("");
+	}
+	if (typeString == UNICODE_STRING_SIMPLE("\\callable")) {
+		typeString = UNICODE_STRING_SIMPLE("");
+	}
+	CreateWithOptionalType(typeString);
+	SetName(parameterName, isReference);
+	return this;
+}
+
+void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	UnicodeString typeString = scope.AbsoluteNamespaceClass(*type, currentNamespace);
+	if (typeString == UNICODE_STRING_SIMPLE("\\")) {
+		typeString = UNICODE_STRING_SIMPLE("");
+	}
+	if (typeString == UNICODE_STRING_SIMPLE("\\array")) {
+		typeString = UNICODE_STRING_SIMPLE("");
+	}
+	CreateWithOptionalType(typeString);
+	SetName(parameterName, isReference);
+}
 
 pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
 	: StatementClass(pelet::StatementClass::EXPRESSION)
@@ -804,6 +1079,31 @@ std::map<UnicodeString, UnicodeString, pelet::UnicodeStringComparatorClass> pele
 		map.insert(NamespaceAliases->begin(), NamespaceAliases->end());
 	}
 	return map;
+}
+
+UnicodeString pelet::ScopeClass::AbsoluteNamespaceClass(const pelet::QualifiedNameClass& name,
+														const pelet::QualifiedNameClass& namespaceName) const {
+	UnicodeString fullyQualified;
+
+	// does name use an alias?
+	UnicodeString alias;
+	UnicodeString qualified = name.ToSignature();
+	int32_t index = qualified.indexOf(UNICODE_STRING_SIMPLE("\\"));
+	if (index > 0) {
+		alias.setTo(qualified, 0, index);
+	}
+	UnicodeString fullNamespace = GetFullNamespace(alias);
+	if (!fullNamespace.isEmpty()) {
+
+		// substitute alias with namespace
+		fullyQualified.setTo(qualified, index + 1);
+		fullyQualified = fullNamespace + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
+	} else {
+
+		// no alias, prepend the curent namespace
+		fullyQualified = name.Prepend(namespaceName);
+	}
+	return fullyQualified;
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass()

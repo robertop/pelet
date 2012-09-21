@@ -35,12 +35,14 @@ namespace pelet {
 
 // these classes are defined below.
 class StatementClass;
+class TokenPositionClass;
 class SemanticValueClass;
 class ConstantClass;
 class AstItemClass;
 class ParametersListClass;
 class ExpressionClass;
 class VariableClass;
+class QualifiedNameClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -402,6 +404,13 @@ public:
 
 	UnicodeString GetFullNamespace(const UnicodeString& alias) const;
 
+	/**
+	 * Calcualte the fully qualified name from a namespace name, taking aliases
+	 * into account.
+	 */
+	UnicodeString AbsoluteNamespaceClass(const pelet::QualifiedNameClass& name, 
+		const pelet::QualifiedNameClass& namespaceName) const;	
+
 	void operator=(const pelet::ScopeClass& scope);
 
 private:
@@ -488,9 +497,10 @@ public:
 
 	QualifiedNameClass();
 	void Clear();
-	void GrabNameAndComment(SemanticValueClass* value);
+	void Init(SemanticValueClass* value);
+	void Init(const UnicodeString& name);
 	void AddName(SemanticValueClass* value);
-	void MakeAbsolute();
+	pelet::QualifiedNameClass* MakeAbsolute();
 	
 	/**
 	 * @param name the namespace to prepend to this namespace. This is the current namespace
@@ -529,6 +539,8 @@ public:
 	 * since this name is absolute no need to prepend the given namespace
 	 */
 	UnicodeString Prepend(const QualifiedNameClass& name) const;
+
+	pelet::QualifiedNameClass* MakeFromCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
 
 private:
 
@@ -792,6 +804,17 @@ public:
 	pelet::StatementClass* At(size_t index) const;
 
 	/**
+	 * initialize with a statement.
+	 */
+	void Init(pelet::StatementClass* statement);
+
+	/**
+	 * initialize with another statement list.
+	 * all of the given StatementListClass statements are pushed into this list
+	 */
+	void Init(pelet::StatementListClass* statementList);
+
+	/**
 	 * @param statement to add to this list
 	 * This class will NOT own any of the statement pointers.
 	 */
@@ -845,6 +868,8 @@ class PELET_API ConstantStatementClass : public StatementClass {
 	int LineNumber;
 	
 	ConstantStatementClass();
+
+	void Init(pelet::SemanticValueClass* value, int lineNumber, const pelet::QualifiedNameClass& currentNamespace);
 };
 
 class PELET_API NamespaceDeclarationClass : public StatementClass {
@@ -861,6 +886,13 @@ public:
 	int StartingPosition;
 
 	NamespaceDeclarationClass();
+
+	void Init(pelet::QualifiedNameClass* namespaceName, const pelet::TokenPositionClass& startingPosition);
+
+	/**
+	 * initializes this as a global namespace declaration
+	 */
+	void Init(const pelet::TokenPositionClass& startingPosition);
 };
 
 class PELET_API NamespaceUseClass : public StatementClass {
@@ -883,6 +915,13 @@ public:
 	int StartingPos;
 	
 	NamespaceUseClass();
+
+	/**
+	 * @param qualifiedName the namespace name 
+	 * @param alias the alias lexeme. this can be NULL if there is no alias
+	 * @param bool TRUE if namespace name is an absolute namespace
+	 */
+	void Init(QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias, bool isAbsolute);
 	
 	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
 };
@@ -1041,6 +1080,35 @@ class PELET_API AssignmentListExpressionClass : public ExpressionClass {
 };
 
 /**
+ * Class that will group a token along with the position
+ * where it was found in the source.
+ * We will use this for most tokens; for most tokens are keywords or
+ * operators and we do not need to stringify those.
+ */
+class TokenPositionClass {
+
+public: 
+
+	/**
+	 * The ID of the token
+	 */
+	int Token;
+
+	/**
+	 * The character position of this token 
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	int Pos;
+	
+	/**
+	 * The line number that the token was founs in.
+	 * @see LexicalAnalyzerClass::GetLineNumber()
+	 */
+	int LineNumber;
+
+};
+
+/**
  * This is the low-level building block that the parser creates as it is traversing the source
  * code.  The parser's job will be to convert these low-level building blocks into 
  * higher-level class, method, function, and variable declarations.
@@ -1126,6 +1194,19 @@ class PELET_API ClassSymbolClass : public StatementClass {
 	void AppendToComment(SemanticValueClass* value);
 	void Clear();
 
+	ClassSymbolClass* AddToImplements(pelet::QualifiedNameClass* implementsClassName, 
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+
+	ClassSymbolClass* SetExtends(pelet::QualifiedNameClass* extendsClassName, 
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+	
+	ClassSymbolClass* SetAll(pelet::SemanticValueClass* nameValue, pelet::ClassSymbolClass* classTypeSymbol, 
+		pelet::ClassSymbolClass* extendsSymbol, pelet::ClassSymbolClass* implementsSymbol, 
+		const pelet::TokenPositionClass& endToken);
+
+	ClassSymbolClass* SetFlags(pelet::SemanticValueClass* commentValue, 
+		bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
+	
 	UnicodeString ToSignature() const;
 	
 };
@@ -1146,6 +1227,19 @@ public:
 	 * @param className must be the FULLY QUALIFIED class name
 	 */
 	void CreateWithOptionalType(const UnicodeString& className);
+
+	/**
+	 * Append another parameter
+	 */
+	pelet::ParametersListClass* Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+	
+	/**
+	 * Create the first parameter
+	 */
+	void Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace); 
+
 	void Clear();	
 	void SetName(SemanticValueClass* value, bool isReference);
 
@@ -1239,6 +1333,28 @@ public:
 	void SetAsProtected();
 	void SetAsPrivate();
 	void Clear();
+
+	pelet::ClassMemberSymbolClass* MakeBody(pelet::StatementListClass* bodyStatements, 
+		const pelet::TokenPositionClass& startingPositionTokenValue, const pelet::TokenPositionClass& endingPositionTokenValue);
+
+	pelet::ClassMemberSymbolClass* Make(pelet::SemanticValueClass* varValue);
+
+	pelet::ClassMemberSymbolClass* MakeAsPublicVariable(pelet::SemanticValueClass* varValue);
+
+	pelet::ClassMemberSymbolClass* MakeFunction(pelet::SemanticValueClass* nameValue, 
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue);
+
+	pelet::StatementListClass* MakeMethod(pelet::SemanticValueClass* nameValue, 
+		pelet::ClassMemberSymbolClass* modifiers,
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
+		pelet::ClassMemberSymbolClass* methodBody);
+	
+	pelet::StatementListClass* MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
+	
+	pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
+	
+	pelet::ClassMemberSymbolClass* SetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
 };
 
 /**

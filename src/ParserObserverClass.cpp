@@ -23,8 +23,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/ParserObserverClass.h>
+#include <pelet/ResourceParserTypeClass.h>
 #include <unicode/ustdio.h>
-#include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
 pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
@@ -41,30 +41,6 @@ pelet::ObserverQuadClass::ObserverQuadClass(ClassObserverClass* classObserver, C
 
 pelet::ObserverQuadClass::~ObserverQuadClass() {
 	SemanticValueFree();
-}
-
-UnicodeString pelet::ObserverQuadClass::AbsoluteNamespaceClass(const QualifiedNameClass& name) {
-	UnicodeString fullyQualified;
-
-	// does name use an alias?
-	UnicodeString alias;
-	UnicodeString qualified = name.ToSignature();
-	int32_t index = qualified.indexOf(UNICODE_STRING_SIMPLE("\\"));
-	if (index > 0) {
-		alias.setTo(qualified, 0, index);
-	}
-	UnicodeString fullNamespace = Scope.GetFullNamespace(alias);
-	if (!fullNamespace.isEmpty()) {
-
-		// substitute alias with namespace
-		fullyQualified.setTo(qualified, index + 1);
-		fullyQualified = fullNamespace + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
-	} else {
-
-		// no alias, prepend the curent namespace
-		fullyQualified = name.Prepend(CurrentNamespace);
-	}
-	return fullyQualified;
 }
 
 void pelet::ObserverQuadClass::NamespaceAliasClear() {
@@ -103,60 +79,6 @@ void pelet::ObserverQuadClass::NotifyLocalVariableTypeHint(const UnicodeString& 
 		return;
 	}
 	NotifyLocalVariableFromPhpDoc(comment);
-}
-
-UnicodeString pelet::ObserverQuadClass::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation) {
-	UnicodeString returnType;
-	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
-	int32_t pos = phpDocComment.indexOf(annotation);
-	if (pos >= 0) {
-		pos += annotation.length();
-
-		// rudimentary tokenizer, skip all whitespace after annotation and get the word
-		while (u_isWhitespace(phpDocComment[pos])) {
-			++pos;
-		}
-		while (!u_isWhitespace(phpDocComment[pos]) && pos < phpDocComment.length()) {
-			returnType += phpDocComment[pos];
-			++pos;
-		}
-	}
-	returnType = returnType.trim();
-	return PhpDocTypeToAbsoluteClassname(returnType);
-
-}
-
-UnicodeString pelet::ObserverQuadClass::PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType) {
-
-	// any of the "basic" types will never use the current namespace
-	// these were taken from http://www.phpdoc.org/docs/latest/for-users/types.html
-	if (UNICODE_STRING_SIMPLE("string").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("integer").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("int").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("boolean").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("bool").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("float").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("double").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("object").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("mixed").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("array").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("resource").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("void").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("null").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("callback").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("false").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("true").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("self").caseCompare(phpDocType, 0) == 0) {
-		return phpDocType;
-	}
-	if (!phpDocType.isEmpty()) {
-		pelet::QualifiedNameClass name;
-		pelet::SemanticValueClass value;
-		value.Lexeme = phpDocType;
-		name.AddName(&value);
-		return AbsoluteNamespaceClass(name);
-	}
-	return phpDocType;
 }
 
 /**
@@ -220,116 +142,11 @@ void pelet::ObserverQuadClass::NotifyLocalVariableFromPhpDoc(const UnicodeString
 				if (!variableName.isEmpty() && !variable.PhpDocType.isEmpty()) {
 
 					// handle namespaces in the phpDoc
-					variable.PhpDocType = PhpDocTypeToAbsoluteClassname(variable.PhpDocType);
+					variable.PhpDocType = pelet::PhpDocTypeToAbsoluteClassname(variable.PhpDocType, Scope, CurrentNamespace);
 					variable.AppendToChain(variableName);
 					Variable->VariableFound(CurrentNamespace.ToAbsoluteSignature(), Scope.ClassName, Scope.MethodName, variable, expression, phpDocComment);
 					next = u_strtok_r(NULL, delimsBuffer, &saveState);
 				}
-			}
-			if (!next) {
-				break;
-			}
-		} else {
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-		}
-	}
-	delete[] buf;
-	delete[] delimsBuffer;
-}
-
-void pelet::ObserverQuadClass::NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, UnicodeString currentNamespaceName, UnicodeString currentClassName, const int lineNumber) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
-		return;
-	}
-	if (!Member) {
-		return;
-	}
-	if (phpDocComment.isEmpty()) {
-		return;
-	}
-
-	UnicodeString memberName;
-	UnicodeString memberType;
-
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UChar* buf = new UChar[phpDocComment.length() + 1];
-	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
-	buf[phpDocComment.length()] = '\0';
-
-	UChar* saveState = 0;
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UnicodeString delimiters = UNICODE_STRING_SIMPLE(" \t\n\v\f");
-	UChar* delimsBuffer = new UChar[delimiters.length() + 1];
-	u_memmove(delimsBuffer, delimiters.getBuffer(), delimiters.length());
-	delimsBuffer[delimiters.length()] = '\0';
-
-	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
-	while (next) {
-		if (UNICODE_STRING_SIMPLE("@property").caseCompare(next, 0) == 0 ||
-		        UNICODE_STRING_SIMPLE("@property-read").caseCompare(next, 0) == 0 ||
-		        UNICODE_STRING_SIMPLE("@property-write").caseCompare(next, 0) == 0) {
-
-			// example line: @property string $nameString a string version of a name
-			// will be lenient and allow the reverse var then type
-			// @property $nameString string
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			FillNameOrType(next, memberName, memberType);
-			if (!next) {
-				break;
-			}
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			FillNameOrType(next, memberName, memberType);
-			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-
-				// handles namespaces in the magic properties
-				memberType = PhpDocTypeToAbsoluteClassname(memberType);
-				Member->PropertyFound(currentNamespaceName, currentClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""),
-				                      pelet::TokenClass::PUBLIC, false, false, lineNumber);
-				memberName.remove();
-				memberType.remove();
-			}
-			if (!next) {
-				break;
-			}
-		} else if (UNICODE_STRING_SIMPLE("@method").caseCompare(next, 0) == 0) {
-
-			// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			if (!next) {
-				break;
-			}
-			memberType.setTo(next);
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			if (!next) {
-				break;
-			}
-			memberName.setTo(next);
-
-			// add the 'function' to keep the sig consistent with the other notify method
-			UnicodeString signature = UNICODE_STRING_SIMPLE("public function ");
-
-			// keep reading next tokens for the signature; stop when we encounter a closing parenthesis
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			while (next) {
-				signature.append(next);
-				size_t len = u_strlen(next);
-				if (')' == next[len - 1]) {
-					break;
-				}
-
-				// put this after the break so that we dont put a space at the end of the sig
-				signature.append(UNICODE_STRING_SIMPLE(" "));
-				next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			}
-			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
-					memberName.remove(memberName.length() - 2, 2);
-				}
-
-				// handles namespaces in the magic properties
-				memberType = PhpDocTypeToAbsoluteClassname(memberType);
-				Member->MethodFound(currentNamespaceName, currentClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""),
-				                    pelet::TokenClass::PUBLIC, false, lineNumber);
 			}
 			if (!next) {
 				break;
@@ -411,7 +228,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::AssignmentExpressionFromExpres
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className) {
 	pelet::AssignmentExpressionClass* newExpr =  new pelet::AssignmentExpressionClass(Scope);
-	newExpr->ToNewCall(AbsoluteNamespaceClass(*className));
+	newExpr->ToNewCall(Scope.AbsoluteNamespaceClass(*className, CurrentNamespace));
 	newExpr->Destination = *variable;
 
 	AllAstItems.push_back(newExpr);
@@ -593,20 +410,20 @@ pelet::ClassMemberSymbolClass* pelet::ObserverQuadClass::ClassMemberSymbolSetMod
 }
 
 pelet::ClassSymbolClass* pelet::ObserverQuadClass::ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName) {
-	classSymbol->ImplementsList.push_back(AbsoluteNamespaceClass(*implementsClassName));
+	classSymbol->ImplementsList.push_back(Scope.AbsoluteNamespaceClass(*implementsClassName, CurrentNamespace));
 	return classSymbol;
 }
 
 pelet::ClassSymbolClass* pelet::ObserverQuadClass::ClassSymbolAddToImplements(pelet::QualifiedNameClass* implementsClassName) {
 	pelet::ClassSymbolClass* newClassSymbol = new pelet::ClassSymbolClass();
-	newClassSymbol->ImplementsList.push_back(AbsoluteNamespaceClass(*implementsClassName));
+	newClassSymbol->ImplementsList.push_back(Scope.AbsoluteNamespaceClass(*implementsClassName, CurrentNamespace));
 	AllAstItems.push_back(newClassSymbol);
 	return newClassSymbol;
 }
 
 pelet::ClassSymbolClass* pelet::ObserverQuadClass::ClassSymbolExtends(pelet::QualifiedNameClass* extendsClassName) {
 	pelet::ClassSymbolClass* newClassSymbol = new pelet::ClassSymbolClass();
-	newClassSymbol->ExtendsFrom = AbsoluteNamespaceClass(*extendsClassName);
+	newClassSymbol->ExtendsFrom = Scope.AbsoluteNamespaceClass(*extendsClassName, CurrentNamespace);
 	AllAstItems.push_back(newClassSymbol);
 	return newClassSymbol;
 }
@@ -698,7 +515,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeAssignmentList(p
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	UnicodeString fullClassName = AbsoluteNamespaceClass(*className);
+	UnicodeString fullClassName = Scope.AbsoluteNamespaceClass(*className, CurrentNamespace);
 	UnicodeString constantNameString;
 	if (constantName) {
 		constantNameString = constantName->Lexeme;
@@ -731,7 +548,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCall(pelet::
 	}
 	
 	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
-	UnicodeString fullFunctionName = AbsoluteNamespaceClass(*functionName);
+	UnicodeString fullFunctionName = Scope.AbsoluteNamespaceClass(*functionName, CurrentNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -764,7 +581,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeFunctionCallFromCurr
 			varCallArguments.push_back(*singleExpr);
 		}
 	}
-	UnicodeString fullFunctionName = AbsoluteNamespaceClass(*functionName);
+	UnicodeString fullFunctionName = Scope.AbsoluteNamespaceClass(*functionName, CurrentNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -782,7 +599,7 @@ pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeGlobalVariable(p
 
 pelet::ExpressionClass* pelet::ObserverQuadClass::ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ToNewCall(AbsoluteNamespaceClass(*className));
+	newExpr->ToNewCall(Scope.AbsoluteNamespaceClass(*className, CurrentNamespace));
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -832,7 +649,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableMakeStaticMethodCall(pel
 		}
 	}
 	
-	newVar->AppendToChain(AbsoluteNamespaceClass(*className));
+	newVar->AppendToChain(Scope.AbsoluteNamespaceClass(*className, CurrentNamespace));
 	if (methodName) {
 		newVar->AppendToChain(methodName->Lexeme, varCallArguments, true, true);
 	}
@@ -900,8 +717,9 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 					                  classSymbol->Comment, classSymbol->StartingLineNumber);
 				}
 				if (Member) {
-					NotifyMagicMethodsAndProperties(classSymbol->Comment, classSymbol->NamespaceName,
-					                                classSymbol->ClassName, classSymbol->StartingLineNumber);
+					NotifyMagicMethodsAndProperties(Member, Scope, CurrentNamespace,
+							classSymbol->Comment, classSymbol->NamespaceName,
+					        classSymbol->ClassName, classSymbol->StartingLineNumber);
 				}
 				if (Class) {
 					Class->ClassEnd(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->EndingLineNumber);
@@ -944,7 +762,7 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 				int32_t index = signature.indexOf(UNICODE_STRING_SIMPLE("function"));
 				signature.setTo(signature, index);
 				UnicodeString comment = memberSymbol->Comment;
-				UnicodeString returnType = ReturnTypeFromPhpDocComment(comment, false);
+				UnicodeString returnType = ReturnTypeFromPhpDocComment(comment, false, Scope, CurrentNamespace);
 				if (Function) {
 					Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
 					                        returnType, memberSymbol->Comment, memberSymbol->StartingLineNumber);
@@ -987,7 +805,7 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 			if (Member || Variable) {
 				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 				UnicodeString comment = memberSymbol->Comment;
-				UnicodeString propType = ReturnTypeFromPhpDocComment(comment, false);
+				UnicodeString propType = ReturnTypeFromPhpDocComment(comment, false, Scope, CurrentNamespace);
 				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
@@ -1034,7 +852,7 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 			if (Member) {
 				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 				UnicodeString comment = memberSymbol->Comment;
-				UnicodeString propType = ReturnTypeFromPhpDocComment(comment, true);
+				UnicodeString propType = ReturnTypeFromPhpDocComment(comment, true, Scope, CurrentNamespace);
 
 				pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
@@ -1167,7 +985,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::NamespaceUseSetStartingPos(
 }
 
 pelet::ParametersListClass* pelet::ObserverQuadClass::ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference) {
-	UnicodeString typeString = AbsoluteNamespaceClass(*type);
+	UnicodeString typeString = Scope.AbsoluteNamespaceClass(*type, CurrentNamespace);
 	if (typeString == UNICODE_STRING_SIMPLE("\\")) {
 		typeString = UNICODE_STRING_SIMPLE("");
 	}
@@ -1187,7 +1005,7 @@ pelet::ParametersListClass* pelet::ObserverQuadClass::ParametersListAppend(pelet
 pelet::ParametersListClass* pelet::ObserverQuadClass::ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference) {
 	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
 
-	UnicodeString typeString = AbsoluteNamespaceClass(*type);
+	UnicodeString typeString = Scope.AbsoluteNamespaceClass(*type, CurrentNamespace);
 	if (typeString == UNICODE_STRING_SIMPLE("\\")) {
 		typeString = UNICODE_STRING_SIMPLE("");
 	}
@@ -1332,7 +1150,7 @@ pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMake(pelet::TraitAli
 
 pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMakeMethodReferenceList(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* methodName) {
 	pelet::TraitAliasClass* newAlias = new pelet::TraitAliasClass;
-	newAlias->TraitUsedClassName = AbsoluteNamespaceClass(*qualifiedName);
+	newAlias->TraitUsedClassName = Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace);
 	if (methodName) {
 		newAlias->TraitMethodReferenceName = methodName->Lexeme;
 	}
@@ -1350,7 +1168,7 @@ pelet::TraitAliasClass* pelet::ObserverQuadClass::TraitAliasMakeMethodReferenceL
 }
 
 pelet::TraitInsteadOfClass* pelet::ObserverQuadClass::TraitInsteadOfAppendReferenceList(pelet::TraitInsteadOfClass* traitInsteadOf, pelet::QualifiedNameClass* qualifiedName) {
-	traitInsteadOf->InsteadOfList.push_back(AbsoluteNamespaceClass(*qualifiedName));
+	traitInsteadOf->InsteadOfList.push_back(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
 	return traitInsteadOf;
 }
 
@@ -1365,13 +1183,13 @@ pelet::TraitInsteadOfClass* pelet::ObserverQuadClass::TraitInsteadOfMake(pelet::
 
 pelet::TraitInsteadOfClass* pelet::ObserverQuadClass::TraitInsteadOfMakeReferenceList(pelet::QualifiedNameClass* qualifiedName) {
 	pelet::TraitInsteadOfClass* newInsteadOf = new pelet::TraitInsteadOfClass;
-	newInsteadOf->InsteadOfList.push_back(AbsoluteNamespaceClass(*qualifiedName));
+	newInsteadOf->InsteadOfList.push_back(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
 	AllAstItems.push_back(newInsteadOf);
 	return newInsteadOf;
 }
 
 pelet::TraitUseClass* pelet::ObserverQuadClass::TraitUseAppend(pelet::TraitUseClass* traitUse, pelet::QualifiedNameClass* qualifiedName) {
-	traitUse->AppendUse(AbsoluteNamespaceClass(*qualifiedName));
+	traitUse->AppendUse(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
 	return traitUse;
 }
 
@@ -1399,7 +1217,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::TraitUseMake(pelet::TraitUs
 
 pelet::TraitUseClass* pelet::ObserverQuadClass::TraitUseStart(pelet::QualifiedNameClass* qualifiedName) {
 	pelet::TraitUseClass* newTraitUse = new pelet::TraitUseClass;
-	newTraitUse->AppendUse(AbsoluteNamespaceClass(*qualifiedName));
+	newTraitUse->AppendUse(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
 	AllAstItems.push_back(newTraitUse);
 	return newTraitUse;
 }
@@ -1502,7 +1320,7 @@ pelet::VariableClass* pelet::ObserverQuadClass::VariableStart(pelet::SemanticVal
 pelet::VariableClass* pelet::ObserverQuadClass::VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (className && memberName) {
-		newVar->AppendToChain(AbsoluteNamespaceClass(*className));
+		newVar->AppendToChain(Scope.AbsoluteNamespaceClass(*className, CurrentNamespace));
 		
 		// dont handle variable static members for now ClassName::${$varName}
 		if (memberName->ChainList.size() == 1) {

@@ -338,15 +338,6 @@ private:
 	void NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName);
 
 	/**
-	 * Get the return type from the '\@return' / '\@var' annotation
-	 * 
-	 * @param const UnicodeString& phpDocComment the comment
-	 * @param bool varAnnotation if false, will return the word after '\@var', else return the word after '\@return'
-	 * @return UnicodeString
-	 */
-	UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation);
-
-	/**
 	 * Parses any variable type hints from the given PHPDoc and notifies the variable observer. In this case, the annotation will
 	 * contain the variable name AND the variable type as in:
 	 *   \@var $myvar VarTypeClass
@@ -355,34 +346,7 @@ private:
 	 * @param phpDocComment the entire comment
 	 */
 	void NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment);
-
-	/**
-	 * parses out the given PHPDoc comment and notifies the member observer of any
-	 * \@property, \@property-read, \@property-write, and \@method 
-	 * declarations.
-	 */
-	void NotifyMagicMethodsAndProperties(const UnicodeString& phpDocComment, UnicodeString currentNamespaceName, UnicodeString currentClassName, const int lineNumber);
 	
-	/**
-	 * Make the given class name absolute, taking into account (1) the current namespace, and 
-	 * (2) any aliases that are used.
-	 * 
-	 * @param name a qualified (not fully qualified) class name
-	 * @return UnicodeString fully qualified namespace
-	 */
-	UnicodeString AbsoluteNamespaceClass(const QualifiedNameClass& name);
-	
-	/**
-	 * Turn a PHPDoc type into a fully qualified class name. The phpdoc type will get
-	 * qualified according to the same PHP rules as a type hint; the current namespace
-	 * and any aliases will be correctly accounted for.
-	 * 
-	 * @param phpDocType the parsed type in the PHPDoc, ie. in "@return StringClass" then this parameter
-	 *        should be "StringClass"
-	 * @param the fully qualified class name
-	 */
-	UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType);
-
 	/**
 	 * the class, method, and namespace that are currently being parsed.
 	 */
