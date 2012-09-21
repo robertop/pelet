@@ -24,6 +24,7 @@
  */
 #include <pelet/ParserClass.h>
 #include <pelet/TokenClass.h>
+#include <pelet/ResourceParserTypeClass.h>
 #include <stack>
 
 /* 
@@ -36,6 +37,8 @@ extern int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuad
 
 extern int php53_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
+
+extern int php53_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
 
 pelet::ParserClass::ParserClass()
 	: Lexer()
@@ -51,7 +54,11 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		if (pelet::PHP_53 == Version) {
+		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php53_resource_parse(Lexer, rObservers) == 0;
+		}
+		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
 		}
 		else if (pelet::PHP_54 == Version) {
@@ -70,15 +77,21 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		if (pelet::PHP_53 == Version) {
+		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php53_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
+		}
+		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		else if (pelet::PHP_54 == Version) {
 			ret = php54parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
-		results.Scope = observers.CurrentScope();
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
@@ -90,7 +103,11 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
 		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
-		if (pelet::PHP_53 == Version) {
+		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php53_resource_parse(Lexer, rObservers) == 0;
+		}
+		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
 		}
 		else if (pelet::PHP_54 == Version) {

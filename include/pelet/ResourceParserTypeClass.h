@@ -44,44 +44,20 @@ public:
 
 	~ResourceParserObserverClass();
 
-	pelet::SemanticValueClass* LexemeMake();
-
+	/**
+	 * @param astItem the pointer to manager.  Once this method is called, this
+	 *        object will own the pointer. the pointer will be deleted when
+	 *        this object goes out of scope.
+	 */
 	void Adopt(pelet::AstItemClass* astItem);
 
-	/*************************************************
-	 class members (methods, properties or constants)
-	**************************************************/
-	pelet::ClassMemberSymbolClass* ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
-		const pelet::TokenPositionClass& startingPositionTokenValue, const pelet::TokenPositionClass& endingPositionTokenValue);
-
-	pelet::ClassMemberSymbolClass* ClassMemberSymbolMake(pelet::SemanticValueClass* varValue);
-
-	pelet::ClassMemberSymbolClass* ClassMemberSymbolMakeAsPublicVariable(pelet::SemanticValueClass* varValue);
-
-	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
-		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
-		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue);
-
-	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
-		pelet::ClassMemberSymbolClass* modifiers,
-		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
-		pelet::ClassMemberSymbolClass* methodBody);
-	
-	pelet::StatementListClass* ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
-	
-	pelet::StatementListClass* ClassMemberSymbolMakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
-	
-	pelet::ClassMemberSymbolClass* ClassMemberSymbolSetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
-	
 	/*************************************************
 	 namespace declarations, usages
 	**************************************************/	
 	void NamespaceUseAddScope(pelet::NamespaceUseClass* namespaceUse);
-
-	pelet::StatementListClass* NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, const pelet::TokenPositionClass& useToken);
 	
 	/*************************************************
-	 set the current scope so that it can be used in other places
+	 set / get the current scope so that it can be used in other places
 	**************************************************/
 	void SetCurrentClassName(pelet::SemanticValueClass* value);
 	
@@ -89,19 +65,10 @@ public:
 	
 	void SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
 
-	/*************************************************
-	 make a list of statements
-	**************************************************/
-	pelet::StatementListClass* StatementListAppend(pelet::StatementListClass* statementList, pelet::StatementClass* statement);
-	
-	pelet::StatementListClass* StatementListMake();
-	
-	pelet::StatementListClass* StatementListMakeAndAppend(pelet::StatementClass* statement);
-	
-	pelet::StatementListClass* StatementListMerge(pelet::StatementListClass* a, pelet::StatementListClass* b); 
-	
-	pelet::StatementListClass* StatementListNil();
+	const pelet::ScopeClass& GetScope() const;
 
+	const pelet::QualifiedNameClass& GetCurrentNamespace() const;
+	
 	/*************************************************
 	 make a function call; only when a define() call is made
 	**************************************************/
@@ -149,7 +116,9 @@ private:
 
 /**
  * This is the parser type that the bison parser uses. A grammar rule outputs
- * to exactly ONE of these properties
+ * to exactly ONE of these . All of these pointers will be
+ * Adopt() by ResourceParserObserverClass; that way they get cleaned up
+ * when the ResourceParserObserverClass object goes out of scope.
  */
 typedef union ResourceParserType {
 	pelet::QualifiedNameClass* qualifiedName;

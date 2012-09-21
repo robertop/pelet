@@ -916,7 +916,7 @@ pelet::QualifiedNameClass* pelet::ObserverQuadClass::NamespaceNameAppend(pelet::
 
 pelet::QualifiedNameClass* pelet::ObserverQuadClass::NamespaceNameMake(pelet::SemanticValueClass* nameValue) {
 	QualifiedNameClass* qualifiedName = new pelet::QualifiedNameClass();
-	qualifiedName->GrabNameAndComment(nameValue);
+	qualifiedName->Init(nameValue);
 	AllAstItems.push_back(qualifiedName);
 	return qualifiedName;
 }
@@ -1028,7 +1028,7 @@ pelet::ParametersListClass* pelet::ObserverQuadClass::ParametersListNil() {
 
 pelet::QualifiedNameClass* pelet::ObserverQuadClass::QualifiedNameCreate(pelet::SemanticValueClass* nameValue) {
 	pelet::QualifiedNameClass* qualifiedName = new pelet::QualifiedNameClass;
-	qualifiedName->GrabNameAndComment(nameValue);
+	qualifiedName->Init(nameValue);
 	AllAstItems.push_back(qualifiedName);
 	return qualifiedName;
 }

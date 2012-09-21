@@ -499,7 +499,7 @@ public:
 	void Clear();
 	void Init(SemanticValueClass* value);
 	void Init(const UnicodeString& name);
-	void AddName(SemanticValueClass* value);
+	pelet::QualifiedNameClass* AddName(SemanticValueClass* value);
 	pelet::QualifiedNameClass* MakeAbsolute();
 	
 	/**
@@ -517,7 +517,6 @@ public:
 	void Prepend(const QualifiedNameClass& name);
 
 	UnicodeString ToSignature() const;
-	
 	
 	/** 
 	 * prepends a namespace separator '\' to this namespace name
@@ -540,7 +539,7 @@ public:
 	 */
 	UnicodeString Prepend(const QualifiedNameClass& name) const;
 
-	pelet::QualifiedNameClass* MakeFromCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	pelet::QualifiedNameClass* MakeFromCurrentNamespace(const pelet::QualifiedNameClass* qualifiedName);
 
 private:
 
@@ -818,13 +817,19 @@ public:
 	 * @param statement to add to this list
 	 * This class will NOT own any of the statement pointers.
 	 */
-	void Push(pelet::StatementClass* statement);
+	pelet::StatementListClass* Push(pelet::StatementClass* statement);
 	
 	/**
 	 * @param list of statements to add to this list
 	 * This class will NOT own any of the statement pointers.
 	 */
-	void PushAll(pelet::StatementListClass* statementList);
+	pelet::StatementListClass* PushAll(pelet::StatementListClass* statementList);
+
+	/**
+	 * @param statement to add to this list
+	 * This class will NOT own any of the statement pointers.
+	 */
+	pelet::StatementListClass* PushFront(pelet::StatementClass* stmt);
 	
 	/**
 	 * removes all of the items in this list. Note that the pointers
@@ -924,6 +929,8 @@ public:
 	void Init(QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias, bool isAbsolute);
 	
 	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
+
+	static pelet::StatementListClass* SetStartingPos(pelet::StatementListClass* namespaceStatements, const pelet::TokenPositionClass& useToken);
 };
 
 class PELET_API TraitUseClass : public StatementClass {
@@ -1202,7 +1209,8 @@ class PELET_API ClassSymbolClass : public StatementClass {
 	
 	ClassSymbolClass* SetAll(pelet::SemanticValueClass* nameValue, pelet::ClassSymbolClass* classTypeSymbol, 
 		pelet::ClassSymbolClass* extendsSymbol, pelet::ClassSymbolClass* implementsSymbol, 
-		const pelet::TokenPositionClass& endToken);
+		const pelet::TokenPositionClass& endToken,
+		const pelet::QualifiedNameClass& currentNamespace);
 
 	ClassSymbolClass* SetFlags(pelet::SemanticValueClass* commentValue, 
 		bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
@@ -1343,18 +1351,21 @@ public:
 
 	pelet::ClassMemberSymbolClass* MakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
-		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue);
+		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
-	pelet::StatementListClass* MakeMethod(pelet::SemanticValueClass* nameValue, 
+	pelet::ClassMemberSymbolClass* MakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
-		pelet::ClassMemberSymbolClass* methodBody);
+		pelet::ClassMemberSymbolClass* methodBody,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
-	pelet::StatementListClass* MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
+	pelet::ClassMemberSymbolClass* MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, 
+		bool isConstant, const int endingPosition, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
-	pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
+	static pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
 	
-	pelet::ClassMemberSymbolClass* SetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
+	pelet::ClassMemberSymbolClass* SetModifier(pelet::SemanticValueClass* modifierValue);
 };
 
 /**

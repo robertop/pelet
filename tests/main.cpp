@@ -26,6 +26,7 @@
 #include <TestReporterStdout.h>
 #include <TestRunner.h>
 #include <unicode/uclean.h>
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -82,11 +83,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Use this when we want to run a single or a few test cases only
+ */
+class SingleTestsPredicateClass {
+
+public:
+	
+	/**
+	 * The individual cases to run
+	 */
+	std::vector<const char*> TestCases;
+
+	SingleTestsPredicateClass(const std::vector<const char*>& testCases) 
+		: TestCases(testCases) {
+	
+	}
+
+	bool operator()(const UnitTest::Test* test) const {
+		if (TestCases.empty()) {
+			return true;
+		}
+		bool ret = false;
+
+		for (std::vector<const char*>::const_iterator it =  TestCases.begin(); it != TestCases.end(); ++it) {
+			if (strcmp(*it, test->m_details.testName) == 0) {
+				ret = true;
+				break;
+			}
+		}
+		return ret;
+	}
+};
+
 // run all tests
 int main(int argc, char **argv) {
 	// change if you want to run only one test
-	bool runAll = true;
-	const char* suiteToRun = "Parser54TestClass";
+	bool runAll = false;
+	const char* suiteToRun = "Parser53TestClass";
+	std::vector<const char*> testCasesToRun;
+	//testCasesToRun.push_back("ScanFileShouldNotifyClassObserver");
 	int ret = 0;
 	if (runAll) {
 		ret = UnitTest::RunAllTests();
@@ -94,7 +130,8 @@ int main(int argc, char **argv) {
 	else {
 		UnitTest::TestReporterStdout reporter;
 		UnitTest::TestRunner runner(reporter);
-		ret = runner.RunTestsIf(UnitTest::Test::GetTestList(), suiteToRun, UnitTest::True(), 0);
+		SingleTestsPredicateClass pred(testCasesToRun);
+		ret = runner.RunTestsIf(UnitTest::Test::GetTestList(), suiteToRun, pred, 0);
 	}
 	
 	// calling cleanup here so that we can run this binary through a memory leak detector 

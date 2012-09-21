@@ -70,7 +70,8 @@ int ResourceSemanticValue(pelet::ResourceParserTypeClass* value, pelet::LexicalA
 		pelet::T_TRAIT == ret ||
 		pelet::T_VAR == ret ||
 		pelet::T_VARIABLE == ret) {
-		value->lexeme = observers.LexemeMake();
+		value->lexeme = new pelet::SemanticValueClass;
+		observers.Adopt(value->lexeme);
 
 		// advance past all comments (there can be more than one consecutive)
 		if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
@@ -274,8 +275,7 @@ void pelet::NotifyMagicMethodsAndProperties(pelet::ClassMemberObserverClass* mem
 pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObserverClass* classObserver,
 		pelet::ClassMemberObserverClass* memberObserver,
 		pelet::FunctionObserverClass* functionObserver)
-	: AllLexemes()
-	, AllStatements() 
+	: AllStatements() 
 	, Scope()
 	, CurrentNamespace()
 	, Class(classObserver)
@@ -285,20 +285,10 @@ pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObse
 }
 
 pelet::ResourceParserObserverClass::~ResourceParserObserverClass() {
-	for (size_t i = 0; i < AllLexemes.size(); ++i) {
-		delete AllLexemes[i];
-	}
 	for (size_t i = 0; i < AllStatements.size(); ++i) {
 		delete AllStatements[i];
 	}
-	AllLexemes.clear();
 	AllStatements.clear();
-}
-
-pelet::SemanticValueClass* pelet::ResourceParserObserverClass::LexemeMake() {
-	pelet::SemanticValueClass* value = new pelet::SemanticValueClass;
-	AllStatements.push_back(value);
-	return value;
 }
 
 void pelet::ResourceParserObserverClass::Adopt(pelet::AstItemClass* astItem) {
@@ -309,17 +299,6 @@ void pelet::ResourceParserObserverClass::NamespaceUseAddScope(pelet::NamespaceUs
 
 	// dont worry about duplicate aliases, since its incorrect PHP
 	Scope.AddNamespace(namespaceUse->NamespaceName, namespaceUse->Alias);
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, const pelet::TokenPositionClass& useToken) {
-	for (size_t i = 0; i < namespaceStatements->Size(); ++i) {
-		pelet::StatementClass::Types type = namespaceStatements->TypeAt(i);
-		if (pelet::StatementClass::NAMESPACE_USE == type) {
-			pelet::NamespaceUseClass* useStmt = (pelet::NamespaceUseClass*) namespaceStatements->At(i);
-			useStmt->StartingPos = useToken.Pos;
-		}
-	}
-	return namespaceStatements;
 }
 
 void pelet::ResourceParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
@@ -340,36 +319,6 @@ void pelet::ResourceParserObserverClass::SetCurrentNamespace(pelet::QualifiedNam
 		CurrentNamespace.MakeAbsolute();
 		Scope.NamespaceName.remove();
 	}
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::StatementListAppend(pelet::StatementListClass* statementList, pelet::StatementClass* statement) {
-	statementList->Push(statement);
-	return statementList;
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::StatementListMake() {
-	pelet::StatementListClass* statementList =  new pelet::StatementListClass;
-	AllStatements.push_back(statementList);
-	return statementList;
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::StatementListMakeAndAppend(pelet::StatementClass* statement) {
-	pelet::StatementListClass* statementList =  new pelet::StatementListClass;
-	statementList->Push(statement);
-
-	AllStatements.push_back(statementList);
-	return statementList;
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::StatementListMerge(pelet::StatementListClass* a, pelet::StatementListClass* b) {
-	a->PushAll(b);
-	return a;
-}
-
-pelet::StatementListClass* pelet::ResourceParserObserverClass::StatementListNil() {
-	pelet::StatementListClass* statementList =  new pelet::StatementListClass;
-	AllStatements.push_back(statementList);
-	return statementList;
 }
 
 pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
@@ -442,19 +391,29 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		case pelet::StatementClass::ASSIGNMENT:
 			break;
 		case pelet::StatementClass::CLASS_DECLARATION:
-			classSymbol = (pelet::ClassSymbolClass*) stmt;
-			Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
-			                  classSymbol->Comment, classSymbol->StartingLineNumber);
+			if (Class) {
+				classSymbol = (pelet::ClassSymbolClass*) stmt;
+				Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
+								  classSymbol->Comment, classSymbol->StartingLineNumber);
+			}
+			if (Member) {
+				classSymbol = (pelet::ClassSymbolClass*) stmt;
 
-			// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-			// not correct
-			NotifyMagicMethodsAndProperties(Member, Scope, CurrentNamespace, classSymbol->Comment, classSymbol->NamespaceName,
-				                                classSymbol->ClassName, classSymbol->StartingLineNumber);
-			Class->ClassEnd(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->EndingLineNumber);
+				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
+				// not correct
+				NotifyMagicMethodsAndProperties(Member, Scope, CurrentNamespace, classSymbol->Comment, classSymbol->NamespaceName,
+													classSymbol->ClassName, classSymbol->StartingLineNumber);
+			}
+			if (Class) {
+				classSymbol = (pelet::ClassSymbolClass*) stmt;
+				Class->ClassEnd(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->EndingLineNumber);
+			}
 			break;
 		case pelet::StatementClass::DEFINE_DECLARATION:
-			constant = (pelet::ConstantStatementClass*) stmt;
-			Class->DefineDeclarationFound(constant->NamespaceName, constant->Name, constant->Value, constant->Comment, constant->LineNumber);
+			if (Class) {
+				constant = (pelet::ConstantStatementClass*) stmt;
+				Class->DefineDeclarationFound(constant->NamespaceName, constant->Name, constant->Value, constant->Comment, constant->LineNumber);
+			}
 			break;
 		case pelet::StatementClass::EXPRESSION:
 			/*
@@ -472,65 +431,75 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			}*/
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
-			memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
+			if (Function) {
+				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 
-			// remove the 'public' we are re-using the ClassMember symbol which always assumes a
-			// method signature
-			// didnt feel like writing a whole other class for just for functions when functions and
-			// methods are almost identical
-			signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
-			signature.setTo(signature, signature.indexOf(UNICODE_STRING_SIMPLE("function")));
+				// remove the 'public' we are re-using the ClassMember symbol which always assumes a
+				// method signature
+				// didnt feel like writing a whole other class for just for functions when functions and
+				// methods are almost identical
+				signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
+				signature.setTo(signature, signature.indexOf(UNICODE_STRING_SIMPLE("function")));
 
-			// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-			// not correct
-			returnType = ReturnTypeFromPhpDocComment(memberSymbol->Comment, false, Scope, CurrentNamespace);
+				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
+				// not correct
+				returnType = ReturnTypeFromPhpDocComment(memberSymbol->Comment, false, Scope, CurrentNamespace);
 
-			Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
-									returnType, memberSymbol->Comment, memberSymbol->StartingLineNumber);
-			Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
-					memberSymbol->StartingPosition, memberSymbol->EndingPosition);
+				Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
+										returnType, memberSymbol->Comment, memberSymbol->StartingLineNumber);
+				Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
+						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
+			}
 			break;
 		case pelet::StatementClass::INCLUDE_STATEMENT:
-			expr = (pelet::ExpressionClass*)stmt;
-			if (pelet::ExpressionClass::SCALAR == expr->ExpressionType) {
-				Class->IncludeFound(expr->FirstValue(), expr->LineNumber);
-			} else {
+			if (Class) {
+				expr = (pelet::ExpressionClass*)stmt;
+				if (pelet::ExpressionClass::SCALAR == expr->ExpressionType) {
+					Class->IncludeFound(expr->FirstValue(), expr->LineNumber);
+				} else {
 
-				// not sure what to do for include statements
-				// with variables; ie. " include $file; "
-				// for now just propagate an empty name
-				UnicodeString empty;
-				Class->IncludeFound(empty, expr->LineNumber);
+					// not sure what to do for include statements
+					// with variables; ie. " include $file; "
+					// for now just propagate an empty name
+					UnicodeString empty;
+					Class->IncludeFound(empty, expr->LineNumber);
+				}
 			}
 			break;
 		case pelet::StatementClass::ASSIGNMENT_LIST:
 			break;
 		case pelet::StatementClass::METHOD_DECLARATION:
-			memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
-			comment = memberSymbol->Comment;
+			if (Member) {
+				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
+				comment = memberSymbol->Comment;
 
-			// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-			// not correct
-			propType = ReturnTypeFromPhpDocComment(comment, false, Scope, CurrentNamespace);
-			signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
-			visibility = pelet::TokenClass::PUBLIC;
-			if (memberSymbol->IsProtectedMember) {
-				visibility = pelet::TokenClass::PROTECTED;
-			} else if (memberSymbol->IsPrivateMember) {
-				visibility = pelet::TokenClass::PRIVATE;
+				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
+				// not correct
+				propType = ReturnTypeFromPhpDocComment(comment, false, Scope, CurrentNamespace);
+				signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
+				visibility = pelet::TokenClass::PUBLIC;
+				if (memberSymbol->IsProtectedMember) {
+					visibility = pelet::TokenClass::PROTECTED;
+				} else if (memberSymbol->IsPrivateMember) {
+					visibility = pelet::TokenClass::PRIVATE;
+				}
+				Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
+									propType, comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
+				Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
+					memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}
-			Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
-			                    propType, comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
-			Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
-				memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			break;
 		case pelet::StatementClass::NAMESPACE_DECLARATION:
-			declaration = (pelet::NamespaceDeclarationClass*) stmt;
-			Class->NamespaceDeclarationFound(declaration->NamespaceName, declaration->StartingPosition);
+			if (Class) {
+				declaration = (pelet::NamespaceDeclarationClass*) stmt;
+				Class->NamespaceDeclarationFound(declaration->NamespaceName, declaration->StartingPosition);
+			}
 			break;
 		case pelet::StatementClass::NAMESPACE_USE:
-			namespaceUse = (pelet::NamespaceUseClass*) stmt;
-			Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->StartingPos);
+			if (Class) {
+				namespaceUse = (pelet::NamespaceUseClass*) stmt;
+				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->StartingPos);
+			}
 			break;
 		case pelet::StatementClass::NIL:
 
@@ -541,37 +510,53 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			// we only want variables that are in assignments for now
 			break;
 		case pelet::StatementClass::PROPERTY_DECLARATION:
-			memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
-			comment = memberSymbol->Comment;
-			
-			// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-			// not correct
-			propType = ReturnTypeFromPhpDocComment(comment, true, Scope, CurrentNamespace);
-			visibility = pelet::TokenClass::PUBLIC;
-			if (memberSymbol->IsProtectedMember) {
-				visibility = pelet::TokenClass::PROTECTED;
-			} else if (memberSymbol->IsPrivateMember) {
-				visibility = pelet::TokenClass::PRIVATE;
+			if (Member) {
+				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
+				comment = memberSymbol->Comment;
+				
+				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
+				// not correct
+				propType = ReturnTypeFromPhpDocComment(comment, true, Scope, CurrentNamespace);
+				visibility = pelet::TokenClass::PUBLIC;
+				if (memberSymbol->IsProtectedMember) {
+					visibility = pelet::TokenClass::PROTECTED;
+				} else if (memberSymbol->IsPrivateMember) {
+					visibility = pelet::TokenClass::PRIVATE;
+				}
+				Member->PropertyFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName,
+									  propType, comment, visibility, memberSymbol->IsConstMember, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
 			}
-			Member->PropertyFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName,
-			                      propType, comment, visibility, memberSymbol->IsConstMember, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
 			break;
 		case pelet::StatementClass::TRAIT_ALIAS_DECLARATION:
-			traitAlias = (pelet::TraitAliasClass*) stmt;
-			Member->TraitAliasFound(traitAlias->NamespaceName, traitAlias->ClassName,
-			                        traitAlias->TraitUsedClassName, traitAlias->TraitMethodReferenceName, traitAlias->Alias, traitAlias->Visibility);
+			if (Member) {
+				traitAlias = (pelet::TraitAliasClass*) stmt;
+				Member->TraitAliasFound(traitAlias->NamespaceName, traitAlias->ClassName,
+										traitAlias->TraitUsedClassName, traitAlias->TraitMethodReferenceName, traitAlias->Alias, traitAlias->Visibility);
+			}
 			break;
 		case pelet::StatementClass::TRAIT_INSTEADOF_DECLARATION:
-			traitInsteadOf = (pelet::TraitInsteadOfClass*) stmt;
-			Member->TraitInsteadOfFound(traitInsteadOf->NamespaceName, traitInsteadOf->ClassName,
-			                            traitInsteadOf->TraitUsedClassName, traitInsteadOf->TraitMethodReferenceName, traitInsteadOf->InsteadOfList);
+			if (Member) {
+				traitInsteadOf = (pelet::TraitInsteadOfClass*) stmt;
+				Member->TraitInsteadOfFound(traitInsteadOf->NamespaceName, traitInsteadOf->ClassName,
+											traitInsteadOf->TraitUsedClassName, traitInsteadOf->TraitMethodReferenceName, traitInsteadOf->InsteadOfList);
+			}
 			break;
 		case pelet::StatementClass::TRAIT_USE_DECLARATION:
-			traitUse = (pelet::TraitUseClass*) stmt;
-			for (size_t i = 0; i < traitUse->UsedTraits.size(); ++i) {
-				Member->TraitUseFound(traitUse->NamespaceName, traitUse->ClassName, traitUse->UsedTraits[i]);
+			if (Member) {
+				traitUse = (pelet::TraitUseClass*) stmt;
+				for (size_t i = 0; i < traitUse->UsedTraits.size(); ++i) {
+					Member->TraitUseFound(traitUse->NamespaceName, traitUse->ClassName, traitUse->UsedTraits[i]);
+				}
 			}
 			break;
 		}
 	}
+}
+
+const pelet::ScopeClass& pelet::ResourceParserObserverClass::GetScope() const {
+	return Scope;
+}
+
+const pelet::QualifiedNameClass& pelet::ResourceParserObserverClass::GetCurrentNamespace() const {
+	return CurrentNamespace;
 }

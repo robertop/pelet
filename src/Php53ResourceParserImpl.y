@@ -49,6 +49,7 @@
 
 #define AST_PUSH_MERGE(stmtListDest, stmt, stmtListSrc) stmtListDest = stmtListSrc; stmtListDest->Push(stmt);
 
+#define AST_PUSH_ALL_MERGE(stmtListDest, stmtListSrcA, stmtListSrcB) stmtListDest = stmtListSrcA; stmtListDest->PushAll(stmtListSrcB);
 
 %}
 
@@ -352,13 +353,13 @@ start:
 ;
 
 top_statement_list:
-		top_statement_list top_statement		{ AST_PUSH_MERGE($$, $2, $1); }
-	|	/* empty */								{ AST_INIT_ARGS($$, pelet::StatementListClass, (pelet::StatementClass*)NULL); }
+		top_statement_list top_statement		{ $$ = $1->PushAll($2); }
+	|	/* empty */								{ AST_INIT($$, pelet::StatementListClass); }
 ;
 
 namespace_name:
 		T_STRING								{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, $1); }
-	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = $1; $$->AddName($3); }
+	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = $1->AddName($3); }
 ;
 
 top_statement:
@@ -374,22 +375,21 @@ top_statement:
 	|	T_NAMESPACE namespace_name '{'			{ observers.SetCurrentNamespace($2); }
 		top_statement_list '}'					{ pelet::NamespaceDeclarationClass* decl;
 												  AST_INIT_ARGS(decl, pelet::NamespaceDeclarationClass, $2, $1);
-												  AST_PUSH_MERGE($$, decl, $5);
+												  $$ = $5->PushFront(decl);
 												}
 	|	T_NAMESPACE '{'							{ observers.SetCurrentNamespace(NULL); }
 		top_statement_list '}'					{ 
 												  pelet::NamespaceDeclarationClass* decl;
 												  AST_INIT_ARGS(decl, pelet::NamespaceDeclarationClass, $1);
-												  $4->Push(decl);
-												  $$ = $4;
+												  $$ = $4->PushFront(decl);
 												}
-	|	T_USE use_declarations ';'				{ $$ = observers.NamespaceUseSetStartingPos($2, $1); }
+	|	T_USE use_declarations ';'				{ $$ = pelet::NamespaceUseClass::SetStartingPos($2, $1); }
 	|	constant_declaration ';'				{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
 ;
 
 use_declarations:
 		use_declarations ',' 									
-		use_declaration											{ $$ = $1; $$->Push($3); }
+		use_declaration											{ $$ = $1->Push($3); }
 	|	use_declaration											{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
 ;
 
@@ -410,19 +410,22 @@ use_declaration:
 
 constant_declaration:
 		constant_declaration ',' T_STRING '=' static_scalar		{ pelet::ConstantStatementClass* constStmt;
-																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $3, analyzer.GetLineNumber());
-																  $1->Push(constStmt);
-																  $$ = $1; 
+																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, 
+																	$3, analyzer.GetLineNumber(), 
+																	observers.GetCurrentNamespace());
+																  $$ = $1->Push(constStmt);
 																}
 	|	T_CONST T_STRING '=' static_scalar						{ pelet::ConstantStatementClass* constStmt;
-																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $2, analyzer.GetLineNumber());
-																  AST_INIT($$, pelet::StatementListClass, constStmt);																	
+																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, 
+																    $2, analyzer.GetLineNumber(),
+																    observers.GetCurrentNamespace());
+																  AST_INIT_ARGS($$, pelet::StatementListClass, constStmt);																	
 																}
 ;
 
 inner_statement_list:
-		inner_statement_list inner_statement			{ $$ = observers.StatementListMerge($1, $2); }
-	|	/* empty */										{ $$ = observers.StatementListMake(); }
+		inner_statement_list inner_statement			{ $$ = $2->PushAll($1); }
+	|	/* empty */										{ AST_INIT($$, pelet::StatementListClass); }
 ;
 
 inner_statement:
@@ -434,7 +437,7 @@ inner_statement:
 
 statement:
 		unticked_statement				{ $$ = $1; }
-	|	T_STRING ':'					{ $$ = observers.StatementListMake(); }
+	|	T_STRING ':'					{ AST_INIT($$, pelet::StatementListClass); }
 ;
 
 unticked_statement:
@@ -483,9 +486,10 @@ unticked_statement:
 	|	T_TRY '{' inner_statement_list '}'															
 		T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'										
 		'{' inner_statement_list '}'
-		additional_catches																			{ $$ = observers.StatementListMerge($3, $11);
-																									  $$ = observers.StatementListMerge($$, $13); }
-	|	T_THROW expr ';'																			{ $$ = observers.StatementListMakeAndAppend($2); }
+		additional_catches																			{ AST_PUSH_ALL_MERGE($$, $3, $11);
+																									  AST_PUSH_ALL_MERGE($$, $$, $13);
+																									}
+	|	T_THROW expr ';'																			{ AST_INIT_ARGS($$, pelet::StatementListClass, $2); }
 	|	T_GOTO T_STRING ';'																			{ $$ = 0; }
 ;
 
@@ -496,7 +500,7 @@ additional_catches:
 
 non_empty_additional_catches:
 		additional_catch												{ $$ = $1; }
-	|	non_empty_additional_catches additional_catch					{ $$ = observers.StatementListMerge($1, $2); }
+	|	non_empty_additional_catches additional_catch					{ AST_PUSH_ALL_MERGE($$, $1, $2); }
 ;
 
 additional_catch:
@@ -528,9 +532,13 @@ is_reference:
 
 unticked_function_declaration_statement:
 		function is_reference T_STRING
-		'(' parameter_list ')'				{ observers.SetCurrentMemberName($3); }
-		'{' inner_statement_list '}'		{ $$ = observers.ClassMemberSymbolMakeFunction($3, $2, $1, $5, $8, $10);
-											  observers.StatementListMerge($$, $9); 
+		'(' parameter_list ')'				{ observers.SetCurrentClassName(NULL); observers.SetCurrentMemberName($3); }
+		'{' inner_statement_list '}'		{ pelet::ClassMemberSymbolClass* member;
+											  AST_INIT(member, pelet::ClassMemberSymbolClass);
+											  member->MakeFunction($3, $2, $1, $5, $8, $10,
+												observers.GetScope(), observers.GetCurrentNamespace());
+											  $$ = $9;
+											  $$->PushFront(member);
 											  observers.SetCurrentMemberName(NULL);
 											}
 ;
@@ -538,18 +546,19 @@ unticked_function_declaration_statement:
 unticked_class_declaration_statement:
 		class_entry_type T_STRING			
 		extends_from implements_list		{ observers.SetCurrentClassName($2); }	
-		'{' class_statement_list '}'		{ $$ = observers.ClassSymbolMake($2, $1, $3, $4, $8);
-											  observers.StatementListMerge($$, $7); 
-											  observers.SetCurrentClassName(NULL);  
+		'{' class_statement_list '}'		{ pelet::ClassSymbolClass* clazz;
+											  AST_INIT(clazz, pelet::ClassSymbolClass);
+											  clazz->SetAll($2, $1, $3, $4, $8, observers.GetCurrentNamespace());
+											  $$ = $7->PushFront(clazz);											  
+											  observers.SetCurrentClassName(NULL);
 											}
 	|	interface_entry T_STRING			
 		interface_extends_list				{ observers.SetCurrentClassName($2); }	
-		'{' class_statement_list '}'		{ pelet::ClassSymbolClass clazz;
+		'{' class_statement_list '}'		{ pelet::ClassSymbolClass* clazz;
 											  AST_INIT(clazz, pelet::ClassSymbolClass);
-											  clazz->SetAll($2, $1, NULL, $3, $7);
-											  $$ = AST_INIT_ARGS($$, pelet::StatementListClass, clazz);
-											  $$->PushAll($6);
-											  observers.SetCurrentClassName(NULL);    
+											  clazz->SetAll($2, $1, NULL, $3, $7, observers.GetCurrentNamespace());
+											  $$ = $6->PushFront(clazz);
+											  observers.SetCurrentClassName(NULL);
 											}
 ;
 
@@ -562,7 +571,9 @@ class_entry_type:
 extends_from:
 		/* empty */						{ $$ = 0; }
 	|	T_EXTENDS
-		fully_qualified_class_name 		{ $$ = observers.ClassSymbolExtends($2); }
+		fully_qualified_class_name 		{ AST_INIT($$, pelet::ClassSymbolClass);
+										  $$->SetExtends($2, observers.GetScope(), observers.GetCurrentNamespace()); 
+										}
 ;
 
 interface_entry:
@@ -582,8 +593,10 @@ implements_list:
 ;
 
 interface_list:
-		fully_qualified_class_name							{ AST_INIT($$, pelet::ClassSymbolClass); $$->AddToImplements($1); }
-	|	interface_list ','	fully_qualified_class_name		{ $$ = $1->AddToImplements($3); }
+		fully_qualified_class_name							{ AST_INIT($$, pelet::ClassSymbolClass); 
+															  $$->AddToImplements($1, observers.GetScope(), observers.GetCurrentNamespace()); 
+															}
+	|	interface_list ','	fully_qualified_class_name		{ $$ = $1->AddToImplements($3, observers.GetScope(), observers.GetCurrentNamespace()); }
 ;
 
 foreach_optional_arg:
@@ -641,18 +654,16 @@ while_statement:
 
 elseif_list:
 		/* empty */											{ $$ = 0; }
-	|	elseif_list T_ELSEIF '(' expr ')' statement			{ $$ = observers.StatementListMake(); 
-															  observers.StatementListMerge($$, $1);
-															  observers.StatementListMerge($$, observers.StatementListMakeAndAppend($4)); 
-															  observers.StatementListMerge($$, $6); }
+	|	elseif_list T_ELSEIF '(' expr ')' statement			{ AST_INIT($$, pelet::StatementListClass);
+															  $$->PushAll($1)->Push($4)->PushAll($6);
+															}
 ;
 
 new_elseif_list:
 		/* empty */																{ $$ = 0; }
-	|	new_elseif_list T_ELSEIF '(' expr ')' ':' inner_statement_list			{ $$ = observers.StatementListMake(); 
-																				  observers.StatementListMerge($$, $1);
-																			  	  observers.StatementListMerge($$, observers.StatementListMakeAndAppend($4)); 
-																				  observers.StatementListMerge($$, $7); }
+	|	new_elseif_list T_ELSEIF '(' expr ')' ':' inner_statement_list			{ AST_INIT($$, pelet::StatementListClass);
+																				  $$->PushAll($1)->Push($4)->PushAll($7);
+																			  	}
 ;
 
 else_single:
@@ -671,14 +682,14 @@ parameter_list:
 ;
 
 non_empty_parameter_list:
-		optional_class_type T_VARIABLE														{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false); }
-	|	optional_class_type '&' T_VARIABLE													{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true); }
-	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true); }
-	|	optional_class_type T_VARIABLE '=' static_scalar									{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = $1->Append($3, $4, false); } 
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = $1->Append($3, $5, true); }
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = $1->Append($3, $5, true); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = $1->Append($3, $4, false); }
+		optional_class_type T_VARIABLE														{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	optional_class_type '&' T_VARIABLE													{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	optional_class_type T_VARIABLE '=' static_scalar									{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = $1->Append($3, $4, false, observers.GetScope(), observers.GetCurrentNamespace()); } 
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = $1->Append($3, $5, true, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = $1->Append($3, $5, true, observers.GetScope(), observers.GetCurrentNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = $1->Append($3, $4, false, observers.GetScope(), observers.GetCurrentNamespace()); }
 ;
 
 optional_class_type:
@@ -693,12 +704,12 @@ function_call_parameter_list:
 ;
 
 non_empty_function_call_parameter_list:
-		expr_without_variable												{ $$ = observers.StatementListMakeAndAppend($1); }
-	|	variable															{ $$ = observers.StatementListMakeAndAppend($1); }
-	|	'&' w_variable														{ $$ = observers.StatementListMakeAndAppend($2); }
-	|	non_empty_function_call_parameter_list ',' expr_without_variable	{ $$ = observers.StatementListAppend($1, $3); }
-	|	non_empty_function_call_parameter_list ',' variable					{ $$ = observers.StatementListAppend($1, $3); }
-	|	non_empty_function_call_parameter_list ',' '&' w_variable			{ $$ = observers.StatementListAppend($1, $4); }
+		expr_without_variable												{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
+	|	variable															{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
+	|	'&' w_variable														{ AST_INIT_ARGS($$, pelet::StatementListClass, $2); }
+	|	non_empty_function_call_parameter_list ',' expr_without_variable	{ $$ = $1->Push($3); }
+	|	non_empty_function_call_parameter_list ',' variable					{ $$ = $1->Push($3); }
+	|	non_empty_function_call_parameter_list ',' '&' w_variable			{ $$ = $1->Push($4); }
 ;
 
 global_var_list:
@@ -720,65 +731,101 @@ static_var_list:
 ;
 
 class_statement_list:
-		class_statement_list class_statement				{ $$ = observers.StatementListMerge($1, $2); }
-	|	/* empty */											{ $$ = 0; }
+		class_statement_list class_statement				{ AST_PUSH_ALL_MERGE($$, $1, $2); }
+	|	/* empty */											{ AST_INIT($$, pelet::StatementListClass); }
 ;
 
 class_statement:
-		variable_modifiers class_variable_declaration ';'	{ $$ = observers.ClassMemberSymbolMakeVariables($2, $1); }
+		variable_modifiers class_variable_declaration ';'	{ $$ = pelet::ClassMemberSymbolClass::MakeVariables($2, $1); }
 	|	class_constant_declaration ';'						{ $$ = $1; }
 	|	method_modifiers function is_reference T_STRING
 		'('	parameter_list  ')'								{ observers.SetCurrentMemberName($4); }
-		method_body											{ $$ = observers.ClassMemberSymbolMakeMethod($4, $1, $3, $2, $6, $9); 
+		method_body											{ pelet::ClassMemberSymbolClass* memberSymbol;
+															  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+															  memberSymbol->MakeMethod($4, $1, $3, $2, $6, $9,
+															    observers.GetScope(), observers.GetCurrentNamespace()); 
+															  AST_INIT_ARGS($$, pelet::StatementListClass, memberSymbol);
 															  observers.SetCurrentMemberName(NULL);
 															}
 ;
 
 method_body:
-		';' /* abstract method */			{ $$ = observers.ClassMemberMakeBody(0, $1, $1); }
-	|	'{' inner_statement_list '}'		{ $$ = observers.ClassMemberMakeBody($2, $1, $3); }
+		';' /* abstract method */			{ AST_INIT($$, pelet::ClassMemberSymbolClass); $$->MakeBody(0, $1, $1); }
+	|	'{' inner_statement_list '}'		{ AST_INIT($$, pelet::ClassMemberSymbolClass); $$->MakeBody($2, $1, $3); }
 ;
 
 variable_modifiers:
 		non_empty_member_modifiers		{ $$ = $1; }
-	|	T_VAR						 	{ $$ = observers.ClassMemberSymbolMakeAsPublicVariable($1); }
+	|	T_VAR						 	{ AST_INIT($$, pelet::ClassMemberSymbolClass);
+										  $$->MakeAsPublicVariable($1); 
+										}
 ;
 
 method_modifiers:
-		/* empty */						{ $$ = observers.ClassMemberSymbolMake(NULL); }
+		/* empty */						{ AST_INIT($$, pelet::ClassMemberSymbolClass); $$->Make(NULL); }
 	|	non_empty_member_modifiers		{ $$ = $1; }
 ;
 
 non_empty_member_modifiers:
-		member_modifier									{ $$ = observers.ClassMemberSymbolMake($1); }
-	|	non_empty_member_modifiers member_modifier		{ $$ = observers.ClassMemberSymbolSetModifier($1, $2); }
+		member_modifier									{ AST_INIT($$, pelet::ClassMemberSymbolClass); $$->Make($1); }
+	|	non_empty_member_modifiers member_modifier		{ $$ = $1->SetModifier($2); }
 ;
 
 member_modifier:
 		T_PUBLIC				
 	|	T_PROTECTED				
 	|	T_PRIVATE				
-	|	T_STATIC				
+	|	T_STATIC		{ $$ = $1; }		
 	|	T_ABSTRACT				
 	|	T_FINAL					
 ;
 
 class_variable_declaration:
-		class_variable_declaration ',' T_VARIABLE						{ $$ = observers.StatementListMerge($1, observers.ClassMemberSymbolMakeVariable($3, $3, false, analyzer.GetLineNumber())); }
-	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ $$ = observers.StatementListMerge($1, observers.ClassMemberSymbolMakeVariable($3, $3, false, analyzer.GetLineNumber()));  }
-	|	T_VARIABLE														{ $$ = observers.ClassMemberSymbolMakeVariable($1, $1, false, analyzer.GetLineNumber()); }
-	|	T_VARIABLE '=' static_scalar									{ $$ = observers.ClassMemberSymbolMakeVariable($1, $1, false, analyzer.GetLineNumber()); }
+		class_variable_declaration ',' T_VARIABLE						{ pelet::ClassMemberSymbolClass* memberSymbol;
+																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+																		  memberSymbol->MakeVariable($3, $3, false, analyzer.GetLineNumber(),
+																			observers.GetScope(), observers.GetCurrentNamespace());
+																		  $$ = $1->Push(memberSymbol);
+																		}
+	|	class_variable_declaration ',' T_VARIABLE '=' static_scalar		{ pelet::ClassMemberSymbolClass* memberSymbol;
+																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+																		  memberSymbol->MakeVariable($3, $3, false, analyzer.GetLineNumber(),
+																			observers.GetScope(), observers.GetCurrentNamespace());
+																		  $$ = $1->Push(memberSymbol);
+																		}
+	|	T_VARIABLE														{ pelet::ClassMemberSymbolClass* memberSymbol;
+																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+																		  memberSymbol->MakeVariable($1, $1, false, analyzer.GetLineNumber(),
+																			observers.GetScope(), observers.GetCurrentNamespace());
+																		  AST_INIT_ARGS($$, pelet::StatementListClass, memberSymbol);
+																		}
+	|	T_VARIABLE '=' static_scalar									{ pelet::ClassMemberSymbolClass* memberSymbol;
+																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+																		  memberSymbol->MakeVariable($1, $1, false, analyzer.GetLineNumber(),
+																			observers.GetScope(), observers.GetCurrentNamespace());
+																		  AST_INIT_ARGS($$, pelet::StatementListClass, memberSymbol);
+																		}
 ;
 
 class_constant_declaration:
 		class_constant_declaration ',' 
-		T_STRING '=' static_scalar			{ $$ = observers.StatementListMerge($1, observers.ClassMemberSymbolMakeVariable($3, $3, true, analyzer.GetLineNumber())); }
-	|	T_CONST T_STRING '=' static_scalar  { $$ = observers.ClassMemberSymbolMakeVariable($2, $1, true, analyzer.GetLineNumber()); }
+		T_STRING '=' static_scalar			{ pelet::ClassMemberSymbolClass* memberSymbol;
+											  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+											  memberSymbol->MakeVariable($3, $3, true, analyzer.GetLineNumber(),
+												observers.GetScope(), observers.GetCurrentNamespace());
+											  $$ = $1->Push(memberSymbol);
+											}
+	|	T_CONST T_STRING '=' static_scalar  { pelet::ClassMemberSymbolClass* memberSymbol;
+											  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
+											  memberSymbol->MakeVariable($2, $1, true, analyzer.GetLineNumber(),
+												observers.GetScope(), observers.GetCurrentNamespace());
+											  AST_INIT_ARGS($$, pelet::StatementListClass, memberSymbol);
+											}
 ;
 
 echo_expr_list:
-		echo_expr_list ',' expr		{ $$ = observers.StatementListAppend($1, $3); }
-	|	expr						{ $$ = observers.StatementListMakeAndAppend($1); }
+		echo_expr_list ',' expr		{ $$ = $1->Push($3); }
+	|	expr						{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
 ;
 
 for_expr:
@@ -787,8 +834,8 @@ for_expr:
 ;
 
 non_empty_for_expr:
-		non_empty_for_expr ',' expr		{ $$ =  observers.StatementListAppend($1, $3); }
-	|	expr							{ $$ = observers.StatementListMakeAndAppend($1); }
+		non_empty_for_expr ',' expr		{ $$ = $1->Push($3); }
+	|	expr							{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
 ;
 
 expr_without_variable:
@@ -905,13 +952,13 @@ function_call:
 class_name:
 		T_STATIC													{ $$ = 0; }
 	|	namespace_name												{ $$ = $1; }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = observers.QualifiedNameMakeFromCurrentNamespace($3); }
-	|	T_NS_SEPARATOR namespace_name								{ $$ = observers.QualifiedNameMakeAbsolute($2); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = $3->MakeFromCurrentNamespace(&observers.GetCurrentNamespace()); }
+	|	T_NS_SEPARATOR namespace_name								{ $$ = $2->MakeAbsolute(); }
 ;
 
 fully_qualified_class_name:
 		namespace_name												{ $$ = $1; }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = $3->MakeFromCurrentNamespace(); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = $3->MakeFromCurrentNamespace(&observers.GetCurrentNamespace()); }
 	|	T_NS_SEPARATOR namespace_name								{ $$ = $2->MakeAbsolute(); }
 ;
 
