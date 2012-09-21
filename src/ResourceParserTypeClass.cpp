@@ -329,20 +329,22 @@ pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCa
 		newVar->Comment = functionName->Comment;
 	}
 	std::vector<pelet::ExpressionClass> varCallArguments;
-	for (size_t i = 0; i < callArguments->Size(); ++i) {
-		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
-		if (pelet::StatementClass::EXPRESSION == type) {
-			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-			varCallArguments.push_back(*singleExpr);
-		}
-		else if (pelet::StatementClass::VARIABLE == type) {
-			pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
-			pelet::ExpressionClass singleExpr(var->Scope);
-			singleExpr.Copy(*var);
-			varCallArguments.push_back(singleExpr);
+	if (callArguments) {
+		for (size_t i = 0; i < callArguments->Size(); ++i) {
+			pelet::StatementClass::Types type =  callArguments->TypeAt(i);
+			if (pelet::StatementClass::EXPRESSION == type) {
+				pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
+				varCallArguments.push_back(*singleExpr);
+			}
+			else if (pelet::StatementClass::VARIABLE == type) {
+				pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
+				pelet::ExpressionClass singleExpr(var->Scope);
+				singleExpr.Copy(*var);
+				varCallArguments.push_back(singleExpr);
+			}
 		}
 	}
-	
+
 	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
 	UnicodeString fullFunctionName = Scope.AbsoluteNamespaceClass(*functionName, CurrentNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
@@ -352,18 +354,24 @@ pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCa
 
 pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-	functionName->MakeAbsolute();
+	if (functionName) {
+		functionName->MakeAbsolute();
+	}
 	std::vector<pelet::ExpressionClass> varCallArguments;
-	for (size_t i = 0; i < callArguments->Size(); ++i) {
-		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
-		if (pelet::StatementClass::EXPRESSION == type) {
-			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-			varCallArguments.push_back(*singleExpr);
+	if (callArguments) {
+		for (size_t i = 0; i < callArguments->Size(); ++i) {
+			pelet::StatementClass::Types type =  callArguments->TypeAt(i);
+			if (pelet::StatementClass::EXPRESSION == type) {
+				pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
+				varCallArguments.push_back(*singleExpr);
+			}
 		}
 	}
-	UnicodeString fullFunctionName = functionName->ToAbsoluteSignature() ;
-	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
-	AllStatements.push_back(newVar);
+	if (functionName) {
+		UnicodeString fullFunctionName = functionName->ToAbsoluteSignature() ;
+		newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
+		AllStatements.push_back(newVar);
+	}
 	return newVar;
 }
 

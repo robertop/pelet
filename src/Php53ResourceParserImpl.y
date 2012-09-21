@@ -424,7 +424,7 @@ constant_declaration:
 ;
 
 inner_statement_list:
-		inner_statement_list inner_statement			{ $$ = $2->PushAll($1); }
+		inner_statement_list inner_statement			{ $$ = $1->PushAll($2); }
 	|	/* empty */										{ AST_INIT($$, pelet::StatementListClass); }
 ;
 
