@@ -955,8 +955,12 @@ public:
 	std::vector<UnicodeString> UsedTraits;
 	
 	TraitUseClass();
+
+	void Init(pelet::QualifiedNameClass* usedTrait, 
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
-	void AppendUse(UnicodeString trait);
+	pelet::TraitUseClass* AppendUse(pelet::QualifiedNameClass* usedTrait,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 };
 
 class PELET_API TraitAliasClass : public StatementClass {
@@ -997,7 +1001,14 @@ public:
 	pelet::TokenClass::TokenIds Visibility;
 	
 	TraitAliasClass();
+
+	void SetMethodReference(pelet::SemanticValueClass* methodName,
+		pelet::QualifiedNameClass* className,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
+	pelet::TraitAliasClass* SetModifiers(pelet::SemanticValueClass* modifier);
+
+	pelet::TraitAliasClass* SetAlias(pelet::SemanticValueClass* alias);
 };
 
 class PELET_API TraitInsteadOfClass : public StatementClass {
@@ -1034,6 +1045,15 @@ public:
 	std::vector<UnicodeString> InsteadOfList;
 	
 	TraitInsteadOfClass();
+
+	void Init(pelet::QualifiedNameClass* insteadOfClass, 
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+
+	pelet::TraitInsteadOfClass* AppendInsteadOf(pelet::QualifiedNameClass* insteadOfClass, 
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+
+	pelet::TraitInsteadOfClass* SetMethodReference(pelet::TraitAliasClass* traitAlias);
+
 };
 
 /**

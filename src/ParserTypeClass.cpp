@@ -188,8 +188,19 @@ pelet::TraitUseClass::TraitUseClass()
 	, UsedTraits() {
 }
 
-void pelet::TraitUseClass::AppendUse(UnicodeString trait) {
-	UsedTraits.push_back(trait);
+void pelet::TraitUseClass::Init(pelet::QualifiedNameClass* usedTrait,
+								const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	if (usedTrait) {
+		UsedTraits.push_back(scope.AbsoluteNamespaceClass(*usedTrait, currentNamespace));
+	}
+}
+
+pelet::TraitUseClass* pelet::TraitUseClass::AppendUse(pelet::QualifiedNameClass* usedTrait,
+									 const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	if (usedTrait) {
+		UsedTraits.push_back(scope.AbsoluteNamespaceClass(*usedTrait, currentNamespace));
+	}
+	return this;
 }
 
 pelet::TraitInsteadOfClass::TraitInsteadOfClass()
@@ -202,6 +213,28 @@ pelet::TraitInsteadOfClass::TraitInsteadOfClass()
 		
 }
 
+void pelet::TraitInsteadOfClass::Init(pelet::QualifiedNameClass* insteadOfClass, 
+		  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	AppendInsteadOf(insteadOfClass, scope, currentNamespace);
+}
+
+pelet::TraitInsteadOfClass* pelet::TraitInsteadOfClass::AppendInsteadOf(pelet::QualifiedNameClass *insteadOfClass, 
+																		const pelet::ScopeClass& scope, 
+																		const pelet::QualifiedNameClass& currentNamespace) {
+	if (insteadOfClass) {
+		InsteadOfList.push_back(scope.AbsoluteNamespaceClass(*insteadOfClass, currentNamespace));
+	}
+	return this;
+}
+
+pelet::TraitInsteadOfClass* pelet::TraitInsteadOfClass::SetMethodReference(pelet::TraitAliasClass* traitAlias) {
+	if (traitAlias) {
+		TraitUsedClassName = traitAlias->TraitUsedClassName;
+		TraitMethodReferenceName = traitAlias->TraitMethodReferenceName;
+	}
+	return this;
+}
+
 pelet::TraitAliasClass::TraitAliasClass()
 	: StatementClass(pelet::StatementClass::TRAIT_ALIAS_DECLARATION)
 	, NamespaceName()
@@ -210,6 +243,38 @@ pelet::TraitAliasClass::TraitAliasClass()
 	, TraitMethodReferenceName()
 	, Alias()
 	, Visibility(pelet::TokenClass::PUBLIC) {
+}
+
+void pelet::TraitAliasClass::SetMethodReference(pelet::SemanticValueClass* methodName,
+												pelet::QualifiedNameClass* className,
+												const pelet::ScopeClass& scope, 
+												const pelet::QualifiedNameClass& currentNamespace) {
+	if (methodName) {
+		TraitMethodReferenceName = methodName->Lexeme;
+	}
+	if (className) {
+		TraitUsedClassName = scope.AbsoluteNamespaceClass(*className,  currentNamespace);
+	}
+}
+
+pelet::TraitAliasClass* pelet::TraitAliasClass::SetModifiers(pelet::SemanticValueClass* modifier) {
+	if (modifier && pelet::T_PUBLIC == modifier->Token) {
+		Visibility = pelet::TokenClass::PUBLIC;
+	}
+	else if (modifier && pelet::T_PROTECTED == modifier->Token) {
+		Visibility = pelet::TokenClass::PROTECTED;
+	}
+	else if (modifier && pelet::T_PRIVATE == modifier->Token) {
+		Visibility = pelet::TokenClass::PRIVATE;
+	}
+	return this;
+}
+
+pelet::TraitAliasClass* pelet::TraitAliasClass::SetAlias(pelet::SemanticValueClass* aliasLexeme) {
+	if (aliasLexeme) {
+		Alias = aliasLexeme->Lexeme;
+	}
+	return this;
 }
 
 pelet::ClassSymbolClass::ClassSymbolClass()

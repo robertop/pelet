@@ -1189,8 +1189,7 @@ pelet::TraitInsteadOfClass* pelet::ObserverQuadClass::TraitInsteadOfMakeReferenc
 }
 
 pelet::TraitUseClass* pelet::ObserverQuadClass::TraitUseAppend(pelet::TraitUseClass* traitUse, pelet::QualifiedNameClass* qualifiedName) {
-	traitUse->AppendUse(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
-	return traitUse;
+	return traitUse->AppendUse(qualifiedName, Scope, CurrentNamespace);
 }
 
 pelet::StatementListClass* pelet::ObserverQuadClass::TraitUseMake(pelet::TraitUseClass* traitsUsed, pelet::StatementListClass* traitAdaptations) {
@@ -1217,7 +1216,7 @@ pelet::StatementListClass* pelet::ObserverQuadClass::TraitUseMake(pelet::TraitUs
 
 pelet::TraitUseClass* pelet::ObserverQuadClass::TraitUseStart(pelet::QualifiedNameClass* qualifiedName) {
 	pelet::TraitUseClass* newTraitUse = new pelet::TraitUseClass;
-	newTraitUse->AppendUse(Scope.AbsoluteNamespaceClass(*qualifiedName, CurrentNamespace));
+	newTraitUse->AppendUse(qualifiedName, Scope, CurrentNamespace);
 	AllAstItems.push_back(newTraitUse);
 	return newTraitUse;
 }

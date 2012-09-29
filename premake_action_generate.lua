@@ -127,5 +127,20 @@ newaction {
 		if code ~= 0 then
 			print("Bison command failed for file src/Php53ResourceParserImpl.y. Is bison installed? Is it in the PATH?");	
 		end
+		
+		if os.is("windows") then
+			-- in windows line macros dont work correctly
+			cmd = "bison --warnings=error " ..
+				" -o " .. normalizepath("src/Php54ResourceParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54ResourceParserImpl.y")
+		else 
+			cmd = "bison  --warnings=error " ..
+				" -o " .. normalizepath("src/Php54ResourceParserImpl.cpp") .. " " ..
+				normalizepath("src/Php54ResourceParserImpl.y")
+		end
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("Bison command failed for file src/Php54ResourceParserImpl.y. Is bison installed? Is it in the PATH?");	
+		end
 	end
 }
