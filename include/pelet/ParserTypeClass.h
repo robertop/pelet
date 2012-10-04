@@ -1009,6 +1009,8 @@ public:
 	pelet::TraitAliasClass* SetModifiers(pelet::SemanticValueClass* modifier);
 
 	pelet::TraitAliasClass* SetAlias(pelet::SemanticValueClass* alias);
+
+	pelet::TraitAliasClass* SetScope(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 };
 
 class PELET_API TraitInsteadOfClass : public StatementClass {

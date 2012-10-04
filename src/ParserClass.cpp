@@ -39,6 +39,7 @@ extern int php53_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 
 extern int php53_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
+extern int php54_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
 
 pelet::ParserClass::ParserClass()
 	: Lexer()
@@ -57,6 +58,10 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
+		}
+		else if (pelet::PHP_54 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php54_resource_parse(Lexer, rObservers) == 0;
 		}
 		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
@@ -80,6 +85,11 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
+		}
+		else if (pelet::PHP_54 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php54_resource_parse(Lexer, rObservers) == 0;
 			results.Scope = rObservers.GetScope();
 		}
 		else if (pelet::PHP_53 == Version) {
@@ -106,6 +116,10 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
+		}
+		else if (pelet::PHP_54 == Version && !VariableObserver && !ExpressionObserver) {
+			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
+			ret = php54_resource_parse(Lexer, rObservers) == 0;
 		}
 		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;

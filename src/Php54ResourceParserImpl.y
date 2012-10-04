@@ -773,7 +773,7 @@ class_statement:
 
 trait_use_statement:
 		T_USE
-		trait_list trait_adaptations				{ AST_PUSH_MERGE($$, $2, $3); }
+		trait_list trait_adaptations				{ $$ = $3->PushFront($2); }
 ;
 
 trait_list:
@@ -826,8 +826,8 @@ trait_method_reference_fully_qualified:
 ;
 
 trait_alias:
-		trait_method_reference T_AS trait_modifiers T_STRING		{ $$ = $1->SetModifiers($3)->SetAlias($4); }	
-	|	trait_method_reference T_AS member_modifier					{ $$ = $1->SetModifiers($3);}	
+		trait_method_reference T_AS trait_modifiers T_STRING		{ $$ = $1->SetModifiers($3)->SetAlias($4)->SetScope(observers.GetScope(), observers.GetCurrentNamespace()); }	
+	|	trait_method_reference T_AS member_modifier					{ $$ = $1->SetModifiers($3)->SetScope(observers.GetScope(), observers.GetCurrentNamespace()); }	
 ;
 
 trait_modifiers:
