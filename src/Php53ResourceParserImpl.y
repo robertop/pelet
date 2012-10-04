@@ -132,7 +132,7 @@
 %token <token> T_DEFAULT 528
 %token <token> T_DIR 529
 %token <token> T_DIV_EQUAL 530
-%token <token> T_DNUMBER 531
+%token <lexeme> T_DNUMBER 531
 %token <token> T_DO 532
 %token <lexeme> T_DOC_COMMENT 533
 %token <token> T_DOLLAR_OPEN_CURLY_BRACES 534
@@ -181,7 +181,7 @@
 %token <token> T_IS_SMALLER_OR_EQUAL 577
 %token <token> T_LINE 578
 %token <token> T_LIST 579
-%token <token> T_LNUMBER 580
+%token <lexeme> T_LNUMBER 580
 %token <token> T_LOGICAL_AND 581
 %token <token> T_LOGICAL_OR 582
 %token <token> T_LOGICAL_XOR 583
@@ -308,10 +308,10 @@
 %type <unused> exit_expr
 %type <unused> backticks_expr
 %type <unused> ctor_arguments
-%type <unused> common_scalar
+%type <statement> common_scalar
 %type <unused> static_scalar
 %type <unused> static_class_constant
-%type <unused> scalar
+%type <statement> scalar
 %type <unused> static_array_pair_list
 %type <isComma> possible_comma
 %type <unused> non_empty_static_array_pair_list
@@ -889,7 +889,7 @@ expr_without_variable:
 	|	expr '>' expr 														{ $$ = 0; }
 	|	expr T_IS_GREATER_OR_EQUAL expr										{ $$ = 0; }
 	|	expr T_INSTANCEOF class_name_reference								{ $$ = 0; }
-	|	'(' expr ')' 														{ $$ = 0; }
+	|	'(' expr ')' 														{ $$ = $2; }
 	|	expr '?' 
 		expr ':' 
 		expr																{ $$ = 0; }
@@ -905,7 +905,7 @@ expr_without_variable:
 	|	T_UNSET_CAST expr													{ $$ = 0; }
 	|	T_EXIT exit_expr													{ $$ = 0; }
 	|	'@'  expr															{ $$ = 0; }
-	|	scalar																{ $$ = 0; }
+	|	scalar																{ $$ = $1; }
 	|	T_ARRAY '(' array_pair_list ')'										{ $$ = 0; }
 	|	'`' backticks_expr '`'												{ $$ = 0; }
 	|	T_PRINT expr														{ $$ = 0; }
@@ -930,13 +930,39 @@ lexical_var_list:
 ;
 
 function_call:
-		namespace_name '('															
-		function_call_parameter_list	')'												{ $$ = observers.VariableMakeFunctionCall($1, $3, analyzer.GetLineNumber()); }
+		namespace_name '('																{ if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+																							observers.DoCaptureScalars = true; 
+																						  }
+																						}
+		function_call_parameter_list	')'												{ /* this parser is only interested in calls to the define function */
+																						  if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																							pelet::ConstantStatementClass* constStmt;
+																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $1, $4, analyzer.GetLineNumber());
+																							$$ = constStmt;
+																						  }
+																						  else {
+																							$$ = 0;
+																						  }
+																						  observers.DoCaptureScalars = false;	
+																						}
 	|	T_NAMESPACE T_NS_SEPARATOR 														
 		namespace_name '(' 																
 		function_call_parameter_list ')' 												{ $$ = 0; }
-	|	T_NS_SEPARATOR namespace_name '(' 												
-				function_call_parameter_list ')'										{ $$ = observers.VariableMakeFunctionCallFromAbsoluteNamespace($2, $4, analyzer.GetLineNumber()); }
+	|	T_NS_SEPARATOR namespace_name '(' 												{ if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+																							observers.DoCaptureScalars = true; 
+																						  }
+																						}
+				function_call_parameter_list ')'										{ /* this parser is only interested in calls to the define function */
+																						  if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																							pelet::ConstantStatementClass* constStmt;
+																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $2, $5, analyzer.GetLineNumber());
+																							$$ = constStmt;
+																						  }
+																						  else {
+																							$$ = 0;
+																						  }	
+																						  observers.DoCaptureScalars = false;
+																						}
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
 			function_call_parameter_list')'												{ $$ = 0; }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
@@ -1003,9 +1029,34 @@ ctor_arguments:
 
 
 common_scalar:
-		T_LNUMBER 															{ $$ = 0; }
-	|	T_DNUMBER 															{ $$ = 0; }
-	|	T_CONSTANT_ENCAPSED_STRING											{ $$ = 0; }
+		T_LNUMBER 															{ if (observers.DoCaptureScalars) {
+																				pelet::ScalarStatementClass* scalarStmt;
+																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
+																				$$ = scalarStmt;
+																			  }
+																			  else { 
+																			    $$ = 0; 
+																			  }
+																			}
+	|	T_DNUMBER 															{ 
+																			  if (observers.DoCaptureScalars) {
+																				pelet::ScalarStatementClass* scalarStmt;
+																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
+																				$$ = scalarStmt;
+																			  }
+																			  else { 
+																			    $$ = 0; 
+																			  }
+																			}
+	|	T_CONSTANT_ENCAPSED_STRING											{ if (observers.DoCaptureScalars) {
+																				pelet::ScalarStatementClass* scalarStmt;
+																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
+																				$$ = scalarStmt;
+																			  }
+																			  else { 
+																			    $$ = 0; 
+																			  }
+																			}
 	|	T_LINE 																{ $$ = 0; }
 	|	T_FILE 																{ $$ = 0; }
 	|	T_DIR   															{ $$ = 0; }
@@ -1019,7 +1070,7 @@ common_scalar:
 
 
 static_scalar: /* compile-time evaluated scalars */
-		common_scalar		
+		common_scalar									{ $$ = 0; }
 	|	namespace_name 									{ $$ = 0; }
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name		{ $$ = 0; }
 	|	T_NS_SEPARATOR namespace_name					{ $$ = 0; }
@@ -1039,7 +1090,7 @@ scalar:
 	|	namespace_name								{ $$ = 0; }
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = 0; }
 	|	T_NS_SEPARATOR namespace_name				{ $$ = 0; }
-	|	common_scalar								{ $$ = 0; }
+	|	common_scalar								{ $$ = $1; }
 	|	'"' encaps_list '"' 						{ $$ = 0; }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC	{ $$ = 0; }
 ;

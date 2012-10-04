@@ -465,7 +465,8 @@ public:
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
 		EXPRESSION,
-		VARIABLE		// 15
+		VARIABLE,		// 15
+		SCALAR
 	};
 	
 	Types Type;
@@ -874,6 +875,21 @@ class PELET_API ConstantStatementClass : public StatementClass {
 	
 	ConstantStatementClass();
 
+	/**
+	 * initialize a constant from the global namespace
+	 * @param functionName the name of the define/constant
+	 * @param params the parameters to the define() function,
+	 *        to get the name of the new constant
+	 * @param lineNumber the line number that the define is in
+	 */
+	void Init(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* params, int lineNumber);
+
+	/**
+	 * initialize a constant from the given namespace
+	 * @param name the name of the define
+	 * @param lineNumber the line number that the constant is in
+	 * @param currentNamespace the namespace the constant in found in
+	 */
 	void Init(pelet::SemanticValueClass* value, int lineNumber, const pelet::QualifiedNameClass& currentNamespace);
 };
 
@@ -1388,6 +1404,18 @@ public:
 	static pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
 	
 	pelet::ClassMemberSymbolClass* SetModifier(pelet::SemanticValueClass* modifierValue);
+};
+
+class PELET_API ScalarStatementClass : public StatementClass {
+
+public: 
+
+	UnicodeString Scalar;
+
+	ScalarStatementClass();
+
+	void Init(pelet::SemanticValueClass* value);
+
 };
 
 /**

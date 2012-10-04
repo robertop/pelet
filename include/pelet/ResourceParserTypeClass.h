@@ -35,6 +35,14 @@ class ResourceParserObserverClass {
 public:
 
 	/**
+	 * If TRUE, then the parser will capture scalar values. This is used to build an AST only in 
+	 * cases for calls to define() and include()/require(). Only in these cases do we want
+	 * to know the scalar values; turning this functionality off is done for performance 
+	 * reasons.
+	 */
+	bool DoCaptureScalars;
+
+	/**
 	 * This object will NOT own the observer pointers.
 	 * pointers must not be NULL.
 	 */
@@ -69,13 +77,6 @@ public:
 
 	const pelet::QualifiedNameClass& GetCurrentNamespace() const;
 	
-	/*************************************************
-	 make a function call; only when a define() call is made
-	**************************************************/
-	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-
-	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-
 	/*************************************************
 	 After all of the code has been parsed and statements created; notify the observers
 	**************************************************/

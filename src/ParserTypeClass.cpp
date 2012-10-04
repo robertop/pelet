@@ -52,6 +52,22 @@ pelet::ConstantStatementClass::ConstantStatementClass()
 
 }
 
+void pelet::ConstantStatementClass::Init(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* params, int lineNumber) {
+	if (functionName) {
+		Comment = functionName->Comment;
+	}
+	if (params && params->Size() >= 2) {
+		if (params->TypeAt(0) == pelet::StatementClass::SCALAR) {
+			Name = ((pelet::ScalarStatementClass*)params->At(0))->Scalar;
+		}
+		if (params->TypeAt(1) == pelet::StatementClass::SCALAR) {
+			Value = ((pelet::ScalarStatementClass*)params->At(1))->Scalar;
+		}
+	}
+	LineNumber = lineNumber;
+	NamespaceName = UNICODE_STRING_SIMPLE("\\");
+}
+
 void pelet::ConstantStatementClass::Init(pelet::SemanticValueClass* value, int lineNumber, const pelet::QualifiedNameClass& currentNamespace) {
 	if (value) {
 		Name = value->Lexeme;
@@ -79,7 +95,7 @@ size_t pelet::StatementListClass::Size() const {
 }
 
 pelet::StatementClass::Types pelet::StatementListClass::TypeAt(size_t index) const {
-	if (index < Statements.size()) {
+	if (index < Statements.size() && Statements[index] != NULL) {
 		return Statements[index]->Type;
 	}
 	return pelet::StatementClass::NIL;
@@ -193,6 +209,8 @@ void pelet::TraitUseClass::Init(pelet::QualifiedNameClass* usedTrait,
 	if (usedTrait) {
 		UsedTraits.push_back(scope.AbsoluteNamespaceClass(*usedTrait, currentNamespace));
 	}
+	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	ClassName = scope.ClassName;
 }
 
 pelet::TraitUseClass* pelet::TraitUseClass::AppendUse(pelet::QualifiedNameClass* usedTrait,
@@ -216,6 +234,8 @@ pelet::TraitInsteadOfClass::TraitInsteadOfClass()
 void pelet::TraitInsteadOfClass::Init(pelet::QualifiedNameClass* insteadOfClass, 
 		  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	AppendInsteadOf(insteadOfClass, scope, currentNamespace);
+	ClassName = scope.ClassName;
+	NamespaceName = currentNamespace.ToAbsoluteSignature();
 }
 
 pelet::TraitInsteadOfClass* pelet::TraitInsteadOfClass::AppendInsteadOf(pelet::QualifiedNameClass *insteadOfClass, 
@@ -274,6 +294,12 @@ pelet::TraitAliasClass* pelet::TraitAliasClass::SetAlias(pelet::SemanticValueCla
 	if (aliasLexeme) {
 		Alias = aliasLexeme->Lexeme;
 	}
+	return this;
+}
+
+pelet::TraitAliasClass* pelet::TraitAliasClass::SetScope(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	ClassName = scope.ClassName;
+	NamespaceName = currentNamespace.ToAbsoluteSignature();
 	return this;
 }
 
@@ -1224,3 +1250,14 @@ pelet::VariablePropertyClass::VariablePropertyClass()
 	, IsStatic(false) {
 }
 
+pelet::ScalarStatementClass::ScalarStatementClass()
+	: StatementClass(pelet::StatementClass::SCALAR) 
+	, Scalar() {
+
+}
+
+void pelet::ScalarStatementClass::Init(pelet::SemanticValueClass *value) {
+	if (value) {
+		Scalar = value->Lexeme;
+	}
+}

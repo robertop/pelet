@@ -56,6 +56,8 @@ int ResourceSemanticValue(pelet::ResourceParserTypeClass* value, pelet::LexicalA
 		pelet::T_COMMENT == ret ||
 		pelet::T_CONST  == ret ||
 		pelet::T_CONSTANT_ENCAPSED_STRING == ret ||
+		pelet::T_LNUMBER == ret || 
+		pelet::T_DNUMBER == ret ||
 		pelet::T_DOC_COMMENT == ret ||
 		pelet::T_ENCAPSED_AND_WHITESPACE == ret ||
 		pelet::T_FINAL == ret ||
@@ -275,7 +277,8 @@ void pelet::NotifyMagicMethodsAndProperties(pelet::ClassMemberObserverClass* mem
 pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObserverClass* classObserver,
 		pelet::ClassMemberObserverClass* memberObserver,
 		pelet::FunctionObserverClass* functionObserver)
-	: AllStatements() 
+	: DoCaptureScalars(false)
+	, AllStatements() 
 	, Scope()
 	, CurrentNamespace()
 	, Class(classObserver)
@@ -319,60 +322,6 @@ void pelet::ResourceParserObserverClass::SetCurrentNamespace(pelet::QualifiedNam
 		CurrentNamespace.MakeAbsolute();
 		Scope.NamespaceName.remove();
 	}
-}
-
-pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
-	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-
-	newVar->LineNumber = lineNumber;
-	if (functionName) {
-		newVar->Comment = functionName->Comment;
-	}
-	std::vector<pelet::ExpressionClass> varCallArguments;
-	if (callArguments) {
-		for (size_t i = 0; i < callArguments->Size(); ++i) {
-			pelet::StatementClass::Types type =  callArguments->TypeAt(i);
-			if (pelet::StatementClass::EXPRESSION == type) {
-				pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-				varCallArguments.push_back(*singleExpr);
-			}
-			else if (pelet::StatementClass::VARIABLE == type) {
-				pelet::VariableClass* var = (pelet::VariableClass*) callArguments->At(i);
-				pelet::ExpressionClass singleExpr(var->Scope);
-				singleExpr.Copy(*var);
-				varCallArguments.push_back(singleExpr);
-			}
-		}
-	}
-
-	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
-	UnicodeString fullFunctionName = Scope.AbsoluteNamespaceClass(*functionName, CurrentNamespace);
-	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
-	AllStatements.push_back(newVar);
-	return newVar;
-}
-
-pelet::VariableClass* pelet::ResourceParserObserverClass::VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber) {
-	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-	if (functionName) {
-		functionName->MakeAbsolute();
-	}
-	std::vector<pelet::ExpressionClass> varCallArguments;
-	if (callArguments) {
-		for (size_t i = 0; i < callArguments->Size(); ++i) {
-			pelet::StatementClass::Types type =  callArguments->TypeAt(i);
-			if (pelet::StatementClass::EXPRESSION == type) {
-				pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
-				varCallArguments.push_back(*singleExpr);
-			}
-		}
-	}
-	if (functionName) {
-		UnicodeString fullFunctionName = functionName->ToAbsoluteSignature() ;
-		newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
-		AllStatements.push_back(newVar);
-	}
-	return newVar;
 }
 
 void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
@@ -424,19 +373,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			}
 			break;
 		case pelet::StatementClass::EXPRESSION:
-			/*
-			if (Class) {
-
-				// check for define() function calls, these are constants
-				pelet::ExpressionClass * expr = (pelet::ExpressionClass*)stmt;
-				if (expr->ChainList.size() == 1 &&
-						expr->ChainList[0].Name.caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0 && 
-						2 == expr->ChainList[0].CallArguments.size()) {
-					Class->DefineDeclarationFound(UNICODE_STRING_SIMPLE(""), expr->ChainList[0].CallArguments[0].FirstValue(),
-												  expr->ChainList[0].CallArguments[1].FirstValue(),
-												  expr->Comment, expr->LineNumber);
-				}
-			}*/
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
 			if (Function) {
