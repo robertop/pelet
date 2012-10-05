@@ -361,7 +361,7 @@
 %type <unused> encaps_list
 %type <unused> encaps_var
 %type <unused> encaps_var_offset
-%type <unused> internal_functions_in_yacc
+%type <statement> internal_functions_in_yacc
 %type <unused> isset_variables
 %type <unused> class_constant
 
@@ -1007,7 +1007,7 @@ expr_without_variable:
 		expr																{ $$ = 0; }
 	|	expr '?' ':' 
 		expr																{ $$ = 0; }
-	|	internal_functions_in_yacc											{ $$ = 0; }
+	|	internal_functions_in_yacc											{ $$ = $1; }
 	|	T_INT_CAST expr 													{ $$ = 0; }
 	|	T_DOUBLE_CAST expr 													{ $$ = 0; }
 	|	T_STRING_CAST expr													{ $$ = 0; }
@@ -1016,7 +1016,7 @@ expr_without_variable:
 	|	T_BOOL_CAST expr													{ $$ = 0; }
 	|	T_UNSET_CAST expr													{ $$ = 0; }
 	|	T_EXIT exit_expr													{ $$ = 0; }
-	|	'@'  expr															{ $$ = 0; }
+	|	'@'  expr															{ $$ = $2; }
 	|	scalar																{ $$ = $1; }
 	|	T_ARRAY '(' array_pair_list ')'										{ $$ = 0; }
  	|	'[' array_pair_list ']'												{ $$ = 0; }					
@@ -1395,13 +1395,32 @@ encaps_var_offset:
 internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')'			{ $$ = 0; }
 	|	T_EMPTY '(' variable ')'				{ $$ = 0; }
-	|	T_INCLUDE expr  						{ $$ = 0; } 
-	|	T_INCLUDE_ONCE expr 					{ $$ = 0; } 
+	|	T_INCLUDE								{ observers.DoCaptureScalars = true; }
+		expr  									{ pelet::IncludeStatementClass* includeStmt;
+												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
+												  $$ = includeStmt;
+												  observers.DoCaptureScalars = false;  
+												} 
+	|	T_INCLUDE_ONCE							{ observers.DoCaptureScalars = true; }
+		expr 									{ pelet::IncludeStatementClass* includeStmt;
+												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
+												  $$ = includeStmt;
+												  observers.DoCaptureScalars = false;  
+												} 
 	|	T_EVAL '(' expr ')' 					{ $$ = 0; }
-	|	T_REQUIRE expr  						{ $$ = 0; } 
-	|	T_REQUIRE_ONCE expr 					{ $$ = 0; } 
+	|	T_REQUIRE								{ observers.DoCaptureScalars = true; }
+		expr  									{ pelet::IncludeStatementClass* includeStmt;
+												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
+												  $$ = includeStmt;
+												  observers.DoCaptureScalars = false;  
+												} 
+	|	T_REQUIRE_ONCE							{ observers.DoCaptureScalars = true; }
+		expr 									{ pelet::IncludeStatementClass* includeStmt;
+												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
+												  $$ = includeStmt;
+												  observers.DoCaptureScalars = false;  
+												}	 
 ;
-
 isset_variables:
 		variable 							{ $$ = 0; }
 	|	isset_variables ','  variable		{ $$ = 0; }

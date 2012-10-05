@@ -336,7 +336,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		UnicodeString signature;
 		UnicodeString returnType;
 		UnicodeString comment;
-		pelet::ExpressionClass* expr;
 		UnicodeString propType;
 		pelet::TokenClass::TokenIds visibility;
 		pelet::NamespaceDeclarationClass* declaration;
@@ -344,6 +343,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		pelet::TraitAliasClass* traitAlias;
 		pelet::TraitUseClass* traitUse;
 		pelet::TraitInsteadOfClass* traitInsteadOf;
+		pelet::IncludeStatementClass* include;
 		switch(type) {
 		case pelet::StatementClass::ASSIGNMENT:
 			break;
@@ -397,17 +397,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			break;
 		case pelet::StatementClass::INCLUDE_STATEMENT:
 			if (Class) {
-				expr = (pelet::ExpressionClass*)stmt;
-				if (pelet::ExpressionClass::SCALAR == expr->ExpressionType) {
-					Class->IncludeFound(expr->FirstValue(), expr->LineNumber);
-				} else {
-
-					// not sure what to do for include statements
-					// with variables; ie. " include $file; "
-					// for now just propagate an empty name
-					UnicodeString empty;
-					Class->IncludeFound(empty, expr->LineNumber);
-				}
+				include = (pelet::IncludeStatementClass*) stmt;
+				Class->IncludeFound(include->File, include->LineNumber);
 			}
 			break;
 		case pelet::StatementClass::ASSIGNMENT_LIST:

@@ -1256,8 +1256,22 @@ pelet::ScalarStatementClass::ScalarStatementClass()
 
 }
 
-void pelet::ScalarStatementClass::Init(pelet::SemanticValueClass *value) {
+void pelet::ScalarStatementClass::Init(pelet::SemanticValueClass* value) {
 	if (value) {
 		Scalar = value->Lexeme;
+	}
+}
+
+pelet::IncludeStatementClass::IncludeStatementClass() 
+	: StatementClass(pelet::StatementClass::INCLUDE_STATEMENT)
+	, File() 
+	, LineNumber(0) {
+
+}
+
+void pelet::IncludeStatementClass::Init(pelet::StatementClass* scalar, int lineNumber) {
+	LineNumber = lineNumber;
+	if (scalar && pelet::StatementClass::SCALAR == scalar->Type) {
+		File = ((pelet::ScalarStatementClass*)scalar)->Scalar;
 	}
 }

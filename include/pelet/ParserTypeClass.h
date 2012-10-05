@@ -1418,6 +1418,27 @@ public:
 
 };
 
+class PELET_API IncludeStatementClass : public StatementClass {
+
+public: 
+
+	/**
+	 * The file being included.  This is only valid when the include
+	 * / require statement has a scalar as the parameter
+	 */
+	UnicodeString File;
+
+	/**
+	 * The line number where the include statement was found.
+	 */
+	int LineNumber;
+
+	IncludeStatementClass();
+
+	void Init(pelet::StatementClass* scalar, int lineNumber);
+
+};
+
 /**
  * This is the parser type that the bison parser uses. A grammar rules outputs
  * to exactly ONE of these properties
