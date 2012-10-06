@@ -484,6 +484,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				}
 			}
 			break;
+		case pelet::StatementClass::SCALAR:
+			break;
 		}
 	}
 }

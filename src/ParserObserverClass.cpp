@@ -889,6 +889,8 @@ void pelet::ObserverQuadClass::MakeAst(pelet::StatementListClass* statements) {
 				}
 			}
 			break;
+		case pelet::StatementClass::SCALAR:
+			break;
 		}
 	}
 }
