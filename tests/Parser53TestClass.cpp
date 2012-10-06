@@ -1051,6 +1051,21 @@ TEST_FIXTURE(Parser53TestClass, ScanFileShouldReturnScopeBadCode) {
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
 }
 
+TEST_FIXTURE(Parser53TestClass, ScanStringShouldReturnScopeBadCode) {
+	UnicodeString code = _U(
+		"<?php "
+		"class MyClass { "
+		" function myFunct() { "
+		"   $'gag's = 'hello' \"again\" $not gaging; "
+		" }"
+		"}");
+	CHECK_EQUAL(false, Parser.ScanString(code, LintResults));
+	CHECK(LintResults.Error.length() > 0);
+	CHECK(LintResults.LineNumber > 0);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+}
+
 TEST_FIXTURE(Parser53ExpressionTestClass, ParseVariableExpression) {
 	UnicodeString code = _U("$variable");
 	Parser.ParseExpression(code, Expr);
