@@ -1100,7 +1100,7 @@ variable:
 		T_OBJECT_OPERATOR object_property 
 		method_or_not							
 		variable_properties						{ $$ = observers.VariableMake($1, $3, $4, $5); }
-	|	base_variable_with_function_calls		{ $$ = observers.VariableMake($1, NULL, false, NULL); }
+	|	base_variable_with_function_calls		{ $$ = observers.VariableMake($1, NULL, NULL, NULL); }
 ;
 
 variable_properties:
@@ -1160,7 +1160,7 @@ base_variable:
 ;
 
 reference_variable:
-		reference_variable '[' dim_offset ']'		{ $$ = $$ = observers.VariableAppendArrayOffset($1, $3); }
+		reference_variable '[' dim_offset ']'		{ $$ = observers.VariableAppendArrayOffset($1, $3); }
 	|	reference_variable '{' expr '}'				{ $$ = observers.VariableNil(); }
 	|	compound_variable
 ;
