@@ -27,6 +27,7 @@
 #include <TestRunner.h>
 #include <unicode/uclean.h>
 #include <vector>
+#include <string.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -119,7 +120,7 @@ public:
 // run all tests
 int main(int argc, char **argv) {
 	// change if you want to run only one test
-	bool runAll = false;
+	bool runAll = true;
 	const char* suiteToRun = "Parser53TestClass";
 	std::vector<const char*> testCasesToRun;
 	//testCasesToRun.push_back("ScanFileShouldNotifyClassObserver");
