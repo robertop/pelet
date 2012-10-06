@@ -58,16 +58,20 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
 		}
 		else if (pelet::PHP_54 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php54_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
 		}
 		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		else if (pelet::PHP_54 == Version) {
 			ret = php54parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
@@ -116,20 +120,24 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
 		}
 		else if (pelet::PHP_54 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php54_resource_parse(Lexer, rObservers) == 0;
+			results.Scope = rObservers.GetScope();
 		}
 		else if (pelet::PHP_53 == Version) {
 			ret = php53parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		else if (pelet::PHP_54 == Version) {
 			ret = php54parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
-		results.Scope = observers.CurrentScope();
+		
 		results.LineNumber = Lexer.GetLineNumber();
 		results.CharacterPosition = Lexer.GetCharacterPosition();
 		Close();
