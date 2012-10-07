@@ -725,12 +725,30 @@ function_call_parameter_list:
 ;
 
 non_empty_function_call_parameter_list:
-		expr_without_variable												{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
-	|	variable															{ AST_INIT_ARGS($$, pelet::StatementListClass, $1); }
-	|	'&' w_variable														{ AST_INIT_ARGS($$, pelet::StatementListClass, $2); }
-	|	non_empty_function_call_parameter_list ',' expr_without_variable	{ $$ = $1->Push($3); }
-	|	non_empty_function_call_parameter_list ',' variable					{ $$ = $1->Push($3); }
-	|	non_empty_function_call_parameter_list ',' '&' w_variable			{ $$ = $1->Push($4); }
+		expr_without_variable												{ if (observers.DoCaptureCallArguments) {
+																				AST_INIT_ARGS($$, pelet::StatementListClass, $1);
+																			  }
+																			  else {
+																				$$ = 0;
+																			  }
+																			}
+	|	variable															{ if (observers.DoCaptureCallArguments) {
+																				AST_INIT_ARGS($$, pelet::StatementListClass, $1);
+																			  }
+																			  else {
+																				$$ = 0;
+																			  } 
+																			}
+	|	'&' w_variable														{ if (observers.DoCaptureCallArguments) {
+																				AST_INIT_ARGS($$, pelet::StatementListClass, $2);
+																			  }
+																			  else {
+																				$$ = 0;
+																			  }
+																			}
+	|	non_empty_function_call_parameter_list ',' expr_without_variable	{ $$ = $1 ? $1->Push($3) : 0; }
+	|	non_empty_function_call_parameter_list ',' variable					{ $$ = $1 ? $1->Push($3) : 0; }
+	|	non_empty_function_call_parameter_list ',' '&' w_variable			{ $$ = $1 ? $1->Push($4) : 0; }
 ;
 
 global_var_list:
@@ -1046,7 +1064,8 @@ lexical_var_list:
 
 function_call:
 		namespace_name '('																{ if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
-																							observers.DoCaptureScalars = true; 
+																							observers.DoCaptureScalars = true;
+																							observers.DoCaptureCallArguments = true; 
 																						  }
 																						}
 		function_call_parameter_list	')'												{ /* this parser is only interested in calls to the define function */
@@ -1059,12 +1078,14 @@ function_call:
 																							$$ = 0;
 																						  }
 																						  observers.DoCaptureScalars = false;	
+																						  observers.DoCaptureCallArguments = false; 
 																						}
 	|	T_NAMESPACE T_NS_SEPARATOR 														
 		namespace_name '(' 																
 		function_call_parameter_list ')' 												{ $$ = 0; }
 	|	T_NS_SEPARATOR namespace_name '(' 												{ if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
 																							observers.DoCaptureScalars = true; 
+																							observers.DoCaptureCallArguments = true; 
 																						  }
 																						}	
 				function_call_parameter_list ')'										{ /* this parser is only interested in calls to the define function */
@@ -1077,6 +1098,7 @@ function_call:
 																							$$ = 0;
 																						  }	
 																						  observers.DoCaptureScalars = false;
+																						  observers.DoCaptureCallArguments = false; 
 																						}
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
 			function_call_parameter_list')'												{ $$ = 0; }

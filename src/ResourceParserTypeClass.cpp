@@ -278,6 +278,7 @@ pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObse
 		pelet::ClassMemberObserverClass* memberObserver,
 		pelet::FunctionObserverClass* functionObserver)
 	: DoCaptureScalars(false)
+	, DoCaptureCallArguments(false)
 	, AllStatements() 
 	, Scope()
 	, CurrentNamespace()

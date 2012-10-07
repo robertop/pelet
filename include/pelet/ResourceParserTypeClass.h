@@ -43,6 +43,14 @@ public:
 	bool DoCaptureScalars;
 
 	/**
+	 * If TRUE then the parser will capture function arguments.  This is used
+	 * to capture constant names defined by the define() function. Only in this case do we want
+	 * to know the function arguments; turning this functionality off is done for performance 
+	 * reasons.
+	 */
+	bool DoCaptureCallArguments;
+
+	/**
 	 * This object will NOT own the observer pointers.
 	 * pointers must not be NULL.
 	 */
