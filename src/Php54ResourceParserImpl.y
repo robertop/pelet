@@ -36,21 +36,10 @@
 #define YYSTYPE pelet::ResourceParserTypeClass
 
 // so that both bison parses call the same lex function
-#define php54_resource_lex ResourceSemanticValue
+#define php54_resource_lex pelet::ResourceLex
 
 // so that both bison parses call the same error function
-#define php54_resource_error ResourceGrammarError
-
-
-#define AST_INIT(dest, clazz) dest = new clazz; observers.Adopt(dest);
-
-#define AST_INIT_ARGS(dest, clazz, ...) dest = new clazz; dest->Init(__VA_ARGS__); observers.Adopt(dest);
-
-#define AST_MERGE(stmtListDest, stmtListSrc) stmtListDest = stmtListSrc;
-
-#define AST_PUSH_MERGE(stmtListDest, stmt, stmtListSrc) stmtListDest = stmtListSrc; stmtListDest->Push(stmt);
-
-#define AST_PUSH_ALL_MERGE(stmtListDest, stmtListSrcA, stmtListSrcB) stmtListDest = stmtListSrcA; stmtListDest->PushAll(stmtListSrcB);
+#define php54_resource_error pelet::ResourceGrammarError
 
 %}
 

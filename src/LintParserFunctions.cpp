@@ -24,7 +24,7 @@
  */	
 #include <pelet/LintParserFunctions.h>
 
-int NextLintSemanticValue(int* value, pelet::LexicalAnalyzerClass& analyzer) {
+int pelet::LintLex(int* value, pelet::LexicalAnalyzerClass& analyzer) {
 	int ret = analyzer.NextToken();
 
 	// ignore these token; there are no parse rules for them
@@ -45,7 +45,7 @@ int NextLintSemanticValue(int* value, pelet::LexicalAnalyzerClass& analyzer) {
 	return ret;
 }
 
-void LintGrammarError(pelet::LexicalAnalyzerClass& analyzer, std::string msg) {
+void pelet::LintGrammarError(pelet::LexicalAnalyzerClass& analyzer, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);

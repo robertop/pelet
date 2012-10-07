@@ -38,7 +38,7 @@ static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& v
 	}
 }
 
-int ResourceSemanticValue(pelet::ResourceParserTypeClass* value, pelet::LexicalAnalyzerClass& analyzer, 
+int pelet::ResourceLex(pelet::ResourceParserTypeClass* value, pelet::LexicalAnalyzerClass& analyzer, 
 						  pelet::ResourceParserObserverClass& observers) {
 	int ret = analyzer.NextToken();
 
@@ -109,7 +109,7 @@ int ResourceSemanticValue(pelet::ResourceParserTypeClass* value, pelet::LexicalA
 	return ret;
 }
 
-void ResourceGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers, std::string msg) {
+void pelet::ResourceGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers, std::string msg) {
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);

@@ -111,10 +111,10 @@
 #define YYSTYPE int
 
 // so that both bison parses call the same lex function
-#define php53_lint_lex NextLintSemanticValue
+#define php53_lint_lex pelet::LintLex
 
 // so that both bison parses call the same error function
-#define php53_lint_error LintGrammarError
+#define php53_lint_error pelet::LintGrammarError
 
 
 
