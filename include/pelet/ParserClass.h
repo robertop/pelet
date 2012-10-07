@@ -27,7 +27,7 @@
 
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/TokenClass.h>
-#include <pelet/ParserObserverClass.h>
+#include <pelet/ParserTypeClass.h>
 #include <unicode/unistr.h>
 #include <pelet/Api.h>
 

@@ -1,7 +1,7 @@
 %{
 	
 #include <pelet/LexicalAnalyzerClass.h>
-#include <pelet/ParserObserverClass.h>
+#include <pelet/FullParserObserverClass.h>
 #include <pelet/TokenClass.h>
  
  #if defined(_MSC_VER)
@@ -11,17 +11,17 @@
 #define YYSTYPE pelet::ParserType
 
 // so that both bison parses call the same lex function
-#define php54lex NextSemanticValue
+#define php54lex pelet::FullLex
 
 // so that both bison parses call the same error function
-#define php54error GrammarError
+#define php54error pelet::FullGrammarError
 
 %}
 
 %parse-param { pelet::LexicalAnalyzerClass &analyzer }
-%parse-param { pelet::ObserverQuadClass& observers }
+%parse-param { pelet::FullParserObserverClass& observers }
 %lex-param  { pelet::LexicalAnalyzerClass &analyzer }
-%lex-param { pelet::ObserverQuadClass& observers }
+%lex-param { pelet::FullParserObserverClass& observers }
 
 %define api.pure
 %expect 3

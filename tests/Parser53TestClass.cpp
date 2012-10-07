@@ -23,7 +23,6 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <UnitTest++.h>
-#include <pelet/ParserObserverClass.h>
 #include <pelet/ParserClass.h>
 #include <FileTestFixtureClass.h>
 #include <TestObserverClass.h>

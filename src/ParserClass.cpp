@@ -24,6 +24,7 @@
  */
 #include <pelet/ParserClass.h>
 #include <pelet/TokenClass.h>
+#include <pelet/FullParserObserverClass.h>
 #include <pelet/ResourceParserObserverClass.h>
 #include <stack>
 
@@ -32,9 +33,6 @@
  * Bison won't put this declaration in the header file so we must
  * manually make it available here by using "extern"
  */
-extern int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
-extern int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
-
 extern int php53_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 
@@ -54,7 +52,7 @@ pelet::ParserClass::ParserClass()
 bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		pelet::FullParserObserverClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
@@ -85,7 +83,7 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
-		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		pelet::FullParserObserverClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
@@ -116,7 +114,7 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
-		pelet::ObserverQuadClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
+		pelet::FullParserObserverClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
 		if (pelet::PHP_53 == Version && !VariableObserver && !ExpressionObserver) {
 			pelet::ResourceParserObserverClass rObservers(ClassObserver, ClassMemberObserver, FunctionObserver);
 			ret = php53_resource_parse(Lexer, rObservers) == 0;
@@ -277,7 +275,7 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 	expression.Clear();
 
 	pelet::ParserVariableObserverClass localObserver;
-	pelet::ObserverQuadClass observers(NULL, NULL, NULL, NULL, &localObserver);
+	pelet::FullParserObserverClass observers(NULL, NULL, NULL, NULL, &localObserver);
 
 	// parse the given expression code snippet
 	// most of the time, the expression observer will NOT be called because 

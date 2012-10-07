@@ -55,7 +55,7 @@ we can then call from anywhere in our program.
 
 \section ParserImplementationDetailsInput Input
 We define the inputs to the php53parse function by using the %parse-param directive, this will make it so 
-that the php53parse and the php53lex functionx accept a pelet::LexicalAnalyzerClass as 
+that the php53parse and the php53lex functions accept a pelet::LexicalAnalyzerClass as 
 an argument.
 We define a php53lex function, and in that function we will use 
 pelet::LexicalAnalyzerClass::NextToken to get the next token from the
@@ -121,14 +121,14 @@ added to the sub list and the new list is returned.
 
 The grammar file contains the entire PHP grammar; most of the rules don't have actions because
 we are not interested in them; but the ones we are interested in have actions.  In our case,
-we delegate most of the work to the pelet::ObserverQuadClass and the rules contain just 1-liner
+we delegate most of the work to the pelet::FullParserObserverClass and the rules contain just 1-liner
 method calls. This makes the code a bit more IDE-friendly. Another reason -  a very important one -
 that the grammar file and ParserObserverClass are designed this way is to make it easy to implement 
 the PHP syntax correctly. Since there is no official PHP language specification, the only sure way to know
 that we implemented the PHP syntax correctly is to use the actual PHP grammar file.
 
 \section ParserImplementationDetailsObserver Observer Quad
-An ObserverQuadClass is an object that holds the observers (the objects that want to be notified
+An FullParserObserverClass is an object that holds the observers (the objects that want to be notified
 of source code artifacts like classes, functions, etc..). It gets passed in as a parameter to 
 the php53parse and the php53lex functions just like the lexer. The different methods of
 the ObserverQuad get called as the different bison rules are triggered, as in for example
@@ -160,7 +160,7 @@ to $$, the calling rule will take the resulting object and store it in a Stateme
 When a new PHP version updates the grammar; we must update the rules.  The simplest way to do this 
 would be to diff the PHP grammar file with its prior versions, taking the new rules, gutting them (removing
 the action block), and adding them to Php53ParserImpl.y.  If any new artifacts become available, then 
-we should create new methods in the ObserverQuadClass, and possibly new interfaces that will expose
+we should create new methods in the FullParserObserverClass, and possibly new interfaces that will expose
 the new artifacts to the users of the pelet library.
 */
 
@@ -171,25 +171,25 @@ the new artifacts to the users of the pelet library.
  * This class will also hold the current scope as the parser is parsing the code, acting as a 'global'
  * that the parser can use to store data accross multiple grammar rules.
  * 
- * A word about memory allocation. The ObserverQuadClass will keep track of all pointers returned
+ * A word about memory allocation. The FullParserObserverClass will keep track of all pointers returned
  * by ALL methods and delete them at the end when a file is finished being parsed. All of the pointers
- * returned by all methods of the ObserverQuadClass will be owned by ObserverQuadClass and will
+ * returned by all methods of the FullParserObserverClass will be owned by ObserverQuadClass and will
  * be deleted when ObserverQuadClass goes out of scope.  We do to simplify memory management
  * as the parser (1) may encounter ambigous code, in which case it has to execute rule, "back up"
  * to the previous rule, and execute another rule, or (2) source code  contains a syntax error
  */
-class PELET_API ObserverQuadClass {
+class PELET_API FullParserObserverClass {
 
 public:
 
 	/**
 	 * Each observer may be NULL. This class will NOT own the pointers.
 	 */
-	ObserverQuadClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
+	FullParserObserverClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
 		FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver, 
 		ExpressionObserverClass* expressionObserver);
 
-	~ObserverQuadClass();
+	~FullParserObserverClass();
 
 	/**
 	 * This method will allocate new string pointers for the Lexeme and Comment;
@@ -388,17 +388,25 @@ private:
 	std::vector<AstItemClass*> AllAstItems;
 };
 
-}
-
 /**
  * This function will get the next token from the lexer and will create a new SemanticValue (token + lexeme) 
  * from it.
  */
-int NextSemanticValue(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers);
+int FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 /**
  * this function will set the error that comes from bison and put it in the LexicalAnalyzer class.
  */
-void GrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ObserverQuadClass& observers, std::string msg);
+void FullGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers, std::string msg);
+
+}
+
+/* 
+ * generated by Bison according to the prefix of our choosing
+ * Bison won't put this declaration in the header file so we must
+ * manually make it available here by using "extern"
+ */
+int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
+int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 #endif

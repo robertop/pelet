@@ -25,7 +25,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
 #include <pelet/LexicalAnalyzerClass.h>
-#include <pelet/ParserObserverClass.h>
+#include <pelet/FullParserObserverClass.h>
  
  #if defined(_MSC_VER)
     #pragma warning(disable:4065) // Bison generates a switch statement without a case
@@ -34,17 +34,17 @@
 #define YYSTYPE pelet::ParserType
 
 // all PHP parsers will use same lex function
-#define php53lex NextSemanticValue
+#define php53lex pelet::FullLex
 
 // all PHP parsers will use the same error function
-#define php53error GrammarError
+#define php53error pelet::FullGrammarError
 
 %}
 
 %parse-param { pelet::LexicalAnalyzerClass &analyzer }
-%parse-param { pelet::ObserverQuadClass& observers }
+%parse-param { pelet::FullParserObserverClass& observers }
 %lex-param  { pelet::LexicalAnalyzerClass &analyzer }
-%lex-param { pelet::ObserverQuadClass& observers }
+%lex-param { pelet::FullParserObserverClass& observers }
 
 /**
  * This parser was ripped from the PHP source (version 5.3.6). All credit goes to them.
