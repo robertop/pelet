@@ -162,6 +162,19 @@ would be to diff the PHP grammar file with its prior versions, taking the new ru
 the action block), and adding them to Php53ParserImpl.y.  If any new artifacts become available, then 
 we should create new methods in the FullParserObserverClass, and possibly new interfaces that will expose
 the new artifacts to the users of the pelet library.
+
+\section Multiple Parser implementations
+pelet has three different parsers for each PHP version; a lint parser, a resource parser, and a full parser. 
+
+The lint parser is the quickest parser but it does not gather any info; its only purpose is to check whether
+a piece of source code is valid PHP code. These are defined in Php53LintParser.cpp and Php54LintParser.cpp.
+
+The resource parser is not as quick, but it gathers class, method, function, traits, and defined constants
+info (does not gather local variables or function calls).  These are defined in 
+Php53ResourceParser.cpp and Php54ResourceParser.cpp.
+
+The full parser is the slowest, but it gathers all expressions; including local variables and function
+calls. These are defined in Php53FullParser.cpp and Php54FullParser.cpp.
 */
 
 

@@ -260,6 +260,9 @@ public:
 	 * Set the variable observer.  The observer will get notified when a new variable has been created.
 	 * Memory management of this pointer should be done by the caller.
 	 * 
+	 * There are performance implications if you call this method; if you want to be notified 
+	 * of variables then the full PHP parser is used; and parsing a file can be memory intensive.
+	 *
 	 * @param VariableObserverClass* observer the object to sent notifications to 
 	 */
 	void SetVariableObserver(VariableObserverClass* observer);
@@ -267,13 +270,18 @@ public:
 	/**
 	 * Set the expression observer.  The observer will get notified when a new expression has been created.
 	 * Memory management of this pointer should be done by the caller.
-	 * 
+	 *
+	 * There are performance implications if you call this method; if you want to be notified 
+	 * of expressions then the full PHP parser is used; and parsing a file can be memory intensive.
+	 *
 	 * @param ExpressionObserverClass* observer the object to sent notifications to 
 	 */
 	void SetExpressionObserver(ExpressionObserverClass* expressionObserver);
 	
 	/**
-	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3.
+	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3
+	 * or PHP 5.4 depending on whether SetVersion() was called.
+	 *
 	 * Note that this is not entirely the same as 'php -l' command; the PHP lint command detects 
 	 * duplicate function  / class names where as this lint check method does not.
 	 *
@@ -290,7 +298,9 @@ public:
 	bool LintFile(const std::string& file, LintResultsClass& results);
 
 	/**
-	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3.
+	 * Perform a TRUE PHP syntax check on the entire file. This syntax check is based on PHP 5.3
+	 * or PHP 5.4 depending on whether SetVersion() was called.
+	 *
 	 * Note that this is not entirely the same as 'php -l' command; the PHP lint command detects 
 	 * duplicate function  / class names where as this lint check method does not.
 	 *
