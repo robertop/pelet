@@ -103,7 +103,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
 #include <pelet/LexicalAnalyzerClass.h>
-#include <pelet/ResourceParserTypeClass.h>
+#include <pelet/ResourceParserObserverClass.h>
 #include <pelet/LintParserFunctions.h>
 #include <pelet/TokenClass.h>
  

@@ -22,7 +22,7 @@
  * @copyright  2012 Roberto Perpuly
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */	
-#include <pelet/ResourceParserTypeClass.h>
+#include <pelet/ResourceParserObserverClass.h>
 #include <pelet/TokenClass.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>

@@ -24,7 +24,7 @@
  */
 #include <pelet/ParserClass.h>
 #include <pelet/TokenClass.h>
-#include <pelet/ResourceParserTypeClass.h>
+#include <pelet/ResourceParserObserverClass.h>
 #include <stack>
 
 /* 

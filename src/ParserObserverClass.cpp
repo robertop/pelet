@@ -23,7 +23,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/ParserObserverClass.h>
-#include <pelet/ResourceParserTypeClass.h>
+#include <pelet/ResourceParserObserverClass.h>
 #include <unicode/ustdio.h>
 #include <unicode/ustring.h>
 
