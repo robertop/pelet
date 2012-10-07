@@ -36,7 +36,7 @@ look at the re2 man page http://re2c.org/manual.html for the basics. Also,
 a more in-depth example of using re2c can be found 
 http://blog.mvceditor.com/2011/11/the-gritty-details-of-a-lexical-analyzer-in-c-using-re2c/
 
-In Php53LexicalAnalyzerImpl.re you will find the source code for the lexer.  This a text
+In Php53LexicalAnalyzer.re you will find the source code for the lexer.  This a text
 file that contains C++ code in addition to re2c rules (in the form of a comment "/ *!re2c"). 
 The lexer can be modified by updating the .re file, running the re2c program, which will
 output the C++ code for the lexer rules.

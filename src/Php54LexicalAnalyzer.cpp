@@ -24,7 +24,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
  
-#include <pelet/Php54LexicalAnalyzerImpl.h>
+#include <pelet/Php54LexicalAnalyzer.h>
 
 // tell re2c we will use Unicode chars
 #define YYCTYPE UChar

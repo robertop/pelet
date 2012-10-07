@@ -23,8 +23,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/LexicalAnalyzerClass.h>
-#include <pelet/Php53LexicalAnalyzerImpl.h>
-#include <pelet/Php54LexicalAnalyzerImpl.h>
+#include <pelet/Php53LexicalAnalyzer.h>
+#include <pelet/Php54LexicalAnalyzer.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>

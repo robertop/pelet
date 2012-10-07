@@ -28,7 +28,6 @@
 #include <string>
 #include <unicode/unistr.h>
 #include <pelet/UCharBufferedFileClass.h>
-#include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <pelet/TokenClass.h>
 #include <pelet/Api.h>
 

@@ -24,7 +24,6 @@
  */
 #include <UnitTest++.h>
 #include <pelet/LexicalAnalyzerClass.h>
-#include <pelet/Php53LexicalAnalyzerImpl.h>
 #include <FileTestFixtureClass.h>
 
 /**
