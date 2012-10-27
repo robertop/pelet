@@ -204,7 +204,7 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	file += "test.php";
 	CHECK(LexerOpen(file));
 	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN(pelet::T_COMMENT);
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/*\n *\n */"));
 	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
 	
 	/*
@@ -565,6 +565,51 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleStringWithInterprola
 	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
 	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
 	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("{$arrRow[\"FirstName\"]} ({$arrRow[\"LastName\"]})"));
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenWithBraces) {
+
+	// testing strings that have braces in order to test that we handle
+	// string interprolated variables correctly and that we leave them alone
+	// when there are no variables
+	CreateFixtureFile("test.php", 
+		"<?php\n"
+		"$data = array();"
+		"$data[] = \"{\" . \"function {};\";\n"
+		"/*\n"
+		"}\n"
+		"*/\n"
+		"$data[] = \"}\";"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
+	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_ARRAY, UNICODE_STRING_SIMPLE("array"));
+	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
+	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
+	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
+	CHECK_TOKEN_LEXEME('[', UNICODE_STRING_SIMPLE("["));
+	CHECK_TOKEN_LEXEME(']', UNICODE_STRING_SIMPLE("]"));
+	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("{"));
+	CHECK_TOKEN_LEXEME('.', UNICODE_STRING_SIMPLE("."));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("function {};"));
+	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/*\n}\n*/"));
+	
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
+	CHECK_TOKEN_LEXEME('[', UNICODE_STRING_SIMPLE("["));
+	CHECK_TOKEN_LEXEME(']', UNICODE_STRING_SIMPLE("]"));
+	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("}"));
+	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {

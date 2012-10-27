@@ -232,7 +232,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SCRIPT> "&=" { return T_AND_EQUAL; }
 <SCRIPT> "|=" { return T_OR_EQUAL; }
 <SCRIPT> "^=" { return T_XOR_EQUAL; }
-<SCRIPT> "/*" { condition = yycMULTI_LINE_COMMENT; goto php_54_lexical_analyzer_next_token_start; }
+<SCRIPT> "/*" { condition = yycMULTI_LINE_COMMENT; goto php_54_lexical_analyzer_next_char; }
 <SCRIPT> "//" { condition = yycLINE_COMMENT; goto php_54_lexical_analyzer_next_token_start; }
 <SCRIPT> "?>" { condition = yycINLINE_HTML; return T_CLOSE_TAG; }
 <SCRIPT> "=>" { return T_DOUBLE_ARROW; }
@@ -319,7 +319,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <DOUBLE_QUOTE_STRING> [\\]["] { goto php_54_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> [\\][\\] { goto php_54_lexical_analyzer_next_char; } 
 <DOUBLE_QUOTE_STRING> "${" {  condition = yycDOUBLE_QUOTE_STRING_VARIABLE; goto php_54_lexical_analyzer_next_char;  }
-<DOUBLE_QUOTE_STRING> "{" { condition = yycDOUBLE_QUOTE_STRING_VARIABLE; goto php_54_lexical_analyzer_next_char; }
+<DOUBLE_QUOTE_STRING> "{$" { condition = yycDOUBLE_QUOTE_STRING_VARIABLE; goto php_54_lexical_analyzer_next_char; }
 <DOUBLE_QUOTE_STRING> '"' { condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 <DOUBLE_QUOTE_STRING> EOF { return T_ERROR_UNTERMINATED_STRING; }
 <DOUBLE_QUOTE_STRING> NEWLINE { buffer->IncrementLine(); goto php_54_lexical_analyzer_next_char; }
@@ -328,6 +328,9 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 /*!ignore:re2c
  * this state is just to handle the string interprolation. We will back out of
  * this state when we encounter a closing curly brace.
+ * watch out for the case when the string only has an opening curly brace and not a 
+ * closing curly brace; this is a valid string too
+ * also watch out for interprolated arrays ie "{$user["name"]}"
  */
 <DOUBLE_QUOTE_STRING_VARIABLE> "}" { condition = yycDOUBLE_QUOTE_STRING; goto php_54_lexical_analyzer_next_char;}
 <DOUBLE_QUOTE_STRING_VARIABLE> NEWLINE { buffer->IncrementLine(); goto php_54_lexical_analyzer_next_char; }
