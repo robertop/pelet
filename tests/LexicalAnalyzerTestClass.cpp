@@ -191,6 +191,23 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
 	CHECK_TOKEN(pelet::T_END);
 }
 
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEmptyComments) {
+
+	// the "/**/" was being confused for an unfinished doc comment "/**"
+	CreateFixtureFile("test.php",
+		"<?php\n"
+		"/**/\n"
+		"function work() {\n"
+		"}"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/**/"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
+}
+
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	CreateFixtureFile("test.php",
 		"<?php\n"

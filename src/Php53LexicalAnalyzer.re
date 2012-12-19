@@ -182,7 +182,15 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SCRIPT> "===" { return T_IS_IDENTICAL; }
 <SCRIPT> "!==" { return T_IS_NOT_IDENTICAL; }
 <SCRIPT> "<?=" { return T_OPEN_TAG_WITH_ECHO; }
-<SCRIPT> "/**" { condition = yycDOC_COMMENT; goto php_53_lexical_analyzer_next_char; }
+
+/*!ignore:re2c
+make sure this is a doc comment and not and empty multi-line comment
+[/] [*] [*] [/] ==> 2 parts [/][*] AND [*][/]
+NOT
+[/][*][*] AND [/]
+*/
+<SCRIPT> "/**"(NEWLINE) { condition = yycDOC_COMMENT; buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
+<SCRIPT> "/**"[^/] { condition = yycDOC_COMMENT; goto php_53_lexical_analyzer_next_char; }
 <SCRIPT> "::" { return T_PAAMAYIM_NEKUDOTAYIM; }
 <SCRIPT> "->" { condition = yycPROPERTY; return T_OBJECT_OPERATOR; }
 <SCRIPT> '<?php' (WHITESPACE) { return T_OPEN_TAG; }
