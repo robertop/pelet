@@ -315,11 +315,13 @@ php_53_lexical_analyzer_76:
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_82;
-		case '\r':	goto php_53_lexical_analyzer_84;
-		case '=':	goto php_53_lexical_analyzer_80;
+		case ' ':	goto php_53_lexical_analyzer_83;
+		case '\r':	goto php_53_lexical_analyzer_85;
+		case '=':	goto php_53_lexical_analyzer_81;
 		case 'P':
 		case 'p':	goto php_53_lexical_analyzer_78;
+		case 'X':
+		case 'x':	goto php_53_lexical_analyzer_80;
 		default:	goto php_53_lexical_analyzer_77;
 		}
 php_53_lexical_analyzer_77:
@@ -328,142 +330,177 @@ php_53_lexical_analyzer_78:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_85;
+		case 'h':	goto php_53_lexical_analyzer_91;
 		default:	goto php_53_lexical_analyzer_79;
 		}
 php_53_lexical_analyzer_79:
 		YYCURSOR = YYMARKER;
 		goto php_53_lexical_analyzer_77;
 php_53_lexical_analyzer_80:
-		++YYCURSOR;
-		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_82:
-		++YYCURSOR;
-php_53_lexical_analyzer_83:
-		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_84:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_82;
-		default:	goto php_53_lexical_analyzer_83;
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_86;
+		default:	goto php_53_lexical_analyzer_79;
 		}
+php_53_lexical_analyzer_81:
+		++YYCURSOR;
+		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_83:
+		++YYCURSOR;
+php_53_lexical_analyzer_84:
+		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
 php_53_lexical_analyzer_85:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_86;
-		default:	goto php_53_lexical_analyzer_79;
+		case '\n':	goto php_53_lexical_analyzer_83;
+		default:	goto php_53_lexical_analyzer_84;
 		}
 php_53_lexical_analyzer_86:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_87;
+		default:	goto php_53_lexical_analyzer_79;
+		}
+php_53_lexical_analyzer_87:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_87;
-		case '\r':	goto php_53_lexical_analyzer_89;
+		case ' ':	goto php_53_lexical_analyzer_88;
+		case '\r':	goto php_53_lexical_analyzer_90;
 		default:	goto php_53_lexical_analyzer_79;
 		}
-php_53_lexical_analyzer_87:
-		++YYCURSOR;
 php_53_lexical_analyzer_88:
-		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+		++YYCURSOR;
 php_53_lexical_analyzer_89:
+		{ goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_90:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_88;
+		default:	goto php_53_lexical_analyzer_89;
+		}
+php_53_lexical_analyzer_91:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_92;
+		default:	goto php_53_lexical_analyzer_79;
+		}
+php_53_lexical_analyzer_92:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case ' ':	goto php_53_lexical_analyzer_93;
+		case '\r':	goto php_53_lexical_analyzer_95;
+		default:	goto php_53_lexical_analyzer_79;
+		}
+php_53_lexical_analyzer_93:
+		++YYCURSOR;
+php_53_lexical_analyzer_94:
+		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_95:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
-		case '\n':	goto php_53_lexical_analyzer_87;
-		default:	goto php_53_lexical_analyzer_88;
+		case '\n':	goto php_53_lexical_analyzer_93;
+		default:	goto php_53_lexical_analyzer_94;
 		}
 /* *********************************** */
 yyc_LINE_COMMENT:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_53_lexical_analyzer_95;
-		case '\n':	goto php_53_lexical_analyzer_92;
-		case '\r':	goto php_53_lexical_analyzer_94;
-		case '?':	goto php_53_lexical_analyzer_97;
-		default:	goto php_53_lexical_analyzer_99;
-		}
-php_53_lexical_analyzer_92:
-		++YYCURSOR;
-php_53_lexical_analyzer_93:
-		{ buffer->IncrementLine(); condition = yycSCRIPT; goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_94:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_102;
-		default:	goto php_53_lexical_analyzer_93;
-		}
-php_53_lexical_analyzer_95:
-		++YYCURSOR;
-		{ return T_END; }
-php_53_lexical_analyzer_97:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case '>':	goto php_53_lexical_analyzer_100;
-		default:	goto php_53_lexical_analyzer_98;
+		case 0x00:	goto php_53_lexical_analyzer_101;
+		case '\n':	goto php_53_lexical_analyzer_98;
+		case '\r':	goto php_53_lexical_analyzer_100;
+		case '?':	goto php_53_lexical_analyzer_103;
+		default:	goto php_53_lexical_analyzer_105;
 		}
 php_53_lexical_analyzer_98:
-		{ goto php_53_lexical_analyzer_next_token_start; }
+		++YYCURSOR;
 php_53_lexical_analyzer_99:
-		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_98;
+		{ buffer->IncrementLine(); condition = yycSCRIPT; goto php_53_lexical_analyzer_next_token_start; }
 php_53_lexical_analyzer_100:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_108;
+		default:	goto php_53_lexical_analyzer_99;
+		}
+php_53_lexical_analyzer_101:
+		++YYCURSOR;
+		{ return T_END; }
+php_53_lexical_analyzer_103:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case '>':	goto php_53_lexical_analyzer_106;
+		default:	goto php_53_lexical_analyzer_104;
+		}
+php_53_lexical_analyzer_104:
+		{ goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_105:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_104;
+php_53_lexical_analyzer_106:
 		++YYCURSOR;
 		{ condition = yycINLINE_HTML; buffer->TokenStart = buffer->Current - 2; return T_CLOSE_TAG; }
-php_53_lexical_analyzer_102:
+php_53_lexical_analyzer_108:
 		++YYCURSOR;
 		yych = *YYCURSOR;
-		goto php_53_lexical_analyzer_93;
+		goto php_53_lexical_analyzer_99;
 /* *********************************** */
 yyc_MULTI_LINE_COMMENT:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_53_lexical_analyzer_107;
-		case '\n':	goto php_53_lexical_analyzer_109;
-		case '\r':	goto php_53_lexical_analyzer_111;
-		case '*':	goto php_53_lexical_analyzer_105;
-		default:	goto php_53_lexical_analyzer_112;
+		case 0x00:	goto php_53_lexical_analyzer_113;
+		case '\n':	goto php_53_lexical_analyzer_115;
+		case '\r':	goto php_53_lexical_analyzer_117;
+		case '*':	goto php_53_lexical_analyzer_111;
+		default:	goto php_53_lexical_analyzer_118;
 		}
-php_53_lexical_analyzer_105:
+php_53_lexical_analyzer_111:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
-		case '/':	goto php_53_lexical_analyzer_114;
-		default:	goto php_53_lexical_analyzer_106;
-		}
-php_53_lexical_analyzer_106:
-		{ goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_107:
-		++YYCURSOR;
-		{ buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
-php_53_lexical_analyzer_109:
-		++YYCURSOR;
-php_53_lexical_analyzer_110:
-		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_111:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_113;
-		default:	goto php_53_lexical_analyzer_110;
+		case '/':	goto php_53_lexical_analyzer_120;
+		default:	goto php_53_lexical_analyzer_112;
 		}
 php_53_lexical_analyzer_112:
-		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_106;
+		{ goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_113:
+		++YYCURSOR;
+		{ buffer->TokenStart = buffer->Limit; return T_ERROR_UNTERMINATED_COMMENT; }
+php_53_lexical_analyzer_115:
+		++YYCURSOR;
+php_53_lexical_analyzer_116:
+		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
+php_53_lexical_analyzer_117:
 		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_110;
-php_53_lexical_analyzer_114:
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_119;
+		default:	goto php_53_lexical_analyzer_116;
+		}
+php_53_lexical_analyzer_118:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_112;
+php_53_lexical_analyzer_119:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_116;
+php_53_lexical_analyzer_120:
 		++YYCURSOR;
 		{ condition = yycSCRIPT; return T_COMMENT; }
 /* *********************************** */
 yyc_NOWDOC:
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
-		if (yych >= 0x01) goto php_53_lexical_analyzer_119;
-php_53_lexical_analyzer_119:
+		if (yych >= 0x01) goto php_53_lexical_analyzer_125;
+php_53_lexical_analyzer_125:
 		++YYCURSOR;
 		{ condition = yycSCRIPT; return pelet::HandleNowdoc(buffer); }
 /* *********************************** */
@@ -471,7 +508,7 @@ yyc_PROPERTY:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_53_lexical_analyzer_125;
+		case 0x00:	goto php_53_lexical_analyzer_131;
 		case 0x01:
 		case 0x02:
 		case 0x03:
@@ -544,26 +581,26 @@ yyc_PROPERTY:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_127;
-		default:	goto php_53_lexical_analyzer_123;
+		case '~':	goto php_53_lexical_analyzer_133;
+		default:	goto php_53_lexical_analyzer_129;
 		}
-php_53_lexical_analyzer_123:
+php_53_lexical_analyzer_129:
 		++YYCURSOR;
 		yych = *YYCURSOR;
-		goto php_53_lexical_analyzer_130;
-php_53_lexical_analyzer_124:
+		goto php_53_lexical_analyzer_136;
+php_53_lexical_analyzer_130:
 		{ condition = yycSCRIPT; return T_STRING; }
-php_53_lexical_analyzer_125:
+php_53_lexical_analyzer_131:
 		++YYCURSOR;
 		{ return T_END; }
-php_53_lexical_analyzer_127:
+php_53_lexical_analyzer_133:
 		++YYCURSOR;
 		{ condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_129:
+php_53_lexical_analyzer_135:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
-php_53_lexical_analyzer_130:
+php_53_lexical_analyzer_136:
 		switch (yych) {
 		case 0x00:
 		case 0x01:
@@ -628,15 +665,15 @@ php_53_lexical_analyzer_130:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_124;
-		default:	goto php_53_lexical_analyzer_129;
+		case '~':	goto php_53_lexical_analyzer_130;
+		default:	goto php_53_lexical_analyzer_135;
 		}
 /* *********************************** */
 yyc_SCRIPT:
 		if ((YYLIMIT - YYCURSOR) < 16) YYFILL(16);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_53_lexical_analyzer_191;
+		case 0x00:	goto php_53_lexical_analyzer_197;
 		case 0x01:
 		case 0x02:
 		case 0x03:
@@ -662,21 +699,21 @@ yyc_SCRIPT:
 		case 0x1C:
 		case 0x1D:
 		case 0x1E:
-		case 0x1F:	goto php_53_lexical_analyzer_189;
+		case 0x1F:	goto php_53_lexical_analyzer_195;
 		case '\t':
 		case '\v':
-		case '\f':	goto php_53_lexical_analyzer_186;
-		case '\n':	goto php_53_lexical_analyzer_183;
-		case '\r':	goto php_53_lexical_analyzer_185;
-		case ' ':	goto php_53_lexical_analyzer_188;
-		case '!':	goto php_53_lexical_analyzer_159;
-		case '"':	goto php_53_lexical_analyzer_181;
-		case '#':	goto php_53_lexical_analyzer_177;
-		case '$':	goto php_53_lexical_analyzer_175;
-		case '%':	goto php_53_lexical_analyzer_168;
-		case '&':	goto php_53_lexical_analyzer_164;
-		case '\'':	goto php_53_lexical_analyzer_179;
-		case '(':	goto php_53_lexical_analyzer_154;
+		case '\f':	goto php_53_lexical_analyzer_192;
+		case '\n':	goto php_53_lexical_analyzer_189;
+		case '\r':	goto php_53_lexical_analyzer_191;
+		case ' ':	goto php_53_lexical_analyzer_194;
+		case '!':	goto php_53_lexical_analyzer_165;
+		case '"':	goto php_53_lexical_analyzer_187;
+		case '#':	goto php_53_lexical_analyzer_183;
+		case '$':	goto php_53_lexical_analyzer_181;
+		case '%':	goto php_53_lexical_analyzer_174;
+		case '&':	goto php_53_lexical_analyzer_170;
+		case '\'':	goto php_53_lexical_analyzer_185;
+		case '(':	goto php_53_lexical_analyzer_160;
 		case ')':
 		case ',':
 		case ';':
@@ -685,13 +722,13 @@ yyc_SCRIPT:
 		case ']':
 		case '{':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_176;
-		case '*':	goto php_53_lexical_analyzer_166;
-		case '+':	goto php_53_lexical_analyzer_165;
-		case '-':	goto php_53_lexical_analyzer_162;
-		case '.':	goto php_53_lexical_analyzer_167;
-		case '/':	goto php_53_lexical_analyzer_160;
-		case '0':	goto php_53_lexical_analyzer_194;
+		case '~':	goto php_53_lexical_analyzer_182;
+		case '*':	goto php_53_lexical_analyzer_172;
+		case '+':	goto php_53_lexical_analyzer_171;
+		case '-':	goto php_53_lexical_analyzer_168;
+		case '.':	goto php_53_lexical_analyzer_173;
+		case '/':	goto php_53_lexical_analyzer_166;
+		case '0':	goto php_53_lexical_analyzer_200;
 		case '1':
 		case '2':
 		case '3':
@@ -700,245 +737,245 @@ yyc_SCRIPT:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_196;
-		case ':':	goto php_53_lexical_analyzer_161;
-		case '<':	goto php_53_lexical_analyzer_156;
-		case '=':	goto php_53_lexical_analyzer_158;
-		case '>':	goto php_53_lexical_analyzer_157;
-		case '?':	goto php_53_lexical_analyzer_170;
+		case '9':	goto php_53_lexical_analyzer_202;
+		case ':':	goto php_53_lexical_analyzer_167;
+		case '<':	goto php_53_lexical_analyzer_162;
+		case '=':	goto php_53_lexical_analyzer_164;
+		case '>':	goto php_53_lexical_analyzer_163;
+		case '?':	goto php_53_lexical_analyzer_176;
 		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_133;
+		case 'a':	goto php_53_lexical_analyzer_139;
 		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_135;
+		case 'b':	goto php_53_lexical_analyzer_141;
 		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_136;
+		case 'c':	goto php_53_lexical_analyzer_142;
 		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_137;
+		case 'd':	goto php_53_lexical_analyzer_143;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_138;
+		case 'e':	goto php_53_lexical_analyzer_144;
 		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_139;
+		case 'f':	goto php_53_lexical_analyzer_145;
 		case 'G':
-		case 'g':	goto php_53_lexical_analyzer_141;
+		case 'g':	goto php_53_lexical_analyzer_147;
 		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_140;
+		case 'i':	goto php_53_lexical_analyzer_146;
 		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_142;
+		case 'l':	goto php_53_lexical_analyzer_148;
 		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_143;
+		case 'n':	goto php_53_lexical_analyzer_149;
 		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_144;
+		case 'o':	goto php_53_lexical_analyzer_150;
 		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_145;
+		case 'p':	goto php_53_lexical_analyzer_151;
 		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_146;
+		case 'r':	goto php_53_lexical_analyzer_152;
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_147;
+		case 's':	goto php_53_lexical_analyzer_153;
 		case 'T':
-		case 't':	goto php_53_lexical_analyzer_152;
+		case 't':	goto php_53_lexical_analyzer_158;
 		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_153;
+		case 'u':	goto php_53_lexical_analyzer_159;
 		case 'V':
-		case 'v':	goto php_53_lexical_analyzer_148;
+		case 'v':	goto php_53_lexical_analyzer_154;
 		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_149;
+		case 'w':	goto php_53_lexical_analyzer_155;
 		case 'X':
-		case 'x':	goto php_53_lexical_analyzer_150;
-		case '\\':	goto php_53_lexical_analyzer_171;
-		case '^':	goto php_53_lexical_analyzer_169;
-		case '_':	goto php_53_lexical_analyzer_151;
-		case '`':	goto php_53_lexical_analyzer_173;
-		case '|':	goto php_53_lexical_analyzer_163;
-		default:	goto php_53_lexical_analyzer_193;
+		case 'x':	goto php_53_lexical_analyzer_156;
+		case '\\':	goto php_53_lexical_analyzer_177;
+		case '^':	goto php_53_lexical_analyzer_175;
+		case '_':	goto php_53_lexical_analyzer_157;
+		case '`':	goto php_53_lexical_analyzer_179;
+		case '|':	goto php_53_lexical_analyzer_169;
+		default:	goto php_53_lexical_analyzer_199;
 		}
-php_53_lexical_analyzer_133:
+php_53_lexical_analyzer_139:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_777;
+		case 'b':	goto php_53_lexical_analyzer_783;
 		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_778;
+		case 'n':	goto php_53_lexical_analyzer_784;
 		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_779;
+		case 'r':	goto php_53_lexical_analyzer_785;
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_780;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_134:
-		{ return T_STRING; }
-php_53_lexical_analyzer_135:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_772;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_136:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_744;
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_745;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_746;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_137:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_726;
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_727;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_728;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_138:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_661;
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_662;
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_663;
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_664;
-		case 'V':
-		case 'v':	goto php_53_lexical_analyzer_665;
-		case 'X':
-		case 'x':	goto php_53_lexical_analyzer_666;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_139:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_640;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_641;
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_642;
-		default:	goto php_53_lexical_analyzer_213;
+		case 's':	goto php_53_lexical_analyzer_786;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_140:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_593;
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_595;
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_596;
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_597;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_STRING; }
 php_53_lexical_analyzer_141:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_583;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_584;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_778;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_142:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_579;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_750;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_751;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_752;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_143:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_567;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_568;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_732;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_733;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_734;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_144:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_565;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_667;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_668;
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_669;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_670;
+		case 'V':
+		case 'v':	goto php_53_lexical_analyzer_671;
+		case 'X':
+		case 'x':	goto php_53_lexical_analyzer_672;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_145:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_541;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_646;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_647;
 		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_542;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'u':	goto php_53_lexical_analyzer_648;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_146:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_523;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_599;
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_601;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_602;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_603;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_147:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_511;
-		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_512;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_589;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_590;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_148:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_508;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_585;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_149:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_503;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_573;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_574;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_150:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_500;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_571;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_151:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_426;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_547;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_548;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_152:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_418;
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_419;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_529;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_153:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_410;
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_411;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_517;
+		case 'W':
+		case 'w':	goto php_53_lexical_analyzer_518;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_154:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_514;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_155:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_509;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_156:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_506;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_157:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '_':	goto php_53_lexical_analyzer_432;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_158:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_424;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_425;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_159:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_416;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_417;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_160:
 		yyaccept = 0;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
@@ -963,90 +1000,90 @@ php_53_lexical_analyzer_154:
 		case 'o':
 		case 'r':
 		case 's':
-		case 'u':	goto php_53_lexical_analyzer_323;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_155:
-		{ return *buffer->TokenStart; }
-php_53_lexical_analyzer_156:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '<':	goto php_53_lexical_analyzer_283;
-		case '=':	goto php_53_lexical_analyzer_281;
-		case '>':	goto php_53_lexical_analyzer_279;
-		case '?':	goto php_53_lexical_analyzer_285;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_157:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_273;
-		case '>':	goto php_53_lexical_analyzer_275;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_158:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_269;
-		case '>':	goto php_53_lexical_analyzer_267;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_159:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_263;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_160:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '*':	goto php_53_lexical_analyzer_252;
-		case '/':	goto php_53_lexical_analyzer_250;
-		case '=':	goto php_53_lexical_analyzer_254;
-		default:	goto php_53_lexical_analyzer_155;
+		case 'u':	goto php_53_lexical_analyzer_329;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_161:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case ':':	goto php_53_lexical_analyzer_248;
-		default:	goto php_53_lexical_analyzer_155;
-		}
+		{ return *buffer->TokenStart; }
 php_53_lexical_analyzer_162:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '-':	goto php_53_lexical_analyzer_244;
-		case '=':	goto php_53_lexical_analyzer_242;
-		case '>':	goto php_53_lexical_analyzer_246;
-		default:	goto php_53_lexical_analyzer_155;
+		case '<':	goto php_53_lexical_analyzer_289;
+		case '=':	goto php_53_lexical_analyzer_287;
+		case '>':	goto php_53_lexical_analyzer_285;
+		case '?':	goto php_53_lexical_analyzer_291;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_163:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_238;
-		case '|':	goto php_53_lexical_analyzer_240;
-		default:	goto php_53_lexical_analyzer_155;
+		case '=':	goto php_53_lexical_analyzer_279;
+		case '>':	goto php_53_lexical_analyzer_281;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_164:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '&':	goto php_53_lexical_analyzer_236;
-		case '=':	goto php_53_lexical_analyzer_234;
-		default:	goto php_53_lexical_analyzer_155;
+		case '=':	goto php_53_lexical_analyzer_275;
+		case '>':	goto php_53_lexical_analyzer_273;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_165:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '+':	goto php_53_lexical_analyzer_232;
-		case '=':	goto php_53_lexical_analyzer_230;
-		default:	goto php_53_lexical_analyzer_155;
+		case '=':	goto php_53_lexical_analyzer_269;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_166:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_228;
-		default:	goto php_53_lexical_analyzer_155;
+		case '*':	goto php_53_lexical_analyzer_258;
+		case '/':	goto php_53_lexical_analyzer_256;
+		case '=':	goto php_53_lexical_analyzer_260;
+		default:	goto php_53_lexical_analyzer_161;
 		}
 php_53_lexical_analyzer_167:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case ':':	goto php_53_lexical_analyzer_254;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_168:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '-':	goto php_53_lexical_analyzer_250;
+		case '=':	goto php_53_lexical_analyzer_248;
+		case '>':	goto php_53_lexical_analyzer_252;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_169:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '=':	goto php_53_lexical_analyzer_244;
+		case '|':	goto php_53_lexical_analyzer_246;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_170:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '&':	goto php_53_lexical_analyzer_242;
+		case '=':	goto php_53_lexical_analyzer_240;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_171:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '+':	goto php_53_lexical_analyzer_238;
+		case '=':	goto php_53_lexical_analyzer_236;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_172:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '=':	goto php_53_lexical_analyzer_234;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_173:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '0':
@@ -1058,35 +1095,35 @@ php_53_lexical_analyzer_167:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_224;
+		case '9':	goto php_53_lexical_analyzer_230;
+		case '=':	goto php_53_lexical_analyzer_232;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_174:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '=':	goto php_53_lexical_analyzer_228;
+		default:	goto php_53_lexical_analyzer_161;
+		}
+php_53_lexical_analyzer_175:
+		yych = *++YYCURSOR;
+		switch (yych) {
 		case '=':	goto php_53_lexical_analyzer_226;
-		default:	goto php_53_lexical_analyzer_155;
+		default:	goto php_53_lexical_analyzer_161;
 		}
-php_53_lexical_analyzer_168:
+php_53_lexical_analyzer_176:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_222;
-		default:	goto php_53_lexical_analyzer_155;
+		case '>':	goto php_53_lexical_analyzer_224;
+		default:	goto php_53_lexical_analyzer_161;
 		}
-php_53_lexical_analyzer_169:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '=':	goto php_53_lexical_analyzer_220;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_170:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '>':	goto php_53_lexical_analyzer_218;
-		default:	goto php_53_lexical_analyzer_155;
-		}
-php_53_lexical_analyzer_171:
+php_53_lexical_analyzer_177:
 		++YYCURSOR;
 		{ return T_NS_SEPARATOR; }
-php_53_lexical_analyzer_173:
+php_53_lexical_analyzer_179:
 		++YYCURSOR;
 		{ condition = yycBACKTICK; goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_175:
+php_53_lexical_analyzer_181:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 0x00:
@@ -1162,52 +1199,52 @@ php_53_lexical_analyzer_175:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_155;
-		default:	goto php_53_lexical_analyzer_215;
+		case '~':	goto php_53_lexical_analyzer_161;
+		default:	goto php_53_lexical_analyzer_221;
 		}
-php_53_lexical_analyzer_176:
+php_53_lexical_analyzer_182:
 		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_155;
-php_53_lexical_analyzer_177:
-		++YYCURSOR;
-		{ condition = yycLINE_COMMENT; goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_179:
-		++YYCURSOR;
-		{ condition = yycSINGLE_QUOTE_STRING; goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_181:
-		++YYCURSOR;
-		{ condition = yycDOUBLE_QUOTE_STRING; goto php_53_lexical_analyzer_next_char; }
+		goto php_53_lexical_analyzer_161;
 php_53_lexical_analyzer_183:
 		++YYCURSOR;
-php_53_lexical_analyzer_184:
-		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_token_start; }
+		{ condition = yycLINE_COMMENT; goto php_53_lexical_analyzer_next_token_start; }
 php_53_lexical_analyzer_185:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_214;
-		default:	goto php_53_lexical_analyzer_184;
-		}
-php_53_lexical_analyzer_186:
 		++YYCURSOR;
+		{ condition = yycSINGLE_QUOTE_STRING; goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_187:
-		{ goto php_53_lexical_analyzer_next_token_start; }
-php_53_lexical_analyzer_188:
-		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_187;
+		++YYCURSOR;
+		{ condition = yycDOUBLE_QUOTE_STRING; goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_189:
 		++YYCURSOR;
-		{ goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_190:
+		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_token_start; }
 php_53_lexical_analyzer_191:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_220;
+		default:	goto php_53_lexical_analyzer_190;
+		}
+php_53_lexical_analyzer_192:
+		++YYCURSOR;
+php_53_lexical_analyzer_193:
+		{ goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_194:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_193;
+php_53_lexical_analyzer_195:
+		++YYCURSOR;
+		{ goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_197:
 		++YYCURSOR;
 		{ return T_END; }
-php_53_lexical_analyzer_193:
+php_53_lexical_analyzer_199:
 		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_213;
-php_53_lexical_analyzer_194:
+		goto php_53_lexical_analyzer_219;
+php_53_lexical_analyzer_200:
 		yyaccept = 1;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
-		case '.':	goto php_53_lexical_analyzer_197;
+		case '.':	goto php_53_lexical_analyzer_203;
 		case '0':
 		case '1':
 		case '2':
@@ -1217,19 +1254,19 @@ php_53_lexical_analyzer_194:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_200;
+		case '9':	goto php_53_lexical_analyzer_206;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_202;
-		case 'x':	goto php_53_lexical_analyzer_208;
-		default:	goto php_53_lexical_analyzer_195;
+		case 'e':	goto php_53_lexical_analyzer_208;
+		case 'x':	goto php_53_lexical_analyzer_214;
+		default:	goto php_53_lexical_analyzer_201;
 		}
-php_53_lexical_analyzer_195:
+php_53_lexical_analyzer_201:
 		{ return T_LNUMBER; }
-php_53_lexical_analyzer_196:
+php_53_lexical_analyzer_202:
 		yyaccept = 1;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
-		case '.':	goto php_53_lexical_analyzer_197;
+		case '.':	goto php_53_lexical_analyzer_203;
 		case '0':
 		case '1':
 		case '2':
@@ -1239,12 +1276,12 @@ php_53_lexical_analyzer_196:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_200;
+		case '9':	goto php_53_lexical_analyzer_206;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_202;
-		default:	goto php_53_lexical_analyzer_195;
+		case 'e':	goto php_53_lexical_analyzer_208;
+		default:	goto php_53_lexical_analyzer_201;
 		}
-php_53_lexical_analyzer_197:
+php_53_lexical_analyzer_203:
 		yyaccept = 2;
 		YYMARKER = ++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 3) YYFILL(3);
@@ -1259,20 +1296,20 @@ php_53_lexical_analyzer_197:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_197;
+		case '9':	goto php_53_lexical_analyzer_203;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_202;
-		default:	goto php_53_lexical_analyzer_199;
+		case 'e':	goto php_53_lexical_analyzer_208;
+		default:	goto php_53_lexical_analyzer_205;
 		}
-php_53_lexical_analyzer_199:
+php_53_lexical_analyzer_205:
 		{ return T_DNUMBER; }
-php_53_lexical_analyzer_200:
+php_53_lexical_analyzer_206:
 		yyaccept = 1;
 		YYMARKER = ++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 3) YYFILL(3);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case '.':	goto php_53_lexical_analyzer_197;
+		case '.':	goto php_53_lexical_analyzer_203;
 		case '0':
 		case '1':
 		case '2':
@@ -1282,75 +1319,16 @@ php_53_lexical_analyzer_200:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_200;
+		case '9':	goto php_53_lexical_analyzer_206;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_202;
-		default:	goto php_53_lexical_analyzer_195;
+		case 'e':	goto php_53_lexical_analyzer_208;
+		default:	goto php_53_lexical_analyzer_201;
 		}
-php_53_lexical_analyzer_202:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '+':
-		case '-':	goto php_53_lexical_analyzer_204;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':	goto php_53_lexical_analyzer_205;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_203:
-		YYCURSOR = YYMARKER;
-		switch (yyaccept) {
-		case 0: 	goto php_53_lexical_analyzer_155;
-		case 1: 	goto php_53_lexical_analyzer_195;
-		case 2: 	goto php_53_lexical_analyzer_199;
-		case 3: 	goto php_53_lexical_analyzer_253;
-		case 4: 	goto php_53_lexical_analyzer_284;
-		case 5: 	goto php_53_lexical_analyzer_286;
-		}
-php_53_lexical_analyzer_204:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':	goto php_53_lexical_analyzer_205;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_205:
-		++YYCURSOR;
-		if (YYLIMIT <= YYCURSOR) YYFILL(1);
-		yych = *YYCURSOR;
-		switch (yych) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':	goto php_53_lexical_analyzer_205;
-		default:	goto php_53_lexical_analyzer_207;
-		}
-php_53_lexical_analyzer_207:
-		{ return T_DNUMBER; }
 php_53_lexical_analyzer_208:
 		yych = *++YYCURSOR;
 		switch (yych) {
+		case '+':
+		case '-':	goto php_53_lexical_analyzer_210;
 		case '0':
 		case '1':
 		case '2':
@@ -1360,25 +1338,55 @@ php_53_lexical_analyzer_208:
 		case '6':
 		case '7':
 		case '8':
-		case '9':
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'E':
-		case 'F':
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		case 'e':
-		case 'f':	goto php_53_lexical_analyzer_209;
-		default:	goto php_53_lexical_analyzer_203;
+		case '9':	goto php_53_lexical_analyzer_211;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_209:
+		YYCURSOR = YYMARKER;
+		switch (yyaccept) {
+		case 0: 	goto php_53_lexical_analyzer_161;
+		case 1: 	goto php_53_lexical_analyzer_201;
+		case 2: 	goto php_53_lexical_analyzer_205;
+		case 3: 	goto php_53_lexical_analyzer_259;
+		case 4: 	goto php_53_lexical_analyzer_290;
+		case 5: 	goto php_53_lexical_analyzer_292;
+		}
+php_53_lexical_analyzer_210:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':	goto php_53_lexical_analyzer_211;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_211:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
+		switch (yych) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':	goto php_53_lexical_analyzer_211;
+		default:	goto php_53_lexical_analyzer_213;
+		}
+php_53_lexical_analyzer_213:
+		{ return T_DNUMBER; }
+php_53_lexical_analyzer_214:
+		yych = *++YYCURSOR;
 		switch (yych) {
 		case '0':
 		case '1':
@@ -1401,91 +1409,46 @@ php_53_lexical_analyzer_209:
 		case 'c':
 		case 'd':
 		case 'e':
-		case 'f':	goto php_53_lexical_analyzer_209;
-		default:	goto php_53_lexical_analyzer_211;
+		case 'f':	goto php_53_lexical_analyzer_215;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_211:
-		{ return T_DNUMBER; }
-php_53_lexical_analyzer_212:
-		++YYCURSOR;
-		if (YYLIMIT <= YYCURSOR) YYFILL(1);
-		yych = *YYCURSOR;
-php_53_lexical_analyzer_213:
-		switch (yych) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_134;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_214:
-		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_184;
 php_53_lexical_analyzer_215:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
 		switch (yych) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':	goto php_53_lexical_analyzer_215;
+		default:	goto php_53_lexical_analyzer_217;
+		}
+php_53_lexical_analyzer_217:
+		{ return T_DNUMBER; }
+php_53_lexical_analyzer_218:
+		++YYCURSOR;
+		if (YYLIMIT <= YYCURSOR) YYFILL(1);
+		yych = *YYCURSOR;
+php_53_lexical_analyzer_219:
+		switch (yych) {
 		case 0x00:
 		case 0x01:
 		case 0x02:
@@ -1549,21 +1512,95 @@ php_53_lexical_analyzer_215:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_217;
-		default:	goto php_53_lexical_analyzer_215;
+		case '~':	goto php_53_lexical_analyzer_140;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_217:
+php_53_lexical_analyzer_220:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_190;
+php_53_lexical_analyzer_221:
+		++YYCURSOR;
+		if (YYLIMIT <= YYCURSOR) YYFILL(1);
+		yych = *YYCURSOR;
+		switch (yych) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_223;
+		default:	goto php_53_lexical_analyzer_221;
+		}
+php_53_lexical_analyzer_223:
 		{ return T_VARIABLE; }
-php_53_lexical_analyzer_218:
+php_53_lexical_analyzer_224:
 		++YYCURSOR;
 		{ condition = yycINLINE_HTML; return T_CLOSE_TAG; }
-php_53_lexical_analyzer_220:
+php_53_lexical_analyzer_226:
 		++YYCURSOR;
 		{ return T_XOR_EQUAL; }
-php_53_lexical_analyzer_222:
+php_53_lexical_analyzer_228:
 		++YYCURSOR;
 		{ return T_MOD_EQUAL; }
-php_53_lexical_analyzer_224:
+php_53_lexical_analyzer_230:
 		yyaccept = 2;
 		YYMARKER = ++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 3) YYFILL(3);
@@ -1578,100 +1615,86 @@ php_53_lexical_analyzer_224:
 		case '6':
 		case '7':
 		case '8':
-		case '9':	goto php_53_lexical_analyzer_224;
+		case '9':	goto php_53_lexical_analyzer_230;
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_202;
-		default:	goto php_53_lexical_analyzer_199;
+		case 'e':	goto php_53_lexical_analyzer_208;
+		default:	goto php_53_lexical_analyzer_205;
 		}
-php_53_lexical_analyzer_226:
-		++YYCURSOR;
-		{ return T_CONCAT_EQUAL; }
-php_53_lexical_analyzer_228:
-		++YYCURSOR;
-		{ return T_MUL_EQUAL; }
-php_53_lexical_analyzer_230:
-		++YYCURSOR;
-		{ return T_PLUS_EQUAL; }
 php_53_lexical_analyzer_232:
 		++YYCURSOR;
-		{ return T_INC; }
+		{ return T_CONCAT_EQUAL; }
 php_53_lexical_analyzer_234:
 		++YYCURSOR;
-		{ return T_AND_EQUAL; }
+		{ return T_MUL_EQUAL; }
 php_53_lexical_analyzer_236:
 		++YYCURSOR;
-		{ return T_BOOLEAN_AND; }
+		{ return T_PLUS_EQUAL; }
 php_53_lexical_analyzer_238:
 		++YYCURSOR;
-		{ return T_OR_EQUAL; }
+		{ return T_INC; }
 php_53_lexical_analyzer_240:
 		++YYCURSOR;
-		{ return T_BOOLEAN_OR; }
+		{ return T_AND_EQUAL; }
 php_53_lexical_analyzer_242:
 		++YYCURSOR;
-		{ return T_MINUS_EQUAL; }
+		{ return T_BOOLEAN_AND; }
 php_53_lexical_analyzer_244:
 		++YYCURSOR;
-		{ return T_DEC; }
+		{ return T_OR_EQUAL; }
 php_53_lexical_analyzer_246:
 		++YYCURSOR;
-		{ condition = yycPROPERTY; return T_OBJECT_OPERATOR; }
+		{ return T_BOOLEAN_OR; }
 php_53_lexical_analyzer_248:
 		++YYCURSOR;
-		{ return T_PAAMAYIM_NEKUDOTAYIM; }
+		{ return T_MINUS_EQUAL; }
 php_53_lexical_analyzer_250:
 		++YYCURSOR;
-		{ condition = yycLINE_COMMENT; goto php_53_lexical_analyzer_next_token_start; }
+		{ return T_DEC; }
 php_53_lexical_analyzer_252:
+		++YYCURSOR;
+		{ condition = yycPROPERTY; return T_OBJECT_OPERATOR; }
+php_53_lexical_analyzer_254:
+		++YYCURSOR;
+		{ return T_PAAMAYIM_NEKUDOTAYIM; }
+php_53_lexical_analyzer_256:
+		++YYCURSOR;
+		{ condition = yycLINE_COMMENT; goto php_53_lexical_analyzer_next_token_start; }
+php_53_lexical_analyzer_258:
 		yyaccept = 3;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
-		case '*':	goto php_53_lexical_analyzer_256;
-		default:	goto php_53_lexical_analyzer_253;
+		case '*':	goto php_53_lexical_analyzer_262;
+		default:	goto php_53_lexical_analyzer_259;
 		}
-php_53_lexical_analyzer_253:
+php_53_lexical_analyzer_259:
 		{ condition = yycMULTI_LINE_COMMENT; goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_254:
+php_53_lexical_analyzer_260:
 		++YYCURSOR;
 		{ return T_DIV_EQUAL; }
-php_53_lexical_analyzer_256:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_259;
-		case '\r':	goto php_53_lexical_analyzer_261;
-		case '/':	goto php_53_lexical_analyzer_203;
-		default:	goto php_53_lexical_analyzer_257;
-		}
-php_53_lexical_analyzer_257:
-		++YYCURSOR;
-		{ condition = yycDOC_COMMENT; goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_259:
-		++YYCURSOR;
-php_53_lexical_analyzer_260:
-		{ condition = yycDOC_COMMENT; buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_261:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_262;
-		default:	goto php_53_lexical_analyzer_260;
-		}
 php_53_lexical_analyzer_262:
 		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_260;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_265;
+		case '\r':	goto php_53_lexical_analyzer_267;
+		case '/':	goto php_53_lexical_analyzer_209;
+		default:	goto php_53_lexical_analyzer_263;
+		}
 php_53_lexical_analyzer_263:
 		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case '=':	goto php_53_lexical_analyzer_265;
-		default:	goto php_53_lexical_analyzer_264;
-		}
-php_53_lexical_analyzer_264:
-		{ return T_IS_NOT_EQUAL; }
+		{ condition = yycDOC_COMMENT; goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_265:
 		++YYCURSOR;
-		{ return T_IS_NOT_IDENTICAL; }
+php_53_lexical_analyzer_266:
+		{ condition = yycDOC_COMMENT; buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_267:
-		++YYCURSOR;
-		{ return T_DOUBLE_ARROW; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_268;
+		default:	goto php_53_lexical_analyzer_266;
+		}
+php_53_lexical_analyzer_268:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_266;
 php_53_lexical_analyzer_269:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
@@ -1679,13 +1702,13 @@ php_53_lexical_analyzer_269:
 		default:	goto php_53_lexical_analyzer_270;
 		}
 php_53_lexical_analyzer_270:
-		{ return T_IS_EQUAL; }
+		{ return T_IS_NOT_EQUAL; }
 php_53_lexical_analyzer_271:
 		++YYCURSOR;
-		{ return T_IS_IDENTICAL; }
+		{ return T_IS_NOT_IDENTICAL; }
 php_53_lexical_analyzer_273:
 		++YYCURSOR;
-		{ return T_IS_GREATER_OR_EQUAL; }
+		{ return T_DOUBLE_ARROW; }
 php_53_lexical_analyzer_275:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
@@ -1693,213 +1716,111 @@ php_53_lexical_analyzer_275:
 		default:	goto php_53_lexical_analyzer_276;
 		}
 php_53_lexical_analyzer_276:
-		{ return T_SR; }
+		{ return T_IS_EQUAL; }
 php_53_lexical_analyzer_277:
 		++YYCURSOR;
-		{ return T_SR_EQUAL; }
+		{ return T_IS_IDENTICAL; }
 php_53_lexical_analyzer_279:
 		++YYCURSOR;
-		{ return T_IS_NOT_EQUAL; }
+		{ return T_IS_GREATER_OR_EQUAL; }
 php_53_lexical_analyzer_281:
 		++YYCURSOR;
-		{ return T_IS_SMALLER_OR_EQUAL; }
+		switch ((yych = *YYCURSOR)) {
+		case '=':	goto php_53_lexical_analyzer_283;
+		default:	goto php_53_lexical_analyzer_282;
+		}
+php_53_lexical_analyzer_282:
+		{ return T_SR; }
 php_53_lexical_analyzer_283:
+		++YYCURSOR;
+		{ return T_SR_EQUAL; }
+php_53_lexical_analyzer_285:
+		++YYCURSOR;
+		{ return T_IS_NOT_EQUAL; }
+php_53_lexical_analyzer_287:
+		++YYCURSOR;
+		{ return T_IS_SMALLER_OR_EQUAL; }
+php_53_lexical_analyzer_289:
 		yyaccept = 4;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
-		case '<':	goto php_53_lexical_analyzer_302;
-		case '=':	goto php_53_lexical_analyzer_304;
-		default:	goto php_53_lexical_analyzer_284;
+		case '<':	goto php_53_lexical_analyzer_308;
+		case '=':	goto php_53_lexical_analyzer_310;
+		default:	goto php_53_lexical_analyzer_290;
 		}
-php_53_lexical_analyzer_284:
+php_53_lexical_analyzer_290:
 		{ return T_SL; }
-php_53_lexical_analyzer_285:
+php_53_lexical_analyzer_291:
 		yyaccept = 5;
 		yych = *(YYMARKER = ++YYCURSOR);
 		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_290;
-		case '\n':	goto php_53_lexical_analyzer_292;
-		case '\r':	goto php_53_lexical_analyzer_294;
-		case '=':	goto php_53_lexical_analyzer_287;
+		case ' ':	goto php_53_lexical_analyzer_296;
+		case '\n':	goto php_53_lexical_analyzer_298;
+		case '\r':	goto php_53_lexical_analyzer_300;
+		case '=':	goto php_53_lexical_analyzer_293;
 		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_289;
-		default:	goto php_53_lexical_analyzer_286;
+		case 'p':	goto php_53_lexical_analyzer_295;
+		default:	goto php_53_lexical_analyzer_292;
 		}
-php_53_lexical_analyzer_286:
+php_53_lexical_analyzer_292:
 		{ return T_OPEN_TAG; }
-php_53_lexical_analyzer_287:
+php_53_lexical_analyzer_293:
 		++YYCURSOR;
 		{ return T_OPEN_TAG_WITH_ECHO; }
-php_53_lexical_analyzer_289:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_295;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_290:
-		++YYCURSOR;
-		{ return T_OPEN_TAG; }
-php_53_lexical_analyzer_292:
-		++YYCURSOR;
-php_53_lexical_analyzer_293:
-		{ buffer->IncrementLine(); return T_OPEN_TAG; }
-php_53_lexical_analyzer_294:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_292;
-		default:	goto php_53_lexical_analyzer_293;
-		}
 php_53_lexical_analyzer_295:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_296;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_301;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_296:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\t':
-		case '\v':
-		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_300;
-		case '\n':	goto php_53_lexical_analyzer_297;
-		case '\r':	goto php_53_lexical_analyzer_299;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_297:
-		++YYCURSOR;
-php_53_lexical_analyzer_298:
-		{ buffer->IncrementLine(); return T_OPEN_TAG; }
-php_53_lexical_analyzer_299:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_297;
-		default:	goto php_53_lexical_analyzer_298;
-		}
-php_53_lexical_analyzer_300:
 		++YYCURSOR;
 		{ return T_OPEN_TAG; }
-php_53_lexical_analyzer_302:
+php_53_lexical_analyzer_298:
 		++YYCURSOR;
-		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
-		yych = *YYCURSOR;
+php_53_lexical_analyzer_299:
+		{ buffer->IncrementLine(); return T_OPEN_TAG; }
+php_53_lexical_analyzer_300:
+		yych = *++YYCURSOR;
 		switch (yych) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\n':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case '!':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_203;
+		case '\n':	goto php_53_lexical_analyzer_298;
+		default:	goto php_53_lexical_analyzer_299;
+		}
+php_53_lexical_analyzer_301:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_302;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_302:
+		yych = *++YYCURSOR;
+		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_302;
-		case '"':	goto php_53_lexical_analyzer_307;
-		case '\'':	goto php_53_lexical_analyzer_306;
-		default:	goto php_53_lexical_analyzer_308;
+		case ' ':	goto php_53_lexical_analyzer_306;
+		case '\n':	goto php_53_lexical_analyzer_303;
+		case '\r':	goto php_53_lexical_analyzer_305;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_304:
+php_53_lexical_analyzer_303:
 		++YYCURSOR;
-		{ return T_SL_EQUAL; }
+php_53_lexical_analyzer_304:
+		{ buffer->IncrementLine(); return T_OPEN_TAG; }
+php_53_lexical_analyzer_305:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_303;
+		default:	goto php_53_lexical_analyzer_304;
+		}
 php_53_lexical_analyzer_306:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\'':
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':	goto php_53_lexical_analyzer_203;
-		default:	goto php_53_lexical_analyzer_317;
-		}
-php_53_lexical_analyzer_307:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '"':
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':	goto php_53_lexical_analyzer_203;
-		default:	goto php_53_lexical_analyzer_314;
-		}
+		++YYCURSOR;
+		{ return T_OPEN_TAG; }
 php_53_lexical_analyzer_308:
 		++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
@@ -1914,9 +1835,8 @@ php_53_lexical_analyzer_308:
 		case 0x06:
 		case 0x07:
 		case 0x08:
-		case '\t':
-		case '\v':
-		case '\f':
+		case '\n':
+		case '\r':
 		case 0x0E:
 		case 0x0F:
 		case 0x10:
@@ -1935,14 +1855,11 @@ php_53_lexical_analyzer_308:
 		case 0x1D:
 		case 0x1E:
 		case 0x1F:
-		case ' ':
 		case '!':
-		case '"':
 		case '#':
 		case '$':
 		case '%':
 		case '&':
-		case '\'':
 		case '(':
 		case ')':
 		case '*':
@@ -1951,6 +1868,16 @@ php_53_lexical_analyzer_308:
 		case '-':
 		case '.':
 		case '/':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
 		case ':':
 		case ';':
 		case '<':
@@ -1966,26 +1893,136 @@ php_53_lexical_analyzer_308:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_203;
-		case '\n':	goto php_53_lexical_analyzer_310;
-		case '\r':	goto php_53_lexical_analyzer_312;
-		default:	goto php_53_lexical_analyzer_308;
+		case '~':	goto php_53_lexical_analyzer_209;
+		case '\t':
+		case '\v':
+		case '\f':
+		case ' ':	goto php_53_lexical_analyzer_308;
+		case '"':	goto php_53_lexical_analyzer_313;
+		case '\'':	goto php_53_lexical_analyzer_312;
+		default:	goto php_53_lexical_analyzer_314;
 		}
 php_53_lexical_analyzer_310:
 		++YYCURSOR;
-php_53_lexical_analyzer_311:
-		{ buffer->IncrementLine(); condition = yycHEREDOC; goto php_53_lexical_analyzer_next_char; }
+		{ return T_SL_EQUAL; }
 php_53_lexical_analyzer_312:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_310;
-		default:	goto php_53_lexical_analyzer_311;
+		case '\'':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':	goto php_53_lexical_analyzer_209;
+		default:	goto php_53_lexical_analyzer_323;
 		}
 php_53_lexical_analyzer_313:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '"':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':	goto php_53_lexical_analyzer_209;
+		default:	goto php_53_lexical_analyzer_320;
+		}
+php_53_lexical_analyzer_314:
+		++YYCURSOR;
+		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
+		yych = *YYCURSOR;
+		switch (yych) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\v':
+		case '\f':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_209;
+		case '\n':	goto php_53_lexical_analyzer_316;
+		case '\r':	goto php_53_lexical_analyzer_318;
+		default:	goto php_53_lexical_analyzer_314;
+		}
+php_53_lexical_analyzer_316:
+		++YYCURSOR;
+php_53_lexical_analyzer_317:
+		{ buffer->IncrementLine(); condition = yycHEREDOC; goto php_53_lexical_analyzer_next_char; }
+php_53_lexical_analyzer_318:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_316;
+		default:	goto php_53_lexical_analyzer_317;
+		}
+php_53_lexical_analyzer_319:
 		++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 3) YYFILL(3);
 		yych = *YYCURSOR;
-php_53_lexical_analyzer_314:
+php_53_lexical_analyzer_320:
 		switch (yych) {
 		case 0x00:
 		case 0x01:
@@ -2049,22 +2086,22 @@ php_53_lexical_analyzer_314:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_203;
-		case '"':	goto php_53_lexical_analyzer_315;
-		default:	goto php_53_lexical_analyzer_313;
+		case '~':	goto php_53_lexical_analyzer_209;
+		case '"':	goto php_53_lexical_analyzer_321;
+		default:	goto php_53_lexical_analyzer_319;
 		}
-php_53_lexical_analyzer_315:
+php_53_lexical_analyzer_321:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_310;
-		case '\r':	goto php_53_lexical_analyzer_312;
-		default:	goto php_53_lexical_analyzer_203;
+		case '\n':	goto php_53_lexical_analyzer_316;
+		case '\r':	goto php_53_lexical_analyzer_318;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_316:
+php_53_lexical_analyzer_322:
 		++YYCURSOR;
 		if ((YYLIMIT - YYCURSOR) < 3) YYFILL(3);
 		yych = *YYCURSOR;
-php_53_lexical_analyzer_317:
+php_53_lexical_analyzer_323:
 		switch (yych) {
 		case 0x00:
 		case 0x01:
@@ -2128,182 +2165,153 @@ php_53_lexical_analyzer_317:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_203;
-		case '\'':	goto php_53_lexical_analyzer_318;
-		default:	goto php_53_lexical_analyzer_316;
-		}
-php_53_lexical_analyzer_318:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_319;
-		case '\r':	goto php_53_lexical_analyzer_321;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_319:
-		++YYCURSOR;
-php_53_lexical_analyzer_320:
-		{ buffer->IncrementLine(); condition = yycNOWDOC; goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_321:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_319;
-		default:	goto php_53_lexical_analyzer_320;
-		}
-php_53_lexical_analyzer_322:
-		++YYCURSOR;
-		if ((YYLIMIT - YYCURSOR) < 7) YYFILL(7);
-		yych = *YYCURSOR;
-php_53_lexical_analyzer_323:
-		switch (yych) {
-		case '\t':
-		case '\v':
-		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_322;
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_327;
-		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_325;
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_329;
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_331;
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_332;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_326;
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_330;
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_328;
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_324;
-		default:	goto php_53_lexical_analyzer_203;
+		case '~':	goto php_53_lexical_analyzer_209;
+		case '\'':	goto php_53_lexical_analyzer_324;
+		default:	goto php_53_lexical_analyzer_322;
 		}
 php_53_lexical_analyzer_324:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_403;
-		default:	goto php_53_lexical_analyzer_203;
+		case '\n':	goto php_53_lexical_analyzer_325;
+		case '\r':	goto php_53_lexical_analyzer_327;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_325:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_390;
-		default:	goto php_53_lexical_analyzer_203;
-		}
+		++YYCURSOR;
 php_53_lexical_analyzer_326:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_382;
-		default:	goto php_53_lexical_analyzer_203;
-		}
+		{ buffer->IncrementLine(); condition = yycNOWDOC; goto php_53_lexical_analyzer_next_char; }
 php_53_lexical_analyzer_327:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_375;
-		default:	goto php_53_lexical_analyzer_203;
+		case '\n':	goto php_53_lexical_analyzer_325;
+		default:	goto php_53_lexical_analyzer_326;
 		}
 php_53_lexical_analyzer_328:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_367;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_329:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_359;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_330:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_353;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_331:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_346;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_332:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_333;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_333:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_334;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_334:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_335;
-		default:	goto php_53_lexical_analyzer_337;
-		}
-php_53_lexical_analyzer_335:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'G':
-		case 'g':	goto php_53_lexical_analyzer_340;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_336:
 		++YYCURSOR;
-		if (YYLIMIT <= YYCURSOR) YYFILL(1);
+		if ((YYLIMIT - YYCURSOR) < 7) YYFILL(7);
 		yych = *YYCURSOR;
-php_53_lexical_analyzer_337:
+php_53_lexical_analyzer_329:
 		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_336;
-		case ')':	goto php_53_lexical_analyzer_338;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_328;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_333;
+		case 'B':
+		case 'b':	goto php_53_lexical_analyzer_331;
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_335;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_337;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_338;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_332;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_336;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_334;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_330;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_330:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_409;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_331:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_396;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_332:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'B':
+		case 'b':	goto php_53_lexical_analyzer_388;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_333:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_381;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_334:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_373;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_335:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_365;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_336:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_359;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_337:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_352;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_338:
-		++YYCURSOR;
-		{ return T_INT_CAST; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_339;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_339:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_340;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_340:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
 		case 'e':	goto php_53_lexical_analyzer_341;
-		default:	goto php_53_lexical_analyzer_203;
+		default:	goto php_53_lexical_analyzer_343;
 		}
 php_53_lexical_analyzer_341:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_342;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'G':
+		case 'g':	goto php_53_lexical_analyzer_346;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_342:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
+php_53_lexical_analyzer_343:
 		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
 		case ' ':	goto php_53_lexical_analyzer_342;
 		case ')':	goto php_53_lexical_analyzer_344;
-		default:	goto php_53_lexical_analyzer_203;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_344:
 		++YYCURSOR;
@@ -2311,25 +2319,18 @@ php_53_lexical_analyzer_344:
 php_53_lexical_analyzer_346:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_347;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_347;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_347:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_348;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_348;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_348:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_349;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_349:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2337,26 +2338,33 @@ php_53_lexical_analyzer_349:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_349;
-		case ')':	goto php_53_lexical_analyzer_351;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_348;
+		case ')':	goto php_53_lexical_analyzer_350;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_351:
+php_53_lexical_analyzer_350:
 		++YYCURSOR;
-		{ return T_DOUBLE_CAST; }
+		{ return T_INT_CAST; }
+php_53_lexical_analyzer_352:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_353;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_353:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'A':
 		case 'a':	goto php_53_lexical_analyzer_354;
-		default:	goto php_53_lexical_analyzer_203;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_354:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_355;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_355;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_355:
 		++YYCURSOR;
@@ -2368,7 +2376,7 @@ php_53_lexical_analyzer_355:
 		case '\f':
 		case ' ':	goto php_53_lexical_analyzer_355;
 		case ')':	goto php_53_lexical_analyzer_357;
-		default:	goto php_53_lexical_analyzer_203;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_357:
 		++YYCURSOR;
@@ -2376,32 +2384,18 @@ php_53_lexical_analyzer_357:
 php_53_lexical_analyzer_359:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_360;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_360;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_360:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_361;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_361;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_361:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_362;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_362:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_363;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_363:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2409,42 +2403,42 @@ php_53_lexical_analyzer_363:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_363;
-		case ')':	goto php_53_lexical_analyzer_365;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_361;
+		case ')':	goto php_53_lexical_analyzer_363;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_365:
+php_53_lexical_analyzer_363:
 		++YYCURSOR;
 		{ return T_DOUBLE_CAST; }
+php_53_lexical_analyzer_365:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_366;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_366:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'B':
+		case 'b':	goto php_53_lexical_analyzer_367;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_367:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_368;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_368;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_368:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_369;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_369;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_369:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_370;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_370:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'G':
-		case 'g':	goto php_53_lexical_analyzer_371;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_371:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2452,35 +2446,42 @@ php_53_lexical_analyzer_371:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_371;
-		case ')':	goto php_53_lexical_analyzer_373;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_369;
+		case ')':	goto php_53_lexical_analyzer_371;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_373:
+php_53_lexical_analyzer_371:
 		++YYCURSOR;
-		{ return T_STRING_CAST; }
-php_53_lexical_analyzer_375:
+		{ return T_DOUBLE_CAST; }
+php_53_lexical_analyzer_373:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_376;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'r':	goto php_53_lexical_analyzer_374;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_374:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_375;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_375:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_376;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_376:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_377;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'G':
+		case 'g':	goto php_53_lexical_analyzer_377;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_377:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'Y':
-		case 'y':	goto php_53_lexical_analyzer_378;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_378:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2488,42 +2489,35 @@ php_53_lexical_analyzer_378:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_378;
-		case ')':	goto php_53_lexical_analyzer_380;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_377;
+		case ')':	goto php_53_lexical_analyzer_379;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_380:
+php_53_lexical_analyzer_379:
 		++YYCURSOR;
-		{ return T_ARRAY_CAST; }
+		{ return T_STRING_CAST; }
+php_53_lexical_analyzer_381:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_382;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_382:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'J':
-		case 'j':	goto php_53_lexical_analyzer_383;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_383;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_383:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_384;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'Y':
+		case 'y':	goto php_53_lexical_analyzer_384;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_384:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_385;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_385:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_386;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_386:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2531,75 +2525,89 @@ php_53_lexical_analyzer_386:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_386;
-		case ')':	goto php_53_lexical_analyzer_388;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_384;
+		case ')':	goto php_53_lexical_analyzer_386;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_388:
+php_53_lexical_analyzer_386:
 		++YYCURSOR;
-		{ return T_OBJECT_CAST; }
+		{ return T_ARRAY_CAST; }
+php_53_lexical_analyzer_388:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'J':
+		case 'j':	goto php_53_lexical_analyzer_389;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_389:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_390;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_390:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_391;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_391;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_391:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_392;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_392;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_392:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_397;
-		default:	goto php_53_lexical_analyzer_394;
-		}
-php_53_lexical_analyzer_393:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
-php_53_lexical_analyzer_394:
 		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_393;
-		case ')':	goto php_53_lexical_analyzer_395;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_392;
+		case ')':	goto php_53_lexical_analyzer_394;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_395:
+php_53_lexical_analyzer_394:
 		++YYCURSOR;
-		{ return T_BOOL_CAST; }
+		{ return T_OBJECT_CAST; }
+php_53_lexical_analyzer_396:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_397;
+		default:	goto php_53_lexical_analyzer_209;
+		}
 php_53_lexical_analyzer_397:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_398;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_398;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_398:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_399;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_403;
+		default:	goto php_53_lexical_analyzer_400;
 		}
 php_53_lexical_analyzer_399:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
+php_53_lexical_analyzer_400:
 		switch (yych) {
 		case '\t':
 		case '\v':
 		case '\f':
 		case ' ':	goto php_53_lexical_analyzer_399;
 		case ')':	goto php_53_lexical_analyzer_401;
-		default:	goto php_53_lexical_analyzer_203;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_401:
 		++YYCURSOR;
@@ -2607,25 +2615,18 @@ php_53_lexical_analyzer_401:
 php_53_lexical_analyzer_403:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_404;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_404;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_404:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_405;
-		default:	goto php_53_lexical_analyzer_203;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_405;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_405:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_406;
-		default:	goto php_53_lexical_analyzer_203;
-		}
-php_53_lexical_analyzer_406:
 		++YYCURSOR;
 		if (YYLIMIT <= YYCURSOR) YYFILL(1);
 		yych = *YYCURSOR;
@@ -2633,113 +2634,149 @@ php_53_lexical_analyzer_406:
 		case '\t':
 		case '\v':
 		case '\f':
-		case ' ':	goto php_53_lexical_analyzer_406;
-		case ')':	goto php_53_lexical_analyzer_408;
-		default:	goto php_53_lexical_analyzer_203;
+		case ' ':	goto php_53_lexical_analyzer_405;
+		case ')':	goto php_53_lexical_analyzer_407;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_408:
+php_53_lexical_analyzer_407:
 		++YYCURSOR;
-		{ return T_UNSET_CAST; }
-php_53_lexical_analyzer_410:
+		{ return T_BOOL_CAST; }
+php_53_lexical_analyzer_409:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_414;
-		default:	goto php_53_lexical_analyzer_213;
+		case 's':	goto php_53_lexical_analyzer_410;
+		default:	goto php_53_lexical_analyzer_209;
+		}
+php_53_lexical_analyzer_410:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_411;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_411:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_412;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_412;
+		default:	goto php_53_lexical_analyzer_209;
 		}
 php_53_lexical_analyzer_412:
 		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
+		if (YYLIMIT <= YYCURSOR) YYFILL(1);
+		yych = *YYCURSOR;
+		switch (yych) {
 		case '\t':
-		case '\n':
 		case '\v':
 		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_413;
-		default:	goto php_53_lexical_analyzer_212;
+		case ' ':	goto php_53_lexical_analyzer_412;
+		case ')':	goto php_53_lexical_analyzer_414;
+		default:	goto php_53_lexical_analyzer_209;
 		}
-php_53_lexical_analyzer_413:
-		{ return T_USE; }
 php_53_lexical_analyzer_414:
+		++YYCURSOR;
+		{ return T_UNSET_CAST; }
+php_53_lexical_analyzer_416:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_420;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_417:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_415;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_418;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_415:
+php_53_lexical_analyzer_418:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_419;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_419:
+		{ return T_USE; }
+php_53_lexical_analyzer_420:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_421;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_421:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'T':
-		case 't':	goto php_53_lexical_analyzer_416;
-		default:	goto php_53_lexical_analyzer_213;
+		case 't':	goto php_53_lexical_analyzer_422;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_416:
+php_53_lexical_analyzer_422:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -2805,439 +2842,328 @@ php_53_lexical_analyzer_416:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_417;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_423;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_417:
+php_53_lexical_analyzer_423:
 		{ return T_UNSET; }
-php_53_lexical_analyzer_418:
+php_53_lexical_analyzer_424:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_422;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'r':	goto php_53_lexical_analyzer_428;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_419:
+php_53_lexical_analyzer_425:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'Y':
-		case 'y':	goto php_53_lexical_analyzer_420;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'y':	goto php_53_lexical_analyzer_426;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_420:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_421;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_421:
-		{ return T_TRY; }
-php_53_lexical_analyzer_422:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_423;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_423:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_424;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_424:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_425;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_425:
-		{ return T_THROW; }
 php_53_lexical_analyzer_426:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_431;
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_429;
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_427;
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_433;
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_428;
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_432;
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_430;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_427;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_427:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_484;
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_485;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_TRY; }
 php_53_lexical_analyzer_428:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_478;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_429;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_429:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_473;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'W':
+		case 'w':	goto php_53_lexical_analyzer_430;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_430:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_462;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_431;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_431:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_455;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_THROW; }
 php_53_lexical_analyzer_432:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_447;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_437;
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_435;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_433;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_439;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_434;
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_438;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_436;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_433:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_434;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_490;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_491;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_434:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_435;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_484;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_435:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_436;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_479;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_436:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_437;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_468;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_437:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_438;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_461;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_438:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_439;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_453;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_439:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_440;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_440;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_440:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_441;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_441;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_441:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_442;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_442;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_442:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_443;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_443;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_443:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_444;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_444;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_444:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_445;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_445;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_445:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_446;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_446;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_446:
-		{ return T_HALT_COMPILER; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_447;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_447:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_448;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_448;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_448:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_449;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_449;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_449:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_450;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_450;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_450:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_451;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_451;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_451:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_452;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_452:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_453;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_453:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -3303,45 +3229,52 @@ php_53_lexical_analyzer_453:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_454;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_452;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_452:
+		{ return T_HALT_COMPILER; }
+php_53_lexical_analyzer_453:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_454;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_454:
-		{ return T_METHOD_C; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_455;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_455:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_456;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_456;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_456:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_457;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_457;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_457:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_458;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_458;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_458:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '_':	goto php_53_lexical_analyzer_459;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_459:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_460;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_460:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -3407,73 +3340,45 @@ php_53_lexical_analyzer_460:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_461;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_460;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_460:
+		{ return T_METHOD_C; }
 php_53_lexical_analyzer_461:
-		{ return T_CLASS_C; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_462;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_462:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_463;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_463;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_463:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_464;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_464;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_464:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_465;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_465;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_465:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_466;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_466;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_466:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_467;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_467:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_468;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_468:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_469;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_469:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_470;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_470:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_471;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_471:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -3539,31 +3444,73 @@ php_53_lexical_analyzer_471:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_472;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_467;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_467:
+		{ return T_CLASS_C; }
+php_53_lexical_analyzer_468:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_469;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_469:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_470;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_470:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_471;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_471:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_472;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_472:
-		{ return T_NS_C; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_473;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_473:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_474;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_474;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_474:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_475;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_475;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_475:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '_':	goto php_53_lexical_analyzer_476;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_476:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '_':	goto php_53_lexical_analyzer_477;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_477:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -3629,36 +3576,29 @@ php_53_lexical_analyzer_476:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_477;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_478;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_477:
-		{ return T_DIR; }
 php_53_lexical_analyzer_478:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_479;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_NS_C; }
 php_53_lexical_analyzer_479:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_480;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_480;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_480:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '_':	goto php_53_lexical_analyzer_481;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_481:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '_':	goto php_53_lexical_analyzer_482;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_482:
 		++YYCURSOR;
@@ -3727,72 +3667,37 @@ php_53_lexical_analyzer_482:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_483;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_483:
-		{ return T_LINE; }
+		{ return T_DIR; }
 php_53_lexical_analyzer_484:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_495;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_485;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_485:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_486;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_486;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_486:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_487;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_487;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_487:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_488;
-		default:	goto php_53_lexical_analyzer_213;
+		case '_':	goto php_53_lexical_analyzer_488;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_488:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_489;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_489:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_490;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_490:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_491;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_491:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_492;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_492:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_493;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_493:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -3858,109 +3763,73 @@ php_53_lexical_analyzer_493:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_494;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_489;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_489:
+		{ return T_LINE; }
+php_53_lexical_analyzer_490:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_501;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_491:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_492;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_492:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_493;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_493:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_494;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_494:
-		{ return T_FUNC_C; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_495;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_495:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_496;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_496;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_496:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case '_':	goto php_53_lexical_analyzer_497;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_497;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_497:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case '_':	goto php_53_lexical_analyzer_498;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_498:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_499;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '_':	goto php_53_lexical_analyzer_499;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_499:
-		{ return T_FILE; }
-php_53_lexical_analyzer_500:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_501;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_501:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4026,33 +3895,31 @@ php_53_lexical_analyzer_501:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_502;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_500;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_502:
-		{ return T_LOGICAL_XOR; }
-php_53_lexical_analyzer_503:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_504;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_504:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_505;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_505:
+php_53_lexical_analyzer_500:
+		{ return T_FUNC_C; }
+php_53_lexical_analyzer_501:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_506;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_502;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_506:
+php_53_lexical_analyzer_502:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '_':	goto php_53_lexical_analyzer_503;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_503:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '_':	goto php_53_lexical_analyzer_504;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_504:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4118,19 +3985,19 @@ php_53_lexical_analyzer_506:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_507;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_505;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_507:
-		{ return T_WHILE; }
-php_53_lexical_analyzer_508:
+php_53_lexical_analyzer_505:
+		{ return T_FILE; }
+php_53_lexical_analyzer_506:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_509;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'r':	goto php_53_lexical_analyzer_507;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_509:
+php_53_lexical_analyzer_507:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4196,47 +4063,33 @@ php_53_lexical_analyzer_509:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_510;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_508;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_510:
-		{ return T_VAR; }
-php_53_lexical_analyzer_511:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_518;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_512:
+php_53_lexical_analyzer_508:
+		{ return T_LOGICAL_XOR; }
+php_53_lexical_analyzer_509:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_513;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'i':	goto php_53_lexical_analyzer_510;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_513:
+php_53_lexical_analyzer_510:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_514;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_511;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_514:
+php_53_lexical_analyzer_511:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_515;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_512;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_515:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_516;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_516:
+php_53_lexical_analyzer_512:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4302,33 +4155,125 @@ php_53_lexical_analyzer_516:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_517;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_513;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_513:
+		{ return T_WHILE; }
+php_53_lexical_analyzer_514:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_515;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_515:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_516;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_516:
+		{ return T_VAR; }
 php_53_lexical_analyzer_517:
-		{ return T_SWITCH; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_524;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_518:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_519;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_519;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_519:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_520;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_520;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_520:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'C':
 		case 'c':	goto php_53_lexical_analyzer_521;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_521:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_522;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_522:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4394,49 +4339,33 @@ php_53_lexical_analyzer_521:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_522;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_523;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_522:
-		{ return T_STATIC; }
 php_53_lexical_analyzer_523:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'Q':
-		case 'q':	goto php_53_lexical_analyzer_524;
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_525;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_SWITCH; }
 php_53_lexical_analyzer_524:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_530;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_525;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_525:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_526;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_526;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_526:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_527;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_527;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_527:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_528;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_528:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4502,33 +4431,49 @@ php_53_lexical_analyzer_528:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_529;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_528;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_528:
+		{ return T_STATIC; }
 php_53_lexical_analyzer_529:
-		{ return T_RETURN; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'Q':
+		case 'q':	goto php_53_lexical_analyzer_530;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_531;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_530:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_531;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_536;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_531:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_532;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_532;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_532:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_533;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_533;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_533:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_534;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_534:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4594,39 +4539,31 @@ php_53_lexical_analyzer_533:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_534;
-		case '_':	goto php_53_lexical_analyzer_535;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_535;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_534:
-		{ return T_REQUIRE; }
 php_53_lexical_analyzer_535:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_536;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_RETURN; }
 php_53_lexical_analyzer_536:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_537;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_537;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_537:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_538;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_538;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_538:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
 		case 'e':	goto php_53_lexical_analyzer_539;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_539:
 		++YYCURSOR;
@@ -4695,48 +4632,40 @@ php_53_lexical_analyzer_539:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_540;
-		default:	goto php_53_lexical_analyzer_212;
+		case '_':	goto php_53_lexical_analyzer_541;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_540:
-		{ return T_REQUIRE_ONCE; }
+		{ return T_REQUIRE; }
 php_53_lexical_analyzer_541:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_548;
 		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_549;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'o':	goto php_53_lexical_analyzer_542;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_542:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_543;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_543;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_543:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_544;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_544;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_544:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_545;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_545;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_545:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_546;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_546:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4802,63 +4731,49 @@ php_53_lexical_analyzer_546:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_547;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_546;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_546:
+		{ return T_REQUIRE_ONCE; }
 php_53_lexical_analyzer_547:
-		{ return T_PUBLIC; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_554;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_555;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_548:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_557;
-		case 'V':
-		case 'v':	goto php_53_lexical_analyzer_558;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'B':
+		case 'b':	goto php_53_lexical_analyzer_549;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_549:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_550;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_550;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_550:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_551;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_551;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_551:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'C':
 		case 'c':	goto php_53_lexical_analyzer_552;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_552:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_553;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_553:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_554;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_554:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_555;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_555:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -4924,38 +4839,61 @@ php_53_lexical_analyzer_555:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_556;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_553;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_556:
-		{ return T_PROTECTED; }
-php_53_lexical_analyzer_557:
+php_53_lexical_analyzer_553:
+		{ return T_PUBLIC; }
+php_53_lexical_analyzer_554:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_563;
+		case 'V':
+		case 'v':	goto php_53_lexical_analyzer_564;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_555:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'T':
-		case 't':	goto php_53_lexical_analyzer_563;
-		default:	goto php_53_lexical_analyzer_213;
+		case 't':	goto php_53_lexical_analyzer_556;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_556:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_557;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_557:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_558;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_558:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_559;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_559;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_559:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_560;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_560;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_560:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_561;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_561;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_561:
 		++YYCURSOR;
@@ -5024,82 +4962,39 @@ php_53_lexical_analyzer_561:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_562;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_562:
-		{ return T_PRIVATE; }
+		{ return T_PROTECTED; }
 php_53_lexical_analyzer_563:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_564;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_569;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_564:
-		{ return T_PRINT; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_565;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_565:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_566;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_566:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_567;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_567:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5165,25 +5060,11 @@ php_53_lexical_analyzer_565:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_566;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_566:
-		{ return T_LOGICAL_OR; }
-php_53_lexical_analyzer_567:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_571;
-		default:	goto php_53_lexical_analyzer_213;
+		case '~':	goto php_53_lexical_analyzer_568;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_568:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_569;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_PRIVATE; }
 php_53_lexical_analyzer_569:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
@@ -5251,53 +5132,96 @@ php_53_lexical_analyzer_569:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_570;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_570:
-		{ return T_NEW; }
+		{ return T_PRINT; }
 php_53_lexical_analyzer_571:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_572;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_572;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_572:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_573;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_LOGICAL_OR; }
 php_53_lexical_analyzer_573:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_574;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_577;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_574:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_575;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'W':
+		case 'w':	goto php_53_lexical_analyzer_575;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_575:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_576;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_576:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_577;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_577:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5363,26 +5287,54 @@ php_53_lexical_analyzer_577:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_578;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_576;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_576:
+		{ return T_NEW; }
+php_53_lexical_analyzer_577:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_578;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_578:
-		{ return T_NAMESPACE; }
-php_53_lexical_analyzer_579:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_580;
-		default:	goto php_53_lexical_analyzer_213;
+		case 's':	goto php_53_lexical_analyzer_579;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_579:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_580;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_580:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_581;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_581;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_581:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_582;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_582:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_583;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_583:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5448,33 +5400,26 @@ php_53_lexical_analyzer_581:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_582;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_582:
-		{ return T_LIST; }
-php_53_lexical_analyzer_583:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_588;
-		default:	goto php_53_lexical_analyzer_213;
+		case '~':	goto php_53_lexical_analyzer_584;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_584:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_585;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_NAMESPACE; }
 php_53_lexical_analyzer_585:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_586;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_586;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_586:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_587;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_587:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5540,104 +5485,33 @@ php_53_lexical_analyzer_586:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_587;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_588;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_587:
-		{ return T_GOTO; }
 php_53_lexical_analyzer_588:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'B':
-		case 'b':	goto php_53_lexical_analyzer_589;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_LIST; }
 php_53_lexical_analyzer_589:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_590;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_594;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_590:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_591;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_591;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_591:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_592;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_592;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_592:
-		{ return T_GLOBAL; }
-php_53_lexical_analyzer_593:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5703,51 +5577,33 @@ php_53_lexical_analyzer_593:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_594;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_593;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_593:
+		{ return T_GOTO; }
 php_53_lexical_analyzer_594:
-		{ return T_IF; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'B':
+		case 'b':	goto php_53_lexical_analyzer_595;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_595:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_631;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_596;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_596:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_602;
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_604;
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_603;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_597;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_597:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_598;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_598:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_599;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_599:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_600;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_600:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -5813,181 +5669,256 @@ php_53_lexical_analyzer_600:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_601;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_598;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_598:
+		{ return T_GLOBAL; }
+php_53_lexical_analyzer_599:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_600;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_600:
+		{ return T_IF; }
 php_53_lexical_analyzer_601:
-		{ return T_ISSET; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_637;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_602:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_620;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_603:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_613;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_604:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_605;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_605:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_606;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_606:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_607;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_607:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'C':
 		case 'c':	goto php_53_lexical_analyzer_608;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_610;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_609;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_608:
+php_53_lexical_analyzer_603:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_604;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_604:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_609;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_605;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_605:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_606;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_606:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_607;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_607:
+		{ return T_ISSET; }
+php_53_lexical_analyzer_608:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_626;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_609:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_610;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_619;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_610:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_611;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_611;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_611:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_612;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_612;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_612:
-		{ return T_INSTANCEOF; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_613;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_613:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_614;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_614;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_614:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_615;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_615;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_615:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_616;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_616;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_616:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_617;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_617;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_617:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_618;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_618:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -6053,33 +5984,47 @@ php_53_lexical_analyzer_618:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_619;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_618;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_618:
+		{ return T_INSTANCEOF; }
 php_53_lexical_analyzer_619:
-		{ return T_INTERFACE; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_620;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_620:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_621;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_621;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_621:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_622;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_622;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_622:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_623;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_623;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_623:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_624;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_624:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -6145,39 +6090,31 @@ php_53_lexical_analyzer_623:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_624;
-		case '_':	goto php_53_lexical_analyzer_625;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_625;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_624:
-		{ return T_INCLUDE; }
 php_53_lexical_analyzer_625:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_626;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_INTERFACE; }
 php_53_lexical_analyzer_626:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_627;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_627;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_627:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_628;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_628;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_628:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
 		case 'e':	goto php_53_lexical_analyzer_629;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_629:
 		++YYCURSOR;
@@ -6246,60 +6183,40 @@ php_53_lexical_analyzer_629:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_630;
-		default:	goto php_53_lexical_analyzer_212;
+		case '_':	goto php_53_lexical_analyzer_631;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_630:
-		{ return T_INCLUDE_ONCE; }
+		{ return T_INCLUDE; }
 php_53_lexical_analyzer_631:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_632;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_632;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_632:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_633;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_633;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_633:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'M':
-		case 'm':	goto php_53_lexical_analyzer_634;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_634;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_634:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
 		case 'e':	goto php_53_lexical_analyzer_635;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_635:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_636;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_636:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_637;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_637:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_638;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_638:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -6365,233 +6282,188 @@ php_53_lexical_analyzer_638:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_639;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_636;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_636:
+		{ return T_INCLUDE_ONCE; }
+php_53_lexical_analyzer_637:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_638;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_638:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_639;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_639:
-		{ return T_IMPLEMENTS; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'M':
+		case 'm':	goto php_53_lexical_analyzer_640;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_640:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_657;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_641;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_641:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_650;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_642;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_642:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_643;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_643;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_643:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_644;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_644;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_644:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_645;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_645;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_645:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_646;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_IMPLEMENTS; }
 php_53_lexical_analyzer_646:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_647;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_663;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_647:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_648;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_656;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_648:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_649;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_649;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_649:
-		{ return T_FUNCTION; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_650;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_650:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_651;
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_652;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_651;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_651:
-		{ return T_FOR; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_652;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_652:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_653;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_653;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_653:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_654;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_654;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_654:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_655;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_655:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -6657,26 +6529,106 @@ php_53_lexical_analyzer_655:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_656;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_655;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_655:
+		{ return T_FUNCTION; }
 php_53_lexical_analyzer_656:
-		{ return T_FOREACH; }
-php_53_lexical_analyzer_657:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_658;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_657;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_658;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_657:
+		{ return T_FOR; }
 php_53_lexical_analyzer_658:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_659;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_659;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_659:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_660;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_660:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_661;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_661:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -6742,479 +6694,465 @@ php_53_lexical_analyzer_659:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_660;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_660:
-		{ return T_FINAL; }
-php_53_lexical_analyzer_661:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_723;
-		default:	goto php_53_lexical_analyzer_213;
+		case '~':	goto php_53_lexical_analyzer_662;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_662:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_717;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_FOREACH; }
 php_53_lexical_analyzer_663:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'P':
-		case 'p':	goto php_53_lexical_analyzer_713;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_664;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_664:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_679;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_665;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_665:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_676;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_666;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_666:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_667;
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_668;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_FINAL; }
 php_53_lexical_analyzer_667:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_674;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_729;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_668:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_669;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_723;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_669:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_670;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'P':
+		case 'p':	goto php_53_lexical_analyzer_719;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_670:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_671;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'd':	goto php_53_lexical_analyzer_685;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_671:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_672;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_682;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_672:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_673;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_673;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_674;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_673:
-		{ return T_EXTENDS; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_680;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_674:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_675;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_675:
-		{ return T_EXIT; }
-php_53_lexical_analyzer_676:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_677;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_677:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_678;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_678:
-		{ return T_EVAL; }
-php_53_lexical_analyzer_679:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_680;
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_681;
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_682;
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_683;
-		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_684;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_680:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_706;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_675;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_681:
+php_53_lexical_analyzer_675:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_698;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_676;
+		default:	goto php_53_lexical_analyzer_219;
 		}
+php_53_lexical_analyzer_676:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_677;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_677:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_678;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_678:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_679;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_679:
+		{ return T_EXTENDS; }
+php_53_lexical_analyzer_680:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_681;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_681:
+		{ return T_EXIT; }
 php_53_lexical_analyzer_682:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_696;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_683;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_683:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'W':
-		case 'w':	goto php_53_lexical_analyzer_690;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_684;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_684:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_685;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_EVAL; }
 php_53_lexical_analyzer_685:
 		yych = *++YYCURSOR;
 		switch (yych) {
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_686;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_687;
 		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_686;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'i':	goto php_53_lexical_analyzer_688;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_689;
+		case 'W':
+		case 'w':	goto php_53_lexical_analyzer_690;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_686:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_687;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_712;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_687:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_688;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_704;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_688:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_689;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_702;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_689:
-		{ return T_ENDWHILE; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'W':
+		case 'w':	goto php_53_lexical_analyzer_696;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_690:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_691;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_691;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_691:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_692;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_692;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_692:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_693;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_693;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_693:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_694;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_694;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_694:
 		++YYCURSOR;
@@ -7283,183 +7221,39 @@ php_53_lexical_analyzer_694:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_695;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_695:
-		{ return T_ENDSWITCH; }
+		{ return T_ENDWHILE; }
 php_53_lexical_analyzer_696:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_697;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_697;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_697:
-		{ return T_ENDIF; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_698;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_698:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_699;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_699;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_699:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_700;
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_701;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_700:
-		{ return T_ENDFOR; }
-php_53_lexical_analyzer_701:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_702;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_702:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_703;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_703:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_704;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'h':	goto php_53_lexical_analyzer_700;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_704:
+php_53_lexical_analyzer_700:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -7525,47 +7319,184 @@ php_53_lexical_analyzer_704:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_705;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_701;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_705:
-		{ return T_ENDFOREACH; }
-php_53_lexical_analyzer_706:
+php_53_lexical_analyzer_701:
+		{ return T_ENDSWITCH; }
+php_53_lexical_analyzer_702:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_703;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_703:
+		{ return T_ENDIF; }
+php_53_lexical_analyzer_704:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_707;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_705;
+		default:	goto php_53_lexical_analyzer_219;
 		}
+php_53_lexical_analyzer_705:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_706;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_707;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_706:
+		{ return T_ENDFOR; }
 php_53_lexical_analyzer_707:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_708;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_708;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_708:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_709;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_709;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_709:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_710;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_710;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_710:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_711;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_711:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -7631,104 +7562,47 @@ php_53_lexical_analyzer_711:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_712;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_711;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_711:
+		{ return T_ENDFOREACH; }
 php_53_lexical_analyzer_712:
-		{ return T_ENDDECLARE; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_713;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_713:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_714;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_714;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_714:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'Y':
-		case 'y':	goto php_53_lexical_analyzer_715;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_715;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_715:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_716;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_716;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_716:
-		{ return T_EMPTY; }
-php_53_lexical_analyzer_717:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_718;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_717;
+		default:	goto php_53_lexical_analyzer_219;
 		}
-php_53_lexical_analyzer_718:
+php_53_lexical_analyzer_717:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -7794,19 +7668,24 @@ php_53_lexical_analyzer_718:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_719;
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_720;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_718;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_718:
+		{ return T_ENDDECLARE; }
 php_53_lexical_analyzer_719:
-		{ return T_ELSE; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_720;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_720:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_721;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'Y':
+		case 'y':	goto php_53_lexical_analyzer_721;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_721:
 		++YYCURSOR;
@@ -7875,16 +7754,16 @@ php_53_lexical_analyzer_721:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_722;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_722:
-		{ return T_ELSEIF; }
+		{ return T_EMPTY; }
 php_53_lexical_analyzer_723:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_724;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_724;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_724:
 		++YYCURSOR;
@@ -7953,27 +7832,20 @@ php_53_lexical_analyzer_724:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_725;
-		default:	goto php_53_lexical_analyzer_212;
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_726;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_725:
-		{ return T_ECHO; }
+		{ return T_ELSE; }
 php_53_lexical_analyzer_726:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_732;
 		case 'F':
-		case 'f':	goto php_53_lexical_analyzer_733;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'f':	goto php_53_lexical_analyzer_727;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_727:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_730;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_728:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8039,11 +7911,18 @@ php_53_lexical_analyzer_728:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_729;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_728;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_728:
+		{ return T_ELSEIF; }
 php_53_lexical_analyzer_729:
-		{ return T_DO; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_730;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_730:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
@@ -8111,46 +7990,27 @@ php_53_lexical_analyzer_730:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_731;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_731:
-		{ return T_EXIT; }
+		{ return T_ECHO; }
 php_53_lexical_analyzer_732:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_739;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_738;
+		case 'F':
+		case 'f':	goto php_53_lexical_analyzer_739;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_733:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_734;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_736;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_734:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_735;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_735:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'L':
-		case 'l':	goto php_53_lexical_analyzer_736;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_736:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_737;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_737:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8216,33 +8076,118 @@ php_53_lexical_analyzer_737:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_738;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_735;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_735:
+		{ return T_DO; }
+php_53_lexical_analyzer_736:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_737;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_737:
+		{ return T_EXIT; }
 php_53_lexical_analyzer_738:
-		{ return T_DEFAULT; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_745;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_739:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'A':
 		case 'a':	goto php_53_lexical_analyzer_740;
-		default:	goto php_53_lexical_analyzer_213;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_740:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_741;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_741;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_741:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_742;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'L':
+		case 'l':	goto php_53_lexical_analyzer_742;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_742:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_743;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_743:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8308,244 +8253,173 @@ php_53_lexical_analyzer_742:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_743;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_744;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_743:
-		{ return T_DECLARE; }
 php_53_lexical_analyzer_744:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_765;
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_766;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_DEFAULT; }
 php_53_lexical_analyzer_745:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_757;
-		case 'O':
-		case 'o':	goto php_53_lexical_analyzer_758;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'a':	goto php_53_lexical_analyzer_746;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_746:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_747;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_747;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_747:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_748;
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_749;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_748;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_748:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_755;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_749;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_749:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'I':
-		case 'i':	goto php_53_lexical_analyzer_750;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_DECLARE; }
 php_53_lexical_analyzer_750:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_751;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_771;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_772;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_751:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'U':
-		case 'u':	goto php_53_lexical_analyzer_752;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_763;
+		case 'O':
+		case 'o':	goto php_53_lexical_analyzer_764;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_752:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_753;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_753;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_753:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_754;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_754:
-		{ return T_CONTINUE; }
-php_53_lexical_analyzer_755:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_756;
-		default:	goto php_53_lexical_analyzer_212;
-		}
-php_53_lexical_analyzer_756:
-		{ return T_CONST; }
-php_53_lexical_analyzer_757:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_762;
-		default:	goto php_53_lexical_analyzer_213;
+		case 's':	goto php_53_lexical_analyzer_754;
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_755;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_754:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_761;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_755:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'I':
+		case 'i':	goto php_53_lexical_analyzer_756;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_756:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_757;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_757:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'U':
+		case 'u':	goto php_53_lexical_analyzer_758;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_758:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'N':
-		case 'n':	goto php_53_lexical_analyzer_759;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_759;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_759:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_760;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_760:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8611,182 +8485,182 @@ php_53_lexical_analyzer_760:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_761;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_760;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_760:
+		{ return T_CONTINUE; }
 php_53_lexical_analyzer_761:
-		{ return T_CLONE; }
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_762;
+		default:	goto php_53_lexical_analyzer_218;
+		}
 php_53_lexical_analyzer_762:
+		{ return T_CONST; }
+php_53_lexical_analyzer_763:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'S':
-		case 's':	goto php_53_lexical_analyzer_763;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_763:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_764;
-		default:	goto php_53_lexical_analyzer_212;
+		case 's':	goto php_53_lexical_analyzer_768;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_764:
-		{ return T_CLASS; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'N':
+		case 'n':	goto php_53_lexical_analyzer_765;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_765:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_770;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_766;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_766:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_767;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_767;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_767:
+		{ return T_CLONE; }
+php_53_lexical_analyzer_768:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'H':
-		case 'h':	goto php_53_lexical_analyzer_768;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_768:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_769;
-		default:	goto php_53_lexical_analyzer_212;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_769;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_769:
-		{ return T_CATCH; }
-php_53_lexical_analyzer_770:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8852,33 +8726,33 @@ php_53_lexical_analyzer_770:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_771;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_770;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_770:
+		{ return T_CLASS; }
 php_53_lexical_analyzer_771:
-		{ return T_CASE; }
-php_53_lexical_analyzer_772:
 		yych = *++YYCURSOR;
 		switch (yych) {
 		case 'E':
-		case 'e':	goto php_53_lexical_analyzer_773;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'e':	goto php_53_lexical_analyzer_776;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_772:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_773;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_773:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_774;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'H':
+		case 'h':	goto php_53_lexical_analyzer_774;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_774:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'K':
-		case 'k':	goto php_53_lexical_analyzer_775;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_775:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -8944,33 +8818,104 @@ php_53_lexical_analyzer_775:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_776;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_775;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_775:
+		{ return T_CATCH; }
 php_53_lexical_analyzer_776:
-		{ return T_BREAK; }
-php_53_lexical_analyzer_777:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'S':
-		case 's':	goto php_53_lexical_analyzer_788;
-		default:	goto php_53_lexical_analyzer_213;
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_777;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_777:
+		{ return T_CASE; }
 php_53_lexical_analyzer_778:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'D':
-		case 'd':	goto php_53_lexical_analyzer_786;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'E':
+		case 'e':	goto php_53_lexical_analyzer_779;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_779:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_782;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_780;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_780:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'K':
+		case 'k':	goto php_53_lexical_analyzer_781;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_781:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -9036,96 +8981,32 @@ php_53_lexical_analyzer_780:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_781;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_782;
+		default:	goto php_53_lexical_analyzer_218;
 		}
-php_53_lexical_analyzer_781:
-		{ return T_AS; }
 php_53_lexical_analyzer_782:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_783;
-		default:	goto php_53_lexical_analyzer_213;
-		}
+		{ return T_BREAK; }
 php_53_lexical_analyzer_783:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'Y':
-		case 'y':	goto php_53_lexical_analyzer_784;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'S':
+		case 's':	goto php_53_lexical_analyzer_794;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_784:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case 0x00:
-		case 0x01:
-		case 0x02:
-		case 0x03:
-		case 0x04:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x08:
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-		case 0x0E:
-		case 0x0F:
-		case 0x10:
-		case 0x11:
-		case 0x12:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1C:
-		case 0x1D:
-		case 0x1E:
-		case 0x1F:
-		case ' ':
-		case '!':
-		case '"':
-		case '#':
-		case '$':
-		case '%':
-		case '&':
-		case '\'':
-		case '(':
-		case ')':
-		case '*':
-		case '+':
-		case ',':
-		case '-':
-		case '.':
-		case '/':
-		case ':':
-		case ';':
-		case '<':
-		case '=':
-		case '>':
-		case '?':
-		case '@':
-		case '[':
-		case '\\':
-		case ']':
-		case '^':
-		case '`':
-		case '{':
-		case '|':
-		case '}':
-		case '~':	goto php_53_lexical_analyzer_785;
-		default:	goto php_53_lexical_analyzer_212;
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'D':
+		case 'd':	goto php_53_lexical_analyzer_792;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_785:
-		{ return T_ARRAY; }
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_788;
+		default:	goto php_53_lexical_analyzer_219;
+		}
 php_53_lexical_analyzer_786:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
@@ -9193,46 +9074,25 @@ php_53_lexical_analyzer_786:
 		case '|':
 		case '}':
 		case '~':	goto php_53_lexical_analyzer_787;
-		default:	goto php_53_lexical_analyzer_212;
+		default:	goto php_53_lexical_analyzer_218;
 		}
 php_53_lexical_analyzer_787:
-		{ return T_LOGICAL_AND; }
+		{ return T_AS; }
 php_53_lexical_analyzer_788:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_789;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_789;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_789:
 		yych = *++YYCURSOR;
 		switch (yych) {
-		case 'R':
-		case 'r':	goto php_53_lexical_analyzer_790;
-		default:	goto php_53_lexical_analyzer_213;
+		case 'Y':
+		case 'y':	goto php_53_lexical_analyzer_790;
+		default:	goto php_53_lexical_analyzer_219;
 		}
 php_53_lexical_analyzer_790:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'A':
-		case 'a':	goto php_53_lexical_analyzer_791;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_791:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'C':
-		case 'c':	goto php_53_lexical_analyzer_792;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_792:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case 'T':
-		case 't':	goto php_53_lexical_analyzer_793;
-		default:	goto php_53_lexical_analyzer_213;
-		}
-php_53_lexical_analyzer_793:
 		++YYCURSOR;
 		switch ((yych = *YYCURSOR)) {
 		case 0x00:
@@ -9298,58 +9158,235 @@ php_53_lexical_analyzer_793:
 		case '{':
 		case '|':
 		case '}':
-		case '~':	goto php_53_lexical_analyzer_794;
-		default:	goto php_53_lexical_analyzer_212;
+		case '~':	goto php_53_lexical_analyzer_791;
+		default:	goto php_53_lexical_analyzer_218;
 		}
+php_53_lexical_analyzer_791:
+		{ return T_ARRAY; }
+php_53_lexical_analyzer_792:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_793;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_793:
+		{ return T_LOGICAL_AND; }
 php_53_lexical_analyzer_794:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_795;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_795:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'R':
+		case 'r':	goto php_53_lexical_analyzer_796;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_796:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'A':
+		case 'a':	goto php_53_lexical_analyzer_797;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_797:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'C':
+		case 'c':	goto php_53_lexical_analyzer_798;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_798:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case 'T':
+		case 't':	goto php_53_lexical_analyzer_799;
+		default:	goto php_53_lexical_analyzer_219;
+		}
+php_53_lexical_analyzer_799:
+		++YYCURSOR;
+		switch ((yych = *YYCURSOR)) {
+		case 0x00:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		case 0x04:
+		case 0x05:
+		case 0x06:
+		case 0x07:
+		case 0x08:
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+		case 0x0E:
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+		case ' ':
+		case '!':
+		case '"':
+		case '#':
+		case '$':
+		case '%':
+		case '&':
+		case '\'':
+		case '(':
+		case ')':
+		case '*':
+		case '+':
+		case ',':
+		case '-':
+		case '.':
+		case '/':
+		case ':':
+		case ';':
+		case '<':
+		case '=':
+		case '>':
+		case '?':
+		case '@':
+		case '[':
+		case '\\':
+		case ']':
+		case '^':
+		case '`':
+		case '{':
+		case '|':
+		case '}':
+		case '~':	goto php_53_lexical_analyzer_800;
+		default:	goto php_53_lexical_analyzer_218;
+		}
+php_53_lexical_analyzer_800:
 		{ return T_ABSTRACT; }
 /* *********************************** */
 yyc_SINGLE_QUOTE_STRING:
 		if ((YYLIMIT - YYCURSOR) < 2) YYFILL(2);
 		yych = *YYCURSOR;
 		switch (yych) {
-		case 0x00:	goto php_53_lexical_analyzer_801;
-		case '\n':	goto php_53_lexical_analyzer_803;
-		case '\r':	goto php_53_lexical_analyzer_805;
-		case '\'':	goto php_53_lexical_analyzer_799;
-		case '\\':	goto php_53_lexical_analyzer_797;
-		default:	goto php_53_lexical_analyzer_806;
+		case 0x00:	goto php_53_lexical_analyzer_807;
+		case '\n':	goto php_53_lexical_analyzer_809;
+		case '\r':	goto php_53_lexical_analyzer_811;
+		case '\'':	goto php_53_lexical_analyzer_805;
+		case '\\':	goto php_53_lexical_analyzer_803;
+		default:	goto php_53_lexical_analyzer_812;
 		}
-php_53_lexical_analyzer_797:
-		++YYCURSOR;
-		switch ((yych = *YYCURSOR)) {
-		case '\'':	goto php_53_lexical_analyzer_810;
-		case '\\':	goto php_53_lexical_analyzer_808;
-		default:	goto php_53_lexical_analyzer_798;
-		}
-php_53_lexical_analyzer_798:
-		{ goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_799:
-		++YYCURSOR;
-		{ condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
-php_53_lexical_analyzer_801:
-		++YYCURSOR;
-		{ return T_ERROR_UNTERMINATED_STRING; }
 php_53_lexical_analyzer_803:
 		++YYCURSOR;
-php_53_lexical_analyzer_804:
-		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_805:
-		yych = *++YYCURSOR;
-		switch (yych) {
-		case '\n':	goto php_53_lexical_analyzer_807;
+		switch ((yych = *YYCURSOR)) {
+		case '\'':	goto php_53_lexical_analyzer_816;
+		case '\\':	goto php_53_lexical_analyzer_814;
 		default:	goto php_53_lexical_analyzer_804;
 		}
-php_53_lexical_analyzer_806:
-		yych = *++YYCURSOR;
-		goto php_53_lexical_analyzer_798;
+php_53_lexical_analyzer_804:
+		{ goto php_53_lexical_analyzer_next_char; }
+php_53_lexical_analyzer_805:
+		++YYCURSOR;
+		{ condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 php_53_lexical_analyzer_807:
+		++YYCURSOR;
+		{ return T_ERROR_UNTERMINATED_STRING; }
+php_53_lexical_analyzer_809:
+		++YYCURSOR;
+php_53_lexical_analyzer_810:
+		{ buffer->IncrementLine(); goto php_53_lexical_analyzer_next_char; }
+php_53_lexical_analyzer_811:
+		yych = *++YYCURSOR;
+		switch (yych) {
+		case '\n':	goto php_53_lexical_analyzer_813;
+		default:	goto php_53_lexical_analyzer_810;
+		}
+php_53_lexical_analyzer_812:
 		yych = *++YYCURSOR;
 		goto php_53_lexical_analyzer_804;
-php_53_lexical_analyzer_808:
+php_53_lexical_analyzer_813:
+		yych = *++YYCURSOR;
+		goto php_53_lexical_analyzer_810;
+php_53_lexical_analyzer_814:
 		++YYCURSOR;
 		{ goto php_53_lexical_analyzer_next_char; }
-php_53_lexical_analyzer_810:
+php_53_lexical_analyzer_816:
 		++YYCURSOR;
 		{ goto php_53_lexical_analyzer_next_char; }
 	}

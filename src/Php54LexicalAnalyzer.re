@@ -356,8 +356,10 @@ NOT
  * there was some html before the open tag. tell the caller about it.
  * no need to send the T_INLINE_HTML when open tag is at the beginning.
  * return token;
+ * treat xml tags as inline html
  */
 <INLINE_HTML> '<?php' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_54_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?xml' (WHITESPACE | NEWLINE) { goto php_54_lexical_analyzer_next_token_start; }
 <INLINE_HTML> '<?=' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_54_lexical_analyzer_next_token_start; }
 <INLINE_HTML> '<?' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_54_lexical_analyzer_next_token_start; }
 <INLINE_HTML> '<?' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_54_lexical_analyzer_next_token_start; }
