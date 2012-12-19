@@ -1223,6 +1223,16 @@ TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueWhenFileHasInlineHtml) {
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
+TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueWhenFileHasTagWithEcho) {
+	CreateFixtureFile("test_tag_with_echo.php",
+		"<? foreach ($arrTabsList as $key=>$val) { ?>\n"
+		"<?= echo 'hello'; ?>"
+		"<?} ?>\n"
+	);
+	std::string file = TestProjectDir + "test_tag_with_echo.php";
+	CHECK(Parser.LintFile(file, LintResults));
+}
+
 TEST_FIXTURE(Parser54TestClass, LintStringShouldReturnFalseOnBadCode) {
 	UnicodeString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
 	CHECK_EQUAL(false, Parser.LintString(code, LintResults));

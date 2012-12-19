@@ -43,7 +43,7 @@ int pelet::ResourceLex(pelet::ResourceParserTypeClass* value, pelet::LexicalAnal
 	int ret = analyzer.NextToken();
 
 	// ignore these token; there are no parse rules for them
-	if (pelet::T_OPEN_TAG == ret) {
+	if (pelet::T_OPEN_TAG == ret || pelet::T_OPEN_TAG_WITH_ECHO == ret) {
 		ret = analyzer.NextToken();
 	}
 
