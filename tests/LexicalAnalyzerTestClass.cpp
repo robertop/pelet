@@ -80,7 +80,7 @@ public:
 		ActualLexeme.remove(); \
 		Lexer54.GetLexeme(ActualLexeme);\
 		CHECK_EQUAL(expectedLexeme, ActualLexeme);
-		
+
 #define CHECK_TOKEN(token) \
 	CHECK_EQUAL(token, Lexer53.NextToken());\
 	CHECK_EQUAL(token, Lexer54.NextToken());
@@ -665,6 +665,36 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) 
 	CHECK_TOKEN(pelet::T_END);
 }
 
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleInlineHtml) {
+	CreateFixtureFile("test.php", 
+		"<? foreach ($arrTabsList as $key=>$val) { ?>\n"
+		"print<br />\n"
+		"<?= 'hello' ?>\n"
+		"<?} ?>\n"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_FOREACH, UNICODE_STRING_SIMPLE("foreach"));
+	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$arrTabsList"));
+	CHECK_TOKEN_LEXEME(pelet::T_AS, UNICODE_STRING_SIMPLE("as"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$key"));
+	CHECK_TOKEN_LEXEME(pelet::T_DOUBLE_ARROW, UNICODE_STRING_SIMPLE("=>"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$val"));
+	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
+	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
+	///CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, UNICODE_STRING_SIMPLE("\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG_WITH_ECHO, UNICODE_STRING_SIMPLE("<?="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("hello"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?"));
+	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
+	CHECK_TOKEN(pelet::T_END);
+}
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFirstFunction) {
 	UnicodeString code = _U(

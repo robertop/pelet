@@ -972,6 +972,16 @@ TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueWhenFileHasBackticks) {
 	CHECK(Parser.LintFile(file, LintResults));
 }
 
+TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueWhenFileHasInlineHtml) {
+	CreateFixtureFile("test_inline.php",
+		"<? foreach ($arrTabsList as $key=>$val) { ?>\n"
+		"print<br />\n"
+		"<?} ?>\n"
+	);
+	std::string file = TestProjectDir + "test_inline.php";
+	CHECK(Parser.LintFile(file, LintResults));
+}
+
 TEST_FIXTURE(Parser53TestClass, LintStringShouldReturnFalseOnBadCode) {
 	UnicodeString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
 	CHECK_EQUAL(false, Parser.LintString(code, LintResults));

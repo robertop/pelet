@@ -195,9 +195,9 @@ NOT
 <SCRIPT> "->" { condition = yycPROPERTY; return T_OBJECT_OPERATOR; }
 <SCRIPT> '<?php' (WHITESPACE) { return T_OPEN_TAG; }
 <SCRIPT> '<?php' (NEWLINE) { buffer->IncrementLine(); return T_OPEN_TAG; }
-<SCRIPT> "<?" { return T_OPEN_TAG; }
 <SCRIPT> '<?' (WHITESPACE) { return T_OPEN_TAG; }
 <SCRIPT> '<?' (NEWLINE) { buffer->IncrementLine(); return T_OPEN_TAG; }
+<SCRIPT> "<?" { return T_OPEN_TAG; }
 <SCRIPT> "||" { return T_BOOLEAN_OR; }
 <SCRIPT> "&&" { return T_BOOLEAN_AND; }
 <SCRIPT> "++" { return T_INC; }
@@ -335,10 +335,10 @@ NOT
  * no need to send the T_INLINE_HTML when open tag is at the beginning.
  * return token;
  */
-<INLINE_HTML> '<?php' WHITESPACE { condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
-<INLINE_HTML> '<?php' NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; else return T_OPEN_TAG;}
-<INLINE_HTML> '<?' WHITESPACE { condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
-<INLINE_HTML> '<?' NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; if (buffer->TokenStart != start) return T_INLINE_HTML; return T_OPEN_TAG; }
+<INLINE_HTML> '<?php' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?=' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
 <INLINE_HTML> NEWLINE { buffer->IncrementLine(); goto php_53_lexical_analyzer_next_token_start; }
 <INLINE_HTML> EOF { return T_END; }
 <INLINE_HTML> ANY { goto php_53_lexical_analyzer_next_token_start; }
