@@ -52,7 +52,6 @@ int pelet::Next53Token(BufferClass* buffer, YYCONDTYPE &condition) {
 		return T_END;
 	}
 	buffer->MarkTokenStart();
-	const UChar *start = buffer->TokenStart;
 	
 // goto this label when we want to advance to the next character but DISCARD the previous
 // lexeme.	

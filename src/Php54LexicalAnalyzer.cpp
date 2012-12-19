@@ -52,8 +52,7 @@ int pelet::Next54Token(BufferClass* buffer, YYCONDTYPE &condition) {
 		return T_END;
 	}
 	buffer->MarkTokenStart();
-	const UChar *start = buffer->TokenStart;
-	
+		
 // goto this label when we want to advance to the next character but DISCARD the previous
 // lexeme.	
 php_54_lexical_analyzer_next_token_start:
