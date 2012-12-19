@@ -97,7 +97,7 @@ yyc_BACKTICK:
 		}
 php_53_lexical_analyzer_2:
 		++YYCURSOR;
-		{ condition = yycSCRIPT; return '`'; }
+		{ condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 php_53_lexical_analyzer_4:
 		++YYCURSOR;
 php_53_lexical_analyzer_5:

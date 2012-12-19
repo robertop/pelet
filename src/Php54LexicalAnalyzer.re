@@ -382,7 +382,7 @@ NOT
  * for now  just eat all of the contents of the backtick expression.
  * TODO: can backticks be escaped??
  */
-<BACKTICK> [`] { condition = yycSCRIPT; return '`'; }
+<BACKTICK> [`] { condition = yycSCRIPT; return T_CONSTANT_ENCAPSED_STRING; }
 <BACKTICK> NEWLINE { buffer->IncrementLine(); goto php_54_lexical_analyzer_next_token_start; }
 <BACKTICK> EOF { return T_ERROR_UNTERMINATED_BACKTICK; }
 <BACKTICK> ANY { goto php_54_lexical_analyzer_next_token_start; }
