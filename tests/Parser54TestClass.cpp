@@ -555,6 +555,18 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassTypes) {
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends AbstractRunnable implements MyRunnable", Observer.ClassSignature[3]);
 }
 
+TEST_FIXTURE(Parser54TestClass, ScanStringWithAllDefinesWithExpressions) {
+	Parser.SetClassObserver(&Observer);
+	UnicodeString code = _U(
+		"define ('MAX_TIME', 3 * 60);\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.DefinedName);
+	CHECK_VECTOR_SIZE(1, Observer.DefinedNamespaceName);
+	CHECK_UNISTR_EQUALS("MAX_TIME", Observer.DefinedName[0]);
+	CHECK_UNISTR_EQUALS("\\", Observer.DefinedNamespaceName[0]);
+}
+
 TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithMultipleNamespaces) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
