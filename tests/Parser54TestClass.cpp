@@ -406,7 +406,8 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassObserver) {
 		CHECK_VECTOR_SIZE(1, Observer.DefinedValue);
 		CHECK_UNISTR_EQUALS("5000", Observer.DefinedValue[0]);		
 		CHECK_VECTOR_SIZE(1, Observer.DefinedComment);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a define comment\n */"), Observer.DefinedComment[0]);
+		CHECK_UNISTR_EQUALS("/**\n * This is a define comment\n */", Observer.DefinedComment[0]);
+		CHECK_UNISTR_EQUALS("\\", Observer.DefinedNamespaceName[0]);
 }
 
 TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassMemberObserver) {
