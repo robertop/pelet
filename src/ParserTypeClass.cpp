@@ -56,13 +56,13 @@ void pelet::ConstantStatementClass::Init(pelet::QualifiedNameClass* functionName
 	if (functionName) {
 		Comment = functionName->Comment;
 	}
-	if (params && params->Size() >= 2) {
-		if (params->TypeAt(0) == pelet::StatementClass::SCALAR) {
-			Name = ((pelet::ScalarStatementClass*)params->At(0))->Scalar;
-		}
-		if (params->TypeAt(1) == pelet::StatementClass::SCALAR) {
-			Value = ((pelet::ScalarStatementClass*)params->At(1))->Scalar;
-		}
+
+	// right now will only scalars are captured; so we may have only 1 param
+	if (params && params->Size() >= 1 && params->TypeAt(0) == pelet::StatementClass::SCALAR) {
+		Name = ((pelet::ScalarStatementClass*)params->At(0))->Scalar;
+	}
+	if (params && params->Size() >= 2 && params->TypeAt(1) == pelet::StatementClass::SCALAR) {
+		Value = ((pelet::ScalarStatementClass*)params->At(1))->Scalar;
 	}
 	LineNumber = lineNumber;
 	NamespaceName = UNICODE_STRING_SIMPLE("\\");
