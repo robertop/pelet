@@ -220,7 +220,7 @@ public:
 	
 	pelet::QualifiedNameClass* QualifiedNameCreate(pelet::SemanticValueClass* nameValue);
 	pelet::QualifiedNameClass* QualifiedNameMakeAbsolute(pelet::QualifiedNameClass* qualifiedName);
-	pelet::QualifiedNameClass* QualifiedNameMakeFromCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	pelet::QualifiedNameClass* QualifiedNameMakeFromDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName);
 	pelet::QualifiedNameClass* QualifiedNameNil();
 	
 	pelet::StatementListClass* NamespaceDeclarationFound(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* namespaceTokenValue);
@@ -292,7 +292,7 @@ public:
 	
 	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);
 	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
-	pelet::VariableClass* VariableMakeFunctionCallFromCurrentNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableMakeFunctionCallFromDeclaredNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue);
@@ -333,13 +333,22 @@ public:
 	
 	void SetCurrentMemberName(pelet::SemanticValueClass* value);
 	
-	void SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	void SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName);
 	
 	/**
 	 * @return Scope that is filled in *as the source is being parsed*. This is 
 	 * useful to get the last good scope when a parse error occurs.
 	 */
 	pelet::ScopeClass CurrentScope();
+	
+	/**
+	 * run through the class statements and create property declarations based out of
+	 * all assignments to "$this->prop". The property declarations are appended to 
+	 * the given list.
+	 * 
+	 * @param classStatements the list of statements parsed from a class declaration
+	 */
+	void DeclareAssignedPropertiesFromAssignments(pelet::StatementListClass* classStatements);
 	
 private:
 
@@ -368,7 +377,7 @@ private:
 	/**
 	 * The current namespace
 	 */
-	QualifiedNameClass CurrentNamespace;
+	QualifiedNameClass DeclaredNamespace;
 	
 	/**
 	 * This object will NOT own the pointer

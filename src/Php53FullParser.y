@@ -366,10 +366,10 @@ top_statement:
 	|	function_declaration_statement			{ $$ = $1; }
 	|	class_declaration_statement				{ $$ = $1; }
 	|	T_HALT_COMPILER '(' ')' ';'				{ $$ = observers.StatementListMake(); }
-	|	T_NAMESPACE namespace_name ';'			{ $$ = observers.NamespaceDeclarationFound($2, $1); observers.SetCurrentNamespace($2); }
-	|	T_NAMESPACE namespace_name '{'			{ observers.SetCurrentNamespace($2); }
+	|	T_NAMESPACE namespace_name ';'			{ $$ = observers.NamespaceDeclarationFound($2, $1); observers.SetDeclaredNamespace($2); }
+	|	T_NAMESPACE namespace_name '{'			{ observers.SetDeclaredNamespace($2); }
 		top_statement_list '}'					{ $$ = observers.NamespaceDeclarationFound($2, $1); $$ = observers.StatementListMerge($$, $5); }
-	|	T_NAMESPACE '{'							{ observers.SetCurrentNamespace(NULL); }
+	|	T_NAMESPACE '{'							{ observers.SetDeclaredNamespace(NULL); }
 		top_statement_list '}'					{  $$ = observers.NamespaceGlobalDeclarationFound($1); $$ = observers.StatementListMerge($$, $4); }
 	|	T_USE use_declarations ';'				{ $$ = observers.NamespaceUseSetStartingPos($2, $1); }
 	|	constant_declaration ';'				{ $$ = $1; }
@@ -525,6 +525,7 @@ unticked_class_declaration_statement:
 		class_entry_type T_STRING			
 		extends_from implements_list		{ observers.SetCurrentClassName($2); }	
 		'{' class_statement_list '}'		{ $$ = observers.ClassSymbolMake($2, $1, $3, $4, $8);
+											  observers.DeclareAssignedPropertiesFromAssignments($7);
 											  observers.StatementListMerge($$, $7); 
 											  observers.SetCurrentClassName(NULL);  
 											}
@@ -873,7 +874,7 @@ function_call:
 		function_call_parameter_list	')'												{ $$ = observers.VariableMakeFunctionCall($1, $3, analyzer.GetLineNumber()); }
 	|	T_NAMESPACE T_NS_SEPARATOR 														
 		namespace_name '(' 																
-		function_call_parameter_list ')' 												{ $$ = observers.VariableMakeFunctionCallFromCurrentNamespace($3, $5, analyzer.GetLineNumber()); }
+		function_call_parameter_list ')' 												{ $$ = observers.VariableMakeFunctionCallFromDeclaredNamespace($3, $5, analyzer.GetLineNumber()); }
 	|	T_NS_SEPARATOR namespace_name '(' 												
 				function_call_parameter_list ')'										{ $$ = observers.VariableMakeFunctionCallFromAbsoluteNamespace($2, $4, analyzer.GetLineNumber()); }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
@@ -891,13 +892,13 @@ function_call:
 class_name:
 		T_STATIC													{ $$ = observers.QualifiedNameNil(); }
 	|	namespace_name												{ $$ = $1; }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = observers.QualifiedNameMakeFromCurrentNamespace($3); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = observers.QualifiedNameMakeFromDeclaredNamespace($3); }
 	|	T_NS_SEPARATOR namespace_name								{ $$ = observers.QualifiedNameMakeAbsolute($2); }
 ;
 
 fully_qualified_class_name:
 		namespace_name												{ $$ = $1; }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = observers.QualifiedNameMakeFromCurrentNamespace($3); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name					{ $$ = observers.QualifiedNameMakeFromDeclaredNamespace($3); }
 	|	T_NS_SEPARATOR namespace_name								{ $$ = observers.QualifiedNameMakeAbsolute($2); }
 ;
 
@@ -972,7 +973,7 @@ scalar:
 		T_STRING_VARNAME								{ $$ = observers.ExpressionMakeScalar($1); }
 	|	class_constant									{ $$ = $1; }
 	|	namespace_name									{ $$ = observers.ExpressionMakeScalarFromConstant($1); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name		{ $$ = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeFromCurrentNamespace($3)); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name		{ $$ = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeFromDeclaredNamespace($3)); }
 	|	T_NS_SEPARATOR namespace_name					{ $$ = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeAbsolute($2)); }
 	|	common_scalar
 	|	'"' encaps_list '"'								{ $$ = observers.ExpressionMakeScalar($2); }

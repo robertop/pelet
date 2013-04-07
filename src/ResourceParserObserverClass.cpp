@@ -24,8 +24,9 @@
  */	
 #include <pelet/ResourceParserObserverClass.h>
 #include <pelet/TokenClass.h>
-#include <unicode/uchar.h>
 #include <unicode/ustring.h>
+
+#include <algorithm>
 
 /**
  * sets either varName or varType depending on whether text contents are a variable name or not.
@@ -115,62 +116,7 @@ void pelet::ResourceGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::R
 	analyzer.ParserError.releaseBuffer(written);
 }
 
-UnicodeString pelet::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation, 
-												 const pelet::ScopeClass& scope, 
-												 const pelet::QualifiedNameClass& currentNamespace) {
-	UnicodeString returnType;
-	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
-	int32_t pos = phpDocComment.indexOf(annotation);
-	if (pos >= 0) {
-		pos += annotation.length();
 
-		// rudimentary tokenizer, skip all whitespace after annotation and get the word
-		while (u_isWhitespace(phpDocComment[pos])) {
-			++pos;
-		}
-		while (!u_isWhitespace(phpDocComment[pos]) && pos < phpDocComment.length()) {
-			returnType += phpDocComment[pos];
-			++pos;
-		}
-	}
-	returnType = returnType.trim();
-	return PhpDocTypeToAbsoluteClassname(returnType, scope, currentNamespace);
-}
-
-UnicodeString pelet::PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
-												   const pelet::ScopeClass& scope, 
-												   const pelet::QualifiedNameClass& currentNamespace) {
-
-	// any of the "basic" types will never use the current namespace
-	// these were taken from http://www.phpdoc.org/docs/latest/for-users/types.html
-	if (UNICODE_STRING_SIMPLE("string").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("integer").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("int").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("boolean").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("bool").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("float").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("double").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("object").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("mixed").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("array").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("resource").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("void").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("null").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("callback").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("false").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("true").caseCompare(phpDocType, 0) == 0 ||
-	        UNICODE_STRING_SIMPLE("self").caseCompare(phpDocType, 0) == 0) {
-		return phpDocType;
-	}
-	if (!phpDocType.isEmpty()) {
-		pelet::QualifiedNameClass name;
-		pelet::SemanticValueClass value;
-		value.Lexeme = phpDocType;
-		name.AddName(&value);
-		return scope.AbsoluteNamespaceClass(name, currentNamespace);
-	}
-	return phpDocType;
-}
 
 void pelet::NotifyMagicMethodsAndProperties(pelet::ClassMemberObserverClass* memberObserver, 
 											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
@@ -279,9 +225,10 @@ pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObse
 		pelet::FunctionObserverClass* functionObserver)
 	: DoCaptureScalars(false)
 	, DoCaptureCallArguments(false)
+	, DoCaptureProperties(false)
 	, AllStatements() 
 	, Scope()
-	, CurrentNamespace()
+	, DeclaredNamespace()
 	, Class(classObserver)
 	, Member(memberObserver)
 	, Function(functionObserver) {
@@ -302,7 +249,7 @@ void pelet::ResourceParserObserverClass::Adopt(pelet::AstItemClass* astItem) {
 void pelet::ResourceParserObserverClass::NamespaceUseAddScope(pelet::NamespaceUseClass* namespaceUse) {
 
 	// dont worry about duplicate aliases, since its incorrect PHP
-	Scope.AddNamespace(namespaceUse->NamespaceName, namespaceUse->Alias);
+	Scope.AddNamespaceAlias(namespaceUse->NamespaceName, namespaceUse->Alias);
 }
 
 void pelet::ResourceParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
@@ -313,16 +260,52 @@ void pelet::ResourceParserObserverClass::SetCurrentMemberName(pelet::SemanticVal
 	Scope.MethodName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
 }
 
-void pelet::ResourceParserObserverClass::SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName) {
+void pelet::ResourceParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName) {
 	Scope.ClearAliases();
 	if (qualifiedName) {
-		CurrentNamespace = *qualifiedName;
-		Scope.NamespaceName = qualifiedName->ToAbsoluteSignature();
+		
+		// setting to true because the namespace declaration is always absolute according to PHP rules
+		qualifiedName->IsAbsolute = true;
+		DeclaredNamespace = *qualifiedName;
+		
+		Scope.NamespaceName = DeclaredNamespace.ToSignature();
 	} else {
-		CurrentNamespace.Clear();
-		CurrentNamespace.MakeAbsolute();
+		DeclaredNamespace.Clear();
+		
+		// setting to true because the namespace declaration is always absolute according to PHP rules
+		DeclaredNamespace.IsAbsolute = true;
 		Scope.NamespaceName.remove();
 	}
+}
+
+void pelet::ResourceParserObserverClass::DeclareAssignedProperties(pelet::StatementListClass* classStatements) {
+	if (NULL == classStatements || classStatements->Size() == 0) {
+		return;
+	}
+
+	pelet::StatementListClass filteredStatements;
+	std::vector<UnicodeString> propertyNames;
+
+	// loop through each statement, if it is a duplicate property dont add it 
+	// to the filtered list
+	// since statements holds pointers that are owned by AllStatements vector, we don't
+	// have to delete them
+	for (size_t i = 0; i < classStatements->Size(); ++i) {
+		pelet::StatementClass::Types type = classStatements->TypeAt(i);
+		if (pelet::StatementClass::PROPERTY_DECLARATION == type) {
+			pelet::ClassMemberSymbolClass* member = (pelet::ClassMemberSymbolClass*)classStatements->At(i);
+			UnicodeString propertyName = member->MemberName;
+			if (propertyNames.end() == std::find(propertyNames.begin(), propertyNames.end(), propertyName)) {
+				filteredStatements.Push(member);
+				propertyNames.push_back(propertyName);
+			}
+		}
+		else {
+			filteredStatements.Push(classStatements->At(i));
+		}
+	}
+	classStatements->Clear();
+	classStatements->PushAll(&filteredStatements);
 }
 
 void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
@@ -335,9 +318,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		pelet::ConstantStatementClass* constant;
 		pelet::ClassMemberSymbolClass* memberSymbol;
 		UnicodeString signature;
-		UnicodeString returnType;
 		UnicodeString comment;
-		UnicodeString propType;
 		pelet::TokenClass::TokenIds visibility;
 		pelet::NamespaceDeclarationClass* declaration;
 		pelet::NamespaceUseClass* namespaceUse;
@@ -357,9 +338,9 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			if (Member) {
 				classSymbol = (pelet::ClassSymbolClass*) stmt;
 
-				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
+				// TODO this is wrong; as we have finished parsing at this point Scope and DeclaredNamespace are 
 				// not correct
-				NotifyMagicMethodsAndProperties(Member, Scope, CurrentNamespace, classSymbol->Comment, classSymbol->NamespaceName,
+				NotifyMagicMethodsAndProperties(Member, Scope, DeclaredNamespace, classSymbol->Comment, classSymbol->NamespaceName,
 													classSymbol->ClassName, classSymbol->StartingLineNumber);
 			}
 			if (Class) {
@@ -386,12 +367,9 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				signature.setTo(signature, signature.indexOf(UNICODE_STRING_SIMPLE("function")));
 
-				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-				// not correct
-				returnType = ReturnTypeFromPhpDocComment(memberSymbol->Comment, false, Scope, CurrentNamespace);
 
 				Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
-										returnType, memberSymbol->Comment, memberSymbol->StartingLineNumber);
+										memberSymbol->GetReturnType(), memberSymbol->GetComment(), memberSymbol->StartingLineNumber);
 				Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}
@@ -407,11 +385,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		case pelet::StatementClass::METHOD_DECLARATION:
 			if (Member) {
 				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
-				comment = memberSymbol->Comment;
-
-				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-				// not correct
-				propType = ReturnTypeFromPhpDocComment(comment, false, Scope, CurrentNamespace);
+				comment = memberSymbol->GetComment();
 				signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
@@ -420,7 +394,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 					visibility = pelet::TokenClass::PRIVATE;
 				}
 				Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
-									propType, comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
+									memberSymbol->GetReturnType(), comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
 				Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
 					memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}
@@ -448,11 +422,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		case pelet::StatementClass::PROPERTY_DECLARATION:
 			if (Member) {
 				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
-				comment = memberSymbol->Comment;
-				
-				// TODO this is wrong; as we have finished parsing at this point Scope and CurrentNamespace are 
-				// not correct
-				propType = ReturnTypeFromPhpDocComment(comment, true, Scope, CurrentNamespace);
+				comment = memberSymbol->GetComment();
 				visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
 					visibility = pelet::TokenClass::PROTECTED;
@@ -460,7 +430,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 					visibility = pelet::TokenClass::PRIVATE;
 				}
 				Member->PropertyFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName,
-									  propType, comment, visibility, memberSymbol->IsConstMember, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
+									  memberSymbol->GetReturnType(), comment, visibility, memberSymbol->IsConstMember, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
 			}
 			break;
 		case pelet::StatementClass::TRAIT_ALIAS_DECLARATION:
@@ -495,6 +465,6 @@ const pelet::ScopeClass& pelet::ResourceParserObserverClass::GetScope() const {
 	return Scope;
 }
 
-const pelet::QualifiedNameClass& pelet::ResourceParserObserverClass::GetCurrentNamespace() const {
-	return CurrentNamespace;
+const pelet::QualifiedNameClass& pelet::ResourceParserObserverClass::GetDeclaredNamespace() const {
+	return DeclaredNamespace;
 }

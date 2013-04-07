@@ -400,17 +400,62 @@ public:
 	 */
 	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> GetNamespaceAliases() const;
 
-	void AddNamespace(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias);
-
-	UnicodeString GetFullNamespace(const UnicodeString& alias) const;
+	/**
+	 * add a namespace alias. this is the result of a "use" statement
+	 * For example, for the code
+	 * 
+	 *    use My\Full\Classname as Another;
+	 * 
+	 * namespaceName is "My\Full\Classname" and namespaceAlias is "Another"
+	 * 
+	 * @param namespaceName the namespace being used. by PHP rules, this is always absolute
+	 * @param namespaceAlias the name the namespace is referred as  
+	 */
+	void AddNamespaceAlias(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias);
 
 	/**
-	 * Calcualte the fully qualified name from a namespace name, taking aliases
-	 * into account.
+	 * Resolve an alias
+	 * For example, for the code
+	 * 
+	 *    use My\Full\Classname as Another;
+	 * 
+	 * namespaceName is "My\Full\Classname" and namespaceAlias is "Another"
+	 * When alias is "Another", this method return "My\Full\Classname"
+	 * 
+	 * @param alias
+	 * @return the namespace that the alias refers to. by PHP rules, this is always absolute
 	 */
-	UnicodeString AbsoluteNamespaceClass(const pelet::QualifiedNameClass& name, 
-		const pelet::QualifiedNameClass& namespaceName) const;	
+	UnicodeString ResolveAlias(const UnicodeString& alias) const;
 
+	/**
+	 * Calculate the fully qualified name from a namespace name, taking aliases
+	 * into account.
+	 * 
+	 * example code:
+	 * 
+	 * 
+	 * namespace MyProject {
+	 * 
+	 *    use My\Full\Classname as Another;
+	 * 
+	 *    class MyClass implements \\Framework\\Base, Another  { ... }
+	 * 
+	 * }
+	 * 
+	 * then names can be:  "MyClass" or "\\Framework\Base", "Another"
+	 * declaredNamespace is always "MyProject"
+	 * 
+	 * @param name the name of the class / function / constant. this name may 
+	 *        contain an alias, or may contain sub-namespaces
+	 * @param declaredNamespace the namespace in which the class  class / function / constant
+	 *        is defined in.  this is always fully qualified.
+	 */
+	UnicodeString FullyQualify(const pelet::QualifiedNameClass& name, 
+		const pelet::QualifiedNameClass& declaredNamespace) const;	
+
+	/**
+	 * copy a scope
+	 */
 	void operator=(const pelet::ScopeClass& scope);
 
 private:
@@ -500,7 +545,7 @@ public:
 	void Clear();
 	void Init(SemanticValueClass* value);
 	void Init(const UnicodeString& name);
-	pelet::QualifiedNameClass* AddName(SemanticValueClass* value);
+	pelet::QualifiedNameClass* AppendName(SemanticValueClass* value);
 	pelet::QualifiedNameClass* MakeAbsolute();
 	
 	/**
@@ -515,14 +560,13 @@ public:
 	 * then this method will make this namespace be "\Parent\Classname"
 	 * since this name is absolute no need to prepend the given namespace
 	 */
-	void Prepend(const QualifiedNameClass& name);
+	void PrependNamespace(const QualifiedNameClass& name);
 
-	UnicodeString ToSignature() const;
-	
-	/** 
-	 * prepends a namespace separator '\' to this namespace name
+	/**
+	 * prints out the namespace as a string.
+	 * This will have 
 	 */
-	UnicodeString ToAbsoluteSignature() const;
+	UnicodeString ToSignature() const;
 	
 	/**
 	 * @param name the namespace to prepend to this namespace. This is the current namespace
@@ -538,9 +582,10 @@ public:
 	 * then this method will return "\Parent\Classname"
 	 * since this name is absolute no need to prepend the given namespace
 	 */
-	UnicodeString Prepend(const QualifiedNameClass& name) const;
+	/*UnicodeString Prepend(const QualifiedNameClass& name) const;
+	*/
 
-	pelet::QualifiedNameClass* MakeFromCurrentNamespace(const pelet::QualifiedNameClass* qualifiedName);
+	pelet::QualifiedNameClass* MakeFromDeclaredNamespace(const pelet::QualifiedNameClass* qualifiedName);
 
 private:
 
@@ -938,11 +983,12 @@ public:
 	NamespaceUseClass();
 
 	/**
-	 * @param qualifiedName the namespace name 
+	 * @param qualifiedName the namespace name . by PHP rules this is always absolute; if it is not it will
+	 *        be made so
 	 * @param alias the alias lexeme. this can be NULL if there is no alias
 	 * @param bool TRUE if namespace name is an absolute namespace
 	 */
-	void Init(QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias, bool isAbsolute);
+	void Init(QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias);
 	
 	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
 
@@ -1326,7 +1372,7 @@ public:
 	 * If this is a property, the MemberName will
 	 * have the siguil ('$')
 	 */
-	UnicodeString MemberName, Comment, NamespaceName, ClassName;
+	UnicodeString MemberName, NamespaceName, ClassName;
 	
 	ParametersListClass ParametersList;
 	
@@ -1334,6 +1380,20 @@ public:
 	 * This class will NOT own the statement pointers in the list
 	 */
 	StatementListClass MethodStatements;
+	
+private:
+
+	UnicodeString Comment;
+
+	/**
+	 *  for methods / functions this is the type that is returned by the  method / function
+	 * for properties, this is the type of the property
+	 * note that this is always parsed out of the PHPDoc comment, as PHP syntax does not 
+	 * allow for type declarations
+	 */
+	UnicodeString ReturnType;
+	
+public:
 	
 	/** line number, 1-based
 	 */
@@ -1370,22 +1430,24 @@ public:
 	bool IsReturnReference;
 
 	ClassMemberSymbolClass();
-	void SetNameAndReturnReference(SemanticValueClass* nameValue, bool isReturnReference, SemanticValueClass* functionValue);
-	void SetAsConst(SemanticValueClass* nameValue, SemanticValueClass* commentValue);
+	void SetNameAndReturnReference(SemanticValueClass* nameValue, bool isReturnReference, SemanticValueClass* functionValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
+	void SetAsConst(SemanticValueClass* nameValue, SemanticValueClass* commentValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
-	void AppendToComment(SemanticValueClass* value);
+	void AppendToComment(SemanticValueClass* value, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	
 	void SetAsPublic();
 	void SetAsProtected();
 	void SetAsPrivate();
 	void Clear();
+	UnicodeString GetReturnType() const;
+	UnicodeString GetComment() const;
 
 	pelet::ClassMemberSymbolClass* MakeBody(pelet::StatementListClass* bodyStatements, 
 		const pelet::TokenPositionClass& startingPositionTokenValue, const pelet::TokenPositionClass& endingPositionTokenValue);
 
-	pelet::ClassMemberSymbolClass* Make(pelet::SemanticValueClass* varValue);
+	pelet::ClassMemberSymbolClass* Make(pelet::SemanticValueClass* varValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 
-	pelet::ClassMemberSymbolClass* MakeAsPublicVariable(pelet::SemanticValueClass* varValue);
+	pelet::ClassMemberSymbolClass* MakeAsPublicVariable(pelet::SemanticValueClass* varValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 
 	pelet::ClassMemberSymbolClass* MakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
@@ -1401,7 +1463,8 @@ public:
 	pelet::ClassMemberSymbolClass* MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, 
 		bool isConstant, const int endingPosition, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
-	static pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
+	static pelet::StatementListClass* MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	
 	pelet::ClassMemberSymbolClass* SetModifier(pelet::SemanticValueClass* modifierValue);
 };
@@ -1459,6 +1522,32 @@ typedef union ParserType {
 	bool isMethod;
 	bool isComma;
 } ParserTypeClass;
+
+/**
+ * Get the return type from the '\@return' / '\@var' annotation
+ * 
+ * @param const UnicodeString& phpDocComment the comment
+ * @param bool varAnnotation if false, will return the word after '\@var', else return the word after '\@return'
+ * @param scope the scope where the PHPDoc comment is located in
+ * @param currentNamespace the current namespace we are in
+ * @return UnicodeString
+ */
+UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation,
+										  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+
+/**
+ * Turn a PHPDoc type into a fully qualified class name. The phpdoc type will get
+ * qualified according to the same PHP rules as a type hint; the current namespace
+ * and any aliases will be correctly accounted for.
+ * 
+ * @param phpDocType the parsed type in the PHPDoc, ie. in "@return StringClass" then this parameter
+ *        should be "StringClass"
+ * @param scope the scope where the PHPDoc comment is located in
+ * @param currentNamespace the current namespace we are in
+ * @param the fully qualified class name
+ */
+UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
+											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
 } 
 

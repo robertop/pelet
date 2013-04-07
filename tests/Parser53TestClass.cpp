@@ -434,19 +434,95 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithReturnAnnotationsNamespaces) {
 		""
 		"	/** @return C\\Result */"
 		"	function stop() {} \n"
+		""
+		"	/** @return \\D\\Result */"
+		"	function pause() {} \n"
 		"} \n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(2, Observer.MethodClassName);
+	CHECK_VECTOR_SIZE(3, Observer.MethodClassName);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.MethodClassName[0]);
 	CHECK_UNISTR_EQUALS("run", Observer.MethodName[0]);
 	CHECK_UNISTR_EQUALS("stop", Observer.MethodName[1]);
-	CHECK_VECTOR_SIZE(2, Observer.MethodReturnType);
+	CHECK_UNISTR_EQUALS("pause", Observer.MethodName[2]);
+	CHECK_VECTOR_SIZE(3, Observer.MethodReturnType);
 	CHECK_UNISTR_EQUALS("\\First\\Result", Observer.MethodReturnType[0]);
 	CHECK_UNISTR_EQUALS("\\Second\\Child\\Result", Observer.MethodReturnType[1]);
-	CHECK_VECTOR_SIZE(2, Observer.MethodSignature);
+	CHECK_UNISTR_EQUALS("\\D\\Result", Observer.MethodReturnType[2]);
+	CHECK_VECTOR_SIZE(3, Observer.MethodSignature);
 	CHECK_UNISTR_EQUALS("public function run()", Observer.MethodSignature[0]);
 	CHECK_UNISTR_EQUALS("public function stop()", Observer.MethodSignature[1]);
+	CHECK_UNISTR_EQUALS("public function pause()", Observer.MethodSignature[2]);
+}
+
+TEST_FIXTURE(Parser53TestClass, ScanStringWithUndeclaredClassMemberAssignments) {
+	Parser.SetClassMemberObserver(&Observer);
+
+	// even though there are two assignments we shoule get notified only once
+	// for the second class, we should only get 1 notification since the
+	// member is declared
+	UnicodeString code = _U(
+		"class MyRunnable { \n"
+		"	function run() {\n"
+		"		$this->name = 'Runnable';\n"
+		"		$this->name = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+		"class ChildRunnable { \n"
+		"	private $fullName;\n"
+		"	function run() {\n"
+		"		$this->fullName = 'Runnable';\n"
+		"		$this->fullName = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.PropertyName);
+	CHECK_UNISTR_EQUALS("$name", Observer.PropertyName[0]);
+	CHECK_UNISTR_EQUALS("$fullName", Observer.PropertyName[1]);
+	CHECK_VECTOR_SIZE(2,  Observer.PropertyConsts);
+	CHECK_EQUAL(false, Observer.PropertyConsts[0]);
+	CHECK_EQUAL(false, Observer.PropertyConsts[1]);
+	CHECK_VECTOR_SIZE(2, Observer.PropertyIsStatic);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[0]);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[1]);
+}
+
+TEST_FIXTURE(Parser53TestClass, ScanStringVariableObserverWithUndeclaredClassMemberAssignments) {
+	
+	// this test is the same as above, except that its using the "full" parser
+	// because we are setting the variable observer
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+
+	// even though there are two assignments we should get notified only once
+	// for the second class, we should only get 1 notification since the
+	// member is declared
+	UnicodeString code = _U(
+		"class MyRunnable { \n"
+		"	function run() {\n"
+		"		$this->name = 'Runnable';\n"
+		"		$this->name = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+		"class ChildRunnable { \n"
+		"	private $fullName;\n"
+		"	function run() {\n"
+		"		$this->fullName = 'Runnable';\n"
+		"		$this->fullName = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.PropertyName);
+	CHECK_UNISTR_EQUALS("$name", Observer.PropertyName[0]);
+	CHECK_UNISTR_EQUALS("$fullName", Observer.PropertyName[1]);
+	CHECK_VECTOR_SIZE(2,  Observer.PropertyConsts);
+	CHECK_EQUAL(false, Observer.PropertyConsts[0]);
+	CHECK_EQUAL(false, Observer.PropertyConsts[1]);
+	CHECK_VECTOR_SIZE(2, Observer.PropertyIsStatic);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[0]);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[1]);
 }
 
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableExpressionTypes) {
@@ -539,22 +615,25 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleVariableExpressionTypes
 TEST_FIXTURE(Parser53TestClass, ScanStringWithAllTypeHintingNamespaces) {
 	Parser.SetVariableObserver(&Observer);
 
+	// array built-in type should not have the declared namespace
 	UnicodeString code = _U(
 		"namespace First;\n"
-		"function workFunc(Globals $srcGlobal, Second\\Globals $second) {\n"
+		"function workFunc(Globals $srcGlobal, Second\\Globals $second, array $items) {\n"
 		"}\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(2, Observer.VariableMethodName);
-	for (size_t i = 0; i < 2; ++i) {
+	CHECK_VECTOR_SIZE(3, Observer.VariableMethodName);
+	for (size_t i = 0; i < 3; ++i) {
 		CHECK_UNISTR_EQUALS("workFunc", Observer.VariableMethodName[i]);
 	}
-	CHECK_VECTOR_SIZE(2, Observer.VariableName);
+	CHECK_VECTOR_SIZE(3, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$second", Observer.VariableName[1]);
-	CHECK_VECTOR_SIZE(2, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("$items", Observer.VariableName[2]);
+	CHECK_VECTOR_SIZE(3, Observer.VariableExpressionChainList);
 	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableExpressionChainList[0]);
 	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableExpressionChainList[1]);
+	CHECK_UNISTR_EQUALS("array", Observer.VariableExpressionChainList[2]);
 }
 
 

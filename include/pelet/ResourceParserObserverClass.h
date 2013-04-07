@@ -60,6 +60,17 @@ public:
 	 */
 	bool DoCaptureCallArguments;
 
+
+	/**
+	 * If TRUE, then the parser will capture object property names. This flag is set for the
+	 * first property in a "$this" object invokation; ie. $this->name. Only in this case
+	 * do we want to capure properties.  For longer object invokation, ie, $this->name->lastName
+	 * then  this flag will be off when pargin "lastName". For all other method invokations,
+	 * ie  "$user->name" then this flag will be off. turning this functionality off is done for performance 
+	 * reasons.
+	 */
+	bool DoCaptureProperties;
+
 	/**
 	 * This object will NOT own the observer pointers.
 	 * pointers must not be NULL.
@@ -77,6 +88,18 @@ public:
 	 */
 	void Adopt(pelet::AstItemClass* astItem);
 
+	/**
+	 * add an assigned property.
+	 */
+	void AppendToClassProperties(pelet::ClassMemberSymbolClass* member);
+
+	/**
+	 * Look at the class statemeents and remove duplicate property assignments. The 
+	 * given list is modified, duplicate items are removed.
+	 * this method is called when a class scope ends.
+	 */
+	void DeclareAssignedProperties(pelet::StatementListClass* classStatements);
+
 	/*************************************************
 	 namespace declarations, usages
 	**************************************************/	
@@ -89,11 +112,11 @@ public:
 	
 	void SetCurrentMemberName(pelet::SemanticValueClass* value);
 	
-	void SetCurrentNamespace(pelet::QualifiedNameClass* qualifiedName);
+	void SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName);
 
 	const pelet::ScopeClass& GetScope() const;
 
-	const pelet::QualifiedNameClass& GetCurrentNamespace() const;
+	const pelet::QualifiedNameClass& GetDeclaredNamespace() const;
 	
 	/*************************************************
 	 After all of the code has been parsed and statements created; notify the observers
@@ -103,7 +126,8 @@ public:
 private:
 
 	/**
-	 * Keep track of all statements; that way we can clean them up on exit
+	 * Keep track of all statements; that way we can clean them up on exit. This class will
+	 * own all of these pointers.
 	 */
 	std::vector<pelet::AstItemClass*> AllStatements;
 
@@ -115,7 +139,7 @@ private:
 	/**
 	 * The current namespace
 	 */
-	QualifiedNameClass CurrentNamespace;
+	QualifiedNameClass DeclaredNamespace;
 	
 	/**
 	 * This object will NOT own the pointer
@@ -156,32 +180,6 @@ typedef union ResourceParserType {
 	bool isComma;
 	bool isReference;
 } ResourceParserTypeClass;
-
-/**
- * Get the return type from the '\@return' / '\@var' annotation
- * 
- * @param const UnicodeString& phpDocComment the comment
- * @param bool varAnnotation if false, will return the word after '\@var', else return the word after '\@return'
- * @param scope the scope where the PHPDoc comment is located in
- * @param currentNamespace the current namespace we are in
- * @return UnicodeString
- */
-UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation,
-										  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
-
-/**
- * Turn a PHPDoc type into a fully qualified class name. The phpdoc type will get
- * qualified according to the same PHP rules as a type hint; the current namespace
- * and any aliases will be correctly accounted for.
- * 
- * @param phpDocType the parsed type in the PHPDoc, ie. in "@return StringClass" then this parameter
- *        should be "StringClass"
- * @param scope the scope where the PHPDoc comment is located in
- * @param currentNamespace the current namespace we are in
- * @param the fully qualified class name
- */
-UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
-											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
 /**
  * parses out the given PHPDoc comment and notifies the member observer of any

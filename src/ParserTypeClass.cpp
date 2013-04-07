@@ -23,6 +23,64 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/ParserTypeClass.h>
+#include <unicode/uchar.h>
+
+UnicodeString pelet::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation, 
+												 const pelet::ScopeClass& scope, 
+												 const pelet::QualifiedNameClass& currentNamespace) {
+	UnicodeString returnType;
+	UnicodeString annotation = varAnnotation ? UNICODE_STRING_SIMPLE("@var") : UNICODE_STRING_SIMPLE("@return");
+	int32_t pos = phpDocComment.indexOf(annotation);
+	if (pos >= 0) {
+		pos += annotation.length();
+
+		// rudimentary tokenizer, skip all whitespace after annotation and get the word
+		while (u_isWhitespace(phpDocComment[pos])) {
+			++pos;
+		}
+		while (!u_isWhitespace(phpDocComment[pos]) && pos < phpDocComment.length()) {
+			returnType += phpDocComment[pos];
+			++pos;
+		}
+	}
+	returnType = returnType.trim();
+	return PhpDocTypeToAbsoluteClassname(returnType, scope, currentNamespace);
+}
+
+UnicodeString pelet::PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
+												   const pelet::ScopeClass& scope, 
+												   const pelet::QualifiedNameClass& currentNamespace) {
+
+	// any of the "basic" types will never use the current namespace
+	// these were taken from http://www.phpdoc.org/docs/latest/for-users/types.html
+	if (UNICODE_STRING_SIMPLE("string").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("integer").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("int").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("boolean").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("bool").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("float").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("double").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("object").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("mixed").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("array").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("resource").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("void").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("null").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("callback").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("false").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("true").caseCompare(phpDocType, 0) == 0 ||
+	        UNICODE_STRING_SIMPLE("self").caseCompare(phpDocType, 0) == 0) {
+		return phpDocType;
+	}
+	if (!phpDocType.isEmpty()) {
+		pelet::QualifiedNameClass name;
+		pelet::SemanticValueClass value;
+		value.Lexeme = phpDocType;
+		name.AppendName(&value);
+		return scope.FullyQualify(name, currentNamespace);
+	}
+	return phpDocType;
+}
 
 pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
 	: AstItemClass()
@@ -74,7 +132,7 @@ void pelet::ConstantStatementClass::Init(pelet::SemanticValueClass* value, int l
 		Comment = value->Comment;
 	}
 	LineNumber = lineNumber;
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 }
 
 pelet::StatementListClass::StatementListClass()
@@ -142,7 +200,10 @@ pelet::NamespaceDeclarationClass::NamespaceDeclarationClass()
 }
 
 void pelet::NamespaceDeclarationClass::Init(pelet::QualifiedNameClass* namespaceName, const pelet::TokenPositionClass& startingPosition) {
-	NamespaceName = namespaceName->ToAbsoluteSignature();
+	
+	// declared namespace is always fully qualified according to PHP rules
+	namespaceName->MakeAbsolute();
+	NamespaceName = namespaceName->ToSignature();
 	StartingPosition = startingPosition.Pos;
 }
 
@@ -159,10 +220,8 @@ pelet::NamespaceUseClass::NamespaceUseClass()
 
 }
 
-void pelet::NamespaceUseClass::Init(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* aliasValue, bool isAbsolute) {
-	if (isAbsolute) {
-		qualifiedName->MakeAbsolute();
-	}
+void pelet::NamespaceUseClass::Init(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* aliasValue) {
+	qualifiedName->MakeAbsolute();
 	UnicodeString alias;
 	if (aliasValue) {
 		alias = aliasValue->Lexeme;
@@ -171,7 +230,7 @@ void pelet::NamespaceUseClass::Init(pelet::QualifiedNameClass* qualifiedName, pe
 }
 
 UnicodeString pelet::NamespaceUseClass::Set(pelet::QualifiedNameClass* qualifiedName, UnicodeString alias) {
-	UnicodeString fullyQualifiedNamespace = qualifiedName->ToAbsoluteSignature();
+	UnicodeString fullyQualifiedNamespace = qualifiedName->ToSignature();
 	if (alias.isEmpty()) {
 		int32_t index = fullyQualifiedNamespace.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
 
@@ -207,16 +266,16 @@ pelet::TraitUseClass::TraitUseClass()
 void pelet::TraitUseClass::Init(pelet::QualifiedNameClass* usedTrait,
 								const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	if (usedTrait) {
-		UsedTraits.push_back(scope.AbsoluteNamespaceClass(*usedTrait, currentNamespace));
+		UsedTraits.push_back(scope.FullyQualify(*usedTrait, currentNamespace));
 	}
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 	ClassName = scope.ClassName;
 }
 
 pelet::TraitUseClass* pelet::TraitUseClass::AppendUse(pelet::QualifiedNameClass* usedTrait,
 									 const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	if (usedTrait) {
-		UsedTraits.push_back(scope.AbsoluteNamespaceClass(*usedTrait, currentNamespace));
+		UsedTraits.push_back(scope.FullyQualify(*usedTrait, currentNamespace));
 	}
 	return this;
 }
@@ -235,14 +294,14 @@ void pelet::TraitInsteadOfClass::Init(pelet::QualifiedNameClass* insteadOfClass,
 		  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	AppendInsteadOf(insteadOfClass, scope, currentNamespace);
 	ClassName = scope.ClassName;
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 }
 
 pelet::TraitInsteadOfClass* pelet::TraitInsteadOfClass::AppendInsteadOf(pelet::QualifiedNameClass *insteadOfClass, 
 																		const pelet::ScopeClass& scope, 
 																		const pelet::QualifiedNameClass& currentNamespace) {
 	if (insteadOfClass) {
-		InsteadOfList.push_back(scope.AbsoluteNamespaceClass(*insteadOfClass, currentNamespace));
+		InsteadOfList.push_back(scope.FullyQualify(*insteadOfClass, currentNamespace));
 	}
 	return this;
 }
@@ -273,7 +332,7 @@ void pelet::TraitAliasClass::SetMethodReference(pelet::SemanticValueClass* metho
 		TraitMethodReferenceName = methodName->Lexeme;
 	}
 	if (className) {
-		TraitUsedClassName = scope.AbsoluteNamespaceClass(*className,  currentNamespace);
+		TraitUsedClassName = scope.FullyQualify(*className,  currentNamespace);
 	}
 }
 
@@ -299,7 +358,7 @@ pelet::TraitAliasClass* pelet::TraitAliasClass::SetAlias(pelet::SemanticValueCla
 
 pelet::TraitAliasClass* pelet::TraitAliasClass::SetScope(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	ClassName = scope.ClassName;
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 	return this;
 }
 
@@ -372,12 +431,12 @@ UnicodeString pelet::ClassSymbolClass::ToSignature() const {
 }
 
 pelet::ClassSymbolClass* pelet::ClassSymbolClass::AddToImplements(pelet::QualifiedNameClass* implementsClassName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
-	ImplementsList.push_back(scope.AbsoluteNamespaceClass(*implementsClassName, currentNamespace));
+	ImplementsList.push_back(scope.FullyQualify(*implementsClassName, currentNamespace));
 	return this;
 }
 
 pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetExtends(pelet::QualifiedNameClass* extendsClassName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
-	ExtendsFrom = scope.AbsoluteNamespaceClass(*extendsClassName, currentNamespace);
+	ExtendsFrom = scope.FullyQualify(*extendsClassName, currentNamespace);
 	return this;
 }
 
@@ -391,7 +450,7 @@ pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetAll(pelet::SemanticValueCla
 		GrabClassName(nameValue);
 		StartingLineNumber = nameValue->LineNumber;
 	}
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 	if (classTypeSymbol) {
 		Comment = classTypeSymbol->Comment;
 		IsAbstract = classTypeSymbol->IsAbstract;
@@ -424,11 +483,12 @@ pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetFlags(pelet::SemanticValueC
 pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 	: StatementClass(pelet::StatementClass::METHOD_DECLARATION)
 	, MemberName()
-	, Comment()
 	, NamespaceName()
 	, ClassName()
 	, ParametersList()
 	, MethodStatements()
+	, Comment()
+	, ReturnType()
 	, StartingLineNumber(0)
 	, EndingPosition(0)
 
@@ -444,16 +504,18 @@ pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 
 }
 
-void pelet::ClassMemberSymbolClass::SetNameAndReturnReference(pelet::SemanticValueClass* nameValue, bool isReturnReference, pelet::SemanticValueClass* functionValue) {
+void pelet::ClassMemberSymbolClass::SetNameAndReturnReference(pelet::SemanticValueClass* nameValue, bool isReturnReference, 
+		pelet::SemanticValueClass* functionValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	MemberName = nameValue->Lexeme;
 	IsReturnReference = isReturnReference;
 
 	// a comment may be attached to the function keyword.
 	// see NextSemanticValue() function
-	Comment.append(functionValue->Comment);
+	AppendToComment(functionValue, scope, declaredNamespace);
 }
 
-void pelet::ClassMemberSymbolClass::SetAsConst(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue) {
+void pelet::ClassMemberSymbolClass::SetAsConst(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	IsPublicMember = true;
 	IsProtectedMember = false;
 	IsPrivateMember = false;
@@ -466,11 +528,17 @@ void pelet::ClassMemberSymbolClass::SetAsConst(pelet::SemanticValueClass* nameVa
 
 	// a comment may be attached to the const keyword.
 	// see NextSemanticValue() function
-	Comment.append(commentValue->Comment);
+	AppendToComment(commentValue, scope, declaredNamespace);
 }
 
-void pelet::ClassMemberSymbolClass::AppendToComment(SemanticValueClass* value) {
+void pelet::ClassMemberSymbolClass::AppendToComment(SemanticValueClass* value, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	Comment.append(value->Comment);
+	if (ReturnType.isEmpty()) {
+		ReturnType = ReturnTypeFromPhpDocComment(Comment, false, scope, declaredNamespace);
+	}
+	if (ReturnType.isEmpty()) {
+		ReturnType = ReturnTypeFromPhpDocComment(Comment, true, scope, declaredNamespace);
+	}
 }
 
 void pelet::ClassMemberSymbolClass::SetAsPublic() {
@@ -497,6 +565,7 @@ void pelet::ClassMemberSymbolClass::Clear() {
 	ClassName.remove();
 	ParametersList.Clear();
 	MethodStatements.Clear();
+	ReturnType.remove();
 	StartingLineNumber = 0;
 	EndingPosition = 0;
 
@@ -553,10 +622,11 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeBody(pelet::St
 	return this;
 }
 
-pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::Make(pelet::SemanticValueClass* varValue) {
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::Make(pelet::SemanticValueClass* varValue, 
+				const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	Type = pelet::StatementClass::METHOD_DECLARATION;
 	if (varValue) {
-		Comment = varValue->Comment;
+		AppendToComment(varValue, scope, declaredNamespace);
 		StartingLineNumber = varValue->LineNumber;
 		IsAbstractMember = varValue && pelet::T_ABSTRACT == varValue->Token;
 		IsFinalMember = varValue && pelet::T_FINAL == varValue->Token;
@@ -575,9 +645,10 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::Make(pelet::Semant
 	return this;
 }
 
-pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeAsPublicVariable(pelet::SemanticValueClass* varValue) {
+pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeAsPublicVariable(pelet::SemanticValueClass* varValue,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	Type = pelet::StatementClass::PROPERTY_DECLARATION;
-	SetNameAndReturnReference(varValue, false, varValue);
+	SetNameAndReturnReference(varValue, false, varValue, scope, declaredNamespace);
 	SetAsPublic();
 	if (varValue) {
 		StartingLineNumber = varValue->LineNumber;
@@ -590,8 +661,8 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeFunction(pelet
 		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue,
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	Type = pelet::StatementClass::FUNCTION_DECLARATION;
-	SetNameAndReturnReference(nameValue, isReference, functionValue);
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	SetNameAndReturnReference(nameValue, isReference, functionValue, scope, currentNamespace);
+	NamespaceName = currentNamespace.ToSignature();
 	ClassName = scope.ClassName;
 	if (parameters) {
 		ParametersList = *parameters;
@@ -609,8 +680,8 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 		pelet::ClassMemberSymbolClass* methodBody,
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	Type = pelet::StatementClass::METHOD_DECLARATION;
-	SetNameAndReturnReference(nameValue, isReference, functionValue);
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	SetNameAndReturnReference(nameValue, isReference, functionValue, scope, currentNamespace);
+	NamespaceName = currentNamespace.ToSignature();
 	ClassName = scope.ClassName;
 	if (parameters) {
 		ParametersList = *parameters;
@@ -624,7 +695,10 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 		// comment can only be attached to the modifiers or the function keyword
 		// the method may not have any modifiers
 		if (Comment.isEmpty() && !modifiers->Comment.isEmpty()) {
-			Comment = modifiers->Comment;
+			Comment.append(modifiers->Comment);
+		}
+		if (ReturnType.isEmpty() && !modifiers->ReturnType.isEmpty()) {
+			ReturnType = modifiers->ReturnType;
 		}
 		if (modifiers->IsPublicMember) {
 			SetAsPublic();
@@ -647,11 +721,15 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeVariable(pelet
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	Type = pelet::StatementClass::PROPERTY_DECLARATION;
 	if (isConstant) {
-		SetAsConst(nameValue, commentValue);
+		SetAsConst(nameValue, commentValue, scope, currentNamespace);
 	} else {
-		SetNameAndReturnReference(nameValue, false, commentValue);
+		SetNameAndReturnReference(nameValue, false, commentValue, scope, currentNamespace);
+		if (nameValue && !nameValue->Lexeme.isEmpty() 
+			&& nameValue->Lexeme.compareBetween(0, 1, UNICODE_STRING_SIMPLE("$"), 0, 1) != 0) {
+			MemberName = UNICODE_STRING_SIMPLE("$") + MemberName;
+		}
 	}
-	NamespaceName = currentNamespace.ToAbsoluteSignature();
+	NamespaceName = currentNamespace.ToSignature();
 	ClassName = scope.ClassName;
 	SetAsPublic();
 	StartingLineNumber = startingLineNumber;
@@ -661,7 +739,8 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeVariable(pelet
 	return this;
 }
 
-pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers) {
+pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariables(pelet::StatementListClass* variableStatements, 
+	pelet::ClassMemberSymbolClass* modifiers, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 
 	// set the modifiers on all of the given property declarations
 	for (size_t i = 0; i < variableStatements->Size(); ++i) {
@@ -672,7 +751,10 @@ pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariables(pelet::S
 			member->IsFinalMember = modifiers->IsFinalMember;
 			member->IsConstMember = modifiers->IsConstMember;
 			member->IsStaticMember = modifiers->IsStaticMember;
-			member->Comment = modifiers->Comment;
+			member->Comment.append(modifiers->Comment);
+			if (member->ReturnType.isEmpty() && !modifiers->ReturnType.isEmpty()) {
+				member->ReturnType = modifiers->ReturnType;
+			}
 			if (modifiers->IsPublicMember) {
 				member->SetAsPublic();
 			}
@@ -704,6 +786,14 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::SetModifier(pelet:
 	return this;
 }
 
+UnicodeString pelet::ClassMemberSymbolClass::GetComment() const {
+	return Comment;
+}
+
+UnicodeString pelet::ClassMemberSymbolClass::GetReturnType() const {
+	return ReturnType;
+}
+
 pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
 	, IsAbsolute(false)
@@ -714,20 +804,26 @@ pelet::QualifiedNameClass::QualifiedNameClass()
 void pelet::QualifiedNameClass::Init(SemanticValueClass* value) {
 	if (value) {
 		Comment.setTo(value->Comment);
-		AddName(value);
+		AppendName(value);
 	}
 }
 
 void pelet::QualifiedNameClass::Clear() {
-	while (!Namespaces.empty()) {
-		Namespaces.pop_back();
-	}
+	Namespaces.clear();
 	IsAbsolute = false;
 }
 
-pelet::QualifiedNameClass* pelet::QualifiedNameClass::AddName(SemanticValueClass* value) {
+pelet::QualifiedNameClass* pelet::QualifiedNameClass::AppendName(SemanticValueClass* value) {
 	if (value) {
-		Namespaces.insert(Namespaces.begin(), value->Lexeme);
+		UnicodeString name = value->Lexeme;
+		if (Namespaces.empty() && value) {
+			IsAbsolute = value->Lexeme.indexOf(UNICODE_STRING_SIMPLE("\\")) == 0;
+			if (IsAbsolute) {
+				name.remove();
+				value->Lexeme.extract(1, value->Lexeme.length() - 1, name);
+			}
+		}
+		Namespaces.push_back(name);
 	}
 	return this;
 }
@@ -737,59 +833,39 @@ pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeAbsolute() {
 	return this;
 }
 
-void pelet::QualifiedNameClass::Prepend(const QualifiedNameClass& name) {
-	std::vector<UnicodeString> newNamespaces;
-	newNamespaces.resize(name.Namespaces.size() + Namespaces.size());
-	std::copy(name.Namespaces.begin(), name.Namespaces.end(), newNamespaces.begin());
-	std::copy(Namespaces.begin(), Namespaces.end(), newNamespaces.begin() + name.Namespaces.size());
-}
-
-UnicodeString pelet::QualifiedNameClass::Prepend(const pelet::QualifiedNameClass& name) const {
-	UnicodeString fullyQualified;
-	if (IsAbsolute) {
-		fullyQualified = ToAbsoluteSignature();
-	} else {
-		if (name.Namespaces.empty()) {
-
-			// this branch of  logic is needed when the code does not have any namespaces, do not
-			// add the namespace separator
-			fullyQualified = ToSignature();
-		} else {
-			fullyQualified = name.ToAbsoluteSignature() + UNICODE_STRING_SIMPLE("\\") + ToSignature();
-		}
-	}
-	return fullyQualified;
+void pelet::QualifiedNameClass::PrependNamespace(const QualifiedNameClass& name) {
+	Namespaces.insert(Namespaces.begin(), name.Namespaces.begin(), name.Namespaces.end());
+	
+	// if we prepend an absolute namespace then this namespace becomes absolute
+	IsAbsolute = name.IsAbsolute;
 }
 
 UnicodeString pelet::QualifiedNameClass::ToSignature() const {
 	UnicodeString ret;
-
-	// create a local copy so that we can pop() from it
-	std::vector<UnicodeString> namespaces = Namespaces;
-	while (!namespaces.empty()) {
-		ret.append(namespaces.back());
-		namespaces.pop_back();
-		if (!namespaces.empty()) {
+	if (IsAbsolute) {
+		ret.append(UNICODE_STRING_SIMPLE("\\"));
+	}
+	
+	std::vector<UnicodeString>::const_iterator nm;
+	for (nm = Namespaces.begin(); nm != Namespaces.end(); ++nm) {
+		if (Namespaces.begin() != nm) {
 			ret.append(UNICODE_STRING_SIMPLE("\\"));
 		}
+		ret.append(*nm);
 	}
 	return ret;
 }
 
 void pelet::QualifiedNameClass::Init(const UnicodeString& name) {
-	Namespaces.insert(Namespaces.begin(), name);
+	Namespaces.push_back(name);
 }
 
-pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromCurrentNamespace(const pelet::QualifiedNameClass* currentNamespace) {
+pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromDeclaredNamespace(const pelet::QualifiedNameClass* currentNamespace) {
 	if (currentNamespace) {
-		Prepend(*currentNamespace);
+		IsAbsolute = currentNamespace->IsAbsolute;
+		Namespaces = currentNamespace->Namespaces;
 	}
 	return this;
-}
-
-UnicodeString pelet::QualifiedNameClass::ToAbsoluteSignature() const {
-	UnicodeString sig = UNICODE_STRING_SIMPLE("\\") + ToSignature();
-	return sig;
 }
 
 pelet::ParametersListClass::ParametersListClass()
@@ -869,15 +945,20 @@ pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedN
 															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	UnicodeString typeString;
 	if (type) {
-		typeString = scope.AbsoluteNamespaceClass(*type, currentNamespace);
+		typeString = type->ToSignature();
+		
+		// array, callable type hints are keywords, do not qualify them
 		if (typeString == UNICODE_STRING_SIMPLE("\\")) {
 			typeString = UNICODE_STRING_SIMPLE("");
 		}
-		if (typeString == UNICODE_STRING_SIMPLE("\\array")) {
-			typeString = UNICODE_STRING_SIMPLE("");
+		else if (typeString == UNICODE_STRING_SIMPLE("array")) {
+			typeString = UNICODE_STRING_SIMPLE("array");
 		}
-		if (typeString == UNICODE_STRING_SIMPLE("\\callable")) {
-			typeString = UNICODE_STRING_SIMPLE("");
+		else if (typeString == UNICODE_STRING_SIMPLE("callable")) {
+			typeString = UNICODE_STRING_SIMPLE("callable");
+		}
+		else {
+			typeString = scope.FullyQualify(*type, currentNamespace);
 		}
 	}
 	CreateWithOptionalType(typeString);
@@ -889,12 +970,20 @@ void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::Se
 															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	UnicodeString typeString;
 	if (type) {
-		typeString = scope.AbsoluteNamespaceClass(*type, currentNamespace);
+		typeString = type->ToSignature();
+		
+		// array, callable type hints are keywords, do not qualify them
 		if (typeString == UNICODE_STRING_SIMPLE("\\")) {
 			typeString = UNICODE_STRING_SIMPLE("");
 		}
-		if (typeString == UNICODE_STRING_SIMPLE("\\array")) {
-			typeString = UNICODE_STRING_SIMPLE("");
+		else if (typeString == UNICODE_STRING_SIMPLE("array")) {
+			typeString = UNICODE_STRING_SIMPLE("array");
+		}
+		else if (typeString == UNICODE_STRING_SIMPLE("callable")) {
+			typeString = UNICODE_STRING_SIMPLE("callable");
+		}
+		else {
+			typeString = scope.FullyQualify(*type, currentNamespace);
 		}
 	}
 	CreateWithOptionalType(typeString);
@@ -1192,14 +1281,22 @@ bool pelet::ScopeClass::IsGlobalNamespace() const {
 	return UNICODE_STRING_SIMPLE("\\").compare(NamespaceName) == 0 || NamespaceName.isEmpty();
 }
 
-void pelet::ScopeClass::AddNamespace(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias) {
+void pelet::ScopeClass::AddNamespaceAlias(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias) {
 	if (!NamespaceAliases) {
 		NamespaceAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>();
 	}
-	(*NamespaceAliases)[namespaceAlias] = namespaceName;
+	
+	// a namespace alias is always fully qualified
+	// add the beginning slash if not there
+	UnicodeString fullyQualified;
+	if (namespaceName.indexOf(UNICODE_STRING_SIMPLE("\\")) != 0) {
+		fullyQualified.append(UNICODE_STRING_SIMPLE("\\"));		
+	}
+	fullyQualified.append(namespaceName);
+	(*NamespaceAliases)[namespaceAlias] = fullyQualified;
 }
 
-UnicodeString pelet::ScopeClass::GetFullNamespace(const UnicodeString& alias) const {
+UnicodeString pelet::ScopeClass::ResolveAlias(const UnicodeString& alias) const {
 	UnicodeString fullName;
 	if (NamespaceAliases) {
 		std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = NamespaceAliases->find(alias);
@@ -1218,8 +1315,8 @@ std::map<UnicodeString, UnicodeString, pelet::UnicodeStringComparatorClass> pele
 	return map;
 }
 
-UnicodeString pelet::ScopeClass::AbsoluteNamespaceClass(const pelet::QualifiedNameClass& name,
-														const pelet::QualifiedNameClass& namespaceName) const {
+UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& name,
+											const pelet::QualifiedNameClass& namespaceName) const {
 	UnicodeString fullyQualified;
 
 	// does name use an alias?
@@ -1229,16 +1326,24 @@ UnicodeString pelet::ScopeClass::AbsoluteNamespaceClass(const pelet::QualifiedNa
 	if (index > 0) {
 		alias.setTo(qualified, 0, index);
 	}
-	UnicodeString fullNamespace = GetFullNamespace(alias);
+	UnicodeString fullNamespace = ResolveAlias(alias);
 	if (!fullNamespace.isEmpty()) {
 
 		// substitute alias with namespace
 		fullyQualified.setTo(qualified, index + 1);
 		fullyQualified = fullNamespace + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
-	} else {
+	} else  if (name.IsAbsolute) {
+		
+		// no alias but the name is already fully qualified
+		fullyQualified = name.ToSignature();
+	}
+	else {
 
 		// no alias, prepend the curent namespace
-		fullyQualified = name.Prepend(namespaceName);
+		pelet::QualifiedNameClass fullName;
+		fullName.PrependNamespace(name);
+		fullName.PrependNamespace(namespaceName);
+		fullyQualified = fullName.ToSignature();
 	}
 	return fullyQualified;
 }

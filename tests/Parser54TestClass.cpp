@@ -694,6 +694,76 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithReturnAnnotationsNamespaces) {
 	CHECK_UNISTR_EQUALS("public function stop()", Observer.MethodSignature[1]);
 }
 
+TEST_FIXTURE(Parser54TestClass, ScanStringWithUndeclaredClassMemberAssignments) {
+	Parser.SetClassMemberObserver(&Observer);
+
+	// even though there are two assignments we shoule get notified only once
+	// for the second class, we should only get 1 notification since the
+	// member is declared
+	UnicodeString code = _U(
+		"class MyRunnable { \n"
+		"	function run() {\n"
+		"		$this->name = 'Runnable';\n"
+		"		$this->name = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+		"class ChildRunnable { \n"
+		"	private $fullName;\n"
+		"	function run() {\n"
+		"		$this->fullName = 'Runnable';\n"
+		"		$this->fullName = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.PropertyName);
+	CHECK_UNISTR_EQUALS("$name", Observer.PropertyName[0]);
+	CHECK_UNISTR_EQUALS("$fullName", Observer.PropertyName[1]);
+	CHECK_VECTOR_SIZE(2,  Observer.PropertyConsts);
+	CHECK_EQUAL(false, Observer.PropertyConsts[0]);
+	CHECK_EQUAL(false, Observer.PropertyConsts[1]);
+	CHECK_VECTOR_SIZE(2, Observer.PropertyIsStatic);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[0]);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[1]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringVariableObserverWithUndeclaredClassMemberAssignments) {
+	
+	// this test is the same as above, except that its using the "full" parser
+	// because we are setting the variable observer
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+
+	// even though there are two assignments we should get notified only once
+	// for the second class, we should only get 1 notification since the
+	// member is declared
+	UnicodeString code = _U(
+		"class MyRunnable { \n"
+		"	function run() {\n"
+		"		$this->name = 'Runnable';\n"
+		"		$this->name = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+		"class ChildRunnable { \n"
+		"	private $fullName;\n"
+		"	function run() {\n"
+		"		$this->fullName = 'Runnable';\n"
+		"		$this->fullName = 'Runnable';\n"
+		"	} \n"
+		"} \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.PropertyName);
+	CHECK_UNISTR_EQUALS("$name", Observer.PropertyName[0]);
+	CHECK_UNISTR_EQUALS("$fullName", Observer.PropertyName[1]);
+	CHECK_VECTOR_SIZE(2,  Observer.PropertyConsts);
+	CHECK_EQUAL(false, Observer.PropertyConsts[0]);
+	CHECK_EQUAL(false, Observer.PropertyConsts[1]);
+	CHECK_VECTOR_SIZE(2, Observer.PropertyIsStatic);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[0]);
+	CHECK_EQUAL(false, Observer.PropertyIsStatic[1]);
+}
+
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleVariableExpressionTypes) {
 	Parser.SetVariableObserver(&Observer);
 
@@ -786,20 +856,22 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllTypeHintingNamespaces) {
 
 	UnicodeString code = _U(
 		"namespace First;\n"
-		"function workFunc(Globals $srcGlobal, Second\\Globals $second) {\n"
+		"function workFunc(Globals $srcGlobal, Second\\Globals $second, array $items) {\n"
 		"}\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(2, Observer.VariableMethodName);
-	for (size_t i = 0; i < 2; ++i) {
+	CHECK_VECTOR_SIZE(3, Observer.VariableMethodName);
+	for (size_t i = 0; i < 3; ++i) {
 		CHECK_UNISTR_EQUALS("workFunc", Observer.VariableMethodName[i]);
 	}
-	CHECK_VECTOR_SIZE(2, Observer.VariableName);
+	CHECK_VECTOR_SIZE(3, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$second", Observer.VariableName[1]);
-	CHECK_VECTOR_SIZE(2, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("$items", Observer.VariableName[2]);
+	CHECK_VECTOR_SIZE(3, Observer.VariableExpressionChainList);
 	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableExpressionChainList[0]);
 	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableExpressionChainList[1]);
+	CHECK_UNISTR_EQUALS("array", Observer.VariableExpressionChainList[2]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
@@ -1088,7 +1160,7 @@ TEST_FIXTURE(Parser54TestClass, NamespaceVariables) {
 		"$sixth = namespace\\strlen('one');\n"
 		"$seventh = new namespace\\MyClass();\n"
 		"$eigth = new C\\MyClass();\n"
-	);	
+	);
 	CHECK(Parser.ScanString(code, LintResults));
 	CHECK_VECTOR_SIZE(8, Observer.VariableExpressionChainList);
 	CHECK_UNISTR_EQUALS("\\First\\MyClass", Observer.VariableExpressionChainList[0]);
