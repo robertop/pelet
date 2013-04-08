@@ -94,11 +94,17 @@ public:
 	void AppendToClassProperties(pelet::ClassMemberSymbolClass* member);
 
 	/**
-	 * Look at the class statemeents and remove duplicate property assignments. The 
+	 * Look at the class statements and remove duplicate property assignments. The 
 	 * given list is modified, duplicate items are removed.
 	 * this method is called when a class scope ends.
 	 */
 	void DeclareAssignedProperties(pelet::StatementListClass* classStatements);
+	
+	/**
+	 * parses out the PHPDoc magic property / methods and creates member declarations
+	 * for them
+	 */
+	void CreateMagicMethodsAndProperties(pelet::StatementListClass* classStatements, pelet::ClassSymbolClass* clazz);
 
 	/*************************************************
 	 namespace declarations, usages
@@ -180,15 +186,6 @@ typedef union ResourceParserType {
 	bool isComma;
 	bool isReference;
 } ResourceParserTypeClass;
-
-/**
- * parses out the given PHPDoc comment and notifies the member observer of any
- * \@property, \@property-read, \@property-write, and \@method 
- * declarations.
- */
-void NotifyMagicMethodsAndProperties(pelet::ClassMemberObserverClass* memberObserver, 
-									 const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
-									 const UnicodeString& phpDocComment, UnicodeString currentNamespaceName, UnicodeString currentClassName, const int lineNumber);
 
 /**
  * The resource parse will call this method to get the next token.

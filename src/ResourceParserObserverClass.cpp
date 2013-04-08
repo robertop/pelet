@@ -24,20 +24,8 @@
  */	
 #include <pelet/ResourceParserObserverClass.h>
 #include <pelet/TokenClass.h>
-#include <unicode/ustring.h>
 
 #include <algorithm>
-
-/**
- * sets either varName or varType depending on whether text contents are a variable name or not.
- */
-static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& varType) {
-	if (text && '$' == text[0]) {
-		varName.setTo(text);
-	} else if (text) {
-		varType.setTo(text);
-	}
-}
 
 int pelet::ResourceLex(pelet::ResourceParserTypeClass* value, pelet::LexicalAnalyzerClass& analyzer, 
 						  pelet::ResourceParserObserverClass& observers) {
@@ -114,110 +102,6 @@ void pelet::ResourceGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::R
 	int capacity = msg.length() + 1;
 	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
 	analyzer.ParserError.releaseBuffer(written);
-}
-
-
-
-void pelet::NotifyMagicMethodsAndProperties(pelet::ClassMemberObserverClass* memberObserver, 
-											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
-											const UnicodeString& phpDocComment, UnicodeString currentNamespaceName, 
-											UnicodeString currentClassName, const int lineNumber) {
-	if (phpDocComment.isEmpty()) {
-		return;
-	}
-
-	UnicodeString memberName;
-	UnicodeString memberType;
-
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UChar* buf = new UChar[phpDocComment.length() + 1];
-	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
-	buf[phpDocComment.length()] = '\0';
-
-	UChar* saveState = 0;
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UnicodeString delimiters = UNICODE_STRING_SIMPLE(" \t\n\v\f");
-	UChar* delimsBuffer = new UChar[delimiters.length() + 1];
-	u_memmove(delimsBuffer, delimiters.getBuffer(), delimiters.length());
-	delimsBuffer[delimiters.length()] = '\0';
-
-	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
-	while (next) {
-		if (UNICODE_STRING_SIMPLE("@property").caseCompare(next, 0) == 0 ||
-		        UNICODE_STRING_SIMPLE("@property-read").caseCompare(next, 0) == 0 ||
-		        UNICODE_STRING_SIMPLE("@property-write").caseCompare(next, 0) == 0) {
-
-			// example line: @property string $nameString a string version of a name
-			// will be lenient and allow the reverse var then type
-			// @property $nameString string
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			FillNameOrType(next, memberName, memberType);
-			if (!next) {
-				break;
-			}
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			FillNameOrType(next, memberName, memberType);
-			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-
-				// handles namespaces in the magic properties
-				memberType = pelet::PhpDocTypeToAbsoluteClassname(memberType, scope, currentNamespace);
-				memberObserver->PropertyFound(currentNamespaceName, currentClassName, memberName, memberType, UNICODE_STRING_SIMPLE(""),
-				                      pelet::TokenClass::PUBLIC, false, false, lineNumber);
-				memberName.remove();
-				memberType.remove();
-			}
-			if (!next) {
-				break;
-			}
-		} else if (UNICODE_STRING_SIMPLE("@method").caseCompare(next, 0) == 0) {
-
-			// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			if (!next) {
-				break;
-			}
-			memberType.setTo(next);
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			if (!next) {
-				break;
-			}
-			memberName.setTo(next);
-
-			// add the 'function' to keep the sig consistent with the other notify method
-			UnicodeString signature = UNICODE_STRING_SIMPLE("public function ");
-
-			// keep reading next tokens for the signature; stop when we encounter a closing parenthesis
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			while (next) {
-				signature.append(next);
-				size_t len = u_strlen(next);
-				if (')' == next[len - 1]) {
-					break;
-				}
-
-				// put this after the break so that we dont put a space at the end of the sig
-				signature.append(UNICODE_STRING_SIMPLE(" "));
-				next = u_strtok_r(NULL, delimsBuffer, &saveState);
-			}
-			if (!memberName.isEmpty() && !memberType.isEmpty()) {
-				if (memberName.endsWith(UNICODE_STRING_SIMPLE("()"))) {
-					memberName.remove(memberName.length() - 2, 2);
-				}
-
-				// handles namespaces in the magic properties
-				memberType = pelet::PhpDocTypeToAbsoluteClassname(memberType, scope, currentNamespace);
-				memberObserver->MethodFound(currentNamespaceName, currentClassName, memberName, signature, memberType, UNICODE_STRING_SIMPLE(""),
-				                    pelet::TokenClass::PUBLIC, false, lineNumber);
-			}
-			if (!next) {
-				break;
-			}
-		} else {
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
-		}
-	}
-	delete[] buf;
-	delete[] delimsBuffer;
 }
 
 pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObserverClass* classObserver,
@@ -308,6 +192,10 @@ void pelet::ResourceParserObserverClass::DeclareAssignedProperties(pelet::Statem
 	classStatements->PushAll(&filteredStatements);
 }
 
+void pelet::ResourceParserObserverClass::CreateMagicMethodsAndProperties(pelet::StatementListClass* classStatements, pelet::ClassSymbolClass* clazz) {
+	pelet::CreateMagicMethodsAndProperties(AllStatements, classStatements, Scope, DeclaredNamespace, clazz->Comment, clazz->EndingLineNumber);
+}
+
 void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
 
 	// go through the list of statements and send the correct notifications
@@ -334,14 +222,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				classSymbol = (pelet::ClassSymbolClass*) stmt;
 				Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
 								  classSymbol->Comment, classSymbol->StartingLineNumber);
-			}
-			if (Member) {
-				classSymbol = (pelet::ClassSymbolClass*) stmt;
-
-				// TODO this is wrong; as we have finished parsing at this point Scope and DeclaredNamespace are 
-				// not correct
-				NotifyMagicMethodsAndProperties(Member, Scope, DeclaredNamespace, classSymbol->Comment, classSymbol->NamespaceName,
-													classSymbol->ClassName, classSymbol->StartingLineNumber);
 			}
 			if (Class) {
 				classSymbol = (pelet::ClassSymbolClass*) stmt;

@@ -563,7 +563,12 @@ unticked_class_declaration_statement:
 											   * defined and it so make them as defined
 											   *  very important to use $$ as we want the returned to list to be modified
 											   */
-											  observers.DeclareAssignedProperties($$);											  
+											  observers.DeclareAssignedProperties($$);
+											  
+											  /*
+											   * parse out property and method PHP docs
+											   */
+											  observers.CreateMagicMethodsAndProperties($$, clazz);
 											  observers.SetCurrentClassName(NULL);
 											}
 	|	interface_entry T_STRING			

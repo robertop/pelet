@@ -56,7 +56,7 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 	if (paramCount > 0 && Variable) {
 		UnicodeString paramName,
 		              paramType;
-		UnicodeString comment; // no comment it is lost in the variables
+		UnicodeString comment;
 		for (size_t i = 0; i < paramCount; ++i) {
 			pelet::VariableClass variable(Scope);
 			pelet::ExpressionClass expression(Scope);
@@ -67,6 +67,7 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 				expression.ExpressionType = pelet::ExpressionClass::UNKNOWN;
 			}
 			variable.AppendToChain(paramName);
+			variable.PhpDocType = paramType;
 			Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, variable, expression, comment);
 		}
 	}
@@ -287,7 +288,8 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace);
 	AllAstItems.push_back(newMember);
 	pelet::StatementListClass* list = StatementListMakeAndAppend(newMember);
-	return StatementListMerge(list, &methodBody->MethodStatements);
+	list = StatementListMerge(list, &methodBody->MethodStatements);
+	return list;
 }
 
 pelet::ClassMemberSymbolClass* pelet::FullParserObserverClass::ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
@@ -619,7 +621,7 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::Expr
 }
 
 void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
-
+	
 	// go through the list of statements and send the correct notifications
 	for (size_t i = 0; i < statements->Size(); ++i) {
 		pelet::StatementClass::Types type = statements->TypeAt(i);
@@ -643,11 +645,6 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				if (Class) {
 					Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
 					                  classSymbol->Comment, classSymbol->StartingLineNumber);
-				}
-				if (Member) {
-					NotifyMagicMethodsAndProperties(Member, Scope, DeclaredNamespace,
-							classSymbol->Comment, classSymbol->NamespaceName,
-					        classSymbol->ClassName, classSymbol->StartingLineNumber);
 				}
 				if (Class) {
 					Class->ClassEnd(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->EndingLineNumber);
@@ -1301,4 +1298,8 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 		}
 	}
 	classStatements->PushAll(&newMembers);
+}
+
+void pelet::FullParserObserverClass::CreateMagicMethodsAndProperties(pelet::StatementListClass* classStatements, pelet::ClassSymbolClass* clazz) {
+	pelet::CreateMagicMethodsAndProperties(AllAstItems, classStatements, Scope, DeclaredNamespace, clazz->Comment, clazz->EndingLineNumber);
 }

@@ -546,6 +546,12 @@ unticked_class_declaration_statement:
 											    */
 											  observers.DeclareAssignedProperties($$);
 											  
+																		  
+											/*
+											 * parse out property and method PHP docs
+											 */
+											observers.CreateMagicMethodsAndProperties($$, clazz);
+											  
 											  observers.SetCurrentClassName(NULL);
 											}
 	|	interface_entry T_STRING			

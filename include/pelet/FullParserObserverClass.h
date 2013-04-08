@@ -349,6 +349,12 @@ public:
 	 * @param classStatements the list of statements parsed from a class declaration
 	 */
 	void DeclareAssignedPropertiesFromAssignments(pelet::StatementListClass* classStatements);
+
+	/**
+	 * parses out the PHPDoc magic property / methods and creates member declarations
+	 * for them
+	 */
+	void CreateMagicMethodsAndProperties(pelet::StatementListClass* classStatements, pelet::ClassSymbolClass* clazz);
 	
 private:
 

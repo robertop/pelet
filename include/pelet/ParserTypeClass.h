@@ -1549,6 +1549,20 @@ UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bo
 UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
 											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
+/**
+ * parses out the given PHPDoc comment and creates property or method declarations for
+ * \@property, \@property-read, \@property-write, and \@method 
+ * doc tags.
+ * @param allAstItems the created items will be appended to this list
+ * @param statement the declarations that are created will be added to this list. to keep
+ *        things consistant, the pointers added to statements will be added to allAstItems
+ *        that way allAstItems manages the pointers
+ */
+void CreateMagicMethodsAndProperties(std::vector<pelet::AstItemClass*>& allAstItems,
+									 pelet::StatementListClass* statements, 
+									 const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
+									 const UnicodeString& phpDocComment, const int lineNumber);
+
 } 
 
 #endif

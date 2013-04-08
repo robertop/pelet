@@ -907,6 +907,8 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 		"	}\n"
 		"}"
 	);
+	
+	// phpdoc magic methods / properties get notified first
 	CHECK(Parser.ScanString(code, LintResults));
 	CHECK_VECTOR_SIZE(2, Observer.MethodClassName);
 	CHECK_UNISTR_EQUALS("Person", Observer.MethodClassName[0]);
@@ -935,25 +937,35 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 	CHECK_UNISTR_EQUALS("NameClass", Observer.PropertyType[2]);
 	CHECK_UNISTR_EQUALS("CName", Observer.PropertyType[3]);
 	
-	// should be 4: 3 function parameters + newName
+	// should be 6: 3 function parameters for __call + newName local var + 2 params for getAge() method
 	// note the order: PHPDoc variables first because of the way
-	// the AST is built (ie. source code notifications happen AFTER AST is built)
-	CHECK_VECTOR_SIZE(4, Observer.VariableName);
+	// the AST is built 
+	// typehint variable is notified first
+	// then  params for phpdoc methods
+	// then params for defined methods
+	CHECK_VECTOR_SIZE(6, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$newName", Observer.VariableName[0]);
-	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[1]);
-	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[2]);
-	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[3]);
+	CHECK_UNISTR_EQUALS("$int1", Observer.VariableName[1]);
+	CHECK_UNISTR_EQUALS("$int2", Observer.VariableName[2]);
+	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[3]);
+	CHECK_UNISTR_EQUALS("$arg1", Observer.VariableName[4]);
+	CHECK_UNISTR_EQUALS("$arg2", Observer.VariableName[5]);
 	
-	CHECK_VECTOR_SIZE(4, Observer.VariableExpressionChainList);
+	
+	CHECK_VECTOR_SIZE(6, Observer.VariableExpressionChainList);
 	//CHECK_UNISTR_EQUALS("NameClass", Observer.VariableExpressionChainList[3]);
 	
-	CHECK_VECTOR_SIZE(4, Observer.VariablePhpDocType);
+	CHECK_VECTOR_SIZE(6, Observer.VariablePhpDocType);
+	
+	 
+	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[0]);
+	CHECK_UNISTR_EQUALS("int", Observer.VariablePhpDocType[1]);
+	CHECK_UNISTR_EQUALS("int", Observer.VariablePhpDocType[2]);
 	
 	// type hints are not read from PHPDoc as of now
-	CHECK_UNISTR_EQUALS("NameClass", Observer.VariablePhpDocType[0]);
-	//CHECK_UNISTR_EQUALS("string", Observer.VariableExpressionChainList[1]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableExpressionChainList[2]);
-	//CHECK_UNISTR_EQUALS("Integer", Observer.VariableExpressionChainList[3]);
+	//CHECK_UNISTR_EQUALS("string", Observer.VariablePhpDocType[3]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariablePhpDocType[4]);
+	//CHECK_UNISTR_EQUALS("Integer", Observer.VariablePhpDocType[5]);
 }
 
 TEST_FIXTURE(Parser54TestClass, MethodScope) {

@@ -511,7 +511,16 @@ unticked_class_declaration_statement:
 		extends_from implements_list		{ observers.SetCurrentClassName($2); }	
 		'{' class_statement_list '}'		{ $$ = observers.ClassSymbolMake($2, $1, $3, $4, $8);
 											  observers.DeclareAssignedPropertiesFromAssignments($7);
+											  
+											   /*
+											   * parse out property and method PHP docs
+											   */
+											  pelet::ClassSymbolClass* clazz = (pelet::ClassSymbolClass*) $$->At(0);
+											  observers.CreateMagicMethodsAndProperties($$, clazz);
+ 
 											  observers.StatementListMerge($$, $7); 
+											  
+											 
 											  
 											  observers.SetCurrentClassName(NULL);  
 											}

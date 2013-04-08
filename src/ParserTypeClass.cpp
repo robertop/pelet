@@ -24,6 +24,7 @@
  */
 #include <pelet/ParserTypeClass.h>
 #include <unicode/uchar.h>
+#include <unicode/ustring.h>
 
 UnicodeString pelet::ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation, 
 												 const pelet::ScopeClass& scope, 
@@ -80,6 +81,188 @@ UnicodeString pelet::PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType,
 		return scope.FullyQualify(name, currentNamespace);
 	}
 	return phpDocType;
+}
+
+/**
+ * sets either varName or varType depending on whether text contents are a variable name or not.
+ */
+static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& varType) {
+	if (text && '$' == text[0]) {
+		varName.setTo(text);
+	} else if (text) {
+		varType.setTo(text);
+	}
+}
+
+static UChar* PropertyFromPhpDoc(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace,
+		const UChar* delimsBuffer, UChar** saveState, pelet::ClassMemberSymbolClass* member) {
+
+	// example line: 
+	//
+	// @property string $nameString a string version of a name
+	//
+	// the 
+	// will be lenient and allow the reverse var then type
+	// @property $nameString string
+	UChar* next = u_strtok_r(NULL, delimsBuffer, saveState);
+	if (!next) {
+		return next;
+	}
+	pelet::SemanticValueClass nameValue;
+	
+	FillNameOrType(next, nameValue.Lexeme, nameValue.Comment);
+	next = u_strtok_r(NULL, delimsBuffer, saveState);
+	if (!next) {
+		return next;
+	}
+	FillNameOrType(next, nameValue.Lexeme, nameValue.Comment);
+	
+	// handles namespaces in the magic properties
+	nameValue.Comment = pelet::PhpDocTypeToAbsoluteClassname(nameValue.Comment, scope, declaredNamespace);
+	nameValue.Comment = UNICODE_STRING_SIMPLE("/** @var ") + nameValue.Comment + UNICODE_STRING_SIMPLE(" */");
+	bool isConstant = false;
+	int endingPosition = 0;
+	member->MakeVariable(&nameValue, &nameValue, isConstant, endingPosition, scope, declaredNamespace);
+	return next;
+}
+
+static UChar* ParametersFromSignature(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace,
+		const UChar* delimsBuffer, UChar** saveState, pelet::ParametersListClass& parameters) {
+	
+	// example line: getAge(int $int1, int $int2) returns the person's age
+	UChar* next = u_strtok_r(NULL, delimsBuffer, saveState); // method name
+	
+	// keep reading next tokens for the signature; stop when we encounter a closing parenthesis
+	UnicodeString paramsString;
+	UChar parens[2] = { '(', '\0' };
+	do {
+		size_t len = u_strlen(next);
+		if (')' == next[len - 1]) {
+			paramsString.append(UNICODE_STRING_SIMPLE(" "));
+			paramsString.append(next, len - 1);
+			break;
+		}
+		UChar* openParens = u_strFindFirst(next, len, parens, 1);
+		if (openParens) {
+			paramsString.append(UNICODE_STRING_SIMPLE(" "));
+			paramsString.append(++openParens);
+		}
+		else {
+			paramsString.append(UNICODE_STRING_SIMPLE(" "));
+			paramsString.append(next, len);
+		}
+		next = u_strtok_r(NULL, delimsBuffer, saveState);
+	} while (next);
+		
+	// paramsString contains the parameters, parse those out
+	// need to split by commas
+	UChar commaDelims[3] = { ',', ' ', '\0' };
+	UChar* commaSaveState = NULL;
+	UChar* paramsBuffer = new UChar[paramsString.length() + 1];
+	u_memmove(paramsBuffer, paramsString.getBuffer(), paramsString.length());
+	paramsBuffer[paramsString.length()] = '\0';
+	
+	UChar* paramsNext = u_strtok_r(paramsBuffer, commaDelims, &commaSaveState);
+	pelet::SemanticValueClass parameterName;
+	pelet::QualifiedNameClass parameterType;
+	while (paramsNext) {
+		if ('$' == paramsNext[0]) {
+			
+			// parameter name
+			parameterName.Lexeme.setTo(paramsNext, u_strlen(paramsNext));
+			if(parameterName.Lexeme.endsWith(UNICODE_STRING_SIMPLE(")"))) {
+				parameterName.Lexeme.remove(parameterName.Lexeme.length() - 1, 1);
+			}
+			bool isReference = false;
+			parameters.Append(&parameterType, &parameterName, isReference, scope, declaredNamespace);
+			parameterName.Lexeme.remove();
+			parameterType.Clear();
+		}
+		else {
+			UnicodeString parameterTypeString(paramsNext);
+			parameterType.Init(parameterTypeString);
+		}
+		paramsNext = u_strtok_r(NULL, commaDelims, &commaSaveState);
+	}
+	return next;
+}
+
+
+static UChar* MethodFromPhpDoc(const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace,
+							const UChar* delimsBuffer, UChar** saveState, pelet::ClassMemberSymbolClass* memberMethod) {
+	pelet::SemanticValueClass nameValue;
+	pelet::SemanticValueClass commentValue;
+	pelet::ParametersListClass parameters;
+	pelet::ClassMemberSymbolClass modifiers;
+	modifiers.SetAsPublic();
+	pelet::ClassMemberSymbolClass methodBody;
+	methodBody.EndingPosition = 0;
+
+	
+	// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
+	UChar* next = u_strtok_r(NULL, delimsBuffer, saveState); // method return type
+	if (!next) {
+		return next;
+	}
+	commentValue.Comment.setTo(next);
+	
+	// handles namespaces in the magic properties
+	commentValue.Comment = pelet::PhpDocTypeToAbsoluteClassname(commentValue.Comment, scope, declaredNamespace);
+	commentValue.Comment = UNICODE_STRING_SIMPLE("/** @return ") + commentValue.Comment + UNICODE_STRING_SIMPLE(" */");
+	
+	next = u_strtok_r(NULL, delimsBuffer, saveState); // method name, could have parenthesis
+	if (!next) {
+		return next;
+	}
+	nameValue.Lexeme.setTo(next);
+	if (nameValue.Lexeme.endsWith(UNICODE_STRING_SIMPLE("()"))) {
+		nameValue.Lexeme.remove(nameValue.Lexeme.length() - 2, 2);
+	}
+	
+	next = ParametersFromSignature(scope, declaredNamespace, delimsBuffer, saveState, parameters);
+	bool isReference = false;
+	memberMethod->MakeMethod(&nameValue, &modifiers, isReference, &commentValue, &parameters, &methodBody, scope, declaredNamespace);
+	return next;
+}
+
+
+void pelet::CreateMagicMethodsAndProperties(std::vector<pelet::AstItemClass*>& allAstItems,
+										    pelet::StatementListClass* statements, 
+											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
+											const UnicodeString& phpDocComment, const int lineNumber) {
+	if (phpDocComment.isEmpty()) {
+		return;
+	}
+
+	// not using getTerminatedBuffer() because that method triggers valgrind warnings
+	UChar* buf = new UChar[phpDocComment.length() + 1];
+	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
+	buf[phpDocComment.length()] = '\0';
+
+	UChar* saveState = 0;
+	UChar delimsBuffer[6] = { ' ', '\t', '\n', '\v', '\f', '\0' };
+	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
+	
+	while (next) {
+		if (UNICODE_STRING_SIMPLE("@property").caseCompare(next, 0) == 0 ||
+		        UNICODE_STRING_SIMPLE("@property-read").caseCompare(next, 0) == 0 ||
+		        UNICODE_STRING_SIMPLE("@property-write").caseCompare(next, 0) == 0) {
+
+			pelet::ClassMemberSymbolClass* propertyMember = new pelet::ClassMemberSymbolClass;
+			next = PropertyFromPhpDoc(scope, currentNamespace, delimsBuffer, &saveState, propertyMember);
+			allAstItems.push_back(propertyMember);
+			statements->Push(propertyMember);
+		} else if (UNICODE_STRING_SIMPLE("@method").caseCompare(next, 0) == 0) {
+
+			// example line:  @method Integer getAge() getAge(int $int1, int $int2) returns the person's age
+			pelet::ClassMemberSymbolClass* methodMember = new pelet::ClassMemberSymbolClass;
+			next = MethodFromPhpDoc(scope, currentNamespace, delimsBuffer, &saveState, methodMember);
+			allAstItems.push_back(methodMember);
+			statements->Push(methodMember);
+		}
+		next = u_strtok_r(NULL, delimsBuffer, &saveState);
+	}
+	delete[] buf;
 }
 
 pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
