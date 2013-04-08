@@ -9,7 +9,7 @@ file. pelet was born out of the [MVC Editor](http://code.google.com/p/mvc-editor
 project.
 
 The pelet project aims to conform to the PHP syntax to its fullest.  Currently, pelet
-can parse source code written for PHP version 5.3 (closures, namespaces).
+can parse source code written for PHP version 5.4 (closures, namespaces, traits, simple arrays).
 
 License
 -------
@@ -59,7 +59,7 @@ Using Make (On  Linux)
 	(build the ICU library as normal, many linux distros have it in their package manager)
 	git clone git@github.com:robertop/pelet.git /home/user/pelet
 	cd /home/user/pelet
-	./premake4 --icu-config="/path/to/icu-config" vs2008
+	./premake4 --icu-config="/path/to/icu-config" gmake
 	cd build/gmake
 	make config=release
 
