@@ -634,6 +634,9 @@ pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetAll(pelet::SemanticValueCla
 		StartingLineNumber = nameValue->LineNumber;
 	}
 	NamespaceName = currentNamespace.ToSignature();
+	if (NamespaceName.isEmpty()) {
+		NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	}
 	if (classTypeSymbol) {
 		Comment = classTypeSymbol->Comment;
 		IsAbstract = classTypeSymbol->IsAbstract;
@@ -865,6 +868,9 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 	Type = pelet::StatementClass::METHOD_DECLARATION;
 	SetNameAndReturnReference(nameValue, isReference, functionValue, scope, currentNamespace);
 	NamespaceName = currentNamespace.ToSignature();
+	if (NamespaceName.isEmpty()) {
+		NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	}
 	ClassName = scope.ClassName;
 	if (parameters) {
 		ParametersList = *parameters;
@@ -913,6 +919,9 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeVariable(pelet
 		}
 	}
 	NamespaceName = currentNamespace.ToSignature();
+	if (NamespaceName.isEmpty()) {
+		NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	}
 	ClassName = scope.ClassName;
 	SetAsPublic();
 	StartingLineNumber = startingLineNumber;

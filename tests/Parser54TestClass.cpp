@@ -397,6 +397,8 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassObserver) {
 		CHECK(Parser.ScanFile(file, LintResults));
 		CHECK_VECTOR_SIZE(1, Observer.ClassName);
 		CHECK_UNISTR_EQUALS("UserClass", Observer.ClassName[0]);
+		CHECK_VECTOR_SIZE(1, Observer.ClassNamespace);
+		CHECK_UNISTR_EQUALS("\\", Observer.ClassNamespace[0]);
 		CHECK_VECTOR_SIZE(1, Observer.ClassSignature);
 		CHECK_UNISTR_EQUALS("abstract class UserClass", Observer.ClassSignature[0]);
 		CHECK_VECTOR_SIZE(1, Observer.ClassComment);
@@ -419,6 +421,13 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassMemberObserver) {
 	CHECK_UNISTR_EQUALS("UserClass", Observer.MethodClassName[1]);
 	CHECK_UNISTR_EQUALS("UserClass", Observer.MethodClassName[2]);
 	CHECK_UNISTR_EQUALS("UserClass", Observer.MethodClassName[3]);
+
+	CHECK_VECTOR_SIZE(4, Observer.MethodClassNamespace);
+	CHECK_UNISTR_EQUALS("\\", Observer.MethodClassNamespace[0]);
+	CHECK_UNISTR_EQUALS("\\", Observer.MethodClassNamespace[1]);
+	CHECK_UNISTR_EQUALS("\\", Observer.MethodClassNamespace[2]);
+	CHECK_UNISTR_EQUALS("\\", Observer.MethodClassNamespace[3]);
+
 	CHECK_VECTOR_SIZE(4, Observer.MethodName);
 	CHECK_UNISTR_EQUALS("__construct", Observer.MethodName[0]);
 	CHECK_UNISTR_EQUALS("work", Observer.MethodName[1]);
