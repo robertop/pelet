@@ -714,6 +714,10 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithUndeclaredClassMemberAssignments) 
 		"	function run() {\n"
 		"		$this->name = 'Runnable';\n"
 		"		$this->name = 'Runnable';\n"
+
+		// make sure method calls don't get treated as undeclared members
+		"       $type = $this->getType();\n"
+		"       $type = $this->getType();\n"
 		"	} \n"
 		"} \n"
 		"class ChildRunnable { \n"

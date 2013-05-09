@@ -311,7 +311,7 @@
 %type <statement> variable
 %type <unused> variable_properties
 %type <unused> variable_property
-%type <unused> method_or_not
+%type <isMethod> method_or_not
 %type <lexeme> variable_without_objects
 %type <unused> static_member
 %type <unused> variable_class_name
@@ -1187,7 +1187,7 @@ variable:
 		object_property
 		method_or_not							{ observers.DoCaptureProperties = false; }
 		variable_properties						{ 
-													if ($1 && pelet::StatementClass::PROPERTY_DECLARATION == $1->Type && $4) {
+													if ($1 && pelet::StatementClass::PROPERTY_DECLARATION == $1->Type && $4 && !$5) {
 														AST_INIT($$, pelet::ClassMemberSymbolClass);
 														
 														/* need to cast because we are returning a statement pointer from this rule */
@@ -1212,7 +1212,7 @@ variable_property:
 ;
 
 method_or_not:
-		'(' function_call_parameter_list ')'		{ $$ = 0; }
+		'(' function_call_parameter_list ')'		{ $$ = 1; }
 	|	/* empty */									{ $$ = 0; }
 ;
 

@@ -330,7 +330,7 @@
 %type <unused> variable_property
 %type <statement> array_method_dereference
 %type <statement> method
-%type <unused> method_or_not
+%type <isMethod> method_or_not
 %type <lexeme> variable_without_objects
 %type <unused> static_member
 %type <unused> variable_class_name
@@ -1294,7 +1294,7 @@ variable:
 		T_OBJECT_OPERATOR object_property 
 		method_or_not							{ observers.DoCaptureProperties = false; }
 		variable_properties						{ 
-													if ($1 && pelet::StatementClass::PROPERTY_DECLARATION == $1->Type && $4) {
+													if ($1 && pelet::StatementClass::PROPERTY_DECLARATION == $1->Type && $4 && !$5) {
 														AST_INIT($$, pelet::ClassMemberSymbolClass);
 														
 														/* need to cast because we are returning a statement pointer from this rule */
@@ -1327,7 +1327,7 @@ method:
 ;
 
 method_or_not:
-		method								{ $$ = 0; }
+		method								{ $$ = 1; }
 	|	array_method_dereference			{ $$ = 0; }
 	|	/* empty */ 						{ $$ = 0; }
 ;

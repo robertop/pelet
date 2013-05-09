@@ -185,6 +185,7 @@ typedef union ResourceParserType {
 	int unused;
 	bool isComma;
 	bool isReference;
+	bool isMethod;
 } ResourceParserTypeClass;
 
 /**
