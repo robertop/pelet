@@ -608,23 +608,38 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
 		"namespace First;\n"
+		"use Symfony\\Request as sfRequest;\n"
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, \\ArrayAccess {}\n"
 		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
-		"const MY_CONST = 1;"
+		"class MyRequest extends sfRequest {} \n"
+		"const MY_CONST = 1;\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(4, Observer.ClassName);
+	CHECK_VECTOR_SIZE(5, Observer.ClassName);
 	CHECK_UNISTR_EQUALS("Runnable", Observer.ClassName[0]);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.ClassName[1]);
 	CHECK_UNISTR_EQUALS("AbstractRunnable", Observer.ClassName[2]);
 	CHECK_UNISTR_EQUALS("TrueRunnable", Observer.ClassName[3]);
-	CHECK_VECTOR_SIZE(4, Observer.ClassSignature);
+	CHECK_VECTOR_SIZE(5, Observer.ClassSignature);
 	CHECK_UNISTR_EQUALS("interface Runnable", Observer.ClassSignature[0]);
+
+	// check that signature resolves unqualifed names to the declared namespace
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends \\First\\Runnable", Observer.ClassSignature[1]);
+	
+	// check that signature leaves fully qualified classes alone
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
+
+	// check the implements code path too
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
+
+	// check that signature uses the imported "use" namespaces
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("class MyRequest extends \\Symfony\\Request"), Observer.ClassSignature[4]);
+	
+	// chec namespaced constants
+	CHECK_VECTOR_SIZE(1, Observer.DefinedNamespaceName);
+	CHECK_UNISTR_EQUALS("\\First", Observer.DefinedNamespaceName[0]);
 	CHECK_VECTOR_SIZE(1, Observer.DefinedName);
 	CHECK_UNISTR_EQUALS("MY_CONST", Observer.DefinedName[0]);
 }

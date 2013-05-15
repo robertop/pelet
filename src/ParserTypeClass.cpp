@@ -1518,13 +1518,27 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 	if (index > 0) {
 		alias.setTo(qualified, 0, index);
 	}
+	else {
+		alias.setTo(qualified);
+	}
 	UnicodeString fullNamespace = ResolveAlias(alias);
-	if (!fullNamespace.isEmpty()) {
+	if (!fullNamespace.isEmpty() && index >= 0) {
 
-		// substitute alias with namespace
+		// name is an aliased namespace. for example
+		// USE Second\Child AS C;                 C\Result
+		// where fullNamespace = \Second\Child alias = C
+		// then the fully qualified name should be \Second\Child\Result
 		fullyQualified.setTo(qualified, index + 1);
 		fullyQualified = fullNamespace + UNICODE_STRING_SIMPLE("\\") + fullyQualified;
-	} else  if (name.IsAbsolute) {
+	}
+	else if (!fullNamespace.isEmpty()) {
+
+		// name is an aliased class. for example
+		// USE Symfony\Request AS sfRequest      sfRequest
+		// where fullNamespace = \Symfony\Request alias = sfRequest
+		fullyQualified = fullNamespace;
+	} 
+	else if (name.IsAbsolute) {
 		
 		// no alias but the name is already fully qualified
 		fullyQualified = name.ToSignature();
