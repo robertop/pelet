@@ -1509,7 +1509,11 @@ std::map<UnicodeString, UnicodeString, pelet::UnicodeStringComparatorClass> pele
 
 UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& name,
 											const pelet::QualifiedNameClass& namespaceName) const {
+	
 	UnicodeString fullyQualified;
+	if (name.ToSignature().isEmpty()) {
+		return fullyQualified;
+	}
 
 	// does name use an alias?
 	UnicodeString alias;
