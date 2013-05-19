@@ -1467,7 +1467,7 @@ void pelet::ScopeClass::AddNamespaceAlias(const wxString& namespaceName, const w
 	// add the beginning slash if not there
 	wxString fullyQualified;
 	if (namespaceName.find(wxT("\\")) != 0) {
-		fullyQualified.append(wxT("\\"));		
+		fullyQualified.append(wxT("\\"));
 	}
 	fullyQualified.append(namespaceName);
 	(*NamespaceAliases)[namespaceAlias] = fullyQualified;
@@ -1495,22 +1495,39 @@ std::map<wxString, wxString, pelet::wxStringComparatorClass> pelet::ScopeClass::
 wxString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& name,
 											const pelet::QualifiedNameClass& namespaceName) const {
 	wxString fullyQualified;
+	if (name.ToSignature().empty()) {
+		return fullyQualified;
+	}
 
 	// does name use an alias?
 	wxString alias;
 	wxString qualified = name.ToSignature();
 	size_t index = qualified.find(wxT("\\"));
-	if (index > 0) {
+	if (index != std::string::npos) {
 		alias = qualified.substr(0, index);
 	}
+	else {
+		alias = qualified;
+	}
 	wxString fullNamespace = ResolveAlias(alias);
-	if (!fullNamespace.empty()) {
+	if (!fullNamespace.empty() && index != std::string::npos) {
 
-		// substitute alias with namespace
+		// name is an aliased namespace. for example
+		// USE Second\Child AS C;                 C\Result
+		// where fullNamespace = \Second\Child alias = C
+		// then the fully qualified name should be \Second\Child\Result
 		fullyQualified = qualified.substr(index + 1);
 		fullyQualified = fullNamespace + wxT("\\") + fullyQualified;
-	} else  if (name.IsAbsolute) {
-		
+	}
+	else if (!fullNamespace.empty()) {
+
+		// name is an aliased class. for example
+		// USE Symfony\Request AS sfRequest      sfRequest
+		// where fullNamespace = \Symfony\Request alias = sfRequest
+		fullyQualified = fullNamespace;
+	} 
+	else if (name.IsAbsolute) {
+
 		// no alias but the name is already fully qualified
 		fullyQualified = name.ToSignature();
 	}

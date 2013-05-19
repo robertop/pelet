@@ -607,23 +607,38 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {
 	Parser.SetClassObserver(&Observer);
 	wxString code = _U(
 		"namespace First;\n"
+		"use Symfony\\Request as sfRequest;\n"
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, \\ArrayAccess {}\n"
 		"class TrueRunnable extends AbstractRunnable implements MyRunnable {} \n"
-		"const MY_CONST = 1;"
+		"class MyRequest extends sfRequest {} \n"
+		"const MY_CONST = 1;\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(4, Observer.ClassName);
+	CHECK_VECTOR_SIZE(5, Observer.ClassName);
 	CHECK_UNISTR_EQUALS("Runnable", Observer.ClassName[0]);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.ClassName[1]);
 	CHECK_UNISTR_EQUALS("AbstractRunnable", Observer.ClassName[2]);
 	CHECK_UNISTR_EQUALS("TrueRunnable", Observer.ClassName[3]);
-	CHECK_VECTOR_SIZE(4, Observer.ClassSignature);
+	CHECK_VECTOR_SIZE(5, Observer.ClassSignature);
 	CHECK_UNISTR_EQUALS("interface Runnable", Observer.ClassSignature[0]);
+
+	// check that signature resolves unqualifed names to the declared namespace
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends \\First\\Runnable", Observer.ClassSignature[1]);
-	CHECK_EQUAL(wxT("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
+
+	// check that signature leaves fully qualified classes alone
+	CHECK_UNISTR_EQUALS("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess", Observer.ClassSignature[2]);
+
+	// check the implements code path too
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
+
+	// check that signature uses the imported "use" namespaces
+	CHECK_UNISTR_EQUALS("class MyRequest extends \\Symfony\\Request", Observer.ClassSignature[4]);
+	
+	// chec namespaced constants
+	CHECK_VECTOR_SIZE(1, Observer.DefinedNamespaceName);
+	CHECK_UNISTR_EQUALS("\\First", Observer.DefinedNamespaceName[0]);
 	CHECK_VECTOR_SIZE(1, Observer.DefinedName);
 	CHECK_UNISTR_EQUALS("MY_CONST", Observer.DefinedName[0]);
 }
@@ -865,25 +880,33 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleVariableExpressionTypes
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllTypeHintingNamespaces) {
 	Parser.SetVariableObserver(&Observer);
-
 	wxString code = _U(
+	
+	// array built-in type should not have the declared namespace
+	// string built-in type should not have the declared namespace
 		"namespace First;\n"
-		"function workFunc(Globals $srcGlobal, Second\\Globals $second, array $items) {\n"
+		"use Symfony\\Request as sfRequest;\n"
+		"function workFunc(Globals $srcGlobal, Second\\Globals $second, array $items, $str, sfRequest $request) {\n"
 		"}\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(3, Observer.VariableMethodName);
-	for (size_t i = 0; i < 3; ++i) {
+	int expectedParams = 5;
+	CHECK_VECTOR_SIZE(expectedParams, Observer.VariableMethodName);
+	for (int i = 0; i < expectedParams; ++i) {
 		CHECK_UNISTR_EQUALS("workFunc", Observer.VariableMethodName[i]);
 	}
-	CHECK_VECTOR_SIZE(3, Observer.VariableName);
+	CHECK_VECTOR_SIZE(expectedParams, Observer.VariableName);
 	CHECK_UNISTR_EQUALS("$srcGlobal", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$second", Observer.VariableName[1]);
 	CHECK_UNISTR_EQUALS("$items", Observer.VariableName[2]);
-	CHECK_VECTOR_SIZE(3, Observer.VariableExpressionChainList);
+	CHECK_UNISTR_EQUALS("$str", Observer.VariableName[3]);
+	CHECK_UNISTR_EQUALS("$request", Observer.VariableName[4]);
+	CHECK_VECTOR_SIZE(expectedParams, Observer.VariableExpressionChainList);
 	CHECK_UNISTR_EQUALS("\\First\\Globals", Observer.VariableExpressionChainList[0]);
 	CHECK_UNISTR_EQUALS("\\First\\Second\\Globals", Observer.VariableExpressionChainList[1]);
 	CHECK_UNISTR_EQUALS("array", Observer.VariableExpressionChainList[2]);
+	CHECK_UNISTR_EQUALS("", Observer.VariableExpressionChainList[3]);
+	CHECK_UNISTR_EQUALS("\\Symfony\\Request", Observer.VariableExpressionChainList[4]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
