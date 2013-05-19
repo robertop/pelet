@@ -207,7 +207,7 @@ public:
 	 * This method is given a file pointer, it is useful for example when a file
 	 * with a unicode filename is opened by the caller.
 	 * 
-	 * @param file the file to parse, this class will NOT own the file pointer
+	 * @param file the file to parse, this class WILL own the file pointer and delete it
 	 * @param fileName this is the name that will be set in  results.UnicodeFilename when an error happens
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool if file was found and could be parsed successfully
@@ -308,7 +308,7 @@ public:
 	 * any PHP code will be considered a good file (a PHP file that has only HTML is
 	 * considered good and true will be returned).
 	 * 
-	 * @param FILE* file the file to parse.  Must be an opened file pointer, this class will NOT own the file pointer
+	 * @param FILE* file the file to parse.  Must be an opened file pointer, this class WILL own the file pointer and delete it
 	 * @param fileName this is the name that will be set in  results.UnicodeFilename when an error happens
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if file was found and had no syntax errors.

@@ -77,7 +77,7 @@ class PELET_API LexicalAnalyzerClass {
 	 * will be closed. The caller can, for example, open a file with a unicode filename and then
 	 * pass it to this method
 	 * 
-	 * @param FILE* opened file to tokenize, this class will NOT own the file pointer
+	 * @param FILE* opened file to tokenize, this class WILL own the file pointer and delete it
 	 * @return bool true if file pointer is valid
 	 */
 	bool OpenFile(FILE* file);

@@ -1,7 +1,22 @@
 Notable changes of the pelet library
 ====================================
 
-Current Version: 2.0
+Current Version: 3.0-wx-string
+Change 1:
+pelet has been changed to use the wxWidgets library instead of ICU.  All parser types will now
+consist of wxString members instead of UnicodeString members.
+
+Change 2:
+LexicalAnalyzerClass::OpenFile(FILE* file)
+WILL own the file pointer and delete it. Callers should no longer delete the file themselves.
+
+Change 3:
+ParserClass::ScanFile(FILE* file, const wxString& fileName, LintResultsClass& results)
+WILL own the file pointer and delete it. Callers should no longer delete the file themselves.
+
+Change 4:
+ParserClass::LintFile(FILE* file, const wxString& filename, LintResultsClass& results)
+WILL own the file pointer and delete it. Callers should no longer delete the file themselves.
 
 version 2.0
 ===========
