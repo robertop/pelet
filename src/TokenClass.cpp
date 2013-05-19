@@ -31,12 +31,12 @@ bool pelet::IsTerminatingToken(int token) {
 		T_END == token;
 }
 
-int pelet::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
+int pelet::SkipToIdentifier(BufferClass *buffer, wxString identifier) {
 	bool end = false;
 	
 	// add semicolon to make checks easier
-	identifier.append(';');
-	UChar c = *buffer->Current;
+	identifier.append(wxT(';'));
+	wxChar c = *buffer->Current;
 	while (!end) {
 	
 		/*
@@ -45,7 +45,7 @@ int pelet::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 		 * be careful; do NOT store buffer->Current since it may change at any after buffer->AppendToLexeme
 		 * is called
 		 */
-		UnicodeString line;
+		wxString line;
 		while (c != 0 && c != '\n' && c != '\r') {
 			line.append(c);
 			
@@ -66,8 +66,8 @@ int pelet::SkipToIdentifier(BufferClass *buffer, UnicodeString identifier) {
 		// will be wrong
 		buffer->IncrementLine();
 		bool hasEndingSemicolon = true;
-		if (!line.endsWith(UNICODE_STRING(";", 1))) {
-			line.append(UNICODE_STRING(";", 1));
+		if (!line.EndsWith(wxT(";"))) {
+			line.append(wxT(";"));
 			hasEndingSemicolon = false;
 		}
 		if (line.compare(identifier) == 0) {
@@ -101,15 +101,15 @@ int pelet::HandleHeredoc(BufferClass *buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat heredoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
-	identifier.trim();
+	wxString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
+	identifier.Trim();
 	
 	// remove double quotes if they are there
-	if (identifier.startsWith(UNICODE_STRING("\"", 1))) {
-		identifier.remove(0, 1);
+	if (identifier.StartsWith(wxT("\""))) {
+		identifier.erase(identifier.begin());
 	}
-	if (identifier.endsWith(UNICODE_STRING("\"", 1))) {
-		identifier.remove(identifier.length() - 1, 1);
+	if (identifier.EndsWith(wxT("\""))) {
+		identifier.erase(identifier.begin() + identifier.length() - 1);
 	}
 	if ((buffer->Limit - buffer->Current) < 2) {
 		buffer->AppendToLexeme(1);
@@ -133,12 +133,12 @@ int pelet::HandleNowdoc(BufferClass *buffer) {
 	 * does not have embedded variables; since we don't care about embedded variables 
 	 * we will always treat nowdoc as singles quote strings
 	 */
-	UnicodeString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
-	identifier.trim();
+	wxString identifier(buffer->TokenStart + 3, buffer->Current - buffer->TokenStart - 3 - 1);
+	identifier.Trim();
 	
 	// remove the single quotes
-	identifier.remove(0, 1);
-	identifier.remove(identifier.length() - 1, 1);
+	identifier.erase(identifier.begin());
+	identifier.erase(identifier.begin() + identifier.length() - 1);
 	if ((buffer->Limit - buffer->Current) < 2) {
 		buffer->AppendToLexeme(1);
 	}

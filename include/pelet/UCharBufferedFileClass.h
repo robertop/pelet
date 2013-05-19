@@ -25,8 +25,9 @@
 #ifndef UCHARBUFFEREDFILE_H
 #define UCHARBUFFEREDFILE_H
 
-#include <unicode/ustdio.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
 #include <pelet/Api.h>
 
 namespace pelet {
@@ -48,21 +49,21 @@ public:
 	 * next and in between long lexemes. For this reason, do NOT store Current pointer since it may change at
 	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
-	const UChar* Current;
+	const wxChar* Current;
 	
 	/**
 	 * Points to the start of a token. This pointer may be reassigned from one lexeme to the 
 	 * next and in between long lexemes. For this reason, do NOT store TokenStart pointer since it may change at
 	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
-	const UChar* TokenStart;
+	const wxChar* TokenStart;
 	
 	/**
 	 * Used for backtracking. This pointer may be reassigned from one lexeme to the 
 	 * next and in between long lexemes. For this reason, do NOT store Marker pointer since it may change at
 	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
-	const UChar* Marker;
+	const wxChar* Marker;
 	
 	/**
 	 * Marks the end of the buffer (NOT necessarily the end of the input). When Current == Limit then we need to refill the buffer. 
@@ -70,7 +71,7 @@ public:
 	 * next and in between long lexemes.For this reason, do NOT store Limit pointer since it may change at
 	 * any after buffer.AppendToLexeme is called. Memory errors will occur.
 	 */
-	const UChar* Limit;
+	const wxChar* Limit;
 	
 	/**
 	 * NO-OP will do nothing since all data is already in memory
@@ -135,12 +136,12 @@ protected:
  *  buf.AppendToLexeme(512);
  * 	while (buf.Current != 0) {
  *     // buf.Current will be valid up to 512;
- *     UnicodeString longStr(buf.Current, 512);
+ *     wxString longStr(buf.Current, 512);
  *     
  *     // small string
  *    buf.ResetBuffer();
  *    buf.AppendToLexeme(16);
- *    UnicodeString shortStr(buf.Current, 16);
+ *    wxString shortStr(buf.Current, 16);
  *   }
  * }
  * else {
@@ -172,10 +173,11 @@ public:
 	 * This method is a convenience method, but it will NOT handle unicode file names.
 	 *
 	 * @param const char *newFile to open
+	 * @param conv the converter to use when opening the file
 	 * @param startingCapacity to initial buffer size
 	 * @return bool true if file can be opened for reading
 	 */
-	bool OpenFile(const char *newFile, int statingCapacity = 512);
+	bool OpenFile(const char *newFile, const wxMBConv& conv = wxConvAuto(), int statingCapacity = 512);
 
 	/**
 	 * Opens the file and partially loads it into the buffer. InlineHtml starts at true; signaling the lexer
@@ -184,10 +186,11 @@ public:
 	 * method.
 	 * 
 	 * @param FILE* *file opened file pointer, this class will NOT own the file pointer
+	 * @param conv the converter to use when opening the file
 	 * @param startingCapacity to initial buffer size
 	 * @return bool true if file can be opened for reading
 	 */
-	bool OpenFile(FILE* file, int statingCapacity = 512);
+	bool OpenFile(FILE* file, const wxMBConv& conv = wxConvAuto(), int statingCapacity = 512);
 	
 	/**
 	 * Gets the next character from the file stream. This method may allocate a larger 
@@ -241,7 +244,20 @@ private:
 	/**
 	 * common code that is shared by the public OpenFile() methods
 	 */
-	bool OpenFile(UFILE* file, int statingCapacity = 512);
+	bool OpenFile(int statingCapacity);
+	
+	/**
+	 * close all file pointers and streams
+	 */
+	void CloseFile();
+	
+	/**
+	 * read n characters from the text stream.
+	 * 
+	 * @param n the number of characters to read
+	 * @return int the number of characters that were read
+	 */
+	int ReadChars(wxChar* buffer, int n);
 	
 	/**
 	 * This will store the lexemes.  Since they can be unlimited in length, we need
@@ -251,17 +267,22 @@ private:
 	 * The string will NOT be NULL terminated. The current lexeme can be retrieved via
 	 * the GetLexeme() method.
 	 */
-	UChar* Buffer;
+	wxChar* Buffer;
 	
 	/**
 	 * Points to the end-of-file. This is just a pointer to Buffer.
 	 */
-	UChar* Eof;
+	wxChar* Eof;
 
 	/**
-	 * The opened file handle.
+	 * The opened file handle. This class will own the pointer.
 	 */
-	UFILE* File;
+	wxFFileInputStream* InputStream;
+	
+	/**
+	 * to convert file data to text. This class will own the pointer.
+	 */
+	wxTextInputStream* TextStream;
 		
 	/**
 	 * This variable stores the total memory allocated to the buffer.
@@ -282,7 +303,7 @@ private:
 };
 
 /**
- * The UCharBufferClass will wrap an array of UChars or a UnicodeString, making it
+ * The UCharBufferClass will wrap an array of UChars or a wxString, making it
  * possible to tokenize a string of PHP source code.
  */
 class PELET_API UCharBufferClass : public BufferClass {
@@ -301,10 +322,10 @@ public:
 	/**
 	 * prepares the given code to be anlyzed. It is assumed that code is all php source; the
 	 * open tag "<?php" is not required (InlineHtml starts at false)
-	 * @param const UnicodeString& code to analyze
+	 * @param const wxString& code to analyze
 	 * @return bool true if code is not empty
 	 */
-	bool OpenString(const UnicodeString& code);
+	bool OpenString(const wxString& code);
 	
 	/**
 	 * NO-OP will do nothing since all data is already in memory
@@ -342,7 +363,7 @@ private:
 	 * The string will NOT be NULL terminated. The current lexeme can be retrieved via
 	 * the GetLexeme() method.
 	 */
-	const UChar* Buffer;
+	const wxChar* Buffer;
 	
 	/**
 	 * This variable stores the total memory allocated to the buffer.

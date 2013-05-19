@@ -37,7 +37,7 @@ Requirements
 - The library can be compiled and run on Windows and Linux. It will most likely be 
 possible to compile and run this library can run on a MAC, however it has not been 
 tested.
-- ICU library is required (ver. 4.2+)
+- wxWidgets library is required (ver. 2.8.10+)
 
 Optional: These are only needed if you want to make changes to the library (most
 users will not need to do so):
@@ -59,20 +59,20 @@ Using Make (On  Linux)
 	(build the ICU library as normal, many linux distros have it in their package manager)
 	git clone git@github.com:robertop/pelet.git /home/user/pelet
 	cd /home/user/pelet
-	./premake4 --icu-config="/path/to/icu-config" gmake
+	./premake4 --wx-config="/path/to/wx-config" gmake
 	cd build/gmake
 	make config=release
 
 "./premake4 gmake" can be substituted for an IDE solution; ie 
-"./premake4 --icu-config="/path/to/icu-config codelite". After these steps
+"./premake4 --wx-config="/path/to/wx-config codelite". After these steps
 the resulting shared library will be created in Release/pelet.so. The library can then be imported
 into any C++ project by adding the include directory (-Iinclude) to the include path and adding the 
 library file as a library (-lpelet). 
 
-Also note that if you installed ICU in a non-standard place you will need to add the ICU library subdirectory
+Also note that if you installed wxWidgets in a non-standard place you will need to add the wxWidgets library subdirectory
 to the LD_LIBRARY_PATH environment variable as well. You will need to do this BEFORE compiling
 pelet, as the compilation has a post-build action to run a test suite (and the test suite requires
-the ICU library).
+the wxWidgets library).
 
 MSW instructions (Visual Studio Solution)
 ------------------------------------------
@@ -80,17 +80,17 @@ MSW instructions (Visual Studio Solution)
 	provides)
 	git clone git@github.com:robertop/pelet.git C:\Users\user\pelet
 	cd C:\Users\user\pelet	
-	./premake4 --icu-include="C:\path\to\icu\headers" --icu-lib="C:\path\to\icu\libs" vs2008
+	./premake4 --wx-include="C:\path\to\wx\headers" --wx-lib="C:\path\to\wx\libs" vs2008
 
 Now you can open the pelet solution file under build/vs2008 and build the solution. After these
 steps, the resulting shared library will be created in Release/pelet.dll. The library can then be imported
 into any C++ project by using the include directory (include) to the include path and adding the 
 library file as a library (pelet.dll)
 
-Also note that if you installed ICU in a non-standard place you will need to copy the ICU DLLs (icu*.dll) into the 
+Also note that if you installed wxWidgets in a non-standard place you will need to copy the wxWidgets DLLs into the 
 same directory as the sample program (the Debug/ and Release/ directories). You will need to do this 
 BEFORE compiling pelet, as the compilation has a post-build action to run a test suite (and the test 
-suite requires the ICU library).
+suite requires the wxWidgets library).
 
 Sample Usage
 -------------
@@ -101,8 +101,8 @@ when it enounters an artifact.
 
 	// create a class to "observe" for artifacts
 	class SampleObserver : public pelet::ClassObserverClass {
-		virtual void ClassFound(const UnicodeString& nameSpace, const UnicodeString& className, 
-			const UnicodeString& signature, const UnicodeString& comment) {
+		virtual void ClassFound(const wxString& nameSpace, const wxString& className, 
+			const wxString& signature, const wxString& comment) {
 			// your code to handle new classes goes here
 		}
 	};

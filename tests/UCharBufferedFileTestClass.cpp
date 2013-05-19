@@ -25,7 +25,8 @@
 #include <UnitTest++.h>
 #include <FileTestFixtureClass.h>
 #include <pelet/UCharBufferedFileClass.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
+#include <wx/strconv.h>
 
 class UCharBufferedFileTestFixtureClass : public FileTestFixtureClass {
 	
@@ -50,10 +51,10 @@ public:
 SUITE(UCharBufferedFileTestClass) {
 
 TEST_FIXTURE(UCharBufferedFileTestFixtureClass, MemoryBufferHasEnded) {
-	UnicodeString test = UNICODE_STRING_SIMPLE("function");
+	wxString test = wxT("function");
 	CHECK(MemBuffer->OpenString(test));
 	CHECK_EQUAL(false, MemBuffer->HasReachedEnd());
-	int actualLength = MemBuffer->Limit - MemBuffer->Current - 1;
+	size_t actualLength = MemBuffer->Limit - MemBuffer->Current - 1;
 	CHECK_EQUAL(test.length(), actualLength);
 	CHECK_EQUAL('f', *MemBuffer->Current++);
 	CHECK_EQUAL('u', *MemBuffer->Current++);
@@ -129,7 +130,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenBufferHasToGrow) {
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 2));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 2));
 	CHECK_EQUAL(false, FileBuffer->HasReachedEnd());
 	CHECK_EQUAL('f', *FileBuffer->Current++);
 	CHECK_EQUAL('u', *FileBuffer->Current++);
@@ -161,7 +162,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 15));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 15));
 	
 	// advance past 'another free '
 	for (int i = 0; i < 13; i++) {
@@ -183,8 +184,8 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 	CHECK(FileBuffer->HasReachedEnd());
 	
 	// here Current is already one past the end
-	UnicodeString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("function"), str);
+	wxString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
+	CHECK_EQUAL(wxT("function"), str);
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
 
@@ -196,7 +197,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 15));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 15));
 	
 	// advance past 'another free '
 	for (int i = 0; i < 13; i++) {
@@ -220,8 +221,8 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 	CHECK(FileBuffer->HasReachedEnd());
 	
 	// here Current is already one past the end
-	UnicodeString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("function"), str);
+	wxString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
+	CHECK_EQUAL(wxT("function"), str);
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
 
@@ -233,7 +234,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 9));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 9));
 	
 	// advance past 'another '
 	for (int i = 0; i < 8; i++) {
@@ -263,8 +264,8 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferWhenRemovingLeadingSla
 	CHECK(FileBuffer->HasReachedEnd());
 	
 	// here Current is already one past the end
-	UnicodeString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("free function"), str);
+	wxString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
+	CHECK_EQUAL(wxT("free function"), str);
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
 
@@ -276,7 +277,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillFromFileAfte
 
 	// start with a small buffer size, it will need to grow to
 	// acommodate the entire file
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 2));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 2));
 	
 	// advance past 'another '
 	for (int i = 0; i < 8; i++) {
@@ -309,8 +310,8 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillFromFileAfte
 	CHECK(FileBuffer->HasReachedEnd());
 	
 	// here Current is already one past the end
-	UnicodeString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("free function"), str);
+	wxString str(FileBuffer->TokenStart, FileBuffer->Current - FileBuffer->TokenStart);
+	CHECK_EQUAL(wxT("free function"), str);
 	CHECK_EQUAL(0, *FileBuffer->Current);
 }
 
@@ -327,7 +328,7 @@ TEST_FIXTURE(UCharBufferedFileTestFixtureClass, FileBufferShouldFillBufferWhenIt
 	CreateFixtureFile(fileName, test);
 	std::string filePath = TestProjectDir + fileName;
 
-	CHECK(FileBuffer->OpenFile(filePath.c_str(), 512));
+	CHECK(FileBuffer->OpenFile(filePath.c_str(), wxConvUTF8, 512));
 	for (int i = 0; i < 8; i++) {
 		++FileBuffer->Current;
 	}

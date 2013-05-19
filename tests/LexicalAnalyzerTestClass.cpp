@@ -25,6 +25,7 @@
 #include <UnitTest++.h>
 #include <pelet/LexicalAnalyzerClass.h>
 #include <FileTestFixtureClass.h>
+#include <PeletChecks.h>
 
 /**
  * This fixture is used to test both version of the lexer (5.3 and 5.4 versions).
@@ -44,13 +45,13 @@ public:
 	
 	pelet::LexicalAnalyzerClass Lexer53;
 	pelet::LexicalAnalyzerClass Lexer54;
-	UnicodeString ActualLexeme;
+	wxString ActualLexeme;
 	
 	bool LexerOpen(std::string file) {
 		return Lexer53.OpenFile(file) && Lexer54.OpenFile(file);
 	}
 	
-	bool LexerOpenString(UnicodeString code) {
+	bool LexerOpenString(wxString code) {
 		return Lexer53.OpenString(code) && Lexer54.OpenString(code);
 	}
 };
@@ -73,11 +74,11 @@ public:
 // number when an assertion fails
 #define CHECK_TOKEN_LEXEME(token, expectedLexeme) \
 		CHECK_EQUAL(token, Lexer53.NextToken());\
-		ActualLexeme.remove(); \
+		ActualLexeme.clear(); \
 		Lexer53.GetLexeme(ActualLexeme);\
 		CHECK_EQUAL(expectedLexeme, ActualLexeme);\
 		CHECK_EQUAL(token, Lexer54.NextToken());\
-		ActualLexeme.remove(); \
+		ActualLexeme.clear(); \
 		Lexer54.GetLexeme(ActualLexeme);\
 		CHECK_EQUAL(expectedLexeme, ActualLexeme);
 
@@ -106,53 +107,53 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasy) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("hello"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("1"));
-	CHECK_TOKEN_LEXEME('*', UNICODE_STRING_SIMPLE("*"));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("3"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$b"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("hello"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("1"));
+	CHECK_TOKEN_LEXEME('*', wxT("*"));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("3"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$b"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
 	
 	// php parser considers these separate
-	CHECK_TOKEN_LEXEME('-', UNICODE_STRING_SIMPLE("-"));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("1"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME('-', wxT("-"));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("1"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindWhenFileEndsWithIdentifier) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"function echoA"
 	);
 	CHECK(LexerOpenString(code));
-	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("echoA"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, wxT("function"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("echoA"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, OpenStringShouldbeAnalyzed) {
-	UnicodeString code  = _U(
+	wxString code  = _U(
 		"$s = 'hello';\n"
 		"$a = 1 * 3;"
 	);
 	CHECK(LexerOpenString(code));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("hello"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("1"));
-	CHECK_TOKEN_LEXEME('*', UNICODE_STRING_SIMPLE("*"));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("3"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("hello"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("1"));
+	CHECK_TOKEN_LEXEME('*', wxT("*"));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("3"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -167,26 +168,26 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindEasyIfStatement) {
 	file += "test.php";
 	CHECK(LexerOpen(file));
 	std::string lexeme;
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_IF, UNICODE_STRING_SIMPLE("if"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("NULL"));
-	CHECK_TOKEN_LEXEME(pelet::T_IS_NOT_IDENTICAL, UNICODE_STRING_SIMPLE("!=="));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$value"));
-	CHECK_TOKEN_LEXEME(pelet::T_BOOLEAN_AND, UNICODE_STRING_SIMPLE("&&"));
-	CHECK_TOKEN_LEXEME('!', UNICODE_STRING_SIMPLE("!"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("is_array"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$value"));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$value"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING_CAST, UNICODE_STRING_SIMPLE("(string)"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$value"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_IF, wxT("if"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("NULL"));
+	CHECK_TOKEN_LEXEME(pelet::T_IS_NOT_IDENTICAL, wxT("!=="));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$value"));
+	CHECK_TOKEN_LEXEME(pelet::T_BOOLEAN_AND, wxT("&&"));
+	CHECK_TOKEN_LEXEME('!', wxT("!"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("is_array"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$value"));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$value"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING_CAST, wxT("(string)"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$value"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
 	
 	CHECK_TOKEN(pelet::T_END);
 }
@@ -203,9 +204,9 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEmptyComments) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/**/"));
-	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, wxT("/**/"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, wxT("function"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
@@ -220,9 +221,9 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/*\n *\n */"));
-	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, wxT("/*\n *\n */"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, wxT("function"));
 	
 	/*
 	 * test for single line, PHP Doc comments 
@@ -237,11 +238,11 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleComments) {
 	file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_DOC_COMMENT, UNICODE_STRING_SIMPLE("/** this is a PHPDoc Comment */"));
-	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, UNICODE_STRING_SIMPLE("require_once"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("globals.php"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_DOC_COMMENT, wxT("/** this is a PHPDoc Comment */"));
+	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, wxT("require_once"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("globals.php"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments) {
@@ -257,8 +258,8 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_ERROR_UNTERMINATED_COMMENT, UNICODE_STRING_SIMPLE(""));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_ERROR_UNTERMINATED_COMMENT, wxT(""));
 	
 	
 	CreateFixtureFile("test.php", 
@@ -269,10 +270,10 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleUnterminatedComments
 	file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, UNICODE_STRING_SIMPLE("require_once"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("globals.php"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, wxT("require_once"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("globals.php"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
@@ -290,15 +291,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleLongComments) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
 	CHECK_TOKEN(pelet::T_COMMENT);
 	CHECK_TOKEN(pelet::T_COMMENT);
-	CHECK_TOKEN_LEXEME(pelet::T_CLASS, UNICODE_STRING_SIMPLE("class"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("ExtendedRecordSetForUnitTestDoesNotInitializeRcord"));
-	CHECK_TOKEN_LEXEME(pelet::T_EXTENDS, UNICODE_STRING_SIMPLE("extends"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("RecordSet"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLASS, wxT("class"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("ExtendedRecordSetForUnitTestDoesNotInitializeRcord"));
+	CHECK_TOKEN_LEXEME(pelet::T_EXTENDS, wxT("extends"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("RecordSet"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
@@ -329,73 +330,73 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldFindClassTokens) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php "));
-	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, UNICODE_STRING_SIMPLE("require_once"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("globals.php"));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php "));
+	CHECK_TOKEN_LEXEME(pelet::T_REQUIRE_ONCE, wxT("require_once"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("globals.php"));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_COMMENT);
-	CHECK_TOKEN_LEXEME(pelet::T_CLASS, UNICODE_STRING_SIMPLE("class"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("UserClass"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_PROTECTED, UNICODE_STRING_SIMPLE("protected"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$_name"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VAR, UNICODE_STRING_SIMPLE("var"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$id"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_CONST, UNICODE_STRING_SIMPLE("const"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("NULL_ID"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("0"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("__construct"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$this"));
-	CHECK_TOKEN_LEXEME(pelet::T_OBJECT_OPERATOR, UNICODE_STRING_SIMPLE("->"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("_name"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE(""));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$this"));
-	CHECK_TOKEN_LEXEME(pelet::T_OBJECT_OPERATOR, UNICODE_STRING_SIMPLE("->"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("id"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("self"));
-	CHECK_TOKEN_LEXEME(pelet::T_PAAMAYIM_NEKUDOTAYIM, UNICODE_STRING_SIMPLE("::"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("NULL_ID"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME(pelet::T_CLASS, UNICODE_STRING_SIMPLE("class"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("AdminClass"));
-	CHECK_TOKEN_LEXEME(pelet::T_EXTENDS, UNICODE_STRING_SIMPLE("extends"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("UserClass"));
-	CHECK_TOKEN_LEXEME(pelet::T_IMPLEMENTS, UNICODE_STRING_SIMPLE("implements"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("IFace"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_PRIVATE, UNICODE_STRING_SIMPLE("private"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$_superUser"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_PUBLIC, UNICODE_STRING_SIMPLE("public"));
-	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, UNICODE_STRING_SIMPLE("function"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("__construct"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("parent"));
-	CHECK_TOKEN_LEXEME(pelet::T_PAAMAYIM_NEKUDOTAYIM, UNICODE_STRING_SIMPLE("::"));
-	CHECK_TOKEN_LEXEME(pelet::T_STRING, UNICODE_STRING_SIMPLE("__construct"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLASS, wxT("class"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("UserClass"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_PROTECTED, wxT("protected"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$_name"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VAR, wxT("var"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$id"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_CONST, wxT("const"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("NULL_ID"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("0"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, wxT("function"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("__construct"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$this"));
+	CHECK_TOKEN_LEXEME(pelet::T_OBJECT_OPERATOR, wxT("->"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("_name"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT(""));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$this"));
+	CHECK_TOKEN_LEXEME(pelet::T_OBJECT_OPERATOR, wxT("->"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("id"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("self"));
+	CHECK_TOKEN_LEXEME(pelet::T_PAAMAYIM_NEKUDOTAYIM, wxT("::"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("NULL_ID"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLASS, wxT("class"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("AdminClass"));
+	CHECK_TOKEN_LEXEME(pelet::T_EXTENDS, wxT("extends"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("UserClass"));
+	CHECK_TOKEN_LEXEME(pelet::T_IMPLEMENTS, wxT("implements"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("IFace"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_PRIVATE, wxT("private"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$_superUser"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_PUBLIC, wxT("public"));
+	CHECK_TOKEN_LEXEME(pelet::T_FUNCTION, wxT("function"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("__construct"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("parent"));
+	CHECK_TOKEN_LEXEME(pelet::T_PAAMAYIM_NEKUDOTAYIM, wxT("::"));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("__construct"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -407,11 +408,11 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSlashes) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("\\"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("\\"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -423,15 +424,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedSingleQuoteSt
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
 
 	// in PHP single quote strings the only escape sequence allowed is the escaped single quotes
 	// double backslash should be turned into single backslash
 	// \n should be left alone.
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this \\ is an 'escaped' \\n string"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this \\ is an 'escaped' \\n string"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -448,13 +449,13 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleEscapedDoubleQuoteSt
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
 	
 	// all strings are labeled as constant for now
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this is an \"escaped\" string"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -473,15 +474,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStrings) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this is an \"escaped\" string;"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("55"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -499,15 +500,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsThatDo
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this is an \"escaped\" string;"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("55"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -526,15 +527,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleHeredocStringsWithEm
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;\n\nthis is an \"escaped\" string;"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this is an \"escaped\" string;\n\nthis is an \"escaped\" string;"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("55"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -554,15 +555,15 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleNowdocStrings) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("this is an \"escaped\" string;"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("55"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("this is an \"escaped\" string;"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("55"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -578,10 +579,10 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleStringWithInterprola
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("{$arrRow[\"FirstName\"]} ({$arrRow[\"LastName\"]})"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("{$arrRow[\"FirstName\"]} ({$arrRow[\"LastName\"]})"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenWithBraces) {
@@ -601,32 +602,32 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenWithBraces) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\n"));
 
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_ARRAY, UNICODE_STRING_SIMPLE("array"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$data"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_ARRAY, wxT("array"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
-	CHECK_TOKEN_LEXEME('[', UNICODE_STRING_SIMPLE("["));
-	CHECK_TOKEN_LEXEME(']', UNICODE_STRING_SIMPLE("]"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME('.', UNICODE_STRING_SIMPLE("."));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("function {};"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$data"));
+	CHECK_TOKEN_LEXEME('[', wxT("["));
+	CHECK_TOKEN_LEXEME(']', wxT("]"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("{"));
+	CHECK_TOKEN_LEXEME('.', wxT("."));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("function {};"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 
-	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, UNICODE_STRING_SIMPLE("/*\n}\n*/"));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, wxT("/*\n}\n*/"));
 	
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$data"));
-	CHECK_TOKEN_LEXEME('[', UNICODE_STRING_SIMPLE("["));
-	CHECK_TOKEN_LEXEME(']', UNICODE_STRING_SIMPLE("]"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$data"));
+	CHECK_TOKEN_LEXEME('[', wxT("["));
+	CHECK_TOKEN_LEXEME(']', wxT("]"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("}"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 }
 
 TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) {
@@ -639,29 +640,29 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleWindowsLineEndings) 
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?php\r\n"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$s"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?php\r\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$s"));
 	CHECK_TOKEN_POSITION(7);
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
 	CHECK_TOKEN_POSITION(10);
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("hello"));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("hello"));
 	CHECK_TOKEN_POSITION(12);
 	CHECK_TOKEN_LINE(2);
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$a"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("1"));
-	CHECK_TOKEN_LEXEME('*', UNICODE_STRING_SIMPLE("*"));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("3"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$a"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("1"));
+	CHECK_TOKEN_LEXEME('*', wxT("*"));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("3"));
 	CHECK_TOKEN_LINE(3);
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$b"));
-	CHECK_TOKEN_LEXEME('=', UNICODE_STRING_SIMPLE("="));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$b"));
+	CHECK_TOKEN_LEXEME('=', wxT("="));
 	CHECK_TOKEN_POSITION(38);
-	CHECK_TOKEN_LEXEME('-', UNICODE_STRING_SIMPLE("-"));
-	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, UNICODE_STRING_SIMPLE("1"));
+	CHECK_TOKEN_LEXEME('-', wxT("-"));
+	CHECK_TOKEN_LEXEME(pelet::T_LNUMBER, wxT("1"));
 	CHECK_TOKEN_LINE(4);
-	CHECK_TOKEN_LEXEME(';', UNICODE_STRING_SIMPLE(";"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
@@ -675,213 +676,213 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleInlineHtml) {
 	std::string file = TestProjectDir;
 	file += "test.php";
 	CHECK(LexerOpen(file));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<? "));
-	CHECK_TOKEN_LEXEME(pelet::T_FOREACH, UNICODE_STRING_SIMPLE("foreach"));
-	CHECK_TOKEN_LEXEME('(', UNICODE_STRING_SIMPLE("("));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$arrTabsList"));
-	CHECK_TOKEN_LEXEME(pelet::T_AS, UNICODE_STRING_SIMPLE("as"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$key"));
-	CHECK_TOKEN_LEXEME(pelet::T_DOUBLE_ARROW, UNICODE_STRING_SIMPLE("=>"));
-	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, UNICODE_STRING_SIMPLE("$val"));
-	CHECK_TOKEN_LEXEME(')', UNICODE_STRING_SIMPLE(")"));
-	CHECK_TOKEN_LEXEME('{', UNICODE_STRING_SIMPLE("{"));
-	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG_WITH_ECHO, UNICODE_STRING_SIMPLE("<?="));
-	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, UNICODE_STRING_SIMPLE("hello"));
-	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
-	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, UNICODE_STRING_SIMPLE("<?"));
-	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
-	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_FOREACH, wxT("foreach"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$arrTabsList"));
+	CHECK_TOKEN_LEXEME(pelet::T_AS, wxT("as"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$key"));
+	CHECK_TOKEN_LEXEME(pelet::T_DOUBLE_ARROW, wxT("=>"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$val"));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG_WITH_ECHO, wxT("<?="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("hello"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
 	CHECK_TOKEN(pelet::T_END);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFirstFunction) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php echo"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("echo"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_UNISTR_EQUALS("echo", last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionSimpleVariable) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr2"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFunctionArgument) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr2"), last);
 }
 
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFunctionChain) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func($expr2)->prop"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("func($expr2)->prop"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("func($expr2)->prop"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFunctionArgumentAsFunction) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"func(funct2($expr2), $arr[3])->prop"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("func(funct2($expr2), $arr[3])->prop"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("func(funct2($expr2), $arr[3])->prop"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionStaticMember) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::$prop"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::$prop"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("MyClass::$prop"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionConstMember) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = 3;\n"
 		"$expr2 = MyClass::DEFAULT_NU"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::DEFAULT_NU"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("MyClass::DEFAULT_NU"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionObjectMethodChain) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 		"$expr2 = $expr->funct3('two')->prop"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr->funct3('two')->prop"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr->funct3('two')->prop"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionNoExpression) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr1 = new MyClass;\n"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(""), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT(""), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionIndirectVariable) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr2 = 3;\n"
 		"$expr1 = 'expr2';\n"
 		"$$expr1"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr1"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr1"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionIndirectProperty) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr1 = 'prop';\n"
 		"$expr2->$expr1"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr1"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr1"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionObjectOperator) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2->"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr2->"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionStaticOperator) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"MyClass::"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass::"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("MyClass::"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionObjectOperatorWithWhitespace) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php\n"
 		"$expr2 = new MyClass;\n"
 		"$expr2\n"
 		"->"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$expr2->"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$expr2->"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionNewCallWithChaining) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php \n"
 		" $expr = new MyClass; \n"
 		"(new Foo)->method"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("(new Foo)->method"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("(new Foo)->method"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionArrayDereference) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php \n"
 		"$expr1 = array( 0 => new MyClass); \n"
 		"$expr2 = array( 1 => new MyClass); \n"
 		"array_merge($expr1, $expr2)[0]->method"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("array_merge($expr1, $expr2)[0]->method"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("array_merge($expr1, $expr2)[0]->method"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionMethodArrayDereference) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php \n"
 		"$expr1 = array( 0 => new MyClass); \n"
 		"$expr2 = array( 1 => new MyClass); \n"
 		"$this->func($expr1, $expr2)[0]->method"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("$this->func($expr1, $expr2)[0]->method"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("$this->func($expr1, $expr2)[0]->method"), last);
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionNamespaces) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php \n"
 		"$obj = new \\op\\child\\MyClass"
 	);
-	UnicodeString last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("\\op\\child\\MyClass"), last);
+	wxString last = Lexer.LastExpression(code);
+	CHECK_EQUAL(wxT("\\op\\child\\MyClass"), last);
 	
 	code = _U(
 		"<?php \n"
 		"$obj = new child\\MyClass"
 	);
 	last = Lexer.LastExpression(code);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("child\\MyClass"), last);
+	CHECK_EQUAL(wxT("child\\MyClass"), last);
 }
 
 }

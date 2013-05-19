@@ -715,8 +715,8 @@ non_empty_parameter_list:
 optional_class_type:
 		/* empty */						{ $$ = 0; }
 	|	fully_qualified_class_name		{ $$ = $1; }
-	|	T_ARRAY							{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array")); }
-	|	T_CALLABLE						{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("callable")); }
+	|	T_ARRAY							{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, wxT("array")); }
+	|	T_CALLABLE						{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, wxT("callable")); }
 ;
 
 function_call_parameter_list:
@@ -1085,13 +1085,13 @@ lexical_var_list:
 ;
 
 function_call:
-		namespace_name '('																{ if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+		namespace_name '('																{ if ($1->IsDefine()) { 
 																							observers.DoCaptureScalars = true;
 																							observers.DoCaptureCallArguments = true; 
 																						  }
 																						}
 		function_call_parameter_list	')'												{ /* this parser is only interested in calls to the define function */
-																						  if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																						  if ($1->IsDefine()) {
 																							pelet::ConstantStatementClass* constStmt;
 																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $1, $4, analyzer.GetLineNumber());
 																							$$ = constStmt;
@@ -1105,13 +1105,13 @@ function_call:
 	|	T_NAMESPACE T_NS_SEPARATOR 														
 		namespace_name '(' 																
 		function_call_parameter_list ')' 												{ $$ = 0; }
-	|	T_NS_SEPARATOR namespace_name '(' 												{ if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+	|	T_NS_SEPARATOR namespace_name '(' 												{ if ($2->IsDefine()) { 
 																							observers.DoCaptureScalars = true; 
 																							observers.DoCaptureCallArguments = true; 
 																						  }
 																						}	
 				function_call_parameter_list ')'										{ /* this parser is only interested in calls to the define function */
-																						  if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																						  if ($2->IsDefine()) {
 																							pelet::ConstantStatementClass* constStmt;
 																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, $2, $5, analyzer.GetLineNumber());
 																							$$ = constStmt;
@@ -1352,7 +1352,7 @@ array_function_dereference:
 ;
 
 base_variable_with_function_calls:
-		base_variable				{ if ($1 && $1->Lexeme.caseCompare(UNICODE_STRING_SIMPLE("$this"), 0) == 0) {
+		base_variable				{ if ($1 && $1->Lexeme == wxT("$this")) {
 										AST_INIT($$, pelet::ClassMemberSymbolClass);
 										
 										/* need to cast because we are returning a statement pointer from this rule */

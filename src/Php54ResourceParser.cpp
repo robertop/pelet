@@ -1,10 +1,8 @@
+/* A Bison parser, made by GNU Bison 2.5.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
-
-/* Skeleton implementation for Bison's Yacc-like parsers in C
+/* Bison implementation for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.1"
+#define YYBISON_VERSION "2.5"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -75,8 +73,8 @@
 
 /* Copy the first part of user declarations.  */
 
-/* Line 189 of yacc.c  */
-#line 1 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 268 of yacc.c  */
+#line 1 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
 
 
 /**
@@ -122,8 +120,8 @@
 
 
 
-/* Line 189 of yacc.c  */
-#line 127 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.cpp"
+/* Line 268 of yacc.c  */
+#line 125 "/home/roberto/workspace/pelet/src/Php54ResourceParser.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -293,8 +291,8 @@
 /* Copy the second part of user declarations.  */
 
 
-/* Line 264 of yacc.c  */
-#line 298 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.cpp"
+/* Line 343 of yacc.c  */
+#line 296 "/home/roberto/workspace/pelet/src/Php54ResourceParser.cpp"
 
 #ifdef short
 # undef short
@@ -344,7 +342,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if YYENABLE_NLS
+# if defined YYENABLE_NLS && YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -397,11 +395,11 @@ YYID (yyi)
 #    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
-#    if ! defined _ALLOCA_H && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#     ifndef _STDLIB_H
-#      define _STDLIB_H 1
+#     ifndef EXIT_SUCCESS
+#      define EXIT_SUCCESS 0
 #     endif
 #    endif
 #   endif
@@ -424,24 +422,24 @@ YYID (yyi)
 #  ifndef YYSTACK_ALLOC_MAXIMUM
 #   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #  endif
-#  if (defined __cplusplus && ! defined _STDLIB_H \
+#  if (defined __cplusplus && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
 	     && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   ifndef _STDLIB_H
-#    define _STDLIB_H 1
+#   ifndef EXIT_SUCCESS
+#    define EXIT_SUCCESS 0
 #   endif
 #  endif
 #  ifndef YYMALLOC
 #   define YYMALLOC malloc
-#   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined malloc && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
-#   if ! defined free && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined free && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
@@ -470,23 +468,7 @@ union yyalloc
      ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
       + YYSTACK_GAP_MAXIMUM)
 
-/* Copy COUNT objects from FROM to TO.  The source and destination do
-   not overlap.  */
-# ifndef YYCOPY
-#  if defined __GNUC__ && 1 < __GNUC__
-#   define YYCOPY(To, From, Count) \
-      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
-#  else
-#   define YYCOPY(To, From, Count)		\
-      do					\
-	{					\
-	  YYSIZE_T yyi;				\
-	  for (yyi = 0; yyi < (Count); yyi++)	\
-	    (To)[yyi] = (From)[yyi];		\
-	}					\
-      while (YYID (0))
-#  endif
-# endif
+# define YYCOPY_NEEDED 1
 
 /* Relocate STACK from its old location to the new one.  The
    local variables YYSIZE and YYSTACKSIZE give the old and new number of
@@ -505,6 +487,26 @@ union yyalloc
     while (YYID (0))
 
 #endif
+
+#if defined YYCOPY_NEEDED && YYCOPY_NEEDED
+/* Copy COUNT objects from FROM to TO.  The source and destination do
+   not overlap.  */
+# ifndef YYCOPY
+#  if defined __GNUC__ && 1 < __GNUC__
+#   define YYCOPY(To, From, Count) \
+      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
+#  else
+#   define YYCOPY(To, From, Count)		\
+      do					\
+	{					\
+	  YYSIZE_T yyi;				\
+	  for (yyi = 0; yyi < (Count); yyi++)	\
+	    (To)[yyi] = (From)[yyi];		\
+	}					\
+      while (YYID (0))
+#  endif
+# endif
+#endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
@@ -1074,8 +1076,8 @@ static const yytype_uint8 yyr2[] =
        0,     3,     0,     3,     1,     3,     3,     3
 };
 
-/* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
-   STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
+/* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
 static const yytype_uint16 yydefact[] =
 {
@@ -1316,8 +1318,7 @@ static const yytype_int16 yypgoto[] =
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
-   number is the opposite.  If zero, do what YYDEFACT says.
-   If YYTABLE_NINF, syntax error.  */
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -391
 static const yytype_int16 yytable[] =
 {
@@ -2105,6 +2106,12 @@ static const yytype_int16 yytable[] =
      241,   242,   243,   244,   245,   246,   247,   248,   249,   250,
      251,   252,   253,   254,   255,   256,   257,   258,     0,   259
 };
+
+#define yypact_value_is_default(yystate) \
+  ((yystate) == (-727))
+
+#define yytable_value_is_error(yytable_value) \
+  ((yytable_value) == (-391))
 
 static const yytype_int16 yycheck[] =
 {
@@ -3004,9 +3011,18 @@ static const yytype_uint16 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  */
+   Once GCC version 2 has supplanted version 1, this can go.  However,
+   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
+   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
+   discussed.  */
 
 #define YYFAIL		goto yyerrlab
+#if defined YYFAIL
+  /* This is here to suppress warnings from the GCC cpp's
+     -Wunused-macros.  Normally we don't worry about that warning, but
+     some users do, and we want to make it easy for users to remove
+     YYFAIL uses, which will produce warnings from Bison 2.5.  */
+#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -3016,7 +3032,6 @@ do								\
     {								\
       yychar = (Token);						\
       yylval = (Value);						\
-      yytoken = YYTRANSLATE (yychar);				\
       YYPOPSTACK (1);						\
       goto yybackup;						\
     }								\
@@ -3058,19 +3073,10 @@ while (YYID (0))
 #endif
 
 
-/* YY_LOCATION_PRINT -- Print the location on the stream.
-   This macro was not mandated originally: define only if we know
-   we won't break user code: when these are the locations we know.  */
+/* This macro is provided for backward compatibility. */
 
 #ifndef YY_LOCATION_PRINT
-# if YYLTYPE_IS_TRIVIAL
-#  define YY_LOCATION_PRINT(File, Loc)			\
-     fprintf (File, "%d.%d-%d.%d",			\
-	      (Loc).first_line, (Loc).first_column,	\
-	      (Loc).last_line,  (Loc).last_column)
-# else
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
 #endif
 
 
@@ -3270,7 +3276,6 @@ int yydebug;
 # define YYMAXDEPTH 10000
 #endif
 
-
 
 #if YYERROR_VERBOSE
 
@@ -3373,115 +3378,142 @@ yytnamerr (char *yyres, const char *yystr)
 }
 # endif
 
-/* Copy into YYRESULT an error message about the unexpected token
-   YYCHAR while in state YYSTATE.  Return the number of bytes copied,
-   including the terminating null byte.  If YYRESULT is null, do not
-   copy anything; just return the number of bytes that would be
-   copied.  As a special case, return 0 if an ordinary "syntax error"
-   message will do.  Return YYSIZE_MAXIMUM if overflow occurs during
-   size calculation.  */
-static YYSIZE_T
-yysyntax_error (char *yyresult, int yystate, int yychar)
+/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
+   about the unexpected token YYTOKEN for the state stack whose top is
+   YYSSP.
+
+   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
+   not large enough to hold the message.  In that case, also set
+   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
+   required number of bytes is too large to store.  */
+static int
+yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
+                yytype_int16 *yyssp, int yytoken)
 {
-  int yyn = yypact[yystate];
+  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytoken]);
+  YYSIZE_T yysize = yysize0;
+  YYSIZE_T yysize1;
+  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+  /* Internationalized format string. */
+  const char *yyformat = 0;
+  /* Arguments of yyformat. */
+  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+  /* Number of reported tokens (one for the "unexpected", one per
+     "expected"). */
+  int yycount = 0;
 
-  if (! (YYPACT_NINF < yyn && yyn <= YYLAST))
-    return 0;
-  else
+  /* There are many possibilities here to consider:
+     - Assume YYFAIL is not used.  It's too flawed to consider.  See
+       <http://lists.gnu.org/archive/html/bison-patches/2009-12/msg00024.html>
+       for details.  YYERROR is fine as it does not invoke this
+       function.
+     - If this state is a consistent state with a default action, then
+       the only way this function was invoked is if the default action
+       is an error action.  In that case, don't check for expected
+       tokens because there are none.
+     - The only way there can be no lookahead present (in yychar) is if
+       this state is a consistent state with a default action.  Thus,
+       detecting the absence of a lookahead is sufficient to determine
+       that there is no unexpected or expected token to report.  In that
+       case, just report a simple "syntax error".
+     - Don't assume there isn't a lookahead just because this state is a
+       consistent state with a default action.  There might have been a
+       previous inconsistent state, consistent state with a non-default
+       action, or user semantic action that manipulated yychar.
+     - Of course, the expected token list depends on states to have
+       correct lookahead information, and it depends on the parser not
+       to perform extra reductions after fetching a lookahead from the
+       scanner and before detecting a syntax error.  Thus, state merging
+       (from LALR or IELR) and default reductions corrupt the expected
+       token list.  However, the list is correct for canonical LR with
+       one exception: it will still contain any token that will not be
+       accepted due to an error action in a later state.
+  */
+  if (yytoken != YYEMPTY)
     {
-      int yytype = YYTRANSLATE (yychar);
-      YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
-      YYSIZE_T yysize = yysize0;
-      YYSIZE_T yysize1;
-      int yysize_overflow = 0;
-      enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-      char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-      int yyx;
+      int yyn = yypact[*yyssp];
+      yyarg[yycount++] = yytname[yytoken];
+      if (!yypact_value_is_default (yyn))
+        {
+          /* Start YYX at -YYN if negative to avoid negative indexes in
+             YYCHECK.  In other words, skip the first -YYN actions for
+             this state because they are default actions.  */
+          int yyxbegin = yyn < 0 ? -yyn : 0;
+          /* Stay within bounds of both yycheck and yytname.  */
+          int yychecklim = YYLAST - yyn + 1;
+          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+          int yyx;
 
-# if 0
-      /* This is so xgettext sees the translatable formats that are
-	 constructed on the fly.  */
-      YY_("syntax error, unexpected %s");
-      YY_("syntax error, unexpected %s, expecting %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
-# endif
-      char *yyfmt;
-      char const *yyf;
-      static char const yyunexpected[] = "syntax error, unexpected %s";
-      static char const yyexpecting[] = ", expecting %s";
-      static char const yyor[] = " or %s";
-      char yyformat[sizeof yyunexpected
-		    + sizeof yyexpecting - 1
-		    + ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
-		       * (sizeof yyor - 1))];
-      char const *yyprefix = yyexpecting;
-
-      /* Start YYX at -YYN if negative to avoid negative indexes in
-	 YYCHECK.  */
-      int yyxbegin = yyn < 0 ? -yyn : 0;
-
-      /* Stay within bounds of both yycheck and yytname.  */
-      int yychecklim = YYLAST - yyn + 1;
-      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-      int yycount = 1;
-
-      yyarg[0] = yytname[yytype];
-      yyfmt = yystpcpy (yyformat, yyunexpected);
-
-      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-	if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	  {
-	    if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-	      {
-		yycount = 1;
-		yysize = yysize0;
-		yyformat[sizeof yyunexpected - 1] = '\0';
-		break;
-	      }
-	    yyarg[yycount++] = yytname[yyx];
-	    yysize1 = yysize + yytnamerr (0, yytname[yyx]);
-	    yysize_overflow |= (yysize1 < yysize);
-	    yysize = yysize1;
-	    yyfmt = yystpcpy (yyfmt, yyprefix);
-	    yyprefix = yyor;
-	  }
-
-      yyf = YY_(yyformat);
-      yysize1 = yysize + yystrlen (yyf);
-      yysize_overflow |= (yysize1 < yysize);
-      yysize = yysize1;
-
-      if (yysize_overflow)
-	return YYSIZE_MAXIMUM;
-
-      if (yyresult)
-	{
-	  /* Avoid sprintf, as that infringes on the user's name space.
-	     Don't have undefined behavior even if the translation
-	     produced a string with the wrong number of "%s"s.  */
-	  char *yyp = yyresult;
-	  int yyi = 0;
-	  while ((*yyp = *yyf) != '\0')
-	    {
-	      if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
-		{
-		  yyp += yytnamerr (yyp, yyarg[yyi++]);
-		  yyf += 2;
-		}
-	      else
-		{
-		  yyp++;
-		  yyf++;
-		}
-	    }
-	}
-      return yysize;
+          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
+                && !yytable_value_is_error (yytable[yyx + yyn]))
+              {
+                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+                  {
+                    yycount = 1;
+                    yysize = yysize0;
+                    break;
+                  }
+                yyarg[yycount++] = yytname[yyx];
+                yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+                if (! (yysize <= yysize1
+                       && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+                  return 2;
+                yysize = yysize1;
+              }
+        }
     }
+
+  switch (yycount)
+    {
+# define YYCASE_(N, S)                      \
+      case N:                               \
+        yyformat = S;                       \
+      break
+      YYCASE_(0, YY_("syntax error"));
+      YYCASE_(1, YY_("syntax error, unexpected %s"));
+      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+# undef YYCASE_
+    }
+
+  yysize1 = yysize + yystrlen (yyformat);
+  if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+    return 2;
+  yysize = yysize1;
+
+  if (*yymsg_alloc < yysize)
+    {
+      *yymsg_alloc = 2 * yysize;
+      if (! (yysize <= *yymsg_alloc
+             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
+        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
+      return 1;
+    }
+
+  /* Avoid sprintf, as that infringes on the user's name space.
+     Don't have undefined behavior even if the translation
+     produced a string with the wrong number of "%s"s.  */
+  {
+    char *yyp = *yymsg;
+    int yyi = 0;
+    while ((*yyp = *yyformat) != '\0')
+      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
+        {
+          yyp += yytnamerr (yyp, yyarg[yyi++]);
+          yyformat += 2;
+        }
+      else
+        {
+          yyp++;
+          yyformat++;
+        }
+  }
+  return 0;
 }
 #endif /* YYERROR_VERBOSE */
-
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
@@ -3518,6 +3550,7 @@ yydestruct (yymsg, yytype, yyvaluep, analyzer, observers)
     }
 }
 
+
 /* Prevent warnings from -Wmissing-prototypes.  */
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
@@ -3534,12 +3567,9 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-
-
-/*-------------------------.
-| yyparse or yypush_parse.  |
-`-------------------------*/
+/*----------.
+| yyparse.  |
+`----------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -3727,7 +3757,7 @@ yybackup:
 
   /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
-  if (yyn == YYPACT_NINF)
+  if (yypact_value_is_default (yyn))
     goto yydefault;
 
   /* Not known => get a lookahead token if don't already have one.  */
@@ -3758,8 +3788,8 @@ yybackup:
   yyn = yytable[yyn];
   if (yyn <= 0)
     {
-      if (yyn == 0 || yyn == YYTABLE_NINF)
-	goto yyerrlab;
+      if (yytable_value_is_error (yyn))
+        goto yyerrlab;
       yyn = -yyn;
       goto yyreduce;
     }
@@ -3814,514 +3844,514 @@ yyreduce:
     {
         case 2:
 
-/* Line 1455 of yacc.c  */
-#line 360 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.MakeAst((yyvsp[(1) - (1)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 360 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.MakeAst((yyvsp[(1) - (1)].statementList)); }
     break;
 
   case 3:
 
-/* Line 1455 of yacc.c  */
-#line 364 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->PushAll((yyvsp[(2) - (2)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 364 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->PushAll((yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 4:
 
-/* Line 1455 of yacc.c  */
-#line 365 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 365 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 5:
 
-/* Line 1455 of yacc.c  */
-#line 369 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, (yyvsp[(1) - (1)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 369 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, (yyvsp[(1) - (1)].lexeme)); }
     break;
 
   case 6:
 
-/* Line 1455 of yacc.c  */
-#line 370 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (3)].qualifiedName)->AppendName((yyvsp[(3) - (3)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 370 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (3)].qualifiedName)->AppendName((yyvsp[(3) - (3)].lexeme)); }
     break;
 
   case 7:
 
-/* Line 1455 of yacc.c  */
-#line 374 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 374 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 8:
 
-/* Line 1455 of yacc.c  */
-#line 375 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 375 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 9:
 
-/* Line 1455 of yacc.c  */
-#line 376 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 376 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 10:
 
-/* Line 1455 of yacc.c  */
-#line 377 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 377 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 11:
 
-/* Line 1455 of yacc.c  */
-#line 378 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 378 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::NamespaceDeclarationClass* decl;
 												  AST_INIT_ARGS(decl, pelet::NamespaceDeclarationClass, (yyvsp[(2) - (3)].qualifiedName), (yyvsp[(1) - (3)].token));  
 												  AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, decl);
 												  observers.SetDeclaredNamespace((yyvsp[(2) - (3)].qualifiedName)); 
-												;}
+												}
     break;
 
   case 12:
 
-/* Line 1455 of yacc.c  */
-#line 383 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetDeclaredNamespace((yyvsp[(2) - (3)].qualifiedName)); ;}
+/* Line 1806 of yacc.c  */
+#line 383 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetDeclaredNamespace((yyvsp[(2) - (3)].qualifiedName)); }
     break;
 
   case 13:
 
-/* Line 1455 of yacc.c  */
-#line 384 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 384 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::NamespaceDeclarationClass* decl;
 												  AST_INIT_ARGS(decl, pelet::NamespaceDeclarationClass, (yyvsp[(2) - (6)].qualifiedName), (yyvsp[(1) - (6)].token));
 												  (yyval.statementList) = (yyvsp[(5) - (6)].statementList)->PushFront(decl);
-												;}
+												}
     break;
 
   case 14:
 
-/* Line 1455 of yacc.c  */
-#line 388 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetDeclaredNamespace(NULL); ;}
+/* Line 1806 of yacc.c  */
+#line 388 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetDeclaredNamespace(NULL); }
     break;
 
   case 15:
 
-/* Line 1455 of yacc.c  */
-#line 389 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 389 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { 
 												  pelet::NamespaceDeclarationClass* decl;
 												  AST_INIT_ARGS(decl, pelet::NamespaceDeclarationClass, (yyvsp[(1) - (5)].token));
 												  (yyval.statementList) = (yyvsp[(4) - (5)].statementList)->PushFront(decl);
-												;}
+												}
     break;
 
   case 16:
 
-/* Line 1455 of yacc.c  */
-#line 394 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = pelet::NamespaceUseClass::SetStartingPos((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].token)); ;}
+/* Line 1806 of yacc.c  */
+#line 394 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = pelet::NamespaceUseClass::SetStartingPos((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].token)); }
     break;
 
   case 17:
 
-/* Line 1455 of yacc.c  */
-#line 395 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (2)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 395 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (2)].statementList)); }
     break;
 
   case 18:
 
-/* Line 1455 of yacc.c  */
-#line 400 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].namespaceUse)); ;}
+/* Line 1806 of yacc.c  */
+#line 400 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].namespaceUse)); }
     break;
 
   case 19:
 
-/* Line 1455 of yacc.c  */
-#line 401 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].namespaceUse)); ;}
+/* Line 1806 of yacc.c  */
+#line 401 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].namespaceUse)); }
     break;
 
   case 20:
 
-/* Line 1455 of yacc.c  */
-#line 405 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 405 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.namespaceUse), pelet::NamespaceUseClass, (yyvsp[(1) - (1)].qualifiedName), NULL); 
 																  observers.NamespaceUseAddScope((yyval.namespaceUse));
-																;}
+																}
     break;
 
   case 21:
 
-/* Line 1455 of yacc.c  */
-#line 408 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 408 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.namespaceUse), pelet::NamespaceUseClass, (yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].lexeme)); 
 																  observers.NamespaceUseAddScope((yyval.namespaceUse));
-																;}
+																}
     break;
 
   case 22:
 
-/* Line 1455 of yacc.c  */
-#line 411 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 411 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.namespaceUse), pelet::NamespaceUseClass, (yyvsp[(2) - (2)].qualifiedName), NULL); 
 																  observers.NamespaceUseAddScope((yyval.namespaceUse));
-																;}
+																}
     break;
 
   case 23:
 
-/* Line 1455 of yacc.c  */
-#line 414 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 414 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.namespaceUse), pelet::NamespaceUseClass, (yyvsp[(2) - (4)].qualifiedName), (yyvsp[(4) - (4)].lexeme)); 
 																  observers.NamespaceUseAddScope((yyval.namespaceUse));
-																;}
+																}
     break;
 
   case 24:
 
-/* Line 1455 of yacc.c  */
-#line 420 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 420 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ConstantStatementClass* constStmt;
 																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, 
 																	(yyvsp[(3) - (5)].lexeme), analyzer.GetLineNumber(), 
 																	observers.GetDeclaredNamespace());
 																  (yyval.statementList) = (yyvsp[(1) - (5)].statementList)->Push(constStmt);
-																;}
+																}
     break;
 
   case 25:
 
-/* Line 1455 of yacc.c  */
-#line 426 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 426 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ConstantStatementClass* constStmt;
 																  AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, 
 																    (yyvsp[(2) - (4)].lexeme), analyzer.GetLineNumber(),
 																    observers.GetDeclaredNamespace());
 																  AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, constStmt);																	
-																;}
+																}
     break;
 
   case 26:
 
-/* Line 1455 of yacc.c  */
-#line 435 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->PushAll((yyvsp[(2) - (2)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 435 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->PushAll((yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 27:
 
-/* Line 1455 of yacc.c  */
-#line 436 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 436 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 31:
 
-/* Line 1455 of yacc.c  */
-#line 443 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 443 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 32:
 
-/* Line 1455 of yacc.c  */
-#line 447 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 447 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 33:
 
-/* Line 1455 of yacc.c  */
-#line 448 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 448 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 34:
 
-/* Line 1455 of yacc.c  */
-#line 452 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 452 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 35:
 
-/* Line 1455 of yacc.c  */
-#line 453 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 453 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(5) - (7)].statementList));
 																									  (yyval.statementList)->PushAll((yyvsp[(6) - (7)].statementList));
 																									  (yyval.statementList)->PushAll((yyvsp[(7) - (7)].statementList));
-																									;}
+																									}
     break;
 
   case 36:
 
-/* Line 1455 of yacc.c  */
-#line 457 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 457 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(6) - (10)].statementList));
 																									  (yyval.statementList)->PushAll((yyvsp[(7) - (10)].statementList));
 																									  (yyval.statementList)->PushAll((yyvsp[(8) - (10)].statementList));
-																									;}
+																									}
     break;
 
   case 37:
 
-/* Line 1455 of yacc.c  */
-#line 461 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 461 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); }
     break;
 
   case 38:
 
-/* Line 1455 of yacc.c  */
-#line 462 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (7)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 462 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (7)].statementList); }
     break;
 
   case 39:
 
-/* Line 1455 of yacc.c  */
-#line 471 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(9) - (9)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 471 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(9) - (9)].statementList); }
     break;
 
   case 40:
 
-/* Line 1455 of yacc.c  */
-#line 472 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 472 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); }
     break;
 
   case 41:
 
-/* Line 1455 of yacc.c  */
-#line 473 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 473 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 42:
 
-/* Line 1455 of yacc.c  */
-#line 474 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 474 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 43:
 
-/* Line 1455 of yacc.c  */
-#line 475 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 475 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 44:
 
-/* Line 1455 of yacc.c  */
-#line 476 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 476 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 45:
 
-/* Line 1455 of yacc.c  */
-#line 477 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 477 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 46:
 
-/* Line 1455 of yacc.c  */
-#line 478 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 478 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 47:
 
-/* Line 1455 of yacc.c  */
-#line 479 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 479 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 48:
 
-/* Line 1455 of yacc.c  */
-#line 480 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 480 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 49:
 
-/* Line 1455 of yacc.c  */
-#line 481 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 481 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 50:
 
-/* Line 1455 of yacc.c  */
-#line 482 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 482 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 51:
 
-/* Line 1455 of yacc.c  */
-#line 483 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 483 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 52:
 
-/* Line 1455 of yacc.c  */
-#line 484 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (2)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 484 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (2)].statement)); }
     break;
 
   case 53:
 
-/* Line 1455 of yacc.c  */
-#line 485 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 485 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 54:
 
-/* Line 1455 of yacc.c  */
-#line 488 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(8) - (8)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 488 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(8) - (8)].statementList); }
     break;
 
   case 55:
 
-/* Line 1455 of yacc.c  */
-#line 491 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(8) - (8)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 491 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(8) - (8)].statementList); }
     break;
 
   case 56:
 
-/* Line 1455 of yacc.c  */
-#line 492 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 492 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 57:
 
-/* Line 1455 of yacc.c  */
-#line 493 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 493 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 58:
 
-/* Line 1455 of yacc.c  */
-#line 497 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 497 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_PUSH_ALL_MERGE((yyval.statementList), (yyvsp[(3) - (13)].statementList), (yyvsp[(11) - (13)].statementList));
 																									  AST_PUSH_ALL_MERGE((yyval.statementList), (yyval.statementList), (yyvsp[(13) - (13)].statementList));
-																									;}
+																									}
     break;
 
   case 59:
 
-/* Line 1455 of yacc.c  */
-#line 500 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(2) - (3)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 500 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(2) - (3)].statement)); }
     break;
 
   case 60:
 
-/* Line 1455 of yacc.c  */
-#line 501 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 501 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 61:
 
-/* Line 1455 of yacc.c  */
-#line 505 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 505 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 62:
 
-/* Line 1455 of yacc.c  */
-#line 506 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 506 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 63:
 
-/* Line 1455 of yacc.c  */
-#line 510 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 510 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 64:
 
-/* Line 1455 of yacc.c  */
-#line 511 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_PUSH_ALL_MERGE((yyval.statementList), (yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 511 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_PUSH_ALL_MERGE((yyval.statementList), (yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 65:
 
-/* Line 1455 of yacc.c  */
-#line 516 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) =  (yyvsp[(7) - (8)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 516 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) =  (yyvsp[(7) - (8)].statementList); }
     break;
 
   case 66:
 
-/* Line 1455 of yacc.c  */
-#line 520 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 520 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 67:
 
-/* Line 1455 of yacc.c  */
-#line 521 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 521 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 68:
 
-/* Line 1455 of yacc.c  */
-#line 525 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 525 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 71:
 
-/* Line 1455 of yacc.c  */
-#line 537 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isReference) = false; ;}
+/* Line 1806 of yacc.c  */
+#line 537 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isReference) = false; }
     break;
 
   case 72:
 
-/* Line 1455 of yacc.c  */
-#line 538 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isReference) = true; ;}
+/* Line 1806 of yacc.c  */
+#line 538 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isReference) = true; }
     break;
 
   case 73:
 
-/* Line 1455 of yacc.c  */
-#line 543 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetCurrentClassName(NULL); observers.SetCurrentMemberName((yyvsp[(3) - (6)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 543 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetCurrentClassName(NULL); observers.SetCurrentMemberName((yyvsp[(3) - (6)].lexeme)); }
     break;
 
   case 74:
 
-/* Line 1455 of yacc.c  */
-#line 544 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 544 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* member;
 											  AST_INIT(member, pelet::ClassMemberSymbolClass);
 											  member->MakeFunction((yyvsp[(3) - (10)].lexeme), (yyvsp[(2) - (10)].isReference), (yyvsp[(1) - (10)].lexeme), (yyvsp[(5) - (10)].parametersList), (yyvsp[(8) - (10)].token), (yyvsp[(10) - (10)].token),
@@ -4329,20 +4359,20 @@ yyreduce:
 											  (yyval.statementList) = (yyvsp[(9) - (10)].statementList);
 											  (yyval.statementList)->PushFront(member);
 											  observers.SetCurrentMemberName(NULL);
-											;}
+											}
     break;
 
   case 75:
 
-/* Line 1455 of yacc.c  */
-#line 556 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetCurrentClassName((yyvsp[(2) - (4)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 556 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetCurrentClassName((yyvsp[(2) - (4)].lexeme)); }
     break;
 
   case 76:
 
-/* Line 1455 of yacc.c  */
-#line 557 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 557 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassSymbolClass* clazz;
 											  AST_INIT(clazz, pelet::ClassSymbolClass);
 											  clazz->SetAll((yyvsp[(2) - (8)].lexeme), (yyvsp[(1) - (8)].classSymbol), (yyvsp[(3) - (8)].classSymbol), (yyvsp[(4) - (8)].classSymbol), (yyvsp[(8) - (8)].token), observers.GetDeclaredNamespace());
@@ -4359,611 +4389,611 @@ yyreduce:
 											   */
 											  observers.CreateMagicMethodsAndProperties((yyval.statementList), clazz);
 											  observers.SetCurrentClassName(NULL);
-											;}
+											}
     break;
 
   case 77:
 
-/* Line 1455 of yacc.c  */
-#line 575 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetCurrentClassName((yyvsp[(2) - (3)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 575 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetCurrentClassName((yyvsp[(2) - (3)].lexeme)); }
     break;
 
   case 78:
 
-/* Line 1455 of yacc.c  */
-#line 576 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 576 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassSymbolClass* clazz;
 											  AST_INIT(clazz, pelet::ClassSymbolClass);
 											  clazz->SetAll((yyvsp[(2) - (7)].lexeme), (yyvsp[(1) - (7)].classSymbol), NULL, (yyvsp[(3) - (7)].classSymbol), (yyvsp[(7) - (7)].token), observers.GetDeclaredNamespace());
 											  (yyval.statementList) = (yyvsp[(6) - (7)].statementList)->PushFront(clazz);
 											  observers.SetCurrentClassName(NULL);
-											;}
+											}
     break;
 
   case 79:
 
-/* Line 1455 of yacc.c  */
-#line 585 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, false, false); ;}
+/* Line 1806 of yacc.c  */
+#line 585 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, false, false); }
     break;
 
   case 80:
 
-/* Line 1455 of yacc.c  */
-#line 586 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (2)].lexeme), true, false, false, false); ;}
+/* Line 1806 of yacc.c  */
+#line 586 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (2)].lexeme), true, false, false, false); }
     break;
 
   case 81:
 
-/* Line 1455 of yacc.c  */
-#line 587 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, false, true); ;}
+/* Line 1806 of yacc.c  */
+#line 587 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, false, true); }
     break;
 
   case 82:
 
-/* Line 1455 of yacc.c  */
-#line 588 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (2)].lexeme), false, true, false, false); ;}
+/* Line 1806 of yacc.c  */
+#line 588 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (2)].lexeme), false, true, false, false); }
     break;
 
   case 83:
 
-/* Line 1455 of yacc.c  */
-#line 592 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classSymbol) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 592 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classSymbol) = 0; }
     break;
 
   case 84:
 
-/* Line 1455 of yacc.c  */
-#line 594 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 594 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass);
 										  (yyval.classSymbol)->SetExtends((yyvsp[(2) - (2)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); 
-										;}
+										}
     break;
 
   case 85:
 
-/* Line 1455 of yacc.c  */
-#line 600 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, true, false); ;}
+/* Line 1806 of yacc.c  */
+#line 600 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags((yyvsp[(1) - (1)].lexeme), false, false, true, false); }
     break;
 
   case 86:
 
-/* Line 1455 of yacc.c  */
-#line 604 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classSymbol) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 604 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classSymbol) = 0; }
     break;
 
   case 87:
 
-/* Line 1455 of yacc.c  */
-#line 606 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); ;}
+/* Line 1806 of yacc.c  */
+#line 606 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); }
     break;
 
   case 88:
 
-/* Line 1455 of yacc.c  */
-#line 610 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags(NULL, false, false, false, false); ;}
+/* Line 1806 of yacc.c  */
+#line 610 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); (yyval.classSymbol)->SetFlags(NULL, false, false, false, false); }
     break;
 
   case 89:
 
-/* Line 1455 of yacc.c  */
-#line 612 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); ;}
+/* Line 1806 of yacc.c  */
+#line 612 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); }
     break;
 
   case 90:
 
-/* Line 1455 of yacc.c  */
-#line 616 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 616 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.classSymbol), pelet::ClassSymbolClass); 
 															  (yyval.classSymbol)->AddToImplements((yyvsp[(1) - (1)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); 
-															;}
+															}
     break;
 
   case 91:
 
-/* Line 1455 of yacc.c  */
-#line 619 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classSymbol) = (yyvsp[(1) - (3)].classSymbol)->AddToImplements((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 619 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classSymbol) = (yyvsp[(1) - (3)].classSymbol)->AddToImplements((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 92:
 
-/* Line 1455 of yacc.c  */
-#line 623 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 623 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 93:
 
-/* Line 1455 of yacc.c  */
-#line 624 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 624 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 94:
 
-/* Line 1455 of yacc.c  */
-#line 628 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 628 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 95:
 
-/* Line 1455 of yacc.c  */
-#line 629 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(2) - (2)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 629 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(2) - (2)].statement); }
     break;
 
   case 96:
 
-/* Line 1455 of yacc.c  */
-#line 633 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 633 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 97:
 
-/* Line 1455 of yacc.c  */
-#line 634 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 634 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 98:
 
-/* Line 1455 of yacc.c  */
-#line 638 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 638 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 99:
 
-/* Line 1455 of yacc.c  */
-#line 639 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 639 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 100:
 
-/* Line 1455 of yacc.c  */
-#line 643 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 643 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 101:
 
-/* Line 1455 of yacc.c  */
-#line 644 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 644 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 102:
 
-/* Line 1455 of yacc.c  */
-#line 648 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 648 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 103:
 
-/* Line 1455 of yacc.c  */
-#line 649 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 649 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 104:
 
-/* Line 1455 of yacc.c  */
-#line 653 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 653 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 105:
 
-/* Line 1455 of yacc.c  */
-#line 654 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 654 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 106:
 
-/* Line 1455 of yacc.c  */
-#line 655 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 655 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 107:
 
-/* Line 1455 of yacc.c  */
-#line 656 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(3) - (5)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 656 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(3) - (5)].statementList); }
     break;
 
   case 108:
 
-/* Line 1455 of yacc.c  */
-#line 660 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 660 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 109:
 
-/* Line 1455 of yacc.c  */
-#line 661 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 661 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); }
     break;
 
   case 110:
 
-/* Line 1455 of yacc.c  */
-#line 662 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(4) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 662 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(4) - (4)].statementList); }
     break;
 
   case 111:
 
-/* Line 1455 of yacc.c  */
-#line 666 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 666 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 112:
 
-/* Line 1455 of yacc.c  */
-#line 667 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 667 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 113:
 
-/* Line 1455 of yacc.c  */
-#line 671 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 671 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 114:
 
-/* Line 1455 of yacc.c  */
-#line 672 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 672 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 115:
 
-/* Line 1455 of yacc.c  */
-#line 676 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 676 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 116:
 
-/* Line 1455 of yacc.c  */
-#line 677 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 677 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.statementList), pelet::StatementListClass);
 															  (yyval.statementList)->PushAll((yyvsp[(1) - (6)].statementList))->Push((yyvsp[(4) - (6)].statement))->PushAll((yyvsp[(6) - (6)].statementList));
-															;}
+															}
     break;
 
   case 117:
 
-/* Line 1455 of yacc.c  */
-#line 683 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 683 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 118:
 
-/* Line 1455 of yacc.c  */
-#line 684 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 684 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.statementList), pelet::StatementListClass);
 																				  (yyval.statementList)->PushAll((yyvsp[(1) - (7)].statementList))->Push((yyvsp[(4) - (7)].statement))->PushAll((yyvsp[(7) - (7)].statementList));
-																			  	;}
+																			  	}
     break;
 
   case 119:
 
-/* Line 1455 of yacc.c  */
-#line 690 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 690 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 120:
 
-/* Line 1455 of yacc.c  */
-#line 691 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (2)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 691 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (2)].statementList); }
     break;
 
   case 121:
 
-/* Line 1455 of yacc.c  */
-#line 695 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 695 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 122:
 
-/* Line 1455 of yacc.c  */
-#line 696 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(3) - (3)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 696 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(3) - (3)].statementList); }
     break;
 
   case 123:
 
-/* Line 1455 of yacc.c  */
-#line 700 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (1)].parametersList); ;}
+/* Line 1806 of yacc.c  */
+#line 700 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = (yyvsp[(1) - (1)].parametersList); }
     break;
 
   case 124:
 
-/* Line 1455 of yacc.c  */
-#line 701 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 701 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = 0; }
     break;
 
   case 125:
 
-/* Line 1455 of yacc.c  */
-#line 705 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 705 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 126:
 
-/* Line 1455 of yacc.c  */
-#line 706 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 706 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 127:
 
-/* Line 1455 of yacc.c  */
-#line 707 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 707 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 128:
 
-/* Line 1455 of yacc.c  */
-#line 708 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 708 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 129:
 
-/* Line 1455 of yacc.c  */
-#line 709 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (4)].parametersList)->Append((yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 709 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = (yyvsp[(1) - (4)].parametersList)->Append((yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 130:
 
-/* Line 1455 of yacc.c  */
-#line 710 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (5)].parametersList)->Append((yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 710 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = (yyvsp[(1) - (5)].parametersList)->Append((yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 131:
 
-/* Line 1455 of yacc.c  */
-#line 711 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (7)].parametersList)->Append((yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 711 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = (yyvsp[(1) - (7)].parametersList)->Append((yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 132:
 
-/* Line 1455 of yacc.c  */
-#line 712 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (6)].parametersList)->Append((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 712 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.parametersList) = (yyvsp[(1) - (6)].parametersList)->Append((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 133:
 
-/* Line 1455 of yacc.c  */
-#line 716 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 716 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = 0; }
     break;
 
   case 134:
 
-/* Line 1455 of yacc.c  */
-#line 717 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
+/* Line 1806 of yacc.c  */
+#line 717 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 135:
 
-/* Line 1455 of yacc.c  */
-#line 718 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array")); ;}
+/* Line 1806 of yacc.c  */
+#line 718 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, wxT("array")); }
     break;
 
   case 136:
 
-/* Line 1455 of yacc.c  */
-#line 719 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("callable")); ;}
+/* Line 1806 of yacc.c  */
+#line 719 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, wxT("callable")); }
     break;
 
   case 137:
 
-/* Line 1455 of yacc.c  */
-#line 723 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 723 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 138:
 
-/* Line 1455 of yacc.c  */
-#line 724 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) =  0; ;}
+/* Line 1806 of yacc.c  */
+#line 724 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) =  0; }
     break;
 
   case 139:
 
-/* Line 1455 of yacc.c  */
-#line 728 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 728 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureCallArguments) {
 																				AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement));
 																			  }
 																			  else {
 																				(yyval.statementList) = 0;
 																			  }
-																			;}
+																			}
     break;
 
   case 140:
 
-/* Line 1455 of yacc.c  */
-#line 735 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 735 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureCallArguments) {
 																				AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement));
 																			  }
 																			  else {
 																				(yyval.statementList) = 0;
 																			  } 
-																			;}
+																			}
     break;
 
   case 141:
 
-/* Line 1455 of yacc.c  */
-#line 742 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 742 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureCallArguments) {
 																				AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(2) - (2)].statement));
 																			  }
 																			  else {
 																				(yyval.statementList) = 0;
 																			  }
-																			;}
+																			}
     break;
 
   case 142:
 
-/* Line 1455 of yacc.c  */
-#line 749 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList) ? (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)) : 0; ;}
+/* Line 1806 of yacc.c  */
+#line 749 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList) ? (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)) : 0; }
     break;
 
   case 143:
 
-/* Line 1455 of yacc.c  */
-#line 750 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList) ? (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)) : 0; ;}
+/* Line 1806 of yacc.c  */
+#line 750 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList) ? (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)) : 0; }
     break;
 
   case 144:
 
-/* Line 1455 of yacc.c  */
-#line 751 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (4)].statementList) ? (yyvsp[(1) - (4)].statementList)->Push((yyvsp[(4) - (4)].statement)) : 0; ;}
+/* Line 1806 of yacc.c  */
+#line 751 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (4)].statementList) ? (yyvsp[(1) - (4)].statementList)->Push((yyvsp[(4) - (4)].statement)) : 0; }
     break;
 
   case 147:
 
-/* Line 1455 of yacc.c  */
-#line 760 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 760 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 148:
 
-/* Line 1455 of yacc.c  */
-#line 761 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 761 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 149:
 
-/* Line 1455 of yacc.c  */
-#line 762 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 762 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 150:
 
-/* Line 1455 of yacc.c  */
-#line 766 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 766 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 151:
 
-/* Line 1455 of yacc.c  */
-#line 767 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 767 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 152:
 
-/* Line 1455 of yacc.c  */
-#line 768 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 768 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 153:
 
-/* Line 1455 of yacc.c  */
-#line 769 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 769 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 154:
 
-/* Line 1455 of yacc.c  */
-#line 773 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_PUSH_ALL_MERGE((yyval.statementList), (yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); ;}
+/* Line 1806 of yacc.c  */
+#line 773 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_PUSH_ALL_MERGE((yyval.statementList), (yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 155:
 
-/* Line 1455 of yacc.c  */
-#line 774 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 774 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 156:
 
-/* Line 1455 of yacc.c  */
-#line 778 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = pelet::ClassMemberSymbolClass::MakeVariables((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].classMemberSymbol), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 778 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = pelet::ClassMemberSymbolClass::MakeVariables((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].classMemberSymbol), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 157:
 
-/* Line 1455 of yacc.c  */
-#line 779 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 779 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 158:
 
-/* Line 1455 of yacc.c  */
-#line 780 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 780 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 159:
 
-/* Line 1455 of yacc.c  */
-#line 782 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.SetCurrentMemberName((yyvsp[(4) - (7)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 782 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.SetCurrentMemberName((yyvsp[(4) - (7)].lexeme)); }
     break;
 
   case 160:
 
-/* Line 1455 of yacc.c  */
-#line 783 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 783 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 															  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 															  memberSymbol->MakeMethod((yyvsp[(4) - (9)].lexeme), (yyvsp[(1) - (9)].classMemberSymbol), (yyvsp[(3) - (9)].isReference), (yyvsp[(2) - (9)].lexeme), (yyvsp[(6) - (9)].parametersList), (yyvsp[(9) - (9)].classMemberSymbol),
@@ -4972,378 +5002,378 @@ yyreduce:
 															  (yyval.statementList)->PushFront(memberSymbol);
 															  (yyval.statementList)->PushAll(&((yyvsp[(9) - (9)].classMemberSymbol)->MethodStatements));
 															  observers.SetCurrentMemberName(NULL);
-															;}
+															}
     break;
 
   case 161:
 
-/* Line 1455 of yacc.c  */
-#line 796 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(3) - (3)].statementList)->PushFront((yyvsp[(2) - (3)].traitUse)); ;}
+/* Line 1806 of yacc.c  */
+#line 796 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(3) - (3)].statementList)->PushFront((yyvsp[(2) - (3)].traitUse)); }
     break;
 
   case 162:
 
-/* Line 1455 of yacc.c  */
-#line 800 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.traitUse), pelet::TraitUseClass, (yyvsp[(1) - (1)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 800 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.traitUse), pelet::TraitUseClass, (yyvsp[(1) - (1)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 163:
 
-/* Line 1455 of yacc.c  */
-#line 802 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitUse) = (yyvsp[(1) - (3)].traitUse)->AppendUse((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 802 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitUse) = (yyvsp[(1) - (3)].traitUse)->AppendUse((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 164:
 
-/* Line 1455 of yacc.c  */
-#line 806 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 806 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 165:
 
-/* Line 1455 of yacc.c  */
-#line 807 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 807 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 166:
 
-/* Line 1455 of yacc.c  */
-#line 811 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.statementList), pelet::StatementListClass); ;}
+/* Line 1806 of yacc.c  */
+#line 811 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.statementList), pelet::StatementListClass); }
     break;
 
   case 167:
 
-/* Line 1455 of yacc.c  */
-#line 812 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 812 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 168:
 
-/* Line 1455 of yacc.c  */
-#line 816 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 816 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); }
     break;
 
   case 169:
 
-/* Line 1455 of yacc.c  */
-#line 817 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->Push((yyvsp[(2) - (2)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 817 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (2)].statementList)->Push((yyvsp[(2) - (2)].statement)); }
     break;
 
   case 170:
 
-/* Line 1455 of yacc.c  */
-#line 821 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (2)].traitInsteadOf); ;}
+/* Line 1806 of yacc.c  */
+#line 821 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (2)].traitInsteadOf); }
     break;
 
   case 171:
 
-/* Line 1455 of yacc.c  */
-#line 822 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (2)].traitAlias); ;}
+/* Line 1806 of yacc.c  */
+#line 822 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (2)].traitAlias); }
     break;
 
   case 172:
 
-/* Line 1455 of yacc.c  */
-#line 827 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitInsteadOf) = (yyvsp[(3) - (3)].traitInsteadOf)->SetMethodReference((yyvsp[(1) - (3)].traitAlias)); ;}
+/* Line 1806 of yacc.c  */
+#line 827 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitInsteadOf) = (yyvsp[(3) - (3)].traitInsteadOf)->SetMethodReference((yyvsp[(1) - (3)].traitAlias)); }
     break;
 
   case 173:
 
-/* Line 1455 of yacc.c  */
-#line 831 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.traitInsteadOf), pelet::TraitInsteadOfClass, (yyvsp[(1) - (1)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 831 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.traitInsteadOf), pelet::TraitInsteadOfClass, (yyvsp[(1) - (1)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 174:
 
-/* Line 1455 of yacc.c  */
-#line 832 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitInsteadOf) = (yyvsp[(1) - (3)].traitInsteadOf)->AppendInsteadOf((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 832 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitInsteadOf) = (yyvsp[(1) - (3)].traitInsteadOf)->AppendInsteadOf((yyvsp[(3) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 175:
 
-/* Line 1455 of yacc.c  */
-#line 836 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 836 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.traitAlias), pelet::TraitAliasClass); 
 														  (yyval.traitAlias)->SetMethodReference((yyvsp[(1) - (1)].lexeme), NULL, observers.GetScope(), observers.GetDeclaredNamespace()); 
-														;}
+														}
     break;
 
   case 176:
 
-/* Line 1455 of yacc.c  */
-#line 839 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitAlias) = (yyvsp[(1) - (1)].traitAlias); ;}
+/* Line 1806 of yacc.c  */
+#line 839 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitAlias) = (yyvsp[(1) - (1)].traitAlias); }
     break;
 
   case 177:
 
-/* Line 1455 of yacc.c  */
-#line 843 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 843 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.traitAlias), pelet::TraitAliasClass); 
 																	  (yyval.traitAlias)->SetMethodReference((yyvsp[(3) - (3)].lexeme), (yyvsp[(1) - (3)].qualifiedName), observers.GetScope(), observers.GetDeclaredNamespace());
-																	;}
+																	}
     break;
 
   case 178:
 
-/* Line 1455 of yacc.c  */
-#line 849 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitAlias) = (yyvsp[(1) - (4)].traitAlias)->SetModifiers((yyvsp[(3) - (4)].lexeme))->SetAlias((yyvsp[(4) - (4)].lexeme))->SetScope(observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 849 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitAlias) = (yyvsp[(1) - (4)].traitAlias)->SetModifiers((yyvsp[(3) - (4)].lexeme))->SetAlias((yyvsp[(4) - (4)].lexeme))->SetScope(observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 179:
 
-/* Line 1455 of yacc.c  */
-#line 850 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.traitAlias) = (yyvsp[(1) - (3)].traitAlias)->SetModifiers((yyvsp[(3) - (3)].lexeme))->SetScope(observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 850 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.traitAlias) = (yyvsp[(1) - (3)].traitAlias)->SetModifiers((yyvsp[(3) - (3)].lexeme))->SetScope(observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 180:
 
-/* Line 1455 of yacc.c  */
-#line 854 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 854 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 181:
 
-/* Line 1455 of yacc.c  */
-#line 855 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 855 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
     break;
 
   case 182:
 
-/* Line 1455 of yacc.c  */
-#line 859 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->MakeBody(0, (yyvsp[(1) - (1)].token), (yyvsp[(1) - (1)].token)); ;}
+/* Line 1806 of yacc.c  */
+#line 859 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->MakeBody(0, (yyvsp[(1) - (1)].token), (yyvsp[(1) - (1)].token)); }
     break;
 
   case 183:
 
-/* Line 1455 of yacc.c  */
-#line 860 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->MakeBody((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].token), (yyvsp[(3) - (3)].token)); ;}
+/* Line 1806 of yacc.c  */
+#line 860 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->MakeBody((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].token), (yyvsp[(3) - (3)].token)); }
     break;
 
   case 184:
 
-/* Line 1455 of yacc.c  */
-#line 864 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); ;}
+/* Line 1806 of yacc.c  */
+#line 864 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 185:
 
-/* Line 1455 of yacc.c  */
-#line 865 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 865 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass);
 										  (yyval.classMemberSymbol)->MakeAsPublicVariable((yyvsp[(1) - (1)].lexeme), observers.GetScope(), observers.GetDeclaredNamespace()); 
-										;}
+										}
     break;
 
   case 186:
 
-/* Line 1455 of yacc.c  */
-#line 871 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->Make(NULL, observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 871 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->Make(NULL, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 187:
 
-/* Line 1455 of yacc.c  */
-#line 872 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); ;}
+/* Line 1806 of yacc.c  */
+#line 872 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 188:
 
-/* Line 1455 of yacc.c  */
-#line 876 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->Make((yyvsp[(1) - (1)].lexeme), observers.GetScope(), observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 876 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT((yyval.classMemberSymbol), pelet::ClassMemberSymbolClass); (yyval.classMemberSymbol)->Make((yyvsp[(1) - (1)].lexeme), observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 189:
 
-/* Line 1455 of yacc.c  */
-#line 877 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.classMemberSymbol) = (yyvsp[(1) - (2)].classMemberSymbol)->SetModifier((yyvsp[(2) - (2)].lexeme)); ;}
+/* Line 1806 of yacc.c  */
+#line 877 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.classMemberSymbol) = (yyvsp[(1) - (2)].classMemberSymbol)->SetModifier((yyvsp[(2) - (2)].lexeme)); }
     break;
 
   case 196:
 
-/* Line 1455 of yacc.c  */
-#line 890 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 890 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 																		  memberSymbol->MakeVariable((yyvsp[(3) - (3)].lexeme), (yyvsp[(3) - (3)].lexeme), false, analyzer.GetLineNumber(),
 																			observers.GetScope(), observers.GetDeclaredNamespace());
 																		  (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push(memberSymbol);
-																		;}
+																		}
     break;
 
   case 197:
 
-/* Line 1455 of yacc.c  */
-#line 896 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 896 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 																		  memberSymbol->MakeVariable((yyvsp[(3) - (5)].lexeme), (yyvsp[(3) - (5)].lexeme), false, analyzer.GetLineNumber(),
 																			observers.GetScope(), observers.GetDeclaredNamespace());
 																		  (yyval.statementList) = (yyvsp[(1) - (5)].statementList)->Push(memberSymbol);
-																		;}
+																		}
     break;
 
   case 198:
 
-/* Line 1455 of yacc.c  */
-#line 902 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 902 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 																		  memberSymbol->MakeVariable((yyvsp[(1) - (1)].lexeme), (yyvsp[(1) - (1)].lexeme), false, analyzer.GetLineNumber(),
 																			observers.GetScope(), observers.GetDeclaredNamespace());
 																		  AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, memberSymbol);
-																		;}
+																		}
     break;
 
   case 199:
 
-/* Line 1455 of yacc.c  */
-#line 908 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 908 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 																		  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 																		  memberSymbol->MakeVariable((yyvsp[(1) - (3)].lexeme), (yyvsp[(1) - (3)].lexeme), false, analyzer.GetLineNumber(),
 																			observers.GetScope(), observers.GetDeclaredNamespace());
 																		  AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, memberSymbol);
-																		;}
+																		}
     break;
 
   case 200:
 
-/* Line 1455 of yacc.c  */
-#line 918 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 918 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 											  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 											  memberSymbol->MakeVariable((yyvsp[(3) - (5)].lexeme), (yyvsp[(3) - (5)].lexeme), true, analyzer.GetLineNumber(),
 												observers.GetScope(), observers.GetDeclaredNamespace());
 											  (yyval.statementList) = (yyvsp[(1) - (5)].statementList)->Push(memberSymbol);
-											;}
+											}
     break;
 
   case 201:
 
-/* Line 1455 of yacc.c  */
-#line 924 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 924 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::ClassMemberSymbolClass* memberSymbol;
 											  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 											  memberSymbol->MakeVariable((yyvsp[(2) - (4)].lexeme), (yyvsp[(1) - (4)].lexeme), true, analyzer.GetLineNumber(),
 												observers.GetScope(), observers.GetDeclaredNamespace());
 											  AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, memberSymbol);
-											;}
+											}
     break;
 
   case 202:
 
-/* Line 1455 of yacc.c  */
-#line 933 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 933 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)); }
     break;
 
   case 203:
 
-/* Line 1455 of yacc.c  */
-#line 934 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 934 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); }
     break;
 
   case 204:
 
-/* Line 1455 of yacc.c  */
-#line 938 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 938 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 205:
 
-/* Line 1455 of yacc.c  */
-#line 939 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
+/* Line 1806 of yacc.c  */
+#line 939 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 206:
 
-/* Line 1455 of yacc.c  */
-#line 943 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 943 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList)->Push((yyvsp[(3) - (3)].statement)); }
     break;
 
   case 207:
 
-/* Line 1455 of yacc.c  */
-#line 944 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); ;}
+/* Line 1806 of yacc.c  */
+#line 944 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { AST_INIT_ARGS((yyval.statementList), pelet::StatementListClass, (yyvsp[(1) - (1)].statement)); }
     break;
 
   case 209:
 
-/* Line 1455 of yacc.c  */
-#line 949 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 949 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 211:
 
-/* Line 1455 of yacc.c  */
-#line 954 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 954 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 215:
 
-/* Line 1455 of yacc.c  */
-#line 964 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 964 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 216:
 
-/* Line 1455 of yacc.c  */
-#line 965 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 965 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 217:
 
-/* Line 1455 of yacc.c  */
-#line 969 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 969 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 218:
 
-/* Line 1455 of yacc.c  */
-#line 973 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(6) - (6)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 973 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(6) - (6)].statement); }
     break;
 
   case 219:
 
-/* Line 1455 of yacc.c  */
-#line 974 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 974 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     {
 																			  /* 
 																			   * since this parser only looks for defines or property assignments
@@ -5356,559 +5386,559 @@ yyreduce:
 																			  else {
 																				(yyval.statement) = (yyvsp[(3) - (3)].statement);
 																			  } 
-																			;}
+																			}
     break;
 
   case 220:
 
-/* Line 1455 of yacc.c  */
-#line 987 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 987 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { (yyval.statement) = 0; 
 																			  if ((yyvsp[(1) - (4)].statement) && pelet::StatementClass::PROPERTY_DECLARATION == (yyvsp[(1) - (4)].statement)->Type) {
 																				(yyval.statement) = (yyvsp[(1) - (4)].statement);
 																			  }
-																			;}
+																			}
     break;
 
   case 221:
 
-/* Line 1455 of yacc.c  */
-#line 992 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 992 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { (yyval.statement) = 0; 
 																			  if ((yyvsp[(1) - (6)].statement) && pelet::StatementClass::PROPERTY_DECLARATION == (yyvsp[(1) - (6)].statement)->Type) {
 																				(yyval.statement) = (yyvsp[(1) - (6)].statement);
 																			  }
-																			;}
+																			}
     break;
 
   case 222:
 
-/* Line 1455 of yacc.c  */
-#line 997 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 997 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 223:
 
-/* Line 1455 of yacc.c  */
-#line 998 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 998 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 224:
 
-/* Line 1455 of yacc.c  */
-#line 999 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 999 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 225:
 
-/* Line 1455 of yacc.c  */
-#line 1000 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1000 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 226:
 
-/* Line 1455 of yacc.c  */
-#line 1001 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1001 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 227:
 
-/* Line 1455 of yacc.c  */
-#line 1002 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1002 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 228:
 
-/* Line 1455 of yacc.c  */
-#line 1003 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1003 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 229:
 
-/* Line 1455 of yacc.c  */
-#line 1004 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1004 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 230:
 
-/* Line 1455 of yacc.c  */
-#line 1005 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1005 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 231:
 
-/* Line 1455 of yacc.c  */
-#line 1006 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1006 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 232:
 
-/* Line 1455 of yacc.c  */
-#line 1007 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1007 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 233:
 
-/* Line 1455 of yacc.c  */
-#line 1008 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1008 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 234:
 
-/* Line 1455 of yacc.c  */
-#line 1009 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1009 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 235:
 
-/* Line 1455 of yacc.c  */
-#line 1010 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1010 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 236:
 
-/* Line 1455 of yacc.c  */
-#line 1011 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1011 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 237:
 
-/* Line 1455 of yacc.c  */
-#line 1012 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1012 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 238:
 
-/* Line 1455 of yacc.c  */
-#line 1013 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1013 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 239:
 
-/* Line 1455 of yacc.c  */
-#line 1014 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1014 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 240:
 
-/* Line 1455 of yacc.c  */
-#line 1015 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1015 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 241:
 
-/* Line 1455 of yacc.c  */
-#line 1016 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1016 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 242:
 
-/* Line 1455 of yacc.c  */
-#line 1017 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1017 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 243:
 
-/* Line 1455 of yacc.c  */
-#line 1018 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1018 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 244:
 
-/* Line 1455 of yacc.c  */
-#line 1019 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1019 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 245:
 
-/* Line 1455 of yacc.c  */
-#line 1020 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1020 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 246:
 
-/* Line 1455 of yacc.c  */
-#line 1021 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1021 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 247:
 
-/* Line 1455 of yacc.c  */
-#line 1022 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1022 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 248:
 
-/* Line 1455 of yacc.c  */
-#line 1023 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1023 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 249:
 
-/* Line 1455 of yacc.c  */
-#line 1024 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1024 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 250:
 
-/* Line 1455 of yacc.c  */
-#line 1025 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1025 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 251:
 
-/* Line 1455 of yacc.c  */
-#line 1026 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1026 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 252:
 
-/* Line 1455 of yacc.c  */
-#line 1027 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1027 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 253:
 
-/* Line 1455 of yacc.c  */
-#line 1028 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1028 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 254:
 
-/* Line 1455 of yacc.c  */
-#line 1029 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1029 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 255:
 
-/* Line 1455 of yacc.c  */
-#line 1030 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1030 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 256:
 
-/* Line 1455 of yacc.c  */
-#line 1031 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1031 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 257:
 
-/* Line 1455 of yacc.c  */
-#line 1032 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1032 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 258:
 
-/* Line 1455 of yacc.c  */
-#line 1033 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1033 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 259:
 
-/* Line 1455 of yacc.c  */
-#line 1034 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1034 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 260:
 
-/* Line 1455 of yacc.c  */
-#line 1035 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1035 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 261:
 
-/* Line 1455 of yacc.c  */
-#line 1036 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1036 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 262:
 
-/* Line 1455 of yacc.c  */
-#line 1037 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1037 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 263:
 
-/* Line 1455 of yacc.c  */
-#line 1038 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1038 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 264:
 
-/* Line 1455 of yacc.c  */
-#line 1039 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1039 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 265:
 
-/* Line 1455 of yacc.c  */
-#line 1040 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1040 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 266:
 
-/* Line 1455 of yacc.c  */
-#line 1041 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1041 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 267:
 
-/* Line 1455 of yacc.c  */
-#line 1042 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(2) - (3)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1042 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(2) - (3)].statement); }
     break;
 
   case 268:
 
-/* Line 1455 of yacc.c  */
-#line 1043 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1043 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 269:
 
-/* Line 1455 of yacc.c  */
-#line 1044 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1044 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 270:
 
-/* Line 1455 of yacc.c  */
-#line 1047 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1047 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 271:
 
-/* Line 1455 of yacc.c  */
-#line 1049 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1049 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 272:
 
-/* Line 1455 of yacc.c  */
-#line 1050 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1050 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 273:
 
-/* Line 1455 of yacc.c  */
-#line 1051 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1051 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 274:
 
-/* Line 1455 of yacc.c  */
-#line 1052 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1052 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 275:
 
-/* Line 1455 of yacc.c  */
-#line 1053 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1053 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 276:
 
-/* Line 1455 of yacc.c  */
-#line 1054 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1054 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 277:
 
-/* Line 1455 of yacc.c  */
-#line 1055 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1055 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 278:
 
-/* Line 1455 of yacc.c  */
-#line 1056 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1056 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 279:
 
-/* Line 1455 of yacc.c  */
-#line 1057 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1057 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 280:
 
-/* Line 1455 of yacc.c  */
-#line 1058 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1058 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 281:
 
-/* Line 1455 of yacc.c  */
-#line 1059 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(2) - (2)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1059 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(2) - (2)].statement); }
     break;
 
   case 282:
 
-/* Line 1455 of yacc.c  */
-#line 1060 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1060 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 283:
 
-/* Line 1455 of yacc.c  */
-#line 1061 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1061 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 284:
 
-/* Line 1455 of yacc.c  */
-#line 1062 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1062 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 285:
 
-/* Line 1455 of yacc.c  */
-#line 1063 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1063 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 286:
 
-/* Line 1455 of yacc.c  */
-#line 1064 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1064 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 287:
 
-/* Line 1455 of yacc.c  */
-#line 1066 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1066 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 288:
 
-/* Line 1455 of yacc.c  */
-#line 1068 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1068 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 290:
 
-/* Line 1455 of yacc.c  */
-#line 1076 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1076 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 291:
 
-/* Line 1455 of yacc.c  */
-#line 1077 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1077 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 292:
 
-/* Line 1455 of yacc.c  */
-#line 1081 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1081 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 293:
 
-/* Line 1455 of yacc.c  */
-#line 1082 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1082 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 294:
 
-/* Line 1455 of yacc.c  */
-#line 1083 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1083 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 295:
 
-/* Line 1455 of yacc.c  */
-#line 1084 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1084 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 296:
 
-/* Line 1455 of yacc.c  */
-#line 1088 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { if ((yyvsp[(1) - (2)].qualifiedName)->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+/* Line 1806 of yacc.c  */
+#line 1088 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { if ((yyvsp[(1) - (2)].qualifiedName)->IsDefine()) { 
 																							observers.DoCaptureScalars = true;
 																							observers.DoCaptureCallArguments = true; 
 																						  }
-																						;}
+																						}
     break;
 
   case 297:
 
-/* Line 1455 of yacc.c  */
-#line 1093 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1093 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { /* this parser is only interested in calls to the define function */
-																						  if ((yyvsp[(1) - (5)].qualifiedName)->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																						  if ((yyvsp[(1) - (5)].qualifiedName)->IsDefine()) {
 																							pelet::ConstantStatementClass* constStmt;
 																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, (yyvsp[(1) - (5)].qualifiedName), (yyvsp[(4) - (5)].statementList), analyzer.GetLineNumber());
 																							(yyval.statement) = constStmt;
@@ -5918,33 +5948,33 @@ yyreduce:
 																						  }
 																						  observers.DoCaptureScalars = false;	
 																						  observers.DoCaptureCallArguments = false; 
-																						;}
+																						}
     break;
 
   case 298:
 
-/* Line 1455 of yacc.c  */
-#line 1107 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1107 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 299:
 
-/* Line 1455 of yacc.c  */
-#line 1108 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { if ((yyvsp[(2) - (3)].qualifiedName)->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
+/* Line 1806 of yacc.c  */
+#line 1108 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { if ((yyvsp[(2) - (3)].qualifiedName)->IsDefine()) { 
 																							observers.DoCaptureScalars = true; 
 																							observers.DoCaptureCallArguments = true; 
 																						  }
-																						;}
+																						}
     break;
 
   case 300:
 
-/* Line 1455 of yacc.c  */
-#line 1113 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1113 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { /* this parser is only interested in calls to the define function */
-																						  if ((yyvsp[(2) - (6)].qualifiedName)->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
+																						  if ((yyvsp[(2) - (6)].qualifiedName)->IsDefine()) {
 																							pelet::ConstantStatementClass* constStmt;
 																							AST_INIT_ARGS(constStmt, pelet::ConstantStatementClass, (yyvsp[(2) - (6)].qualifiedName), (yyvsp[(5) - (6)].statementList), analyzer.GetLineNumber());
 																							(yyval.statement) = constStmt;
@@ -5954,202 +5984,202 @@ yyreduce:
 																						  }	
 																						  observers.DoCaptureScalars = false;
 																						  observers.DoCaptureCallArguments = false; 
-																						;}
+																						}
     break;
 
   case 301:
 
-/* Line 1455 of yacc.c  */
-#line 1126 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1126 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 302:
 
-/* Line 1455 of yacc.c  */
-#line 1128 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1128 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 303:
 
-/* Line 1455 of yacc.c  */
-#line 1130 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1130 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 304:
 
-/* Line 1455 of yacc.c  */
-#line 1132 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1132 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 305:
 
-/* Line 1455 of yacc.c  */
-#line 1134 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1134 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 306:
 
-/* Line 1455 of yacc.c  */
-#line 1138 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1138 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = 0; }
     break;
 
   case 307:
 
-/* Line 1455 of yacc.c  */
-#line 1139 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
+/* Line 1806 of yacc.c  */
+#line 1139 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 308:
 
-/* Line 1455 of yacc.c  */
-#line 1140 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(3) - (3)].qualifiedName)->MakeFromDeclaredNamespace(&observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 1140 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(3) - (3)].qualifiedName)->MakeFromDeclaredNamespace(&observers.GetDeclaredNamespace()); }
     break;
 
   case 309:
 
-/* Line 1455 of yacc.c  */
-#line 1141 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(2) - (2)].qualifiedName)->MakeAbsolute(); ;}
+/* Line 1806 of yacc.c  */
+#line 1141 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(2) - (2)].qualifiedName)->MakeAbsolute(); }
     break;
 
   case 310:
 
-/* Line 1455 of yacc.c  */
-#line 1145 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
+/* Line 1806 of yacc.c  */
+#line 1145 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 311:
 
-/* Line 1455 of yacc.c  */
-#line 1146 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(3) - (3)].qualifiedName)->MakeFromDeclaredNamespace(&observers.GetDeclaredNamespace()); ;}
+/* Line 1806 of yacc.c  */
+#line 1146 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(3) - (3)].qualifiedName)->MakeFromDeclaredNamespace(&observers.GetDeclaredNamespace()); }
     break;
 
   case 312:
 
-/* Line 1455 of yacc.c  */
-#line 1147 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(2) - (2)].qualifiedName)->MakeAbsolute(); ;}
+/* Line 1806 of yacc.c  */
+#line 1147 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(2) - (2)].qualifiedName)->MakeAbsolute(); }
     break;
 
   case 313:
 
-/* Line 1455 of yacc.c  */
-#line 1151 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
+/* Line 1806 of yacc.c  */
+#line 1151 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 314:
 
-/* Line 1455 of yacc.c  */
-#line 1152 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
+/* Line 1806 of yacc.c  */
+#line 1152 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 315:
 
-/* Line 1455 of yacc.c  */
-#line 1157 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1157 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = 0; }
     break;
 
   case 316:
 
-/* Line 1455 of yacc.c  */
-#line 1158 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.qualifiedName) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1158 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.qualifiedName) = 0; }
     break;
 
   case 317:
 
-/* Line 1455 of yacc.c  */
-#line 1162 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1162 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 318:
 
-/* Line 1455 of yacc.c  */
-#line 1163 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1163 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 319:
 
-/* Line 1455 of yacc.c  */
-#line 1167 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1167 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 320:
 
-/* Line 1455 of yacc.c  */
-#line 1171 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1171 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 321:
 
-/* Line 1455 of yacc.c  */
-#line 1172 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1172 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 322:
 
-/* Line 1455 of yacc.c  */
-#line 1173 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1173 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 323:
 
-/* Line 1455 of yacc.c  */
-#line 1177 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1177 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 324:
 
-/* Line 1455 of yacc.c  */
-#line 1178 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1178 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 325:
 
-/* Line 1455 of yacc.c  */
-#line 1179 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1179 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 326:
 
-/* Line 1455 of yacc.c  */
-#line 1183 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1183 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 327:
 
-/* Line 1455 of yacc.c  */
-#line 1184 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1184 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 328:
 
-/* Line 1455 of yacc.c  */
-#line 1188 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1188 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureScalars) {
 																				pelet::ScalarStatementClass* scalarStmt;
 																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, (yyvsp[(1) - (1)].lexeme));
@@ -6158,13 +6188,13 @@ yyreduce:
 																			  else { 
 																			    (yyval.statement) = 0; 
 																			  }
-																			;}
+																			}
     break;
 
   case 329:
 
-/* Line 1455 of yacc.c  */
-#line 1197 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1197 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureScalars) {
 																				pelet::ScalarStatementClass* scalarStmt;
 																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, (yyvsp[(1) - (1)].lexeme));
@@ -6173,13 +6203,13 @@ yyreduce:
 																			  else { 
 																			    (yyval.statement) = 0; 
 																			  }
-																			;}
+																			}
     break;
 
   case 330:
 
-/* Line 1455 of yacc.c  */
-#line 1206 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1206 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if (observers.DoCaptureScalars) {
 																				pelet::ScalarStatementClass* scalarStmt;
 																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, (yyvsp[(1) - (1)].lexeme));
@@ -6188,275 +6218,275 @@ yyreduce:
 																			  else { 
 																			    (yyval.statement) = 0; 
 																			  }
-																			;}
+																			}
     break;
 
   case 331:
 
-/* Line 1455 of yacc.c  */
-#line 1215 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1215 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 332:
 
-/* Line 1455 of yacc.c  */
-#line 1216 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1216 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 333:
 
-/* Line 1455 of yacc.c  */
-#line 1217 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1217 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 334:
 
-/* Line 1455 of yacc.c  */
-#line 1218 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1218 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 335:
 
-/* Line 1455 of yacc.c  */
-#line 1219 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1219 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 336:
 
-/* Line 1455 of yacc.c  */
-#line 1220 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1220 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 337:
 
-/* Line 1455 of yacc.c  */
-#line 1221 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1221 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 338:
 
-/* Line 1455 of yacc.c  */
-#line 1222 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1222 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 339:
 
-/* Line 1455 of yacc.c  */
-#line 1223 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1223 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 340:
 
-/* Line 1455 of yacc.c  */
-#line 1227 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1227 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 341:
 
-/* Line 1455 of yacc.c  */
-#line 1228 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1228 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 342:
 
-/* Line 1455 of yacc.c  */
-#line 1229 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1229 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 343:
 
-/* Line 1455 of yacc.c  */
-#line 1230 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1230 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 344:
 
-/* Line 1455 of yacc.c  */
-#line 1231 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1231 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 345:
 
-/* Line 1455 of yacc.c  */
-#line 1232 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1232 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 346:
 
-/* Line 1455 of yacc.c  */
-#line 1233 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1233 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 347:
 
-/* Line 1455 of yacc.c  */
-#line 1234 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1234 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 348:
 
-/* Line 1455 of yacc.c  */
-#line 1235 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1235 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 349:
 
-/* Line 1455 of yacc.c  */
-#line 1236 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1236 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 350:
 
-/* Line 1455 of yacc.c  */
-#line 1240 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1240 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 351:
 
-/* Line 1455 of yacc.c  */
-#line 1244 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1244 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 352:
 
-/* Line 1455 of yacc.c  */
-#line 1245 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1245 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 353:
 
-/* Line 1455 of yacc.c  */
-#line 1246 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1246 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 354:
 
-/* Line 1455 of yacc.c  */
-#line 1247 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1247 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 355:
 
-/* Line 1455 of yacc.c  */
-#line 1248 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1248 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 356:
 
-/* Line 1455 of yacc.c  */
-#line 1249 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1249 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 357:
 
-/* Line 1455 of yacc.c  */
-#line 1250 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1250 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 358:
 
-/* Line 1455 of yacc.c  */
-#line 1251 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1251 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 359:
 
-/* Line 1455 of yacc.c  */
-#line 1252 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1252 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 360:
 
-/* Line 1455 of yacc.c  */
-#line 1256 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1256 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 361:
 
-/* Line 1455 of yacc.c  */
-#line 1257 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1257 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 362:
 
-/* Line 1455 of yacc.c  */
-#line 1261 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isComma) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1261 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isComma) = 0; }
     break;
 
   case 363:
 
-/* Line 1455 of yacc.c  */
-#line 1262 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isComma) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1262 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isComma) = 0; }
     break;
 
   case 368:
 
-/* Line 1455 of yacc.c  */
-#line 1273 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1273 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 369:
 
-/* Line 1455 of yacc.c  */
-#line 1274 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1274 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 373:
 
-/* Line 1455 of yacc.c  */
-#line 1290 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1290 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { if ((yyvsp[(1) - (1)].statement) && pelet::StatementClass::PROPERTY_DECLARATION == (yyvsp[(1) - (1)].statement)->Type) {
 													observers.DoCaptureProperties = true;	
 												  }
-												;}
+												}
     break;
 
   case 374:
 
-/* Line 1455 of yacc.c  */
-#line 1295 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.DoCaptureProperties = false; ;}
+/* Line 1806 of yacc.c  */
+#line 1295 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.DoCaptureProperties = false; }
     break;
 
   case 375:
 
-/* Line 1455 of yacc.c  */
-#line 1296 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1296 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { 
 													if ((yyvsp[(1) - (7)].statement) && pelet::StatementClass::PROPERTY_DECLARATION == (yyvsp[(1) - (7)].statement)->Type && (yyvsp[(4) - (7)].lexeme) && !(yyvsp[(5) - (7)].isMethod)) {
 														AST_INIT((yyval.statement), pelet::ClassMemberSymbolClass);
@@ -6468,112 +6498,112 @@ yyreduce:
 													else {
 														(yyval.statement) = 0; 
 													}													
-												;}
+												}
     break;
 
   case 376:
 
-/* Line 1455 of yacc.c  */
-#line 1308 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1308 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 377:
 
-/* Line 1455 of yacc.c  */
-#line 1312 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1312 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 378:
 
-/* Line 1455 of yacc.c  */
-#line 1313 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1313 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 379:
 
-/* Line 1455 of yacc.c  */
-#line 1317 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1317 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 380:
 
-/* Line 1455 of yacc.c  */
-#line 1321 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (4)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1321 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (4)].statement); }
     break;
 
   case 381:
 
-/* Line 1455 of yacc.c  */
-#line 1322 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (4)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1322 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (4)].statement); }
     break;
 
   case 382:
 
-/* Line 1455 of yacc.c  */
-#line 1326 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1326 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 383:
 
-/* Line 1455 of yacc.c  */
-#line 1330 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isMethod) = 1; ;}
+/* Line 1806 of yacc.c  */
+#line 1330 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isMethod) = 1; }
     break;
 
   case 384:
 
-/* Line 1455 of yacc.c  */
-#line 1331 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isMethod) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1331 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isMethod) = 0; }
     break;
 
   case 385:
 
-/* Line 1455 of yacc.c  */
-#line 1332 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.isMethod) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1332 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.isMethod) = 0; }
     break;
 
   case 387:
 
-/* Line 1455 of yacc.c  */
-#line 1337 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1337 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 388:
 
-/* Line 1455 of yacc.c  */
-#line 1341 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1341 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 389:
 
-/* Line 1455 of yacc.c  */
-#line 1342 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1342 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 390:
 
-/* Line 1455 of yacc.c  */
-#line 1346 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1346 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 393:
 
-/* Line 1455 of yacc.c  */
-#line 1355 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { if ((yyvsp[(1) - (1)].lexeme) && (yyvsp[(1) - (1)].lexeme)->Lexeme.caseCompare(UNICODE_STRING_SIMPLE("$this"), 0) == 0) {
+/* Line 1806 of yacc.c  */
+#line 1355 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { if ((yyvsp[(1) - (1)].lexeme) && (yyvsp[(1) - (1)].lexeme)->Lexeme == wxT("$this")) {
 										AST_INIT((yyval.statement), pelet::ClassMemberSymbolClass);
 										
 										/* need to cast because we are returning a statement pointer from this rule */
@@ -6582,451 +6612,462 @@ yyreduce:
 									  else {
 										(yyval.statement) = 0; 
 									  }
-									;}
+									}
     break;
 
   case 394:
 
-/* Line 1455 of yacc.c  */
-#line 1365 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1365 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 395:
 
-/* Line 1455 of yacc.c  */
-#line 1366 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = (yyvsp[(1) - (1)].statement); ;}
+/* Line 1806 of yacc.c  */
+#line 1366 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = (yyvsp[(1) - (1)].statement); }
     break;
 
   case 396:
 
-/* Line 1455 of yacc.c  */
-#line 1371 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1371 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
     break;
 
   case 397:
 
-/* Line 1455 of yacc.c  */
-#line 1372 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1372 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 398:
 
-/* Line 1455 of yacc.c  */
-#line 1373 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1373 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 399:
 
-/* Line 1455 of yacc.c  */
-#line 1377 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1377 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); }
     break;
 
   case 400:
 
-/* Line 1455 of yacc.c  */
-#line 1378 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1378 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); }
     break;
 
   case 401:
 
-/* Line 1455 of yacc.c  */
-#line 1379 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1379 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
     break;
 
   case 402:
 
-/* Line 1455 of yacc.c  */
-#line 1383 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme);	;}
+/* Line 1806 of yacc.c  */
+#line 1383 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme);	}
     break;
 
   case 403:
 
-/* Line 1455 of yacc.c  */
-#line 1384 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1384 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 404:
 
-/* Line 1455 of yacc.c  */
-#line 1388 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1388 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 405:
 
-/* Line 1455 of yacc.c  */
-#line 1389 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1389 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 408:
 
-/* Line 1455 of yacc.c  */
-#line 1398 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1398 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); }
     break;
 
   case 409:
 
-/* Line 1455 of yacc.c  */
-#line 1399 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1399 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (4)].lexeme); }
     break;
 
   case 410:
 
-/* Line 1455 of yacc.c  */
-#line 1400 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); ;}
+/* Line 1806 of yacc.c  */
+#line 1400 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
     break;
 
   case 411:
 
-/* Line 1455 of yacc.c  */
-#line 1404 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = observers.DoCaptureProperties ? ((yyvsp[(1) - (1)].lexeme)) : 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1404 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = observers.DoCaptureProperties ? ((yyvsp[(1) - (1)].lexeme)) : 0; }
     break;
 
   case 412:
 
-/* Line 1455 of yacc.c  */
-#line 1405 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.lexeme) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1405 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.lexeme) = 0; }
     break;
 
   case 413:
 
-/* Line 1455 of yacc.c  */
-#line 1409 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1409 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 414:
 
-/* Line 1455 of yacc.c  */
-#line 1410 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1410 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 417:
 
-/* Line 1455 of yacc.c  */
-#line 1419 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1419 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 418:
 
-/* Line 1455 of yacc.c  */
-#line 1420 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1420 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 419:
 
-/* Line 1455 of yacc.c  */
-#line 1421 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1421 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 420:
 
-/* Line 1455 of yacc.c  */
-#line 1425 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1425 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 421:
 
-/* Line 1455 of yacc.c  */
-#line 1426 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1426 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 422:
 
-/* Line 1455 of yacc.c  */
-#line 1430 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1430 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 423:
 
-/* Line 1455 of yacc.c  */
-#line 1431 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1431 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 424:
 
-/* Line 1455 of yacc.c  */
-#line 1432 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1432 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 425:
 
-/* Line 1455 of yacc.c  */
-#line 1433 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1433 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 426:
 
-/* Line 1455 of yacc.c  */
-#line 1434 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1434 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 427:
 
-/* Line 1455 of yacc.c  */
-#line 1435 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1435 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 428:
 
-/* Line 1455 of yacc.c  */
-#line 1436 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1436 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 429:
 
-/* Line 1455 of yacc.c  */
-#line 1437 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statementList) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1437 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statementList) = 0; }
     break;
 
   case 430:
 
-/* Line 1455 of yacc.c  */
-#line 1441 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1441 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 431:
 
-/* Line 1455 of yacc.c  */
-#line 1442 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1442 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 432:
 
-/* Line 1455 of yacc.c  */
-#line 1443 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1443 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 433:
 
-/* Line 1455 of yacc.c  */
-#line 1444 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1444 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 434:
 
-/* Line 1455 of yacc.c  */
-#line 1448 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1448 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 435:
 
-/* Line 1455 of yacc.c  */
-#line 1449 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1449 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 436:
 
-/* Line 1455 of yacc.c  */
-#line 1450 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1450 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 437:
 
-/* Line 1455 of yacc.c  */
-#line 1451 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1451 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 438:
 
-/* Line 1455 of yacc.c  */
-#line 1452 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1452 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 439:
 
-/* Line 1455 of yacc.c  */
-#line 1453 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1453 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 440:
 
-/* Line 1455 of yacc.c  */
-#line 1457 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1457 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 441:
 
-/* Line 1455 of yacc.c  */
-#line 1458 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1458 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 442:
 
-/* Line 1455 of yacc.c  */
-#line 1459 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1459 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 443:
 
-/* Line 1455 of yacc.c  */
-#line 1463 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1463 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 444:
 
-/* Line 1455 of yacc.c  */
-#line 1464 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1464 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 445:
 
-/* Line 1455 of yacc.c  */
-#line 1465 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.DoCaptureScalars = true; ;}
+/* Line 1806 of yacc.c  */
+#line 1465 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.DoCaptureScalars = true; }
     break;
 
   case 446:
 
-/* Line 1455 of yacc.c  */
-#line 1466 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1466 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::IncludeStatementClass* includeStmt;
 												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
 												  (yyval.statement) = includeStmt;
 												  observers.DoCaptureScalars = false;  
-												;}
+												}
     break;
 
   case 447:
 
-/* Line 1455 of yacc.c  */
-#line 1471 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.DoCaptureScalars = true; ;}
+/* Line 1806 of yacc.c  */
+#line 1471 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.DoCaptureScalars = true; }
     break;
 
   case 448:
 
-/* Line 1455 of yacc.c  */
-#line 1472 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1472 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::IncludeStatementClass* includeStmt;
 												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
 												  (yyval.statement) = includeStmt;
 												  observers.DoCaptureScalars = false;  
-												;}
+												}
     break;
 
   case 449:
 
-/* Line 1455 of yacc.c  */
-#line 1477 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.statement) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1477 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.statement) = 0; }
     break;
 
   case 450:
 
-/* Line 1455 of yacc.c  */
-#line 1478 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.DoCaptureScalars = true; ;}
+/* Line 1806 of yacc.c  */
+#line 1478 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.DoCaptureScalars = true; }
     break;
 
   case 451:
 
-/* Line 1455 of yacc.c  */
-#line 1479 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1479 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::IncludeStatementClass* includeStmt;
 												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
 												  (yyval.statement) = includeStmt;
 												  observers.DoCaptureScalars = false;  
-												;}
+												}
     break;
 
   case 452:
 
-/* Line 1455 of yacc.c  */
-#line 1484 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { observers.DoCaptureScalars = true; ;}
+/* Line 1806 of yacc.c  */
+#line 1484 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { observers.DoCaptureScalars = true; }
     break;
 
   case 453:
 
-/* Line 1455 of yacc.c  */
-#line 1485 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 1806 of yacc.c  */
+#line 1485 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
     { pelet::IncludeStatementClass* includeStmt;
 												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
 												  (yyval.statement) = includeStmt;
 												  observers.DoCaptureScalars = false;  
-												;}
+												}
     break;
 
   case 454:
 
-/* Line 1455 of yacc.c  */
-#line 1492 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1492 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 455:
 
-/* Line 1455 of yacc.c  */
-#line 1493 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1493 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 456:
 
-/* Line 1455 of yacc.c  */
-#line 1497 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1497 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
   case 457:
 
-/* Line 1455 of yacc.c  */
-#line 1498 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
-    { (yyval.unused) = 0; ;}
+/* Line 1806 of yacc.c  */
+#line 1498 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
+    { (yyval.unused) = 0; }
     break;
 
 
 
-/* Line 1455 of yacc.c  */
-#line 7028 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.cpp"
+/* Line 1806 of yacc.c  */
+#line 7058 "/home/roberto/workspace/pelet/src/Php54ResourceParser.cpp"
       default: break;
     }
+  /* User semantic actions sometimes alter yychar, and that requires
+     that yytoken be updated with the new translation.  We take the
+     approach of translating immediately before every use of yytoken.
+     One alternative is translating here after every semantic action,
+     but that translation would be missed if the semantic action invokes
+     YYABORT, YYACCEPT, or YYERROR immediately after altering yychar or
+     if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
+     incorrect destructor might then be invoked immediately.  In the
+     case of YYERROR or YYBACKUP, subsequent parser actions might lead
+     to an incorrect destructor call or verbose syntax error message
+     before the lookahead is translated.  */
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
@@ -7054,6 +7095,10 @@ yyreduce:
 | yyerrlab -- here on detecting error |
 `------------------------------------*/
 yyerrlab:
+  /* Make sure we have latest lookahead translation.  See comments at
+     user semantic actions for why this is necessary.  */
+  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
+
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -7061,37 +7106,36 @@ yyerrlab:
 #if ! YYERROR_VERBOSE
       yyerror (analyzer, observers, YY_("syntax error"));
 #else
+# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
+                                        yyssp, yytoken)
       {
-	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
-	if (yymsg_alloc < yysize && yymsg_alloc < YYSTACK_ALLOC_MAXIMUM)
-	  {
-	    YYSIZE_T yyalloc = 2 * yysize;
-	    if (! (yysize <= yyalloc && yyalloc <= YYSTACK_ALLOC_MAXIMUM))
-	      yyalloc = YYSTACK_ALLOC_MAXIMUM;
-	    if (yymsg != yymsgbuf)
-	      YYSTACK_FREE (yymsg);
-	    yymsg = (char *) YYSTACK_ALLOC (yyalloc);
-	    if (yymsg)
-	      yymsg_alloc = yyalloc;
-	    else
-	      {
-		yymsg = yymsgbuf;
-		yymsg_alloc = sizeof yymsgbuf;
-	      }
-	  }
-
-	if (0 < yysize && yysize <= yymsg_alloc)
-	  {
-	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (analyzer, observers, yymsg);
-	  }
-	else
-	  {
-	    yyerror (analyzer, observers, YY_("syntax error"));
-	    if (yysize != 0)
-	      goto yyexhaustedlab;
-	  }
+        char const *yymsgp = YY_("syntax error");
+        int yysyntax_error_status;
+        yysyntax_error_status = YYSYNTAX_ERROR;
+        if (yysyntax_error_status == 0)
+          yymsgp = yymsg;
+        else if (yysyntax_error_status == 1)
+          {
+            if (yymsg != yymsgbuf)
+              YYSTACK_FREE (yymsg);
+            yymsg = (char *) YYSTACK_ALLOC (yymsg_alloc);
+            if (!yymsg)
+              {
+                yymsg = yymsgbuf;
+                yymsg_alloc = sizeof yymsgbuf;
+                yysyntax_error_status = 2;
+              }
+            else
+              {
+                yysyntax_error_status = YYSYNTAX_ERROR;
+                yymsgp = yymsg;
+              }
+          }
+        yyerror (analyzer, observers, yymsgp);
+        if (yysyntax_error_status == 2)
+          goto yyexhaustedlab;
       }
+# undef YYSYNTAX_ERROR
 #endif
     }
 
@@ -7150,7 +7194,7 @@ yyerrlab1:
   for (;;)
     {
       yyn = yypact[yystate];
-      if (yyn != YYPACT_NINF)
+      if (!yypact_value_is_default (yyn))
 	{
 	  yyn += YYTERROR;
 	  if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
@@ -7209,8 +7253,13 @@ yyexhaustedlab:
 
 yyreturn:
   if (yychar != YYEMPTY)
-     yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval, analyzer, observers);
+    {
+      /* Make sure we have latest lookahead translation.  See comments at
+         user semantic actions for why this is necessary.  */
+      yytoken = YYTRANSLATE (yychar);
+      yydestruct ("Cleanup: discarding lookahead",
+                  yytoken, &yylval, analyzer, observers);
+    }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
@@ -7235,6 +7284,6 @@ yyreturn:
 
 
 
-/* Line 1675 of yacc.c  */
-#line 1501 "C:\\Users\\Roberto\\Documents\\GitHub\\pelet\\src\\Php54ResourceParser.y"
+/* Line 2067 of yacc.c  */
+#line 1501 "/home/roberto/workspace/pelet/src/Php54ResourceParser.y"
 

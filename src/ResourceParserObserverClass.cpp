@@ -99,9 +99,8 @@ int pelet::ResourceLex(pelet::ResourceParserTypeClass* value, pelet::LexicalAnal
 }
 
 void pelet::ResourceGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers, std::string msg) {
-	int capacity = msg.length() + 1;
-	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
-	analyzer.ParserError.releaseBuffer(written);
+	wxString wxMsg(msg.c_str(), wxConvUTF8);
+	analyzer.ParserError = wxMsg;
 }
 
 pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObserverClass* classObserver,
@@ -137,11 +136,11 @@ void pelet::ResourceParserObserverClass::NamespaceUseAddScope(pelet::NamespaceUs
 }
 
 void pelet::ResourceParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
-	Scope.ClassName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	Scope.ClassName = value ? value->Lexeme : wxT("");
 }
 
 void pelet::ResourceParserObserverClass::SetCurrentMemberName(pelet::SemanticValueClass* value) {
-	Scope.MethodName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	Scope.MethodName = value ? value->Lexeme : wxT("");
 }
 
 void pelet::ResourceParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName) {
@@ -158,7 +157,7 @@ void pelet::ResourceParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNa
 		
 		// setting to true because the namespace declaration is always absolute according to PHP rules
 		DeclaredNamespace.IsAbsolute = true;
-		Scope.NamespaceName.remove();
+		Scope.NamespaceName.clear();
 	}
 }
 
@@ -168,7 +167,7 @@ void pelet::ResourceParserObserverClass::DeclareAssignedProperties(pelet::Statem
 	}
 
 	pelet::StatementListClass filteredStatements;
-	std::vector<UnicodeString> propertyNames;
+	std::vector<wxString> propertyNames;
 
 	// loop through each statement, if it is a duplicate property dont add it 
 	// to the filtered list
@@ -178,7 +177,7 @@ void pelet::ResourceParserObserverClass::DeclareAssignedProperties(pelet::Statem
 		pelet::StatementClass::Types type = classStatements->TypeAt(i);
 		if (pelet::StatementClass::PROPERTY_DECLARATION == type) {
 			pelet::ClassMemberSymbolClass* member = (pelet::ClassMemberSymbolClass*)classStatements->At(i);
-			UnicodeString propertyName = member->MemberName;
+			wxString propertyName = member->MemberName;
 			if (propertyNames.end() == std::find(propertyNames.begin(), propertyNames.end(), propertyName)) {
 				filteredStatements.Push(member);
 				propertyNames.push_back(propertyName);
@@ -205,8 +204,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		pelet::ClassSymbolClass* classSymbol;
 		pelet::ConstantStatementClass* constant;
 		pelet::ClassMemberSymbolClass* memberSymbol;
-		UnicodeString signature;
-		UnicodeString comment;
+		wxString signature;
+		wxString comment;
 		pelet::TokenClass::TokenIds visibility;
 		pelet::NamespaceDeclarationClass* declaration;
 		pelet::NamespaceUseClass* namespaceUse;
@@ -245,7 +244,7 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				// didnt feel like writing a whole other class for just for functions when functions and
 				// methods are almost identical
 				signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
-				signature.setTo(signature, signature.indexOf(UNICODE_STRING_SIMPLE("function")));
+				signature = signature.substr(signature.find(wxT("function")));
 
 
 				Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,

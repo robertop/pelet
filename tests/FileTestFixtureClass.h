@@ -26,7 +26,7 @@
 #define __filetestfixtureclass__
 
 #include <string>
-#include <unicode/ustream.h> //get the << overloaded operator, needed by UnitTest++
+#include <wx/string.h>
 #include <iostream>
 
 /**
@@ -57,18 +57,18 @@ public:
 };
 
 /**
- * Create a UnicodeString from a char*.  This function is useful when creating a string
+ * Create a wxString from a char*.  This function is useful when creating a string
  * that is broken up into multiple lines of code; like this:
  *
  *   // does not compile in MSW 
  *   // error C2308: concatenating mismatched strings
- *   UnicodeString str = UNICODE_STRING_SIMPLE("line 1\n"
+ *   wxString str = wxT("line 1\n"
  *    "line 2");
  *
  *   // works
- *   UnicodeString str = _U("line 1\n"
+ *   wxString str = _U("line 1\n"
  *    "line 2");
  */
-UnicodeString _U(const char* str);
+wxString _U(const char* str);
 
 #endif // __filetestfixtureclass__

@@ -46,7 +46,6 @@ int pelet::LintLex(int* value, pelet::LexicalAnalyzerClass& analyzer) {
 }
 
 void pelet::LintGrammarError(pelet::LexicalAnalyzerClass& analyzer, std::string msg) {
-	int capacity = msg.length() + 1;
-	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
-	analyzer.ParserError.releaseBuffer(written);
+	wxString wxMsg(msg.c_str(), wxConvUTF8);
+	analyzer.ParserError = wxMsg;
 }

@@ -25,7 +25,7 @@
 #include <UnitTest++.h>
 #include <TestReporterStdout.h>
 #include <TestRunner.h>
-#include <unicode/uclean.h>
+#include <wx/init.h>
 #include <vector>
 #include <string.h>
 
@@ -119,11 +119,15 @@ public:
 
 // run all tests
 int main(int argc, char **argv) {
+
+	// initialize wxWidgets
+	wxInitializer init;
+	
 	// change if you want to run only one test
 	bool runAll = true;
-	const char* suiteToRun = "Parser53TestClass";
+	const char* suiteToRun = "LexicalAnalyzerTestClass";
 	std::vector<const char*> testCasesToRun;
-	//testCasesToRun.push_back("ScanFileShouldNotifyClassObserver");
+	testCasesToRun.push_back("LastExpressionFirstFunction");
 	int ret = 0;
 	if (runAll) {
 		ret = UnitTest::RunAllTests();
@@ -134,9 +138,5 @@ int main(int argc, char **argv) {
 		SingleTestsPredicateClass pred(testCasesToRun);
 		ret = runner.RunTestsIf(UnitTest::Test::GetTestList(), suiteToRun, pred, 0);
 	}
-	
-	// calling cleanup here so that we can run this binary through a memory leak detector 
-	// ICU will cache many things and that will cause the detector to output "possible leaks"
-	u_cleanup();
 	return ret;
 }

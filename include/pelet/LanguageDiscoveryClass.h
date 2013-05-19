@@ -25,7 +25,7 @@
 #ifndef LANGUAGE_DISCOVERY_CLASS_H
 #define LANGUAGE_DISCOVERY_CLASS_H
 
-#include <unicode/unistr.h>
+#include <wx/string.h>
 #include <pelet/UCharBufferedFileClass.h>
 #include <pelet/Api.h>
 
@@ -73,7 +73,7 @@ public:
 	 *
 	 * @return bool TRUE if code is not empty.
 	 */
-	bool Open(const UnicodeString& code);
+	bool Open(const wxString& code);
 
 	/**
 	 * Clean up any resources after lexing. This should be done so that
@@ -101,7 +101,7 @@ private:
 	/**
 	 * The actual code being parsed
 	 */
-	UnicodeString Code;
+	wxString Code;
 };
 
 }

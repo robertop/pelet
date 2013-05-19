@@ -80,7 +80,7 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 	return ret;
 }
 
-bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pelet::LintResultsClass& results) {
+bool pelet::ParserClass::ScanFile(FILE* file, const wxString& filename, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		pelet::FullParserObserverClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
@@ -111,7 +111,7 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 	return ret;
 }
 
-bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResultsClass& results) {
+bool pelet::ParserClass::ScanString(const wxString& code, pelet::LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
 		pelet::FullParserObserverClass observers(ClassObserver, ClassMemberObserver, FunctionObserver, VariableObserver, ExpressionObserver);
@@ -187,7 +187,7 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 	return ret;
 }
 
-bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, LintResultsClass& results) {
+bool pelet::ParserClass::LintFile(FILE* file, const wxString& filename, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenFile(file)) {
 		if (pelet::PHP_53 == Version) {
@@ -206,7 +206,7 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 	return ret;
 }
 
-bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass& results) {
+bool pelet::ParserClass::LintString(const wxString& code, LintResultsClass& results) {
 	bool ret = false;
 	if (Lexer.OpenString(code)) {
 		if (pelet::PHP_53 == Version) {
@@ -248,29 +248,29 @@ public:
 };
 }
 
-void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::ExpressionClass& expression) {
-	expressionString.trim();
+void pelet::ParserClass::ParseExpression(wxString expressionString, pelet::ExpressionClass& expression) {
+	expressionString.Trim();
 
 	// remove the operators if they are at the end; this prevents parse errors
 	bool endsWithObject = false;
 	bool endsWithStatic = false;
 	bool endsWithNamespace = false;
-	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("->"))) {
-		expressionString.remove(expressionString.length() - 2, 2);
+	if (expressionString.EndsWith(wxT("->"))) {
+		expressionString = expressionString.substr(0, expressionString.length() - 2);
 		endsWithObject = true;
 	}
-	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("::"))) {
-		expressionString.remove(expressionString.length() - 2, 2);
+	if (expressionString.EndsWith(wxT("::"))) {
+		expressionString = expressionString.substr(0, expressionString.length() - 2);
 		endsWithStatic = true;
 	}
-	if (expressionString.endsWith(UNICODE_STRING_SIMPLE("\\"))) {
-		expressionString.remove(expressionString.length() - 1, 1);
+	if (expressionString.EndsWith(wxT("\\"))) {
+		expressionString = expressionString.substr(0, expressionString.length() - 1);
 		endsWithNamespace = true;
 	}
 
 	// make it so that the expression observer is always called by terminating the expression
-	if (!expressionString.endsWith(UNICODE_STRING_SIMPLE(";"))) {
-		expressionString += UNICODE_STRING_SIMPLE(";");
+	if (!expressionString.EndsWith(wxT(";"))) {
+		expressionString += wxT(";");
 	}
 	expression.Clear();
 
@@ -295,15 +295,15 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 	}
 	if (endsWithObject) {
 		std::vector<pelet::ExpressionClass> args;
-		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, false);
+		expression.AppendToChain(wxT(""), args, false, false);
 	}
 	if (endsWithStatic) {
 		std::vector<pelet::ExpressionClass> args;
-		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, true);
+		expression.AppendToChain(wxT(""), args, false, true);
 	}
 	if (endsWithNamespace) {
 		if (!expression.ChainList.empty()) {
-			expression.ChainList[0].Name += UNICODE_STRING_SIMPLE("\\");
+			expression.ChainList[0].Name += wxT("\\");
 		}
 	}
 }
@@ -327,8 +327,8 @@ void pelet::LintResultsClass::Copy(const pelet::LintResultsClass& other) {
 }
 
 void pelet::LintResultsClass::Clear() {
-	Error.remove();
-	UnicodeFilename.remove();
+	Error.clear();
+	UnicodeFilename.clear();
 	Scope.Clear();
 	File = "";
 	LineNumber = 0;

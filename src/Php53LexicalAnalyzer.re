@@ -26,7 +26,7 @@
 #include <pelet/Php53LexicalAnalyzer.h>
 
 // tell re2c we will use Unicode chars
-#define YYCTYPE UChar
+#define YYCTYPE wxChar
 
 // this is the pointer to the current position; 
 #define YYCURSOR buffer->Current

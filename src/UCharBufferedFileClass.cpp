@@ -24,18 +24,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 #include <pelet/UCharBufferedFileClass.h>
-#include <unicode/ustring.h>
 
-/**
- * IMPLEMENTATION NOTE: This class internally uses ICU strings instead of wxStrings because of a couple of issues:
- * 
- * 1.) wxTextInputStream::GetChar() has trouble with UTF-16. See http://forums.wxwidgets.org/viewtopic.php?t=1241
- * 2.) Fallback text encoding does not work properly when a file contains some High Ascii characters. See 
- *     http://trac.wxwidgets.org/ticket/10670
- * 
- * Also, note the use of UChar arrays.  Using arrays (and in some cases arrays allocated on the
- * stack) greatly improved the tokenizer performance.
- */
 pelet::BufferClass::BufferClass() 
 	: Current(NULL)
 	, TokenStart(NULL)
@@ -147,9 +136,10 @@ void pelet::UCharBufferedFileClass::CleanupBuffer() {
 
 void pelet::UCharBufferedFileClass::GrowBuffer(int minCapacity) {
 	int newCapacity = minCapacity < (2 * BufferCapacity) ? (2 * BufferCapacity) : minCapacity;
-	UChar* newBuffer = new UChar[newCapacity];
-	u_memcpy(newBuffer, Buffer, BufferCapacity);
-	u_memset(newBuffer + BufferCapacity, 'i', newCapacity / 2);
+	wxChar* newBuffer = new wxChar[newCapacity];
+
+	memcpy(newBuffer, Buffer, sizeof(wxChar) * BufferCapacity);
+	memset(newBuffer + BufferCapacity, 'i', sizeof(wxChar) * newCapacity / 2);
 	
 	
 	// change all of the pointers
@@ -171,13 +161,13 @@ void pelet::UCharBufferedFileClass::MarkTokenStart() {
 }
 
 void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
-	if (NULL != File) {
+	if (InputStream && !InputStream->Eof()) {
 		//printf("getting extra %d chars\n", minToGet);
 		
 		// since Limit points to the last character of the string (not past), we do +1 
 		int validContentsCount = (Limit - TokenStart + 1); 
 		int charsToGet;
-		UChar* startOfFreeSpace;
+		wxChar* startOfFreeSpace;
 		if (TokenStart > Buffer) {
 			RemoveLeadingSlackSpace();
 			startOfFreeSpace = Buffer + validContentsCount; 
@@ -196,7 +186,7 @@ void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 		// should read charsToGet bytes from file; not charsToFill
 		// we want to get as much from the file as possible without re-allocation
 		if (charsToGet > 0) {
-			int read = u_file_read(startOfFreeSpace, charsToGet, File);
+			int read = ReadChars(startOfFreeSpace, charsToGet);
 			Limit = Buffer + BufferCapacity - 1;
 			if (read < charsToGet) {
 				HasReachedEof = true;
@@ -204,13 +194,11 @@ void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 				// insert null character as the lexers will look for null characters as EOF
 				startOfFreeSpace[read] = '\0';
 				Eof = startOfFreeSpace + read;
-				u_fclose(File);
-				File = NULL;
 			}
 		}
 	}
 }
-\
+
 bool pelet::UCharBufferedFileClass::HasReachedEnd() const {
 	
 	// if we havent yet read in all of the file from disk then Limit is not really the end of the input
@@ -230,7 +218,7 @@ void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 	int currentIndex = Current - TokenStart;
 	int markerIndex = Marker - TokenStart;
 
-	u_memmove(Buffer, TokenStart, goodCount);
+	memmove(Buffer, TokenStart, sizeof(wxChar) * goodCount);
 	
 	// make everything point to the beginning of the buffer
 	// also move limit back to the end of the unread content
@@ -240,24 +228,36 @@ void  pelet::UCharBufferedFileClass::RemoveLeadingSlackSpace() {
 
 }
 
-bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, int startingCapacity) {
-	UFILE* uFile = u_fopen(newFile, "rb", NULL, NULL);
-	return OpenFile(uFile);
+bool pelet::UCharBufferedFileClass::OpenFile(const char *newFile, const wxMBConv& conv, int startingCapacity) {
+	CloseFile();
+	wxString filename(newFile, wxConvUTF8);
+	InputStream = new wxFFileInputStream(filename);
+	TextStream = new wxTextInputStream(*InputStream, wxT("\t"), conv);
+	return OpenFile(startingCapacity);
 }
 
-bool pelet::UCharBufferedFileClass::OpenFile(FILE* file, int startingCapacity) {
-	UFILE* uFile = u_finit(file, NULL, NULL);
-	return OpenFile(uFile);
+bool pelet::UCharBufferedFileClass::OpenFile(FILE* file, const wxMBConv& conv, int startingCapacity) {
+	CloseFile();
+	InputStream = new wxFFileInputStream(file);
+	TextStream = new wxTextInputStream(*InputStream, wxT("\t"), conv);
+	return OpenFile(startingCapacity);
 }
 
-bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity) {
-	if (NULL != File) {
-		u_fclose(File);
-		File = NULL;	
+void pelet::UCharBufferedFileClass::CloseFile() {
+	if (NULL != TextStream) {
+		delete TextStream;
+		TextStream = NULL;
 	}
+	if (NULL != InputStream) {
+		delete InputStream;
+		InputStream = NULL;
+	}
+}
+
+bool pelet::UCharBufferedFileClass::OpenFile(int startingCapacity) {
 	if (!Buffer) {
 		LineNumber = 1;
-		Buffer = new UChar[startingCapacity];
+		Buffer = new wxChar[startingCapacity];
 		BufferCapacity = startingCapacity;
 		Current = Buffer;
 		TokenStart = Buffer;
@@ -267,8 +267,7 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 		Eof = NULL;
 	}
 	bool opened = false;
-	File = ufile;
-	if (NULL != File) {
+	if (NULL != InputStream && NULL != TextStream) {
 		
 		// point to the start of the file
 		LineNumber = 1;
@@ -276,11 +275,10 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 		Current = Buffer;
 		Limit = Buffer;
 		opened = true;
-		int read = u_file_read(Buffer, BufferCapacity, File);
+		int read = ReadChars(Buffer, BufferCapacity);
 		Limit = Buffer + BufferCapacity - 1;
 		if (read < BufferCapacity) {
-			u_fclose(File);
-			File = NULL;
+			CloseFile();
 			
 			// insert null character as the lexers will look for null characters as EOF
 			Buffer[read] = '\0';
@@ -291,11 +289,31 @@ bool pelet::UCharBufferedFileClass::OpenFile(UFILE* ufile, int startingCapacity)
 	return opened;
 }
 
+int pelet::UCharBufferedFileClass::ReadChars(wxChar* buffer, int n) {
+	int read = 0;
+	if (!InputStream) {
+		return read;
+	}
+	for (int k = 0; k < n && !InputStream->Eof(); ++k) {
+		
+		// from wxWidgets docs
+		// Note that the behaviour of the file pointer-based class wxFFile is different as wxFFile::Eof() 
+		// will return true here only if an attempt has been made to read PAST the last byte of the file,
+		wxChar c = TextStream->GetChar();
+		if (c > 0) {
+			buffer[k] = c;
+			read++;
+		}
+	}
+	return read;
+}
+
 pelet::UCharBufferedFileClass::UCharBufferedFileClass()
 	: BufferClass()
 	, Buffer(NULL)
 	, Eof(NULL)
-	, File(NULL)
+	, InputStream(NULL)
+	, TextStream(NULL)
 	, BufferCapacity(0) 
 	, CharacterPos(0)
 	, HasReachedEof(false)
@@ -308,13 +326,16 @@ pelet::UCharBufferedFileClass::~UCharBufferedFileClass() {
 
 void pelet::UCharBufferedFileClass::Close() {
 	CleanupBuffer();
-	if (NULL != File) {
-		u_fclose(File);
-		File = NULL;
+	if (NULL != TextStream) {
+		delete TextStream;
+		TextStream = NULL;
+	}
+	if (NULL != InputStream) {
+		delete InputStream;
+		InputStream = NULL;
 	}
 	Buffer = NULL;
 	Eof = NULL;
-	File = NULL;
 	BufferCapacity = 0;
 	CharacterPos = 0;
 	HasReachedEof = false;
@@ -340,16 +361,18 @@ pelet::UCharBufferClass::~UCharBufferClass() {
 	Close();
 }
 
-bool pelet::UCharBufferClass::OpenString(const UnicodeString& code) {
+bool pelet::UCharBufferClass::OpenString(const wxString& code) {
 	Close();
 	int length = code.length();
 	if (length > 0) {
 		LineNumber = 1;
-		UChar* buf = new UChar[length + 1];
-		u_memmove(buf, code.getBuffer(), length);
+		wxChar* buf = new wxChar[length + 1];
+		int i = 0;
+		for (wxString::const_iterator c = code.begin(); c != code.end(); ++c) {
+			buf[i++] = *c;
+		}
 		buf[length] = '\0';
 		Buffer = buf;
-		//Buffer = code.getTerminatedBuffer();
 		Current = Buffer;
 		TokenStart = Buffer;
 		Marker = Buffer;

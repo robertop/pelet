@@ -34,12 +34,11 @@
 	CHECK_EQUAL((size_t)expectedSize, list.size());\
 	if ((size_t)expectedSize != list.size()) return;
 
-
 /**
  * A macro to reduce the code needed to check unicode strings against a known ascii-only string.
  * expected is assumed to be an ASCII string.
  */
 #define CHECK_UNISTR_EQUALS(expected, actual) \
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE(expected), actual);
+	CHECK_EQUAL(wxString(expected, wxConvUTF8), actual);
 
 #endif

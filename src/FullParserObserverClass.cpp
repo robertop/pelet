@@ -24,9 +24,9 @@
  */
 #include <pelet/FullParserObserverClass.h>
 #include <pelet/ResourceParserObserverClass.h>
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
+#include <wx/tokenzr.h>
 #include <algorithm>
+#include <cctype>
 
 pelet::FullParserObserverClass::FullParserObserverClass(ClassObserverClass* classObserver, ClassMemberObserverClass* memberObserver,
         FunctionObserverClass* functionObserver, VariableObserverClass* variableObserver,
@@ -48,20 +48,20 @@ void pelet::FullParserObserverClass::NamespaceAliasClear() {
 	Scope.ClearAliases();
 }
 
-void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName) {
+void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, wxString currentNamespaceName, wxString currentClassName, wxString currentMethodName) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	size_t paramCount = parameters.GetCount();
 	if (paramCount > 0 && Variable) {
-		UnicodeString paramName,
+		wxString paramName,
 		              paramType;
-		UnicodeString comment;
+		wxString comment;
 		for (size_t i = 0; i < paramCount; ++i) {
 			pelet::VariableClass variable(Scope);
 			pelet::ExpressionClass expression(Scope);
 			parameters.Param(i, paramName, paramType);
-			if (!paramType.isEmpty()) {
+			if (!paramType.empty()) {
 				expression.ToNewCall(paramType);
 			} else {
 				expression.ExpressionType = pelet::ExpressionClass::UNKNOWN;
@@ -76,32 +76,21 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 	// ie default argument values
 }
 
-void pelet::FullParserObserverClass::NotifyLocalVariableTypeHint(const UnicodeString& comment) {
+void pelet::FullParserObserverClass::NotifyLocalVariableTypeHint(const wxString& comment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	NotifyLocalVariableFromPhpDoc(comment);
 }
 
-/**
- * sets either varName or varType depending on whether text contents are a variable name or not.
- */
-static void FillNameOrType(UChar* text, UnicodeString& varName, UnicodeString& varType) {
-	if (text && '$' == text[0]) {
-		varName.setTo(text);
-	} else if (text) {
-		varType.setTo(text);
-	}
-}
-
-void pelet::FullParserObserverClass::NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment) {
+void pelet::FullParserObserverClass::NotifyLocalVariableFromPhpDoc(const wxString& phpDocComment) {
 	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
 		return;
 	}
 	if (!Variable) {
 		return;
 	}
-	if (phpDocComment.isEmpty()) {
+	if (phpDocComment.empty()) {
 		return;
 	}
 
@@ -110,55 +99,43 @@ void pelet::FullParserObserverClass::NotifyLocalVariableFromPhpDoc(const Unicode
 	// people got used to doing it this way
 	// http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	// there could be multiple hints in a single comment
-
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UChar* buf = new UChar[phpDocComment.length() + 1];
-	u_memmove(buf, phpDocComment.getBuffer(), phpDocComment.length());
-	buf[phpDocComment.length()] = '\0';
-
-	UChar* saveState = 0;
-
-	// not using getTerminatedBuffer() because that method triggers valgrind warnings
-	UnicodeString delimiters = UNICODE_STRING_SIMPLE(" \t\v\f\r\n");
-	UChar* delimsBuffer = new UChar[delimiters.length() + 1];
-	u_memmove(delimsBuffer, delimiters.getBuffer(), delimiters.length());
-	delimsBuffer[delimiters.length()] = '\0';
-
-	UChar* next = u_strtok_r(buf, delimsBuffer, &saveState);
-	UnicodeString varName;
-	UnicodeString varType;
-	while (next) {
-		if (UNICODE_STRING_SIMPLE("@var").caseCompare(next, 0) == 0) {
+	
+	
+	wxString delimiters = wxT(" \t\v\f\r\n");
+	wxStringTokenizer tokenizer(phpDocComment, delimiters);
+	wxString varName;
+	wxString varType;
+	wxString next;
+	while (tokenizer.HasMoreTokens()) {
+		next = tokenizer.NextToken();
+		next.MakeLower();
+		if (next.compare(wxT("@var")) == 0) {
 			pelet::VariableClass variable(Scope);
 			pelet::ExpressionClass expression(Scope);
-			UnicodeString variableName;
+			wxString variableName;
 
 			// example line: @var string $nameString a string version of a name
 			// will be lenient and allow the reverse var then type
 			// @var $nameString string
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
+			next = tokenizer.NextToken();
 			FillNameOrType(next, variableName, variable.PhpDocType);
-			if (next) {
-				next = u_strtok_r(NULL, delimsBuffer, &saveState);
+			if (!next.empty()) {
+				next = tokenizer.NextToken();
 				FillNameOrType(next, variableName, variable.PhpDocType);
-				if (!variableName.isEmpty() && !variable.PhpDocType.isEmpty()) {
+				if (!variableName.empty() && !variable.PhpDocType.empty()) {
 
 					// handle namespaces in the phpDoc
 					variable.PhpDocType = pelet::PhpDocTypeToAbsoluteClassname(variable.PhpDocType, Scope, DeclaredNamespace);
 					variable.AppendToChain(variableName);
 					Variable->VariableFound(DeclaredNamespace.ToSignature(), Scope.ClassName, Scope.MethodName, variable, expression, phpDocComment);
-					next = u_strtok_r(NULL, delimsBuffer, &saveState);
+					next = tokenizer.NextToken();
 				}
 			}
-			if (!next) {
+			if (next.empty()) {
 				break;
 			}
-		} else {
-			next = u_strtok_r(NULL, delimsBuffer, &saveState);
 		}
 	}
-	delete[] buf;
-	delete[] delimsBuffer;
 }
 
 pelet::SemanticValueClass* pelet::FullParserObserverClass::SemanticValueInit() {
@@ -200,7 +177,7 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 			ret = analyzer.NextToken();
 		}
 	}
-	if (!commentValue.Comment.isEmpty()) {
+	if (!commentValue.Comment.empty()) {
 		observers.NotifyLocalVariableTypeHint(commentValue.Comment);
 	}
 	if (pelet::T_CLOSE_TAG == ret) {
@@ -214,9 +191,8 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 }
 
 void pelet::FullGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers, std::string msg) {
-	int capacity = msg.length() + 1;
-	int written = u_sprintf(analyzer.ParserError.getBuffer(capacity), "%s", msg.c_str());
-	analyzer.ParserError.releaseBuffer(written);
+	wxString wxMsg(msg.c_str(), wxConvUTF8);
+	analyzer.ParserError = wxMsg;
 	observers.SemanticValueFree();
 }
 
@@ -445,8 +421,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeAssignment
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	UnicodeString fullClassName = Scope.FullyQualify(*className, DeclaredNamespace);
-	UnicodeString constantNameString;
+	wxString fullClassName = Scope.FullyQualify(*className, DeclaredNamespace);
+	wxString constantNameString;
 	if (constantName) {
 		constantNameString = constantName->Lexeme;
 	}
@@ -478,7 +454,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCall(p
 	}
 	
 	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
-	UnicodeString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
+	wxString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -495,7 +471,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 			varCallArguments.push_back(*singleExpr);
 		}
 	}
-	UnicodeString fullFunctionName = functionName->ToSignature() ;
+	wxString fullFunctionName = functionName->ToSignature() ;
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -511,7 +487,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 			varCallArguments.push_back(*singleExpr);
 		}
 	}
-	UnicodeString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
+	wxString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -562,7 +538,7 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pel
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->ToConstant(UNICODE_STRING_SIMPLE(""), constantName->ToSignature());
+	newExpr->ToConstant(wxT(""), constantName->ToSignature());
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -626,6 +602,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 	for (size_t i = 0; i < statements->Size(); ++i) {
 		pelet::StatementClass::Types type = statements->TypeAt(i);
 		pelet::StatementClass* stmt = statements->At(i);
+		wxString name;
 		switch(type) {
 		case pelet::StatementClass::ASSIGNMENT:
 			if (ExpressionObserver) {
@@ -666,12 +643,15 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 
 				// check for define() function calls, these are constants
 				pelet::ExpressionClass * expr = (pelet::ExpressionClass*)stmt;
-				if (expr->ChainList.size() == 1 &&
-						expr->ChainList[0].Name.caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0 && 
-						2 == expr->ChainList[0].CallArguments.size()) {
-					Class->DefineDeclarationFound(UNICODE_STRING_SIMPLE(""), expr->ChainList[0].CallArguments[0].FirstValue(),
-												  expr->ChainList[0].CallArguments[1].FirstValue(),
-												  expr->Comment, expr->LineNumber);
+				if (expr->ChainList.size() == 1) {
+					name = expr->ChainList[0].Name;
+					name.MakeLower();
+					if (name.compare(wxT("define")) == 0
+						&& 2 == expr->ChainList[0].CallArguments.size()) {
+						Class->DefineDeclarationFound(wxT(""), expr->ChainList[0].CallArguments[0].FirstValue(),
+													expr->ChainList[0].CallArguments[1].FirstValue(),
+													expr->Comment, expr->LineNumber);
+					}
 				}
 			}
 			break;
@@ -683,10 +663,10 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				// method signature
 				// didnt feel like writing a whole other class for just for functions when functions and
 				// methods are almost identical
-				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
-				int32_t index = signature.indexOf(UNICODE_STRING_SIMPLE("function"));
-				signature.setTo(signature, index);
-				UnicodeString comment = memberSymbol->GetComment();
+				wxString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
+				size_t index = signature.find(wxT("function"));
+				signature = signature.substr(index, std::string::npos);
+				wxString comment = memberSymbol->GetComment();
 				if (Function) {
 					Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
 					                        memberSymbol->GetReturnType(), comment, memberSymbol->StartingLineNumber);
@@ -710,7 +690,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					// not sure what to do for include statements
 					// with variables; ie. " include $file; "
 					// for now just propagate an empty name
-					UnicodeString empty;
+					wxString empty;
 					Class->IncludeFound(empty, expr->LineNumber);
 				}
 			}
@@ -728,14 +708,14 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 		case pelet::StatementClass::METHOD_DECLARATION:
 			if (Member || Variable) {
 				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
-				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
+				wxString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
 					visibility = pelet::TokenClass::PROTECTED;
 				} else if (memberSymbol->IsPrivateMember) {
 					visibility = pelet::TokenClass::PRIVATE;
 				}
-				UnicodeString className = memberSymbol->ClassName;
+				wxString className = memberSymbol->ClassName;
 				bool isStatic = memberSymbol->IsStaticMember;
 				if (Member) {
 					Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
@@ -779,7 +759,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				} else if (memberSymbol->IsPrivateMember) {
 					visibility = pelet::TokenClass::PRIVATE;
 				}
-				UnicodeString className = memberSymbol->ClassName;
+				wxString className = memberSymbol->ClassName;
 				bool isStatic = memberSymbol->IsStaticMember;
 				bool isConst = memberSymbol->IsConstMember;
 				Member->PropertyFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName,
@@ -825,7 +805,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceDeclarationF
 pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceGlobalDeclarationFound(pelet::SemanticValueClass* namespaceTokenValue) {
 	pelet::NamespaceDeclarationClass* newNamespace = new pelet::NamespaceDeclarationClass();
 	newNamespace->StartingPosition = namespaceTokenValue->Pos;
-	newNamespace->NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	newNamespace->NamespaceName = wxT("\\");
 	AllAstItems.push_back(newNamespace);
 	return StatementListMakeAndAppend(newNamespace);
 }
@@ -847,7 +827,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUse(pelet::Q
 	
 	// according to PHP rules, all imports use absolute namespaces
 	namespaceName->MakeAbsolute();
-	UnicodeString alias = useStatement->Set(namespaceName, UNICODE_STRING_SIMPLE(""));
+	wxString alias = useStatement->Set(namespaceName, wxT(""));
 
 	// dont worry about duplicate aliases, since its incorrect PHP
 	Scope.AddNamespaceAlias(namespaceName->ToSignature(), alias);
@@ -860,7 +840,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseAbsolute(
 	namespaceName->MakeAbsolute();
 
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
-	UnicodeString alias = useStatement->Set(namespaceName, UNICODE_STRING_SIMPLE(""));
+	wxString alias = useStatement->Set(namespaceName, wxT(""));
 
 	// dont worry about duplicate aliases, since its incorrect PHP
 	Scope.AddNamespaceAlias(namespaceName->ToSignature(), alias);
@@ -875,7 +855,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseAbsoluteA
 
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
 	if (aliasValue) {
-		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
+		wxString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
 		Scope.AddNamespaceAlias(namespaceName->ToSignature(), alias);
@@ -891,7 +871,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseAlias(pel
 	namespaceName->MakeAbsolute();
 	pelet::NamespaceUseClass* useStatement = new pelet::NamespaceUseClass;
 	if (aliasValue) {
-		UnicodeString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
+		wxString alias = useStatement->Set(namespaceName, aliasValue->Lexeme);
 
 		// dont worry about duplicate aliases, since its incorrect PHP
 		Scope.AddNamespaceAlias(namespaceName->ToSignature(), alias);
@@ -990,11 +970,11 @@ pelet::StatementListClass* pelet::FullParserObserverClass::StatementListNil() {
 }
 
 void pelet::FullParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
-	Scope.ClassName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	Scope.ClassName = value ? value->Lexeme : wxT("");
 }
 
 void pelet::FullParserObserverClass::SetCurrentMemberName(pelet::SemanticValueClass* value) {
-	Scope.MethodName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	Scope.MethodName = value ? value->Lexeme : wxT("");
 }
 
 void pelet::FullParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName) {
@@ -1008,7 +988,7 @@ void pelet::FullParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameCl
 	} else {
 		DeclaredNamespace.Clear();
 		DeclaredNamespace.IsAbsolute = true;
-		Scope.NamespaceName.remove();
+		Scope.NamespaceName.clear();
 	}
 }
 
@@ -1174,7 +1154,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeAndAppendFunct
 			varCallArguments.push_back(singleExpr);
 		}
 	}
-	newVar->AppendToChain(UNICODE_STRING_SIMPLE(""), varCallArguments, isMethod, false);
+	newVar->AppendToChain(wxT(""), varCallArguments, isMethod, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
 }
@@ -1246,7 +1226,7 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 	if (classStatements == NULL || classStatements->Size() <= 0) {
 		return;
 	}
-	std::vector<UnicodeString> assignedProperties;
+	std::vector<wxString> assignedProperties;
 	
 	// gather all of the declared properties
 	for (size_t i = 0; i < classStatements->Size(); ++i) {
@@ -1269,7 +1249,7 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 			expr = (pelet::AssignmentExpressionClass*)classStatements->At(i);
 			
 			// the chain list must have 2 items: "$this" and the property name
-			if (expr->Destination.ChainList.size() == 2 && expr->Destination.ChainList[0].Name == UNICODE_STRING_SIMPLE("$this") 
+			if (expr->Destination.ChainList.size() == 2 && expr->Destination.ChainList[0].Name == wxT("$this") 
 					&& !expr->Destination.ChainList[0].IsFunction && !expr->Destination.ChainList[1].IsFunction) {
 				isThisAssignment = true;
 			}
@@ -1278,7 +1258,7 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 			
 			// add the siguil because declared properties have the siguil while the properties added at run time
 			// do not; we want to compare apples-to-apples
-			UnicodeString propertyName = UNICODE_STRING_SIMPLE("$") + expr->Destination.ChainList[1].Name;
+			wxString propertyName = wxT("$") + expr->Destination.ChainList[1].Name;
 			if (assignedProperties.end() == std::find(assignedProperties.begin(), assignedProperties.end(), propertyName)) {
 				pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass;
 				pelet::SemanticValueClass nameValue;

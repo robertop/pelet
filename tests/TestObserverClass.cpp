@@ -24,8 +24,8 @@
  */
 #include <TestObserverClass.h> 
 
-void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment, const int lineNumber) {
+void TestObserverClass::ClassFound(const wxString& namespaceName, const wxString& className, const wxString& signature, 
+		const wxString& comment, const int lineNumber) {
 	ClassNamespace.push_back(namespaceName);
 	ClassName.push_back(className);
 	ClassSignature.push_back(signature);
@@ -33,18 +33,18 @@ void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const Uni
 	ClassLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos) {
+void TestObserverClass::NamespaceUseFound(const wxString& namespaceName, const wxString& alias, int startingPos) {
 	NamespaceUseName.push_back(namespaceName);
 	NamespaceAlias.push_back(alias);
 	NamespaceUseStartingPos.push_back(startingPos);
 }
 
-void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) {
+void TestObserverClass::NamespaceDeclarationFound(const wxString& namespaceName, int startingPos) {
 	NamespaceName.push_back(namespaceName);
 }
 
-void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+void TestObserverClass::MethodFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+		const wxString& signature, const wxString& returnType, const wxString& comment,
 		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
 	MethodClassNamespace.push_back(namespaceName);
 	MethodClassName.push_back(className);
@@ -57,14 +57,14 @@ void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const Un
 	MethodLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+void TestObserverClass::MethodScope(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
 		int startingPos, int endingPos) {
 	MethodStartingPos.push_back(startingPos);
 	MethodEndingPos.push_back(endingPos);
 }
 
-void TestObserverClass::PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
-		const UnicodeString& propertyType, const UnicodeString& comment, 
+void TestObserverClass::PropertyFound(const wxString& namespaceName, const wxString& className, const wxString& propertyName, 
+		const wxString& propertyType, const wxString& comment, 
 		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
 	PropertyClassNamespace.push_back(namespaceName);
 	PropertyClassName.push_back(className);
@@ -77,8 +77,8 @@ void TestObserverClass::PropertyFound(const UnicodeString& namespaceName, const 
 	PropertyLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
+void TestObserverClass::FunctionFound(const wxString& namespaceName, const wxString& functionName, 
+		const wxString& signature, const wxString& returnType, const wxString& comment, const int lineNumber) {
 	FunctionNamespace.push_back(namespaceName);
 	FunctionName.push_back(functionName);
 	FunctionSignature.push_back(signature);
@@ -87,13 +87,13 @@ void TestObserverClass::FunctionFound(const UnicodeString& namespaceName, const 
 	FunctionLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) {
+void TestObserverClass::FunctionScope(const wxString& namespaceName, const wxString& functionName, int startingPos, int endingPos) {
 	FunctionStartingPos.push_back(startingPos);
 	FunctionEndingPos.push_back(endingPos);
 }
 
-void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-	const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment) {
+void TestObserverClass::VariableFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+	const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const wxString& comment) {
 	VariableClassNamespace.push_back(namespaceName);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
@@ -101,18 +101,18 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	VariableComment.push_back(variable.Comment);
 	VariableArrayKeys.push_back(variable.ArrayKey);
 	VariableExpressionTypes.push_back(expression.ExpressionType);
-	UnicodeString typeString;
+	wxString typeString;
 	for (size_t i = 0; i < expression.ChainList.size(); ++i) {
-		UnicodeString prop;
+		wxString prop;
 		if (expression.ChainList[i].IsStatic && i > 0) {
-			prop = UNICODE_STRING_SIMPLE("::");
+			prop = wxT("::");
 		}
 		else if (i > 0) {
-			prop = UNICODE_STRING_SIMPLE("->");
+			prop = wxT("->");
 		}
 		prop.append(expression.ChainList[i].Name);
 		if (expression.ChainList[i].IsFunction) {
-			prop.append(UNICODE_STRING_SIMPLE("()"));
+			prop.append(wxT("()"));
 		}
 		typeString.append(prop);
 	}
@@ -123,28 +123,28 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	}
 }
 
-void TestObserverClass::DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment, const int lineNumber) {
+void TestObserverClass::DefineDeclarationFound(const wxString& namespaceName, const wxString& variableName, const wxString& variableValue, 
+		const wxString& comment, const int lineNumber) {
 	DefinedNamespaceName.push_back(namespaceName);
 	DefinedName.push_back(variableName);
 	DefinedValue.push_back(variableValue);
 	DefinedComment.push_back(comment);		
 }
 
-void TestObserverClass::IncludeFound(const UnicodeString& file, const int lineNumber) {
+void TestObserverClass::IncludeFound(const wxString& file, const int lineNumber) {
 	IncludeFile.push_back(file);
 	IncludeLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitName) {
+void TestObserverClass::TraitUseFound(const wxString& namespaceName, const wxString& className, const wxString& traitName) {
 	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitName);
 }
 	
-void TestObserverClass::TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-										const UnicodeString& traitMethodName, 
-										const UnicodeString& alias, pelet::TokenClass::TokenIds visibility) {
+void TestObserverClass::TraitAliasFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
+										const wxString& traitMethodName, 
+										const wxString& alias, pelet::TokenClass::TokenIds visibility) {
 	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);
@@ -153,8 +153,8 @@ void TestObserverClass::TraitAliasFound(const UnicodeString& namespaceName, cons
 	TraitAliasVisibility.push_back(visibility);
 }
 
-void TestObserverClass::TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-						  const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) {
+void TestObserverClass::TraitInsteadOfFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
+						  const wxString& traitMethodName, const std::vector<wxString>& insteadOfList) {
 	TraitNamespace.push_back(namespaceName);
 	TraitClassName.push_back(className);
 	TraitUsed.push_back(traitUsedClassName);

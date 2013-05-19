@@ -27,7 +27,6 @@
 #include <FileTestFixtureClass.h>
 #include <TestObserverClass.h>
 #include <PeletChecks.h>
-#include <unicode/ustring.h>
 #include <vector>
 
 
@@ -69,7 +68,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, Traits) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 
-	UnicodeString code = _U(
+	wxString code = _U(
 		"trait ezcReflectionReturnInfo {"
 		"    function getReturnType() { /*1*/ }"
 		"    function getReturnDescription() { /*2*/ }"
@@ -99,7 +98,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, Traits) {
 TEST_FIXTURE(Parser54FeaturesTestClass, TraitsWithConflictsAndAlias) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"trait A {"
 		"    public function smallTalk() {"
 		"        echo 'a';"
@@ -205,7 +204,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, TraitsWithNamespaces) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First {\n"
 		"trait ezcReflectionReturnInfo {"
 		"    function getReturnType() { /*1*/ }"
@@ -239,7 +238,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, TraitWithVariable) {
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetVariableObserver(&Observer);
 
-	UnicodeString code = _U(
+	wxString code = _U(
 		"trait ezcReflectionReturnInfo {"
 		"    function getReturnType() { /*1*/ }"
 		"    function getReturnDescription() { /*2*/ }"
@@ -259,7 +258,7 @@ TEST_FIXTURE(Parser54FeaturesTestClass, TraitWithVariable) {
 
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainConstructor) {
-	UnicodeString code = _U("(new Foo)->method");
+	wxString code = _U("(new Foo)->method");
 	Parser.ParseExpression(code, Expr);
 
 	CHECK_UNISTR_EQUALS("Foo", Expr.FirstValue());
@@ -270,7 +269,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainConstruct
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithFunctionArrayDereference) {
-	UnicodeString code = _U("array_merge($expr1, $expr2)[0]->method()");
+	wxString code = _U("array_merge($expr1, $expr2)[0]->method()");
 	Parser.ParseExpression(code, Expr);
 
 	CHECK_UNISTR_EQUALS("array_merge", Expr.FirstValue());
@@ -281,7 +280,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithFunctionArrayD
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithMethodArrayDereference) {
-	UnicodeString code = _U("$this->func($expr1, $expr2)[0]->method()");
+	wxString code = _U("$this->func($expr1, $expr2)[0]->method()");
 	Parser.ParseExpression(code, Expr);
 
 	CHECK_UNISTR_EQUALS("$this", Expr.FirstValue());
@@ -402,7 +401,7 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassObserver) {
 		CHECK_VECTOR_SIZE(1, Observer.ClassSignature);
 		CHECK_UNISTR_EQUALS("abstract class UserClass", Observer.ClassSignature[0]);
 		CHECK_VECTOR_SIZE(1, Observer.ClassComment);
-		CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a class comment\n */"), Observer.ClassComment[0]);			
+		CHECK_EQUAL(wxT("/**\n * This is a class comment\n */"), Observer.ClassComment[0]);			
 		CHECK_VECTOR_SIZE(1, Observer.DefinedName);
 		CHECK_UNISTR_EQUALS("MAX_TIME", Observer.DefinedName[0]);		
 		CHECK_VECTOR_SIZE(1, Observer.DefinedValue);
@@ -434,11 +433,11 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassMemberObserver) {
 	CHECK_UNISTR_EQUALS("getName", Observer.MethodName[2]);
 	CHECK_UNISTR_EQUALS("setName", Observer.MethodName[3]);
 	CHECK_VECTOR_SIZE(4, Observer.MethodComment);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n\t * The class constructor\n\t * @return void\n\t */"), 
+	CHECK_EQUAL(wxT("/**\n\t * The class constructor\n\t * @return void\n\t */"), 
 		Observer.MethodComment[0]); // __construct() comment
 	CHECK_UNISTR_EQUALS("", 
 		Observer.MethodComment[1]); // work() comment
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/** get the user's name */"), 
+	CHECK_EQUAL(wxT("/** get the user's name */"), 
 		Observer.MethodComment[2]); // getName() comment
 	CHECK_UNISTR_EQUALS("", 
 		Observer.MethodComment[3]); // setName() comment
@@ -454,7 +453,7 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassMemberObserver) {
 	CHECK_UNISTR_EQUALS("public function __construct()", Observer.MethodSignature[0]);
 	CHECK_UNISTR_EQUALS("public abstract function work()", Observer.MethodSignature[1]);
 	CHECK_UNISTR_EQUALS("public function getName()", Observer.MethodSignature[2]);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("private static function setName($name)"), Observer.MethodSignature[3]);
+	CHECK_EQUAL(wxT("private static function setName($name)"), Observer.MethodSignature[3]);
 	CHECK_VECTOR_SIZE(2, Observer.PropertyClassName);
 	CHECK_UNISTR_EQUALS("UserClass", Observer.PropertyClassName[0]);
 	CHECK_UNISTR_EQUALS("UserClass", Observer.PropertyClassName[1]);
@@ -462,9 +461,9 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyClassMemberObserver) {
 	CHECK_UNISTR_EQUALS("$name", Observer.PropertyName[0]);
 	CHECK_UNISTR_EQUALS("DEFAULT_NAME", Observer.PropertyName[1]);
 	CHECK_VECTOR_SIZE(2, Observer.PropertyComment);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n\t * This is a the user's name\n\t * @var string\n\t */"), 
+	CHECK_EQUAL(wxT("/**\n\t * This is a the user's name\n\t * @var string\n\t */"), 
 		Observer.PropertyComment[0]);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n\t * This is the default user name\n\t * @var string\n\t */"), 
+	CHECK_EQUAL(wxT("/**\n\t * This is the default user name\n\t * @var string\n\t */"), 
 		Observer.PropertyComment[1]);
 	CHECK_VECTOR_SIZE(2, Observer.PropertyType);
 	CHECK_UNISTR_EQUALS("string", Observer.PropertyType[0]);
@@ -487,10 +486,10 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyFunctionObserver) {
 	CHECK_VECTOR_SIZE(1, Observer.FunctionName);
 	CHECK_UNISTR_EQUALS("showUser", Observer.FunctionName[0]);
 	CHECK_VECTOR_SIZE(1, Observer.FunctionComment);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("/**\n * This is a function comment\n * @return boolean\n */"), 
+	CHECK_EQUAL(wxT("/**\n * This is a function comment\n * @return boolean\n */"), 
 		Observer.FunctionComment[0]);
 	CHECK_VECTOR_SIZE(1, Observer.FunctionSignature);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("function showUser($user)"), 
+	CHECK_EQUAL(wxT("function showUser($user)"), 
 		Observer.FunctionSignature[0]);
 	CHECK_VECTOR_SIZE(1, Observer.FunctionReturnType);
 	CHECK_UNISTR_EQUALS("boolean", Observer.FunctionReturnType[0]);
@@ -546,7 +545,7 @@ TEST_FIXTURE(FullParser54TestClass, ScanFileShouldNotifyVariableObserver) {
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassTypes) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
 		"abstract class AbstractRunnable implements Runnable, ArrayAccess {}\n"
@@ -561,13 +560,13 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassTypes) {
 	CHECK_VECTOR_SIZE(4, Observer.ClassSignature);
 	CHECK_UNISTR_EQUALS("interface Runnable", Observer.ClassSignature[0]);
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends Runnable", Observer.ClassSignature[1]);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements Runnable, ArrayAccess"), Observer.ClassSignature[2]);
+	CHECK_EQUAL(wxT("abstract class AbstractRunnable implements Runnable, ArrayAccess"), Observer.ClassSignature[2]);
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends AbstractRunnable implements MyRunnable", Observer.ClassSignature[3]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllDefinesWithExpressions) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"define ('MAX_TIME', 3 * 60);\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
@@ -579,7 +578,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllDefinesWithExpressions) {
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithMultipleNamespaces) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace Second {\n"
 		"class SecClass {}\n"
 		"}"
@@ -606,7 +605,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithMultipleNamespaces) {
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First;\n"
 		"interface Runnable {}\n"
 		"interface MyRunnable extends Runnable {} \n"
@@ -623,7 +622,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {
 	CHECK_VECTOR_SIZE(4, Observer.ClassSignature);
 	CHECK_UNISTR_EQUALS("interface Runnable", Observer.ClassSignature[0]);
 	CHECK_UNISTR_EQUALS("interface MyRunnable extends \\First\\Runnable", Observer.ClassSignature[1]);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
+	CHECK_EQUAL(wxT("abstract class AbstractRunnable implements \\First\\Runnable, \\ArrayAccess"), Observer.ClassSignature[2]);
 	CHECK_UNISTR_EQUALS("class TrueRunnable extends \\First\\AbstractRunnable implements \\First\\MyRunnable", Observer.ClassSignature[3]);
 	CHECK_VECTOR_SIZE(1, Observer.DefinedName);
 	CHECK_UNISTR_EQUALS("MY_CONST", Observer.DefinedName[0]);
@@ -631,7 +630,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithClassesWithNamespaces) {
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"interface Runnable { const MSG = 'const'; abstract function run();}\n"
 		"abstract class MyRunnable implements Runnable { \n"
 		"	function run() {} \n"
@@ -679,7 +678,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithReturnAnnotationsNamespaces) {
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First;\n"
 		"use Second\\Child as C;"
 		"abstract class MyRunnable implements Runnable { \n"
@@ -709,7 +708,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithUndeclaredClassMemberAssignments) 
 	// even though there are two assignments we shoule get notified only once
 	// for the second class, we should only get 1 notification since the
 	// member is declared
-	UnicodeString code = _U(
+	wxString code = _U(
 		"class MyRunnable { \n"
 		"	function run() {\n"
 		"		$this->name = 'Runnable';\n"
@@ -750,7 +749,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringVariableObserverWithUndeclaredClassMem
 	// even though there are two assignments we should get notified only once
 	// for the second class, we should only get 1 notification since the
 	// member is declared
-	UnicodeString code = _U(
+	wxString code = _U(
 		"class MyRunnable { \n"
 		"	function run() {\n"
 		"		$this->name = 'Runnable';\n"
@@ -791,7 +790,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleVariableExpressionTypes
 	// a static declaration
 	// an assignment with an array expression
 	// an assignment with a variable that has an array key
-	UnicodeString code = _U(
+	wxString code = _U(
 		"$glob = new Globals();\n"
 		"function workFunc(Globals $srcGlobal) {\n"
 		"	$local = $srcGlobal;\n"
@@ -867,7 +866,7 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleVariableExpressionTypes
 TEST_FIXTURE(Parser54TestClass, ScanStringWithAllTypeHintingNamespaces) {
 	Parser.SetVariableObserver(&Observer);
 
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First;\n"
 		"function workFunc(Globals $srcGlobal, Second\\Globals $second, array $items) {\n"
 		"}\n"
@@ -894,7 +893,7 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 	// test all the PHPDoc stuff
 	// @property, @property-read, @property-write, @method, and @var
 	// also @param and @return
-	UnicodeString code = _U(
+	wxString code = _U(
 		"/**\n"
 		" * This is a class that implements the 'magic' methods\n"
 		" *\n"
@@ -932,8 +931,8 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 	CHECK_UNISTR_EQUALS("Integer", Observer.MethodReturnType[0]);
 	CHECK_UNISTR_EQUALS("string", Observer.MethodReturnType[1]);
 	CHECK_VECTOR_SIZE(2, Observer.MethodSignature);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function getAge(int $int1, int $int2)"), Observer.MethodSignature[0]);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("public function __call($name, $arg1, $arg2)"), Observer.MethodSignature[1]);
+	CHECK_UNISTR_EQUALS("public function getAge(int $int1, int $int2)", Observer.MethodSignature[0]);
+	CHECK_UNISTR_EQUALS("public function __call($name, $arg1, $arg2)", Observer.MethodSignature[1]);
 	CHECK_VECTOR_SIZE(4, Observer.PropertyClassName);
 	CHECK_UNISTR_EQUALS("Person", Observer.PropertyClassName[0]);
 	CHECK_UNISTR_EQUALS("Person", Observer.PropertyClassName[1]);
@@ -985,7 +984,7 @@ TEST_FIXTURE(Parser54TestClass, MethodScope) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
 	Parser.SetFunctionObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"class MyClass {\n"     //16
 		"\n"                    // 1
 		"function work() {\n"   //18
@@ -1001,7 +1000,7 @@ TEST_FIXTURE(Parser54TestClass, MethodScope) {
 
 TEST_FIXTURE(Parser54TestClass, IncludeWithStringConstant) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"require ('db_functions_0.php');\n"
 		"require_once ('db_functions_1.php');\n"
 		"include 'db_functions_2.php';\n"
@@ -1017,7 +1016,7 @@ TEST_FIXTURE(Parser54TestClass, IncludeWithStringConstant) {
 
 TEST_FIXTURE(Parser54TestClass, IncludeWithExpression) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"@include($file);\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
@@ -1029,7 +1028,7 @@ TEST_FIXTURE(Parser54TestClass, IncludeWithExpression) {
 
 TEST_FIXTURE(Parser54TestClass, IncludeWithMagicConstant) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"include (__DIR__ . '/file.php');\n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
@@ -1043,7 +1042,7 @@ TEST_FIXTURE(Parser54TestClass, IncludeWithMagicConstant) {
 TEST_FIXTURE(Parser54TestClass, ClassLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"/**\n"
 		" * my class \n"
 		" */\n"
@@ -1064,7 +1063,7 @@ TEST_FIXTURE(Parser54TestClass, ClassLineNumber) {
 TEST_FIXTURE(Parser54TestClass, MethodLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"class MyClass {\n"
 		"	function \n"
 		"      myFunc() {\n"
@@ -1082,7 +1081,7 @@ TEST_FIXTURE(Parser54TestClass, MethodLineNumber) {
 TEST_FIXTURE(Parser54TestClass, PropertyLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"class MyClass {\n"
 		"	var $name;\n"
 		"}\n"
@@ -1097,7 +1096,7 @@ TEST_FIXTURE(Parser54TestClass, PropertyLineNumber) {
 
 TEST_FIXTURE(Parser54TestClass, IncludeLineNumber) {
 	Parser.SetClassObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"require 'db_functions_0.php';\n"             // line 1
 		"require_once 'db_functions_1.php';\n"
 		"include 'db_functions_2.php';\n"
@@ -1118,7 +1117,7 @@ TEST_FIXTURE(Parser54TestClass, IncludeLineNumber) {
 TEST_FIXTURE(Parser54TestClass, NamespaceAlias) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetFunctionObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First;\n"
 		"class MyClass {}\n"
 		"function work() {}\n"
@@ -1151,9 +1150,9 @@ TEST_FIXTURE(Parser54TestClass, NamespaceAlias) {
 	CHECK_UNISTR_EQUALS("\\First\\Child", Observer.NamespaceUseName[2]);
 	
 	CHECK_VECTOR_SIZE(3, Observer.NamespaceUseStartingPos);
-	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use First\\MyClass")), Observer.NamespaceUseStartingPos[0]);
-	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use Second\\MyClass")), Observer.NamespaceUseStartingPos[1]);
-	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use \\First\\Child")), Observer.NamespaceUseStartingPos[2]);
+	CHECK_EQUAL((int)code.find(wxT("use First\\MyClass")), Observer.NamespaceUseStartingPos[0]);
+	CHECK_EQUAL((int)code.find(wxT("use Second\\MyClass")), Observer.NamespaceUseStartingPos[1]);
+	CHECK_EQUAL((int)code.find(wxT("use \\First\\Child")), Observer.NamespaceUseStartingPos[2]);
 	
 	CHECK_VECTOR_SIZE(3, Observer.NamespaceAlias);
 	CHECK_UNISTR_EQUALS("FClass", Observer.NamespaceAlias[0]);
@@ -1174,7 +1173,7 @@ TEST_FIXTURE(Parser54TestClass, NamespaceAlias) {
 
 TEST_FIXTURE(Parser54TestClass, NamespaceVariables) {
 	Parser.SetVariableObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"namespace First;\n"
 		"use Second\\Child as C;\n"
 		"$first =  new MyClass();\n"
@@ -1200,7 +1199,7 @@ TEST_FIXTURE(Parser54TestClass, NamespaceVariables) {
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserver) {
 	Parser.SetExpressionObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"myFunct('one', $arr); \n"
 		"anotherFunc(myFunct('three', $four), myFunct(array('key_one' => 1)));\n"
 	);
@@ -1244,7 +1243,7 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserver) {
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithObjects) {
 	Parser.SetExpressionObserver(&Observer);
-	UnicodeString code = _U(
+	wxString code = _U(
 		"$this->load->view('one', $arr); \n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
@@ -1344,7 +1343,7 @@ TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueWhenFileHasTagWithEcho) 
 }
 
 TEST_FIXTURE(Parser54TestClass, LintStringShouldReturnFalseOnBadCode) {
-	UnicodeString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
+	wxString code = _U("$'gag's = 'hello' \"again\" $not gaging;");
 	CHECK_EQUAL(false, Parser.LintString(code, LintResults));
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
@@ -1354,47 +1353,23 @@ TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnFalseOnBadCode) {
 	CreateFixtureFile("testpure.php", 
 		"<?php $'gag's = 'hello' \"again\" $not gaging;");
 	std::string filename = TestProjectDir + "testpure.php";
-	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
-	int charCount = filename.length();
-	UErrorCode status = U_ZERO_ERROR;
-	UnicodeString uni;
-	int actualCount = 0;
-	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
-	if (U_SUCCESS(status)) {
-		ufilename.releaseBuffer(actualCount + 0);	
-	}
-	else {
-		ufilename.releaseBuffer(0);
-	}
-
+	wxString ufilename(filename.c_str(), wxConvUTF8);
+	
 	FILE* file = fopen(filename.c_str(), "rb");
 	CHECK_EQUAL(false, Parser.LintFile(file, ufilename, LintResults));
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
-	fclose(file);
 }
 
 TEST_FIXTURE(Parser54TestClass, ScanFileShouldReturnFalseOnBadCode) {
 	CreateFixtureFile("testpure.php", 
 		"<?php $'gag's = 'hello' \"again\" $not gaging;");
 	std::string filename = TestProjectDir + "testpure.php";
-	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
-	int charCount = filename.length();
-	UErrorCode status = U_ZERO_ERROR;
-	UnicodeString uni;
-	int actualCount = 0;
-	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
-	if (U_SUCCESS(status)) {
-		ufilename.releaseBuffer(actualCount + 0);	
-	}
-	else {
-		ufilename.releaseBuffer(0);
-	}
-
+	wxString ufilename(filename.c_str(), wxConvUTF8);
+	
 	FILE* file = fopen(filename.c_str(), "rb");
 	CHECK_EQUAL(false, Parser.ScanFile(file, ufilename, LintResults));
-	fclose(file);
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
@@ -1409,31 +1384,18 @@ TEST_FIXTURE(Parser54TestClass, ScanFileShouldReturnScopeBadCode) {
 		" }"
 		"}");
 	std::string filename = TestProjectDir + "testpure.php";
-	UnicodeString ufilename = UNICODE_STRING_SIMPLE("testpure.php");
-	int charCount = filename.length();
-	UErrorCode status = U_ZERO_ERROR;
-	UnicodeString uni;
-	int actualCount = 0;
-	u_strFromUTF8(ufilename.getBuffer(charCount + 0), charCount + 0, &actualCount, filename.c_str(), charCount, &status);
-	if (U_SUCCESS(status)) {
-		ufilename.releaseBuffer(actualCount + 0);	
-	}
-	else {
-		ufilename.releaseBuffer(0);
-	}
-
+	wxString ufilename(filename.c_str(), wxConvUTF8);
 	FILE* file = fopen(filename.c_str(), "rb");
 	CHECK_EQUAL(false, Parser.ScanFile(file, ufilename, LintResults));
-	fclose(file);
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
 	CHECK_EQUAL(ufilename, LintResults.UnicodeFilename);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+	CHECK_EQUAL(wxT("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(wxT("myFunct"), LintResults.Scope.MethodName);
 }
 
 TEST_FIXTURE(Parser54TestClass, ScanStringShouldReturnScopeBadCode) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<?php "
 		"class MyClass { "
 		" function myFunct() { "
@@ -1443,18 +1405,18 @@ TEST_FIXTURE(Parser54TestClass, ScanStringShouldReturnScopeBadCode) {
 	CHECK_EQUAL(false, Parser.ScanString(code, LintResults));
 	CHECK(LintResults.Error.length() > 0);
 	CHECK(LintResults.LineNumber > 0);
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
-	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+	CHECK_EQUAL(wxT("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(wxT("myFunct"), LintResults.Scope.MethodName);
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseVariableExpression) {
-	UnicodeString code = _U("$variable");
+	wxString code = _U("$variable");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseObjectExpression) {
-	UnicodeString code = _U("$variable->prop");
+	wxString code = _U("$variable->prop");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(2, Expr.ChainList);
@@ -1467,7 +1429,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseObjectWithoutPropertyExpression) 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
-	UnicodeString code = _U("$obj->");
+	wxString code = _U("$obj->");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$obj", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(2, Expr.ChainList);
@@ -1480,7 +1442,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseStaticWithoutPropertyExpression) 
 	// if an expression ends with the operator, still want to add it to the
 	// chain list so that during code completion we can trigger lookup
 	// of class members
-	UnicodeString code = _U("MyClass::");
+	wxString code = _U("MyClass::");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(2, Expr.ChainList);
@@ -1490,7 +1452,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseStaticWithoutPropertyExpression) 
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseStaticExpression) {
-	UnicodeString code = _U("MyClass::$DEFAULT");
+	wxString code = _U("MyClass::$DEFAULT");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(2, Expr.ChainList);
@@ -1500,7 +1462,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseStaticExpression) {
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseConstantExpression) {
-	UnicodeString code = _U("MyClass::PI;");
+	wxString code = _U("MyClass::PI;");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("MyClass", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(2, Expr.ChainList);
@@ -1510,7 +1472,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseConstantExpression) {
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpression) {
-	UnicodeString code = _U("$variable->func1()->prop2->func3()->prop4");
+	wxString code = _U("$variable->func1()->prop2->func3()->prop4");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$variable", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(5, Expr.ChainList);
@@ -1522,7 +1484,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpression) {
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionStartsWithFunction) {
-	UnicodeString code = _U("func1()->prop2->prop4");
+	wxString code = _U("func1()->prop2->prop4");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("func1", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(3, Expr.ChainList);
@@ -1534,7 +1496,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionStartsWithFunction
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = _U("$this->propA->func1($a, $b)->prop2->prop4");
+	wxString code = _U("$this->propA->func1($a, $b)->prop2->prop4");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$this", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(5, Expr.ChainList);
@@ -1548,7 +1510,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithFunctionArgume
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainThatStartsWithMethodArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = _U("$this->func1($a, $b)->propA->prop2->prop4");
+	wxString code = _U("$this->func1($a, $b)->propA->prop2->prop4");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("$this", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(5, Expr.ChainList);
@@ -1562,7 +1524,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainThatStart
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainThatStartsWithFunctionArguments) {
 
 	// function args $a, $b should be ignored here
-	UnicodeString code = _U("func1($a, $b)->propA->func2($c)->prop4");
+	wxString code = _U("func1($a, $b)->propA->func2($c)->prop4");
 	Parser.ParseExpression(code, Expr);
 
 	CHECK_UNISTR_EQUALS("func1", Expr.FirstValue());
@@ -1574,7 +1536,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainThatStart
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseExpressionWithNamespace) {
-	UnicodeString code = _U("\\First\\Chi");
+	wxString code = _U("\\First\\Chi");
 	Parser.ParseExpression(code, Expr);
 
 	CHECK_UNISTR_EQUALS("\\First\\Chi", Expr.FirstValue());
@@ -1583,7 +1545,7 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseExpressionWithNamespace) {
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseExpressionWithNamespaceEnd) {
-	UnicodeString code = _U("\\First\\");
+	wxString code = _U("\\First\\");
 	Parser.ParseExpression(code, Expr);
 	CHECK_UNISTR_EQUALS("\\First\\", Expr.FirstValue());
 	CHECK_VECTOR_SIZE(1, Expr.ChainList);

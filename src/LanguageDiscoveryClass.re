@@ -40,7 +40,7 @@ void pelet::LanguageDiscoveryClass::Close() {
 	Buffer.Close();
 }
 
-bool pelet::LanguageDiscoveryClass::Open(const UnicodeString& code) {
+bool pelet::LanguageDiscoveryClass::Open(const wxString& code) {
 	bool ret = Buffer.OpenString(code);
 	if (ret) {
 		Code = code;
@@ -76,7 +76,7 @@ discovery_start:
 discovery_next_char:
 /*!re2c
  
-re2c:define:YYCTYPE = UChar;
+re2c:define:YYCTYPE = wxChar;
 re2c:define:YYCURSOR = Buffer.Current;
 re2c:define:YYLIMIT = Buffer.Limit;
 re2c:define:YYMARKER = Buffer.Marker;

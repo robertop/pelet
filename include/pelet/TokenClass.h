@@ -27,7 +27,7 @@
 
 #include <pelet/Api.h>
 #include <pelet/UCharBufferedFileClass.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 
 namespace pelet {
 
@@ -276,7 +276,7 @@ bool PELET_API IsTerminatingToken(int token);
  * @param identifier the identifier to look for.
  * @return 0 for success; ERROR_UNTERMINATED_STRING if identifier was not found
  */
-int SkipToIdentifier(BufferClass* buffer, UnicodeString identifier);
+int SkipToIdentifier(BufferClass* buffer, wxString identifier);
 
 /**
  * This function will advance the current pointer of the buffer all the way until

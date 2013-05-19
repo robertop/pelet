@@ -45,7 +45,7 @@
  * cleaned up properly. Additionally, the macro will call the new instance's
  * Init() method, giving all of the parameters given. For example a macro call
  * 
- *    AST_INIT_ARGS($$, pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("clazz"))
+ *    AST_INIT_ARGS($$, pelet::QualifiedNameClass, wxT("clazz"))
  *
  * will create a new pelet::QualifiedNameClass and will call the Init method with a 
  * single parameter "clazz"

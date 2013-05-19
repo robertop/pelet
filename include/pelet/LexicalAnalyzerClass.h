@@ -26,7 +26,7 @@
 #define LEXICALANALYZER_H
 
 #include <string>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 #include <pelet/UCharBufferedFileClass.h>
 #include <pelet/TokenClass.h>
 #include <pelet/Api.h>
@@ -46,7 +46,7 @@ class PELET_API LexicalAnalyzerClass {
 	 * Any parse error is stored here. This is read by the ParserClass::LintFile and 
 	 * ParserClass::LintCode methods and written by php53error function.
 	 */
-	 UnicodeString ParserError;
+	 wxString ParserError;
 
 	/**
 	 * constructor: opens the file with the name given, using PHP_53 as the version
@@ -90,7 +90,7 @@ class PELET_API LexicalAnalyzerClass {
 	 * @param wxString& code to analyze
 	 * @return bool true if source could be successfully turned to utf-16
 	 */
-	bool OpenString(const UnicodeString& code);
+	bool OpenString(const wxString& code);
 	
 	/**
 	 * Change the version that this lexer can handle. This needs to be called BEFORE OpenFile() or
@@ -117,10 +117,10 @@ class PELET_API LexicalAnalyzerClass {
 	/**
 	 * Get the current lexeme, which is set during NextToken() method.
 	 *
-	 * @param UnicodeString& lexeme will be set with the lexeme
+	 * @param wxString& lexeme will be set with the lexeme
 	 * @return bool true if successful, false on error
 	 */
-	bool GetLexeme(UnicodeString& lexeme);
+	bool GetLexeme(wxString& lexeme);
 
 	/**
 	 * returns the line number of the source file that the
@@ -174,7 +174,7 @@ class PELET_API LexicalAnalyzerClass {
 	 *         if the the last expression has been terminated (ie the last non-whitespace
 	 *         character is ";")
 	 */
-	UnicodeString LastExpression(const UnicodeString& code) const;
+	wxString LastExpression(const wxString& code) const;
 	
 private:	
 	

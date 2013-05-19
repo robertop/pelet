@@ -41,7 +41,7 @@ void pelet::LanguageDiscoveryClass::Close() {
 	Buffer.Close();
 }
 
-bool pelet::LanguageDiscoveryClass::Open(const UnicodeString& code) {
+bool pelet::LanguageDiscoveryClass::Open(const wxString& code) {
 	bool ret = Buffer.OpenString(code);
 	if (ret) {
 		Code = code;
@@ -77,7 +77,7 @@ discovery_start:
 discovery_next_char:
 
 	{
-		UChar yych;
+		wxChar yych;
 		unsigned int yyaccept = 0;
 		switch (DISCOVERY_GET_CONDITION()) {
 		case SYNTAX_HTML: goto discovery_HTML;

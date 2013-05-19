@@ -28,7 +28,7 @@
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/TokenClass.h>
 #include <pelet/ParserTypeClass.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 #include <pelet/Api.h>
 
 /**
@@ -88,7 +88,7 @@ public:
 	 * not the most user-friendly but it is exactly what PHP displays; might as well
 	 * keep it consistant.
 	 */
-	UnicodeString Error;
+	wxString Error;
 
 	/**
 	 * Path to the file in which the error ocurred. 
@@ -99,10 +99,10 @@ public:
 
 	/**
 	 * Path to the file in which the error ocurred. 
-	 * This is what was given to the LintFile() or ScanFile(FILE*, UnicodeString, LintResultsClass&) method.
+	 * This is what was given to the LintFile() or ScanFile(FILE*, wxString, LintResultsClass&) method.
 	 * For LintString() results this will be the empty string.
 	 */
-	UnicodeString UnicodeFilename;
+	wxString UnicodeFilename;
 	
 	/**
 	 * If the parser encountered a syntax error, then this object will be filled with 
@@ -143,8 +143,8 @@ public:
  * @code
  *   class EchoAndObserverClass : public ClassObserverClass {
  * 
- *     virtual void ClassFound(const UnicodeString& className, const UnicodeString& signature, 
- *          const UnicodeString& comment) {
+ *     virtual void ClassFound(const wxString& className, const wxString& signature, 
+ *          const wxString& comment) {
  *       printf("Found Class %s\n", (const char*)className.ToUTF8());
  *     }
  *   }
@@ -191,7 +191,7 @@ public:
 	 * parser should not be modified in the observer calls.
 	 * 
 	 * This is a convenience method, it does no handle unicode file names. For that,
-	 * see ScanFile(FILE*, UnicodeString, LintResultsClass)
+	 * see ScanFile(FILE*, wxString, LintResultsClass)
 	 *
 	 * @param file the file to parse.  Must be a full path.
 	 * @param LintResultsClass& results any error message will be populated here
@@ -212,7 +212,7 @@ public:
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool if file was found and could be parsed successfully
 	 */
-	bool ScanFile(FILE* file, const UnicodeString& fileName, LintResultsClass& results);
+	bool ScanFile(FILE* file, const wxString& fileName, LintResultsClass& results);
 	
 	/**
 	 * Scans the given string. This function will return once the entire
@@ -220,11 +220,11 @@ public:
 	 * a class, function, or variable declaration. This means that this
 	 * parser should not be modified in the observer calls.
 	 * 
-	 * @param const UnicodeString& code the code to parse.
+	 * @param const wxString& code the code to parse.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool if string could be parsed successfully
 	 */
-	bool ScanString(const UnicodeString& code, LintResultsClass& results);
+	bool ScanString(const wxString& code, LintResultsClass& results);
 	
 	/**
 	 * Change the version that this parser can handle. This needs to be called BEFORE ScanFile() or
@@ -313,7 +313,7 @@ public:
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if file was found and had no syntax errors.
 	 */
-	bool LintFile(FILE* file, const UnicodeString& filename, LintResultsClass& results);
+	bool LintFile(FILE* file, const wxString& filename, LintResultsClass& results);
 	
 	/**
 	 * Perform a syntax check on the given source code. Source code is assumed to be
@@ -321,11 +321,11 @@ public:
 	 * open tag is optional.
 	 * Returns true if the code had no syntax errors.
 	 * 
-	 * @param const UnicodeString& code the actual code to parse.
+	 * @param const wxString& code the actual code to parse.
 	 * @param LintResultsClass& results any error message will be populated here
 	 * @return bool true if the code has no syntax errors.
 	 */
-	bool LintString(const UnicodeString& code, LintResultsClass& results);
+	bool LintString(const wxString& code, LintResultsClass& results);
 
 	/**
 	 * @return the character position where the parser is currently parsing. This can be called
@@ -357,7 +357,7 @@ public:
 	 * For example, if sourceCode represented this string:
 	 * 
 	 *   @code
-	 *     UnicodeString sourceCode = UNICODE_STRING_SIMPLE("
+	 *     wxString sourceCode = wxT("
 	 *       class UserClass {
 	 *         private $name;
 	 * 
@@ -369,7 +369,7 @@ public:
 	 * 
 	 *   @code
 	 *     ParserClass parser;
-	 *     UnicodeString expression = UNICODE_STRING_SIMPLE("$this->");
+	 *     wxString expression = wxT("$this->");
 	 *     pelet::SymbolClass exprResult;
 	 *     if (parser.ParseExpression(expression, exprResult)) {
 	 *     	// if successful, symbol.Lexeme will be set to "$this"
@@ -404,7 +404,7 @@ public:
 	 * the variable name actually ended.
 	 * @param expression the expression's name and "chain" list. The  properties of this object will be reset every call.
 	 */
-	void ParseExpression(UnicodeString expressionString, ExpressionClass& expression);
+	void ParseExpression(wxString expressionString, ExpressionClass& expression);
 	
 private:
 

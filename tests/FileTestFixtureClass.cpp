@@ -24,7 +24,6 @@
  */
 #include <FileTestFixtureClass.h>
 #include <fstream>
-#include <unicode/ustring.h>
 #include <string.h>
 
 FileTestFixtureClass::FileTestFixtureClass()
@@ -42,21 +41,8 @@ void FileTestFixtureClass::CreateFixtureFile(const std::string& fileName, const 
 	file.close();
 }
 
-UnicodeString _U(const char* source) {
-	int charCount = strlen(source);
-	UErrorCode status = U_ZERO_ERROR;
-	UnicodeString uni;
-	int actualCount = 0;
-	
-	// not sure if 5th param is meant to be in bytes or in chars... only time will tell	
-	// need to account for the null character, hence the +1
-	u_strFromUTF8(uni.getBuffer(charCount + 0), charCount + 0, &actualCount, source, charCount, &status);
-	if (U_SUCCESS(status)) {
-		uni.releaseBuffer(actualCount + 0);	
-	}
-	else {
-		uni.releaseBuffer(0);
-	}
+wxString _U(const char* source) {
+	wxString uni = wxString::FromAscii(source);
 	return uni;
 
 }

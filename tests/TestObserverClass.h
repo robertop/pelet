@@ -40,7 +40,7 @@ class TestObserverClass :
 public:
 
 	
-	std::vector<UnicodeString> ClassNamespace, ClassName, ClassSignature, ClassComment,
+	std::vector<wxString> ClassNamespace, ClassName, ClassSignature, ClassComment,
 						NamespaceName,
 						NamespaceUseName, NamespaceAlias,
 						MethodClassNamespace, MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
@@ -62,45 +62,45 @@ public:
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
 	std::vector<pelet::ExpressionClass> Expressions;
 	
-	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
-			const UnicodeString& comment, const int lineNumber);
+	void ClassFound(const wxString& namespaceName, const wxString& className, const wxString& signature, 
+			const wxString& comment, const int lineNumber);
 			
-	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos);
+	void NamespaceUseFound(const wxString& namespaceName, const wxString& alias, int startingPos);
 	
-	void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos);
+	void NamespaceDeclarationFound(const wxString& namespaceName, int startingPos);
 	
-	void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
+	void MethodFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+			const wxString& signature, const wxString& returnType, const wxString& comment,
 			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber);
 
-	void MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
+	void MethodScope(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
 		int startingPos, int endingPos);
 	
-	void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
-			const UnicodeString& propertyType, const UnicodeString& comment, 
+	void PropertyFound(const wxString& namespaceName, const wxString& className, const wxString& propertyName, 
+			const wxString& propertyType, const wxString& comment, 
 			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber);
 	
-	void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber);
+	void FunctionFound(const wxString& namespaceName, const wxString& functionName, 
+			const wxString& signature, const wxString& returnType, const wxString& comment, const int lineNumber);
 
-	void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos);
+	void FunctionScope(const wxString& namespaceName, const wxString& functionName, int startingPos, int endingPos);
 	
-	void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment);
+	void VariableFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const wxString& comment);
 	
-	void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
-			const UnicodeString& comment, const int lineNumber);
+	void DefineDeclarationFound(const wxString& namespaceName, const wxString& variableName, const wxString& variableValue, 
+			const wxString& comment, const int lineNumber);
 
-	void IncludeFound(const UnicodeString& file, const int lineNumber);
+	void IncludeFound(const wxString& file, const int lineNumber);
 
-	void TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitName);
+	void TraitUseFound(const wxString& namespaceName, const wxString& className, const wxString& traitName);
 	
-	void TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName, 
-		const UnicodeString& traitMethodName, 
-		const UnicodeString& alias, pelet::TokenClass::TokenIds visibility);
+	void TraitAliasFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName, 
+		const wxString& traitMethodName, 
+		const wxString& alias, pelet::TokenClass::TokenIds visibility);
 
-	void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList);
+	void TraitInsteadOfFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
+		const wxString& traitMethodName, const std::vector<wxString>& insteadOfList);
 		
 	void ExpressionFound(const pelet::ExpressionClass& expression);
 };

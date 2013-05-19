@@ -27,7 +27,7 @@
 
 #include <pelet/Api.h>
 #include <pelet/TokenClass.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 #include <vector>
 #include <map>
 
@@ -47,9 +47,9 @@ class QualifiedNameClass;
 /**
  * Case-sensitive string comparator for use as STL Predicate
  */
-class PELET_API UnicodeStringComparatorClass {
+class PELET_API wxStringComparatorClass {
 public:
-		bool operator()(const UnicodeString& str1, const UnicodeString& str2) const {
+		bool operator()(const wxString& str1, const wxString& str2) const {
 			return (str1.compare(str2) < (int8_t)0) ? true : false;
 		}
 };
@@ -66,63 +66,63 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a class, interface, or trait is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified "declared" namespace of the class that was found
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
+	 * @param const wxString& namespace the fully qualified "declared" namespace of the class that was found
+	 * @param const wxString& className the name of the class that was found
+	 * @param const wxString& signature the list of classes that the class inherits / implements in code format
 	 *        for example "extends UserClass implements Runnable".
 	 *        Note that the extends and implements class names are FULLY QUALIFIED in the proper manner using the current
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
 	 *        In other words, this is the "unparsed" signature and NOT what was actually in the input source code.
-	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
+	 * @param const wxString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
-	virtual void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
-		const UnicodeString& comment, const int lineNumber) { }
+	virtual void ClassFound(const wxString& namespaceName, const wxString& className, const wxString& signature, 
+		const wxString& comment, const int lineNumber) { }
 		
 	/**
 	 * Override this method to perform any logic when the class has ended (a closing brace '}' was encountered).
 	 *
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
-	 * @param const UnicodeString& className the name of the class that was found
+	 * @param const wxString& namespace the fully qualified namespace of the class that was found
+	 * @param const wxString& className the name of the class that was found
 	 * @param pos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void ClassEnd(const UnicodeString& namespaceName, const UnicodeString& className, int pos)  { }
+	virtual void ClassEnd(const wxString& namespaceName, const wxString& className, int pos)  { }
 	
 	/**
 	 * Override this method to perform any custom logic when a define declaration is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the define that was found
-	 * @param const UnicodeString& variableName the name of the defined variable
-	 * @param const UnicodeString& variableValue the variable value
-	 * @param const UnicodeString& comment PHPDoc attached to the define
+	 * @param const wxString& namespace the fully qualified namespace of the define that was found
+	 * @param const wxString& variableName the name of the defined variable
+	 * @param const wxString& variableValue the variable value
+	 * @param const wxString& comment PHPDoc attached to the define
 	 * @param lineNumber the line number (1-based) that the define was found in
 	 */
-	virtual void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
-		const UnicodeString& comment, const int lineNumber) { }
+	virtual void DefineDeclarationFound(const wxString& namespaceName, const wxString& variableName, const wxString& variableValue, 
+		const wxString& comment, const int lineNumber) { }
 		
 	/**
 	 * Override this method to perform any custom logic when an include / require / require_once / include_once declaration is found.
 	 * 
-	 * @param const UnicodeString& filename the name of the included file, but only if the statement
+	 * @param const wxString& filename the name of the included file, but only if the statement
 	 *        is a constant expression. Otherwise, lineNumber will be an empty string 
 	 * @param lineNumber the line number (1-based) that the include/ was found in
 	 */
-	virtual void IncludeFound(const UnicodeString& filename, const int lineNumber) { }
+	virtual void IncludeFound(const wxString& filename, const int lineNumber) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a namespace declaration is found.
 	 * 
-	 * @param const UnicodeString& namespaceName the name of the namespace name. Name will
+	 * @param const wxString& namespaceName the name of the namespace name. Name will
 	 *        be fully qualified (starts with '\')
 	 * @param startingPos the character position (of the 'namespace' keyword in the original source code)
 	 *        this is 0-based
 	 */
-	virtual void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos) { }
+	virtual void NamespaceDeclarationFound(const wxString& namespaceName, int startingPos) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a namespace is imported ("use" keyword).
 	 * 
-	 * @param UnicodeString namespaceName the fully qualified namespace that is being imported. It will 
+	 * @param wxString namespaceName the fully qualified namespace that is being imported. It will 
 	 *        always begin with a leading slash, even if the original source did not include it
 	 * @param alias any alias to the namespaceName. alias will never be empty. If the code does not
 	 *        specify an alias, the alias will be the last part of the namespace.
@@ -137,7 +137,7 @@ public:
 	 *        the namespace \Sec\Child is the position of "use"
 	 * @see LexicalAnalyzerClass::GetCharacterPosition()
 	 */
-	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos) { }
+	virtual void NamespaceUseFound(const wxString& namespaceName, const wxString& alias, int startingPos) { }
 
 };
 
@@ -154,69 +154,69 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a class method is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& methodName the name of the method that was found
-	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
+	 * @param const wxString& namespace the fully qualified namespace of the class that was found
+	 * @param const wxString& className the name of the class that was found
+	 * @param const wxString& methodName the name of the method that was found
+	 * @param const wxString& signature string containing method parameters.  String is normalized, meaning that
 	 *        any extra white space is removed, and every token is separated by one space only. ie. for the code
 	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
-	 * @param const UnicodeString& returnType the method's return type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param const wxString& returnType the method's return type, as dictated by the PHPDoc comment
+	 * @param const wxString& comment PHPDoc attached to the class
 	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
 	 * @param isStatic true if the method is static
 	 * @param lineNumber the line number (1-based) that the method was found in
 	 */
-	virtual void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
+	virtual void MethodFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+		const wxString& signature, const wxString& returnType, const wxString& comment, 
 		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& propertyName the name of the property that was found
-	 * @param const UnicodeString& propertyType the property's type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the property
+	 * @param const wxString& namespace the fully qualified namespace of the class that was found
+	 * @param const wxString& className the name of the class that was found
+	 * @param const wxString& propertyName the name of the property that was found
+	 * @param const wxString& propertyType the property's type, as dictated by the PHPDoc comment
+	 * @param const wxString& comment PHPDoc attached to the property
 	 * @param visibility the visibility token attached  to the property: PUBLIC, PROTECTED, or PRIVATE
 	 * @param bool isConst true if property is a constant
 	 * @param isStatic true if the property is static
 	 * @param lineNumber the line number (1-based) that the property was found in
 	 */
-	virtual void PropertyFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& propertyName, 
-		const UnicodeString& propertyType, const UnicodeString& comment, 
+	virtual void PropertyFound(const wxString& namespaceName, const wxString& className, const wxString& propertyName, 
+		const wxString& propertyType, const wxString& comment, 
 		TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) { }
 
 	/**
 	 * Override this method to perform any logic when the method body has ended (a closing brace '}' was encountered).
 	 *
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
-	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& methodName the name of the method that was found
+	 * @param const wxString& namespace the fully qualified namespace of the class that was found
+	 * @param const wxString& className the name of the class that was found
+	 * @param const wxString& methodName the name of the method that was found
 	 * @param startingPos the character position (of the closing brace '{' original source code)
 	 *        In case of an abstract method, startingPos is the position of the semicolon ';'
 	 * @param endingPos the character position (of the closing brace '}' original source code)
 	 *        In case of an abstract method, endingPos is the position of the semicolon ';'
 	 */
-	virtual void MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, 
-		const UnicodeString& methodName, int startingPos, int endingPos) { }
+	virtual void MethodScope(const wxString& namespaceName, const wxString& className, 
+		const wxString& methodName, int startingPos, int endingPos) { }
 
 	/**
 	 * Override this method to perform custom logic when a trait user statement has been found
 	 *
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class
+	 * @param const wxString& namespace the fully qualified namespace of the class
 	 * @param className the name of the class that uses the trait (NOT a fully qualified or qualified name)
 	 * @param traitName the fully qualified name of the trait to be used. FULLY QUALIFIED in the proper manner using the current
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
 	 *        In other words, this is the "unparsed" trait name and NOT what was actually in the input source code. 
 	 */
-	virtual void TraitUseFound(const UnicodeString& namespaceName, const UnicodeString& className, 
-		const UnicodeString& fullyQualifiedTraitName) { }
+	virtual void TraitUseFound(const wxString& namespaceName, const wxString& className, 
+		const wxString& fullyQualifiedTraitName) { }
 	
 	/**
 	 * Override this method to perform custom logic when a trait method has been aliased
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that uses the trait
+	 * @param const wxString& namespace the fully qualified namespace of the class that uses the trait
 	 * @param className name of the class that uses the trait (NOT a fully qualified or qualified name)
 	 * @param traitUsedClassName the class name of the trait to be aliased. FULLY QUALIFIED in the proper manner using the current
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
@@ -227,15 +227,15 @@ public:
 	 * @param alias the name of the new alias. alias may be empty when ONLY the visibility is changed.
 	 * @param visibility the visbility of the trait method. may be PUBLIC if the visibility was not changed.
 	 */
-	virtual void TraitAliasFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName, 
-		const UnicodeString& alias, TokenClass::TokenIds visibility) { }
+	virtual void TraitAliasFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
+		const wxString& traitMethodName, 
+		const wxString& alias, TokenClass::TokenIds visibility) { }
 
 	/**
 	 * Override this method to perform custom logic when a trait method conflict has been resolved
 	 * (an insteadof operation) 
 	 *
-	 * @param const UnicodeString& namespace the fully qualified namespace of the class that was found
+	 * @param const wxString& namespace the fully qualified namespace of the class that was found
 	 * @param className the name of the class that uses the trait (NOT a fully qualified or qualified name)
 	 * @param traitUsedClassName the class name of the trait to be used. FULLY QUALIFIED in the proper manner using the current
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
@@ -243,8 +243,8 @@ public:
 	 * @param traitMethodName name of the trait method that is to being resolved
 	 * @param insteadOfList the list of fully qualified trait names that are listed after the insteadof operator
 	 */
-	virtual void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
-		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList) { }
+	virtual void TraitInsteadOfFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
+		const wxString& traitMethodName, const std::vector<wxString>& insteadOfList) { }
 };
 
 /**
@@ -259,27 +259,27 @@ public:
 	/**
 	 * Override this method to perform any custom logic when a function is found.
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the function that was found
-	 * @param const UnicodeString& functionName the name of the method that was found
-	 * @param const UnicodeString& signature string containing method parameters.  String is normalized, meaning that
+	 * @param const wxString& namespace the fully qualified namespace of the function that was found
+	 * @param const wxString& functionName the name of the method that was found
+	 * @param const wxString& signature string containing method parameters.  String is normalized, meaning that
 	 *        any extra white space is removed, and every token is separated by one space only. ie. for the code
 	 *        "public function doWork( $item1,   $item2  ) " the signature will be  "($item1, $item2)"
-	 * @param const UnicodeString& returnType the function's return type, as dictated by the PHPDoc comment
-	 * @param const UnicodeString& comment PHPDoc attached to the class
+	 * @param const wxString& returnType the function's return type, as dictated by the PHPDoc comment
+	 * @param const wxString& comment PHPDoc attached to the class
 	 * @param lineNumber the line number (1-based) that the function was found in
 	 */
-	virtual void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) { }
+	virtual void FunctionFound(const wxString& namespaceName, const wxString& functionName, 
+		const wxString& signature, const wxString& returnType, const wxString& comment, const int lineNumber) { }
 
 	/**
 	 * Override this method to perform any logic when the function body has ended (a closing brace '}' was encountered).
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the function that was found
-	 * @param const UnicodeString& functionName the name of the method that was found
+	 * @param const wxString& namespace the fully qualified namespace of the function that was found
+	 * @param const wxString& functionName the name of the method that was found
 	 * @param startingPos the character position (of the closing brace '{' original source code)
 	 * @param endingPos the character position (of the closing brace '}' original source code)
 	 */
-	virtual void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) { }
+	virtual void FunctionScope(const wxString& namespaceName, const wxString& functionName, int startingPos, int endingPos) { }
 };
 
 /**
@@ -309,20 +309,20 @@ public:
 	 * In this case, Variable ChainList will contain 1 item: "$name" and the Variable Array Key will contain "name"
 	 * 
 	 * 
-	 * @param const UnicodeString& namespace the fully qualified namespace of the containing class / function.
-	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
+	 * @param const wxString& namespace the fully qualified namespace of the containing class / function.
+	 * @param const wxString& className class where the variable was found. may be empty is variable is scoped 
 	 *        inside a function or is global.
-	 * @param const UnicodeString& methodName function/method name where the variable was found. may be empty if 
+	 * @param const wxString& methodName function/method name where the variable was found. may be empty if 
 	 *        variable is globally scoped.
 	 * @param const VariableClass& variable the name of the variable that was found, along with any array keys that were used
 	 *       in the left hand of the assignment. 
 	 * @param const ExpressionClass& expression the expression assigned to the variable
-	 * @param const UnicodeString& comment PHPDoc attached to the variable
+	 * @param const wxString& comment PHPDoc attached to the variable
 	 * 
 	 * @see pelet::VariableClass
 	 */
-	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const VariableClass& variable, const ExpressionClass& expression, const UnicodeString& comment) { }
+	virtual void VariableFound(const wxString& namespaceName, const wxString& className, const wxString& methodName, 
+		const VariableClass& variable, const ExpressionClass& expression, const wxString& comment) { }
 };
 
 /**
@@ -355,18 +355,18 @@ public:
 	/**
 	 * The fully qualified namespace; "" (empty string) for the root namespace
 	 */
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
 	/**
 	 * The class name only
 	 * Could be empty if the scope is a function
 	 */
-	UnicodeString ClassName;
+	wxString ClassName;
 	
 	/**
 	 * The method or function name only.
 	 */
-	UnicodeString MethodName;
+	wxString MethodName;
 	
 	ScopeClass();
 
@@ -398,7 +398,7 @@ public:
 	 * "use Name\Child" the Child is the alias.
 	 * Note that no check is done to ensure aliases are unique.
 	 */
-	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass> GetNamespaceAliases() const;
+	std::map<wxString, wxString, wxStringComparatorClass> GetNamespaceAliases() const;
 
 	/**
 	 * add a namespace alias. this is the result of a "use" statement
@@ -411,7 +411,7 @@ public:
 	 * @param namespaceName the namespace being used. by PHP rules, this is always absolute
 	 * @param namespaceAlias the name the namespace is referred as  
 	 */
-	void AddNamespaceAlias(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias);
+	void AddNamespaceAlias(const wxString& namespaceName, const wxString& namespaceAlias);
 
 	/**
 	 * Resolve an alias
@@ -425,7 +425,7 @@ public:
 	 * @param alias
 	 * @return the namespace that the alias refers to. by PHP rules, this is always absolute
 	 */
-	UnicodeString ResolveAlias(const UnicodeString& alias) const;
+	wxString ResolveAlias(const wxString& alias) const;
 
 	/**
 	 * Calculate the fully qualified name from a namespace name, taking aliases
@@ -450,7 +450,7 @@ public:
 	 * @param declaredNamespace the namespace in which the class  class / function / constant
 	 *        is defined in.  this is always fully qualified.
 	 */
-	UnicodeString FullyQualify(const pelet::QualifiedNameClass& name, 
+	wxString FullyQualify(const pelet::QualifiedNameClass& name, 
 		const pelet::QualifiedNameClass& declaredNamespace) const;	
 
 	/**
@@ -466,7 +466,7 @@ private:
 	 * This object will own this pointer; thus we need to make sure that it
 	 * gets copied when an instance of this object is copied.
 	 */
-	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* NamespaceAliases;
+	std::map<wxString, wxString, wxStringComparatorClass>* NamespaceAliases;
 
 };
 
@@ -534,7 +534,7 @@ public:
 	/**
 	 * A PHPDoc comment attached to the beginning of this name
 	 */
-	UnicodeString Comment;
+	wxString Comment;
 	
 	/**
 	 * If TRUE then this is a fully Qualified namespace name
@@ -544,7 +544,7 @@ public:
 	QualifiedNameClass();
 	void Clear();
 	void Init(SemanticValueClass* value);
-	void Init(const UnicodeString& name);
+	void Init(const wxString& name);
 	pelet::QualifiedNameClass* AppendName(SemanticValueClass* value);
 	pelet::QualifiedNameClass* MakeAbsolute();
 	
@@ -566,7 +566,7 @@ public:
 	 * prints out the namespace as a string.
 	 * This will have 
 	 */
-	UnicodeString ToSignature() const;
+	wxString ToSignature() const;
 	
 	/**
 	 * @param name the namespace to prepend to this namespace. This is the current namespace
@@ -582,14 +582,19 @@ public:
 	 * then this method will return "\Parent\Classname"
 	 * since this name is absolute no need to prepend the given namespace
 	 */
-	/*UnicodeString Prepend(const QualifiedNameClass& name) const;
+	/*wxString Prepend(const QualifiedNameClass& name) const;
 	*/
 
 	pelet::QualifiedNameClass* MakeFromDeclaredNamespace(const pelet::QualifiedNameClass* qualifiedName);
+	
+	/**
+	 * @return TRUE if this name is equal to "define"
+	 */
+	bool IsDefine() const;
 
 private:
 
-	std::vector<UnicodeString> Namespaces;
+	std::vector<wxString> Namespaces;
 		
 };
 
@@ -610,7 +615,7 @@ class PELET_API VariablePropertyClass {
 	/**
 	 * The method or property name being called. It may also be the variable name itself.
 	 */
-	UnicodeString Name;
+	wxString Name;
 	
 	/**
 	 * If this property is a method, then this vector will contain the function call
@@ -666,7 +671,7 @@ public:
 	/**
 	 * The comment that is attached to the function call / variable.
 	 */
-	UnicodeString Comment;
+	wxString Comment;
 	
 	/**
 	 * The function where this expression is located.
@@ -690,7 +695,7 @@ public:
 	 * Also note that if the source code does not define keys then this list will be empty
 	 * as well; for example array(1, 2) will not produce any array keys.
 	 */
-	std::vector<UnicodeString> ArrayKeys;
+	std::vector<wxString> ArrayKeys;
 
 	ExpressionTypes ExpressionType;
 	
@@ -723,18 +728,18 @@ public:
 	 * @param isMethod TRUE if the property is a method
 	 * @param isStatic TRUE if this is a static operation '::'
 	*/
-	void AppendToChain(const UnicodeString& propertyName, 
+	void AppendToChain(const wxString& propertyName, 
 		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
 
 	void Clear();
 	void Copy(const ExpressionClass& src);
 	void Copy(const VariableClass& variable);
-	void ToNewCall(const UnicodeString& className);
-	void ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& functionName, bool isMethod);
-	void ToVariable(const UnicodeString& variableName);
-	void ToScalar(const UnicodeString& scalarValue);
-	void ToConstant(const UnicodeString& className, const UnicodeString& constantName);
-	UnicodeString FirstValue() const;
+	void ToNewCall(const wxString& className);
+	void ToStaticFunctionCall(const wxString& className, const wxString& functionName, bool isMethod);
+	void ToVariable(const wxString& variableName);
+	void ToScalar(const wxString& scalarValue);
+	void ToConstant(const wxString& className, const wxString& constantName);
+	wxString FirstValue() const;
 
 };
 
@@ -756,13 +761,13 @@ public:
 	/**
 	 * Any PHP doc comment that was attached to this variable (appeared immediately before).
 	 */
-	UnicodeString Comment;
+	wxString Comment;
 
 	/**
 	 * The name of the "type" of this variable that was parsed out of the PHPDoc. For example
 	 * when a variable is decorated with " \@var $var TypeClass" comments
 	 */
-	UnicodeString PhpDocType;
+	wxString PhpDocType;
 	
 	/**
 	 * The list of methods and properties that were called in order to create this variable. For instance,
@@ -789,7 +794,7 @@ public:
 	 * If this variable is an array, then the ArrayKey is the key that is assigned
 	 * For example, for the variable $samples['one'], 'one' is the ArrayKey
 	 */
-	UnicodeString ArrayKey;
+	wxString ArrayKey;
 	
 	/**
 	 * The function where this variable is located.
@@ -817,7 +822,7 @@ public:
 	 * Add a property to the variable chain list
 	 * @param propertyValue the lexeme of the property/method to chain
 	 */
-	void AppendToChain(const UnicodeString& propertyValue);
+	void AppendToChain(const wxString& propertyValue);
 	
 	/**
 	 * Add a property to the variable chain list
@@ -827,7 +832,7 @@ public:
 	 * @param isMethod TRUE if the property is a method
 	 * @param isStatic if TRUE if the property is accessed statically ('::')
 	 */
-	void AppendToChain(const UnicodeString& propertyValue, 
+	void AppendToChain(const wxString& propertyValue, 
 		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
 };
 
@@ -900,17 +905,17 @@ class PELET_API ConstantStatementClass : public StatementClass {
 	/**
 	 * The constant's identifier
 	 */
-	UnicodeString Name;
+	wxString Name;
 	
 	/**
 	 * the namespace that the constant was defined in. if constant is 
 	 * in the root namespace, then this will contain "\"
 	 */
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
-	UnicodeString Comment;
+	wxString Comment;
 	
-	UnicodeString Value;
+	wxString Value;
 	
 	/**
 	 * The line where the constant was defined in
@@ -942,7 +947,7 @@ class PELET_API NamespaceDeclarationClass : public StatementClass {
 	
 public:
 	
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
 	/**
 	 * Character position where the 'namespace' keyword starts. This number is 
@@ -965,9 +970,9 @@ class PELET_API NamespaceUseClass : public StatementClass {
 	
 public:
 	
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
-	UnicodeString Alias;
+	wxString Alias;
 
 	/**
 	 *  Character position where the namespace use statement starts. This number is 
@@ -990,7 +995,7 @@ public:
 	 */
 	void Init(QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias);
 	
-	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
+	wxString Set(QualifiedNameClass* qualifiedName, wxString alias);
 
 	static pelet::StatementListClass* SetStartingPos(pelet::StatementListClass* namespaceStatements, const pelet::TokenPositionClass& useToken);
 };
@@ -1003,18 +1008,18 @@ public:
 	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
 	 * namespace only
 	 */
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
 	/**
 	 * The class where the traits are being used in. This is the name of the
 	 * class only
 	 */
-	UnicodeString ClassName;
+	wxString ClassName;
 	
 	/**
 	 * list of the fully qualified names of the traits that are used.
 	 */
-	std::vector<UnicodeString> UsedTraits;
+	std::vector<wxString> UsedTraits;
 	
 	TraitUseClass();
 
@@ -1033,29 +1038,29 @@ public:
 	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
 	 * namespace only
 	 */
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
 	/**
 	 * The class where the traits are being used in. This is the name of the
 	 * class only
 	 */
-	UnicodeString ClassName;
+	wxString ClassName;
 	
 	/**
 	 * The fully qualified class name of the trait class that is being aliased. This may be empty
 	 * if the source code does not define it (ie. the alias does not need to resolve a conflict)
 	 */
-	UnicodeString TraitUsedClassName;
+	wxString TraitUsedClassName;
 	
 	/**
 	 * The name of the method being aliased (the "old" name)
 	 */
-	UnicodeString TraitMethodReferenceName;
+	wxString TraitMethodReferenceName;
 	
 	/**
 	 * the method alias; the "new" name
 	 */
-	UnicodeString Alias;
+	wxString Alias;
 	
 	/**
 	 * the new visbility of the alias. If source code does not define it, then this is public.
@@ -1083,30 +1088,30 @@ public:
 	 * The fully qualified namespace of the class where the traits are being used in. This is the name of the
 	 * namespace only
 	 */
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
 	/**
 	 * The class where the traits are being used in. This is the name of the
 	 * class only
 	 */
-	UnicodeString ClassName;
+	wxString ClassName;
 	
 	/**
 	 * The fully qualified class name of the trait class that is being aliased. This may be empty
 	 * if the source code does not define it (ie. the alias does not need to resolve a conflict)
 	 */
-	UnicodeString TraitUsedClassName;
+	wxString TraitUsedClassName;
 	
 	/**
 	 * The name of the method being resolved
 	 */
-	UnicodeString TraitMethodReferenceName;
+	wxString TraitMethodReferenceName;
 	
 	/**
 	 * list of fully qualified class names that define the method in question but
 	 * will NOT be used
 	 */
-	std::vector<UnicodeString> InsteadOfList;
+	std::vector<wxString> InsteadOfList;
 	
 	TraitInsteadOfClass();
 
@@ -1205,7 +1210,7 @@ public:
  * higher-level class, method, function, and variable declarations.
  *
  * using pointers here because Bison will create a union with this type as one of the values;
- * and unions values have to be Plain Old Data types (which UnicodeString is not).
+ * and unions values have to be Plain Old Data types (which wxString is not).
  * Also, this cannot have a non-trival constructor; Init() should be called right
  * after object construction.
  * Be sure to init and free with the ParserObserverClass; that way memory can be 
@@ -1218,12 +1223,12 @@ public:
 	/**
 	 * The textual value
 	 */
-	UnicodeString Lexeme;
+	wxString Lexeme;
 
 	/**
 	 * This is the **PHPDoc** comment that was immediately before this token.
 	 */
-	UnicodeString Comment;
+	wxString Comment;
 
 	/**
 	 * The ID of the token
@@ -1256,21 +1261,21 @@ class PELET_API ClassSymbolClass : public StatementClass {
 	/**
 	 * This is NEVER qualified
 	 */
-	UnicodeString ClassName;
+	wxString ClassName;
 	
-	UnicodeString NamespaceName;
+	wxString NamespaceName;
 	
-	UnicodeString Comment;
+	wxString Comment;
 	
 	/** 
 	 * This is always fully qualified name
 	 */
-	UnicodeString ExtendsFrom;
+	wxString ExtendsFrom;
 	
 	/** 
 	 * These are always fully qualified names
 	 */
-	std::vector<UnicodeString> ImplementsList; 
+	std::vector<wxString> ImplementsList; 
 	
 	int StartingLineNumber, EndingLineNumber;
 	
@@ -1299,7 +1304,7 @@ class PELET_API ClassSymbolClass : public StatementClass {
 	ClassSymbolClass* SetFlags(pelet::SemanticValueClass* commentValue, 
 		bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
 	
-	UnicodeString ToSignature() const;
+	wxString ToSignature() const;
 	
 };
 
@@ -1318,7 +1323,7 @@ public:
 	/**
 	 * @param className must be the FULLY QUALIFIED class name
 	 */
-	void CreateWithOptionalType(const UnicodeString& className);
+	void CreateWithOptionalType(const wxString& className);
 
 	/**
 	 * Append another parameter
@@ -1341,7 +1346,7 @@ public:
 	 * the returned string will have parenthesis already present.
 	 * For example "($name, $places)"
 	 */
-	UnicodeString ToSignature() const;
+	wxString ToSignature() const;
 
 	/**
 	 * @return the number of parameters that have been created
@@ -1353,11 +1358,11 @@ public:
 	 * @param the parameter name will be set in this variable
 	 * @param optionalType the parameter's type will be set in this variable
 	 */
-	void Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const;
+	void Param(size_t index, wxString& param, wxString& optionalType) const;
 
 private:
-	std::vector<UnicodeString> Params;
-	std::vector<UnicodeString> OptionalTypes;
+	std::vector<wxString> Params;
+	std::vector<wxString> OptionalTypes;
 };
 
 /**
@@ -1372,7 +1377,7 @@ public:
 	 * If this is a property, the MemberName will
 	 * have the siguil ('$')
 	 */
-	UnicodeString MemberName, NamespaceName, ClassName;
+	wxString MemberName, NamespaceName, ClassName;
 	
 	ParametersListClass ParametersList;
 	
@@ -1383,7 +1388,7 @@ public:
 	
 private:
 
-	UnicodeString Comment;
+	wxString Comment;
 
 	/**
 	 *  for methods / functions this is the type that is returned by the  method / function
@@ -1391,7 +1396,7 @@ private:
 	 * note that this is always parsed out of the PHPDoc comment, as PHP syntax does not 
 	 * allow for type declarations
 	 */
-	UnicodeString ReturnType;
+	wxString ReturnType;
 	
 public:
 	
@@ -1432,15 +1437,15 @@ public:
 	ClassMemberSymbolClass();
 	void SetNameAndReturnReference(SemanticValueClass* nameValue, bool isReturnReference, SemanticValueClass* functionValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	void SetAsConst(SemanticValueClass* nameValue, SemanticValueClass* commentValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
-	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
+	wxString ToMethodSignature(wxString variablesSignature) const;
 	void AppendToComment(SemanticValueClass* value, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	
 	void SetAsPublic();
 	void SetAsProtected();
 	void SetAsPrivate();
 	void Clear();
-	UnicodeString GetReturnType() const;
-	UnicodeString GetComment() const;
+	wxString GetReturnType() const;
+	wxString GetComment() const;
 
 	pelet::ClassMemberSymbolClass* MakeBody(pelet::StatementListClass* bodyStatements, 
 		const pelet::TokenPositionClass& startingPositionTokenValue, const pelet::TokenPositionClass& endingPositionTokenValue);
@@ -1473,7 +1478,7 @@ class PELET_API ScalarStatementClass : public StatementClass {
 
 public: 
 
-	UnicodeString Scalar;
+	wxString Scalar;
 
 	ScalarStatementClass();
 
@@ -1489,7 +1494,7 @@ public:
 	 * The file being included.  This is only valid when the include
 	 * / require statement has a scalar as the parameter
 	 */
-	UnicodeString File;
+	wxString File;
 
 	/**
 	 * The line number where the include statement was found.
@@ -1526,13 +1531,13 @@ typedef union ParserType {
 /**
  * Get the return type from the '\@return' / '\@var' annotation
  * 
- * @param const UnicodeString& phpDocComment the comment
+ * @param const wxString& phpDocComment the comment
  * @param bool varAnnotation if false, will return the word after '\@var', else return the word after '\@return'
  * @param scope the scope where the PHPDoc comment is located in
  * @param currentNamespace the current namespace we are in
- * @return UnicodeString
+ * @return wxString
  */
-UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bool varAnnotation,
+wxString ReturnTypeFromPhpDocComment(const wxString& phpDocComment, bool varAnnotation,
 										  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
 /**
@@ -1546,7 +1551,7 @@ UnicodeString ReturnTypeFromPhpDocComment(const UnicodeString& phpDocComment, bo
  * @param currentNamespace the current namespace we are in
  * @param the fully qualified class name
  */
-UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType, 
+wxString PhpDocTypeToAbsoluteClassname(wxString phpDocType, 
 											const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 
 /**
@@ -1561,7 +1566,12 @@ UnicodeString PhpDocTypeToAbsoluteClassname(UnicodeString phpDocType,
 void CreateMagicMethodsAndProperties(std::vector<pelet::AstItemClass*>& allAstItems,
 									 pelet::StatementListClass* statements, 
 									 const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace,
-									 const UnicodeString& phpDocComment, const int lineNumber);
+									 const wxString& phpDocComment, const int lineNumber);
+
+/**
+ * sets either varName or varType depending on whether text contents are a variable name or not.
+ */
+void FillNameOrType(const wxString& text, wxString& varName, wxString& varType);
 
 } 
 

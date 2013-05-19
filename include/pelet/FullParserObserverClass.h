@@ -29,7 +29,7 @@
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/Api.h>
 #include <pelet/ParserTypeClass.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 
 #include <stack>
 #include <vector>
@@ -327,7 +327,7 @@ public:
 	 * people got used to doing it this way
 	 * http://stackoverflow.com/questions/4329288/code-hinting-completion-for-array-of-objects-in-zend-studio-or-any-other-ecli
 	 */
-	void NotifyLocalVariableTypeHint(const UnicodeString& comment);
+	void NotifyLocalVariableTypeHint(const wxString& comment);
 	
 	void SetCurrentClassName(pelet::SemanticValueClass* value);
 	
@@ -363,7 +363,7 @@ private:
 	 * of those variables.  This, in essence, allows the creation of parameters as 
 	 * local variables.
 	 */
-	void NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName);
+	void NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, wxString currentNamespaceName, wxString currentClassName, wxString currentMethodName);
 
 	/**
 	 * Parses any variable type hints from the given PHPDoc and notifies the variable observer. In this case, the annotation will
@@ -373,7 +373,7 @@ private:
 	 * The comment may contain more than on name-type pair
 	 * @param phpDocComment the entire comment
 	 */
-	void NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment);
+	void NotifyLocalVariableFromPhpDoc(const wxString& phpDocComment);
 	
 	/**
 	 * the class, method, and namespace that are currently being parsed.

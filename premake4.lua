@@ -27,57 +27,91 @@ dofile "premake_functions.lua"
 dofile "premake_action_generate.lua"
 
 newoption {
-	trigger = "icu-include",
+	trigger = "wx-include",
 	value = "path",
-	description = "Directory Location of the ICU header files. " ..
+	description = "Directory Location of the wxWidgets header files. " ..
 	"This option should only be used on Win32 systems"
 }
 
 newoption {
-	trigger = "icu-lib",
+	trigger = "wx-lib",
 	value = "path",
-	description = "Directory Location of the ICU library shared object files. " ..
+	description = "Directory Location of the wx Widgets shared object files. " ..
 	"This option should only be used on Win32 systems"
 }
 
 newoption {
-	trigger = "icu-config",
+	trigger = "wx-config",
 	value = "path",
-	description = "File location of the icu-config binary. If given, " .. 
+	description = "File location of the wx-config binary. If given, " .. 
 		"it will be used to get the appropriate compiler and linker flags. " ..
 		"This option should only be used on linux systems"
 }
 
--- these are the ICU unicode string libraries (in Win32)
-ICU_LIBS_RELEASE = {
-       "icudt", "icuin", "icuio", "icule",
-       "iculx", "icutu", "icuuc"
+-- location to the wxWidgets libraries. Make sure to copy the
+-- wxWidgets DLLs to the Debug directory, otherwise the wxWidgets library
+-- will not be found at runtime (ie. when you try to execute the executable).
+-- Also, if you build wxWidgets yourself, you will need to build the Unicode
+-- DLL version
+--
+-- Consult the wxWidgets for more info if necessary
+--
+-- these are the core wxWidgets debug libraries and their Win32 dependencies (win dependencies listed first)
+WX_LIBS_DEBUG = {
+        "winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
+        "wxmsw28ud_core", "wxbase28ud", "wxexpatd", "wxjpegd", "wxpngd", "wxregexud",
+        "wxtiffd", "wxzlibd"
 }
 
--- these are the ICU unicode string libraries (in Win32)
-ICU_LIBS_DEBUG = {
-       "icudt", "icuind", "icuiod", "iculed",
-       "iculxd", "icutud", "icuucd"
+-- these are the core wxWidgets Release libraries and their Win32 dependencies (win dependencies listed first)
+WX_LIBS_RELEASE = {
+        "winmm", "comctl32", "rpcrt4", "wsock32", "odbc32",
+        "wxmsw28u_core", "wxbase28u", "wxexpat", "wxjpeg", "wxpng", "wxregexu",
+        "wxtiff", "wxzlib"
 }
 
--- this configuration uses the command line options to get the ICU header & library locations
-function icuconfiguration(config, action)
-	if config == "Debug" and _OPTIONS['icu-include'] then
-		includedirs { _OPTIONS['icu-include'] }
-		libdirs { _OPTIONS['icu-lib'] }
-		links { ICU_LIBS_DEBUG }
-	elseif config == "Release" and _OPTIONS['icu-include'] then
-		includedirs { _OPTIONS['icu-include'] }
-		libdirs { _OPTIONS['icu-lib'] }
-		links { ICU_LIBS_RELEASE }
-	elseif _OPTIONS['icu-config'] then
-	
-		-- use the execution operator '``' because the icu-config program
-		-- will be used to generate the correct compile and linker flags
-		buildoptions { "`" .. _OPTIONS['icu-config'] .. " --cppflags`" }
-		linkoptions { "`" .. _OPTIONS['icu-config'] .. " --ldflags --ldflags-icuio`" }
-	end
+-- this configuration uses the wx-config binary to get the wx header & library locations
+-- this is usually the case on linux
+-- this configuration sets up the WX library and include files for Visual Studio projects
+function wxconfiguration(config, action)
+		WX_CONFIG = _OPTIONS['wx-config']
+		WX_INCLUDE_DIRS_DEBUG = _OPTIONS['wx-include']
+		WX_INCLUDE_DIRS_RELEASE = _OPTIONS['wx-include']
+		WX_LIB_DIR = _OPTIONS['wx-lib']
+
+        if config == "Debug" and action == "vs2008" then
+                libdirs { WX_LIB_DIR }
+                includedirs { WX_INCLUDE_DIRS_DEBUG }
+
+                -- wxWidgets framework needs these
+                -- tell wxWidgets to import DLL symbols
+                defines { "WIN32", "_DEBUG", "_WINDOWS", "WXUSINGDLL" }
+
+                -- enable the "Use Unicode Character Set" option under General .. Character Set
+                -- wxWidgets needs this in order to link properly
+                flags { "Unicode" }
+                links { WX_LIBS_DEBUG }
+        elseif config == "Debug" and (action == "gmake" or action == "codelite") then
+                buildoptions { string.format("`%s --cxxflags --debug=yes --unicode=yes`", WX_CONFIG) }
+                linkoptions { string.format("`%s --debug=yes --unicode=yes --libs core,base`", WX_CONFIG) }
+        elseif config == "Release" and action ==  "vs2008" then
+                libdirs { WX_LIB_DIR }
+                includedirs { WX_INCLUDE_DIRS_RELEASE }
+
+                -- wxWidgets framework needs these
+                -- tell wxWidgets to import DLL symbols
+                defines { "WIN32", "_WINDOWS", "__WXMSW__", "WXUSINGDLL" }
+
+                -- enable the "Use Unicode Character Set" option under General .. Character Set
+                -- wxWidgets needs this in order to link properly
+                flags { "Unicode", "Optimize" }
+                links { WX_LIBS_RELEASE }
+        elseif config == "Release" and (action == "gmake" or action == "codelite") then
+                buildoptions { string.format("`%s --cxxflags --debug=no --unicode=yes`", WX_CONFIG) }
+                linkoptions { string.format("`%s --debug=no --unicode=yes --libs core,base`", WX_CONFIG) }
+        end
 end
+
 
 function pickywarnings(action) 
 	if action == "vs2008" then
@@ -91,8 +125,8 @@ function pickywarnings(action)
 end
 
 if ((not _OPTIONS.help) and (_ACTION ~= 'clean') and (_ACTION ~= 'generate')) then
-	if ((not _OPTIONS['icu-include']) and (not _OPTIONS['icu-config'])) then
-		error("Missing one of --icu-include or --icu-config. See --help for details")
+	if ((not _OPTIONS['wx-include']) and (not _OPTIONS['wx-config'])) then
+		error("Missing one of (--wx-include and --wx-lib) or --wx-config. See --help for details")
 	end
 end
 
@@ -127,18 +161,18 @@ solution "pelet"
 		
 		configuration "Release"
 			pickywarnings(_ACTION)
-			icuconfiguration("Release", _ACTION)
+			wxconfiguration("Release", _ACTION)
 		configuration { "Debug", "vs2008" }
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Debug") .. " && tests.exe" }
 		configuration { "Debug", "gmake or codelite" }
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Debug") .. " && ./tests" }
 		configuration { "Release", "vs2008" }
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && tests.exe"  }
 		configuration { "Release", "gmake or codelite" }
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
 		
 	project "pelet"
@@ -149,9 +183,9 @@ solution "pelet"
 		defines { "PELET_MAKING_DLL" }
 		pickywarnings(_ACTION)
 		configuration "Release"			
-			icuconfiguration("Release", _ACTION)
+			wxconfiguration("Release", _ACTION)
 		configuration { "Debug" }
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 								
 	project "tests"
 		language "C++"
@@ -174,10 +208,10 @@ solution "pelet"
 
 		configuration "Debug"
 			pickywarnings(_ACTION)
-			icuconfiguration("Debug", _ACTION)
+			wxconfiguration("Debug", _ACTION)
 		configuration "Release"
 			pickywarnings(_ACTION)
-			icuconfiguration("Release", _ACTION)
+			wxconfiguration("Release", _ACTION)
 			
 	
 	project "unit_test++"

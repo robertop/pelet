@@ -25,9 +25,6 @@
 #include <pelet/LexicalAnalyzerClass.h>
 #include <pelet/Php53LexicalAnalyzer.h>
 #include <pelet/Php54LexicalAnalyzer.h>
-#include <unicode/uchar.h>
-#include <unicode/ustring.h>
-#include <unicode/ucnv.h>
 
 pelet::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName) 
 	: ParserError()
@@ -76,7 +73,7 @@ bool pelet::LexicalAnalyzerClass::OpenFile(FILE* file) {
 	return bufferFile->OpenFile(file);
 }
 
-bool pelet::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
+bool pelet::LexicalAnalyzerClass::OpenString(const wxString& code) {
 	Close();
 	FileName = "";
 	Condition = yycSCRIPT;
@@ -98,13 +95,13 @@ int pelet::LexicalAnalyzerClass::NextToken() {
 	}
 }
 
-bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
+bool pelet::LexicalAnalyzerClass::GetLexeme(wxString& lexeme) {
 	if (!Buffer) {
 		return false;
 	}
-	lexeme.remove();
-	const UChar *start = Buffer->TokenStart;
-	const UChar *end =  Buffer->Current;
+	lexeme.clear();
+	const wxChar *start = Buffer->TokenStart;
+	const wxChar *end =  Buffer->Current;
 	bool ret = false;
 	bool isSingleQuoteString = false;
 	bool isDoubleQuoteString = false;
@@ -132,8 +129,8 @@ bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 		int len = (end - start);
 		int added = 0;
 		for (int i = 0; i < len; i++) {
-			UChar c = start[i];
-			UChar next = 0;
+			wxChar c = start[i];
+			wxChar next = 0;
 			if (i < (len - 1)) {
 				next = start[i + 1];
 			}
@@ -187,23 +184,23 @@ bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
 			// and the identifier from the end.  we don't need to actually check
 			// for the identifier here; nextToken() already makes sure that the 
 			// beginning and ending identifiers are the same
-			for (int i = 0; i < lexeme.length(); i++) {
-				UChar c = lexeme.charAt(i);
-				lexeme.remove(0, 1);
+			for (size_t i = 0; i < lexeme.length(); i++) {
+				wxChar c = lexeme.at(i);
+				lexeme.erase(lexeme.begin() + i);
 				i--;
-				if (c == '\n' || c == '\r') {	
+				if (c == '\n' || c == '\r') {
 					break;
-				}			
+				}
 			}
 
 			// take care of the final newline
-			lexeme.trim();
+			lexeme.Trim();
 
-			// take care of the newline and endind identifier
-			for (int i = lexeme.length() - 1; i >= 0 && !lexeme.isEmpty(); i--) {
-				UChar c = lexeme.charAt(i);
-				lexeme.remove(i, 1);
-				if (c == '\n' || c == '\r') {	
+			// take care of the newline and ending identifier
+			for (size_t i = lexeme.length() - 1; i >= 0 && !lexeme.empty(); i--) {
+				wxChar c = lexeme[i];
+				lexeme.erase(lexeme.begin() + i);
+				if (c == '\n' || c == '\r') {
 						break;
 				}
 			}
@@ -228,38 +225,38 @@ std::string pelet::LexicalAnalyzerClass::GetFileName() const {
 /**
  * @return TRUE if c is a character that can be in a PHP identifier
  */
-static bool IsPhpIdentifierChar(UChar c) {
-	return u_isalnum(c) || '_' == c || (c >= 0x7f && c <= 0xff);
+static bool IsPhpIdentifierChar(wxChar c) {
+	return isalnum(c) || '_' == c || (c >= 0x7f && c <= 0xff);
 }
 
-UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& code) const {
+wxString pelet::LexicalAnalyzerClass::LastExpression(const wxString& code) const {
 	bool done = false;
 
 	// keep iterating backwards; if we used re2c lexer then we would have to iterate through the entire
 	// string
-	int32_t index = code.length() - 1;
+	size_t index = code.length() - 1;
 
 	// the resulting string will only keep non-space characters
 	// we need to keep remove spacing because expression can have whitepace
 	// like this  "$this->\nprop->\nprop"
-	UnicodeString expr;
+	wxString expr;
 	while (!done && index >= 0) {
-		UChar32 c = code[index];
+		wxChar c = code[index];
 		if (IsPhpIdentifierChar(c)) {
 
 			// get the entire token
 			while (IsPhpIdentifierChar(c) && index > 0) {
 
 				// since we are iterating backwards, put char in the beginning
-				expr.insert(0, c);
+				expr = wxString(c) + expr;
 				index--;
 				c = code[index];
 			}
 		}
-		else  if (u_isspace(c) && index > 0) {
+		else  if (isspace(c) && index > 0) {
 			
 			// skip whitespace entirely
-			while(u_isspace(c) && index > 0) {
+			while(isspace(c) && index > 0) {
 				index--;
 				c = code[index];
 			}
@@ -267,13 +264,13 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 			// if we encounter an object operator then we can continue grabbing the expression
 			// otherwise it means that we are done
 			if (index > 1 && ':' == code[index] && ':' == code[index - 1]) {
-				expr.insert(0, code[index]);
-				expr.insert(0, code[index - 1]);
+				expr = code[index] + expr;
+				expr = code[index - 1] + expr;
 				index -= 2;
 			}
 			else if (index > 1 && '>' == code[index] && '-' == code[index - 1]) {
-				expr.insert(0, code[index]);
-				expr.insert(0, code[index - 1]);
+				expr = code[index] + expr;
+				expr = code[index - 1] + expr;
 				index -= 2;
 			}
 			else {
@@ -281,7 +278,7 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 			}
 		}
 		else if ('$' == c) {
-			expr.insert(0, c);
+			expr = wxString(c) + expr;
 			index--;
 
 			// indirect variables means we are done ("$$expr")
@@ -298,15 +295,15 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 
 			// check for a possible static object operator; if not an object operator then we are done
 			index--;
-			UChar32 n = code[index];
+			wxChar n = code[index];
 			if (':' == n) {
 				index--;
-				expr.insert(0, c);
-				expr.insert(0, n);
+				expr = c + expr;
+				expr = n + expr;
 
 				// skip whitespace before the operator entirely
 				c = code[index];
-				while(u_isspace(c) && index > 0) {
+				while(isspace(c) && index > 0) {
 					index--;
 					c = code[index];
 				}
@@ -319,7 +316,7 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 
 			// skip all the way past the beginning '(', taking care to look for nested function calls
 			int nestCount = 1;
-			expr.insert(0, c);
+			expr = c + expr;
 			while (index > 0 && nestCount > 0) {
 				index--;
 				c = code[index];
@@ -329,7 +326,7 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 				else if ('(' == c) {
 					nestCount--;
 				}
-				expr.insert(0, c);
+				expr = c + expr;
 			}
 			index--;
 		}
@@ -337,7 +334,7 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 
 			// skip all the way past the beginning '[', taking care to look for 2-D arrays
 			int nestCount = 1;
-			expr.insert(0, c);
+			expr = c + expr;
 			while (index > 0 && nestCount > 0) {
 				index--;
 				c = code[index];
@@ -347,7 +344,7 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 				else if ('[' == c) {
 					nestCount--;
 				}
-				expr.insert(0, c);
+				expr = c + expr;
 			}
 			index--;
 		
@@ -356,28 +353,28 @@ UnicodeString pelet::LexicalAnalyzerClass::LastExpression(const UnicodeString& c
 			
 			// check for a possible object operator; if not an object operator then we are done
 			index--;
-			UChar32 n = code[index];
+			wxChar n = code[index];
 			if ('-' == n) {
 				index--;
-				expr.insert(0, c);
-				expr.insert(0, n);
+				expr = c + expr;
+				expr = n + expr;
 
 				// skip whitespace before the operator entirely
 				c = code[index];
-				while(u_isspace(c) && index > 0) {
+				while(isspace(c) && index > 0) {
 					index--;
 					c = code[index];
 				}
 			}
 			else {
 				done = true;
-			}		
+			}
 		}
 		else if ('\\' == c) {
 			
 			// namespace operator; keep it
 			// since we are iterating backwards, put char in the beginning
-			expr.insert(0, c);
+			expr = c + expr;
 			index--;
 		}
 		else {

@@ -24,14 +24,14 @@
  */
 
 #include <UnitTest++.h>
-#include <unicode/unistr.h>
+#include <wx/string.h>
 #include <pelet/LanguageDiscoveryClass.h>
 #include <FileTestFixtureClass.h>
 
 SUITE(LanguageDiscoveryTestClass) {
 
 TEST(DiscoverHtmlAndPhp) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<html><body>"
 		"<?php echo 'hello'; ?>"
 		"</body></html>"
@@ -39,11 +39,11 @@ TEST(DiscoverHtmlAndPhp) {
 	pelet::LanguageDiscoveryClass discover;
 	CHECK(discover.Open((code)));
 	
-	int pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
+	int pos = code.find(wxT("</body>"));
 	pelet::LanguageDiscoveryClass::Syntax syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
+	pos = code.find(wxT("hello"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 }
@@ -52,7 +52,7 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 	
 	// put the end tag in various strings; check that we still discover PHP 
 	// note that end tag WILL break out of single line comments 
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<html><body>"
 		"<?php echo '?>hello';\n"
 		"echo \"goodbye ?> double\";\n"
@@ -72,37 +72,37 @@ TEST(DiscoverShouldNotRecognizeEndTagInsideStringsAndComments) {
 	
 	int pos;
 	pelet::LanguageDiscoveryClass::Syntax syntax;
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("hello"));
+	pos = code.find(wxT("hello"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SINGLE_QUOTE_STRING, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("double"));
+	pos = code.find(wxT("double"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_DOUBLE_QUOTE_STRING, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("heredoc"));
+	pos = code.find(wxT("heredoc"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_HEREDOC, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("nowdoc"));
+	pos = code.find(wxT("nowdoc"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_NOWDOC, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("backtick"));
+	pos = code.find(wxT("backtick"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_BACKTICK, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("multiline"));
+	pos = code.find(wxT("multiline"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_MULTI_LINE_COMMENT, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("</body>"));
+	pos = code.find(wxT("</body>"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML, syntax);
 }
 
 TEST(MultipleHtmlBlocks) {
-	UnicodeString code = _U(
+	wxString code = _U(
 		"<html>"
 		"<head><title><?php echo $title;?></title></head>"
 		"<body class='<?php echo \"?>\" . $theclass; ?>' id='thebody'>This is the body</body>"
@@ -113,28 +113,28 @@ TEST(MultipleHtmlBlocks) {
 	CHECK(discover.Open(code));
 	pelet::LanguageDiscoveryClass::Syntax syntax;
 	int pos;
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("$title"));
+	pos = code.find(wxT("$title"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
 	
 	// a start tag
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("itle>"));
+	pos = code.find(wxT("itle>"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("/head>"));
+	pos = code.find(wxT("/head>"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_TAG, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("$theclass"));
+	pos = code.find(wxT("$theclass"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_PHP_SCRIPT, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("id="));
+	pos = code.find(wxT("id="));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE, syntax);
 	
-	pos = code.indexOf(UNICODE_STRING_SIMPLE("thebody"));
+	pos = code.find(wxT("thebody"));
 	syntax = discover.at(pos);
 	CHECK_EQUAL(pelet::LanguageDiscoveryClass::SYNTAX_HTML_ATTRIBUTE_SINGLE_QUOTE_VALUE, syntax);
 	
