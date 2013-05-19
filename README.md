@@ -80,7 +80,8 @@ MSW instructions (Visual Studio Solution)
 	provides)
 	git clone git@github.com:robertop/pelet.git C:\Users\user\pelet
 	cd C:\Users\user\pelet	
-	./premake4 --wx-include="C:\path\to\wx\headers" --wx-lib="C:\path\to\wx\libs" vs2008
+	./premake4 --wx-include="C:\path\to\wx\headers;C:\path\to\wx\lib\vc_dll" --wx-lib="C:\path\to\wx\lib\vc_dll" vs2008
+
 
 Now you can open the pelet solution file under build/vs2008 and build the solution. After these
 steps, the resulting shared library will be created in Release/pelet.dll. The library can then be imported

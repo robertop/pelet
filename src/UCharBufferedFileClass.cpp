@@ -383,8 +383,6 @@ bool pelet::UCharBufferClass::OpenString(const wxString& code) {
 
 void pelet::UCharBufferClass::Close() {
 	if (Buffer) {
-		
-		// the original string still owns the data, according to getTerminatedBuffer()
 		delete[] Buffer;
 		Buffer = NULL;
 	}

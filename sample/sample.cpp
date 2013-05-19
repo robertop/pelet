@@ -56,8 +56,8 @@ public:
 	virtual void ClassFound(const wxString&  namespaceName, const wxString& className, const wxString& signature, 
 		const wxString& comment, const int lineNumber) {
 		wxPrintf(wxT("Class Found: %s in namespace %s on line %d \n"), 
-			(const char*)className.ToAscii(), 
-			(const char*)namespaceName.ToAscii(), 
+			(const char*)className.c_str(), 
+			(const char*)namespaceName.c_str(), 
 			lineNumber);
 	}
 	
@@ -73,8 +73,8 @@ public:
 	virtual void DefineDeclarationFound(const wxString& namespaceName, const wxString& variableName, const wxString& variableValue, 
 		const wxString& comment, const int lineNumber) {
 		wxPrintf(wxT("Define Found: %s in namespace %s on line %d\n"), 
-			(const char*)variableName.ToAscii(), 
-			(const char*)namespaceName.ToAscii(), 
+			(const char*)variableName.c_str(), 
+			(const char*)namespaceName.c_str(), 
 			lineNumber);
 	}
 	
@@ -100,7 +100,7 @@ public:
 	 */
 	virtual void IncludeFound(const wxString& filename, const int lineNumber) {
 		wxPrintf(wxT("Include or Require Found: %s on line %d\n"), 
-			(const char*)filename.ToAscii(), 
+			(const char*)filename.c_str(), 
 			lineNumber);
 	}
 	
@@ -124,8 +124,8 @@ public:
 	 */	
 	virtual void NamespaceUseFound(const wxString& namespaceName, const wxString& alias, int startingPos) {
 		wxPrintf(wxT("Namespace Import (Use) Found: %s alias %d\n"), 
-			(const char*)namespaceName.ToAscii(), 
-			(const char*)alias.ToAscii());
+			(const char*)namespaceName.c_str(), 
+			(const char*)alias.c_str());
 	}
 		
 	/* This method gets called when a class method is found.
@@ -147,18 +147,18 @@ public:
 		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
 		if (returnType.empty()) {
 			wxPrintf(wxT("Method Found: %s in class %s in namespace %s on line %d. Method did not have @return in PHPDoc comment\n"), 
-				(const char*)methodName.ToAscii(), 
-				(const char*)className.ToAscii(), 
-				(const char*)namespaceName.ToAscii(), 
+				(const char*)methodName.c_str(), 
+				(const char*)className.c_str(), 
+				(const char*)namespaceName.c_str(), 
 				lineNumber);
 		}
 		else {
 			wxPrintf(wxT("Method Found: %s in class %s in namespace %s on line %d and returns %s\n"), 
-				(const char*)methodName.ToAscii(), 
-				(const char*)className.ToAscii(), 
-				(const char*)namespaceName.ToAscii(),
+				(const char*)methodName.c_str(), 
+				(const char*)className.c_str(), 
+				(const char*)namespaceName.c_str(),
 				lineNumber, 
-				(const char*)returnType.ToAscii());
+				(const char*)returnType.c_str());
 		}
 	}
 	
@@ -180,18 +180,18 @@ public:
 		pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber) {
 		if (propertyType.empty()) {
 			wxPrintf(wxT("Property Found: %s in class %s in namespace %s on line %d. Did not have @return in PHPDoc comment\n"), 
-				(const char*)propertyName.ToAscii(), 
-				(const char*)className.ToAscii(), 
-				(const char*)namespaceName.ToAscii(), 
+				(const char*)propertyName.c_str(), 
+				(const char*)className.c_str(), 
+				(const char*)namespaceName.c_str(), 
 				lineNumber);
 		}
 		else {
 			wxPrintf(wxT("Property Found: %s in class %s in namespace %s on line %d and is of type %s\n"), 
-				(const char*)propertyName.ToAscii(), 
-				(const char*)className.ToAscii(), 
-				(const char*)namespaceName.ToAscii(), 
+				(const char*)propertyName.c_str(), 
+				(const char*)className.c_str(), 
+				(const char*)namespaceName.c_str(), 
 				lineNumber, 
-				(const char*)propertyType.ToAscii());
+				(const char*)propertyType.c_str());
 		}
 	}
 
@@ -219,9 +219,9 @@ public:
 	 */
 	virtual void TraitUseFound(const wxString& namespaceName, const wxString& className, const wxString& traitName) {
 		wxPrintf(wxT("Trait Usage Found in class %s in namespace %s. Trait Name %s \n"), 
-			(const char*)className.ToAscii(),  
-			(const char*)namespaceName.ToAscii(), 
-			(const char*)traitName.ToAscii());
+			(const char*)className.c_str(),  
+			(const char*)namespaceName.c_str(), 
+			(const char*)traitName.c_str());
 	}
 	
 	/**
@@ -250,11 +250,11 @@ public:
 				visibilityStr = "public";
 			}
 			wxPrintf(wxT("Trait Alias Found in class %s in namespace %s. Trait Class %s Trait Method %s Trait Alias %s New Visibility %s \n"), 
-				(const char*)className.ToAscii(),
-				(const char*)namespaceName.ToAscii(),
-				(const char*)traitUsedClassName.ToAscii(),
-				(const char*)traitMethodName.ToAscii(),
-				(const char*)alias.ToAscii(),
+				(const char*)className.c_str(),
+				(const char*)namespaceName.c_str(),
+				(const char*)traitUsedClassName.c_str(),
+				(const char*)traitMethodName.c_str(),
+				(const char*)alias.c_str(),
 				visibilityStr
 			);
 		}
@@ -270,10 +270,10 @@ public:
 				visibilityStr = "public";
 			}
 			wxPrintf(wxT("Trait Change in visbility Found in class %s in namespace %s. Trait Class %s Trait Method %s New Visibility %s\n"), 
-				(const char*)className.ToAscii(),
-				(const char*)namespaceName.ToAscii(),
-				(const char*)traitUsedClassName.ToAscii(),
-				(const char*)traitMethodName.ToAscii(),
+				(const char*)className.c_str(),
+				(const char*)namespaceName.c_str(),
+				(const char*)traitUsedClassName.c_str(),
+				(const char*)traitMethodName.c_str(),
 				visibilityStr
 			);
 		}
@@ -292,14 +292,15 @@ public:
 	virtual void TraitInsteadOfFound(const wxString& namespaceName, const wxString& className, const wxString& traitUsedClassName,
 		const wxString& traitMethodName, const std::vector<wxString>& insteadOfList) {
 		wxPrintf(wxT("Trait InsteadOf Found in class %s in namespace %s. Trait Class %s Trait Method %s \n"), 
-			(const char*)className.ToAscii(),
-			(const char*)namespaceName.ToAscii(),
-			(const char*)traitUsedClassName.ToAscii(),
-			(const char*)traitMethodName.ToAscii()
+			(const char*)className.c_str(),
+			(const char*)namespaceName.c_str(),
+			(const char*)traitUsedClassName.c_str(),
+			(const char*)traitMethodName.c_str()
 		);
+
 		wxPrintf(wxT("Instead of"));
 		for (size_t i = 0; i < insteadOfList.size(); ++i) {
-			wxPrintf(wxT(" %s"), (const char*)insteadOfList[i].ToAscii());
+			wxPrintf(wxT(" %s"), (const char*)insteadOfList[i].c_str());
 		}
 	}
 	
@@ -319,16 +320,16 @@ public:
 		const wxString& signature, const wxString& returnType, const wxString& comment, const int lineNumber) {
 		if (returnType.empty()) {
 			wxPrintf(wxT("Function Found: %s in namespace %s on line %d. Function Did not have @return in PHPDoc comment\n"), 
-				(const char*)functionName.ToAscii(),
-				(const char*)namespaceName.ToAscii(),
+				(const char*)functionName.c_str(),
+				(const char*)namespaceName.c_str(),
 				lineNumber);
 		}
 		else {
 			wxPrintf(wxT("Function Found: %s in namespace %s on line %d and it returns %s\n"), 
-				(const char*)functionName.ToAscii(),
-				(const char*)namespaceName.ToAscii(),
+				(const char*)functionName.c_str(),
+				(const char*)namespaceName.c_str(),
 				lineNumber,
-				(const char*)returnType.ToAscii());
+				(const char*)returnType.c_str());
 		}
 	}
 
@@ -419,9 +420,9 @@ public:
 			type += variable.PhpDocType;
 		}
 		wxPrintf(wxT("Variable Found: %s in scope %s. %s\n"), 
-				(const char*)variable.ChainList[0].Name.ToAscii(),
-				(const char*)scope.ToAscii(),
-				(const char*)type.ToAscii());
+				(const char*)variable.ChainList[0].Name.c_str(),
+				(const char*)scope.c_str(),
+				(const char*)type.c_str());
 	}
 };
 
@@ -447,7 +448,7 @@ int main(int argc, char** argv) {
 	}
 	else {
 		wxPrintf(wxT("Parse error: %s on line %d\n"), 
-			(const char*)results.Error.ToAscii(), 
+			(const char*)results.Error.c_str(), 
 			results.LineNumber);
 	}
 	return 0;

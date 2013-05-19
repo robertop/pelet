@@ -169,10 +169,10 @@ solution "pelet"
 			wxconfiguration("Debug", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Debug") .. " && ./tests" }
 		configuration { "Release", "vs2008" }
-			wxconfiguration("Debug", _ACTION)
+			wxconfiguration("Release", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && tests.exe"  }
 		configuration { "Release", "gmake or codelite" }
-			wxconfiguration("Debug", _ACTION)
+			wxconfiguration("Release", _ACTION)
 			postbuildcommands { "cd " .. normalizepath("Release") .. " && ./tests" }
 		
 	project "pelet"

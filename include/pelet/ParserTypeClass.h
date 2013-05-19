@@ -50,7 +50,7 @@ class QualifiedNameClass;
 class PELET_API wxStringComparatorClass {
 public:
 		bool operator()(const wxString& str1, const wxString& str2) const {
-			return (str1.compare(str2) < (int8_t)0) ? true : false;
+			return (str1.compare(str2) < 0) ? true : false;
 		}
 };
 
