@@ -87,11 +87,14 @@ namespace pelet {
  * * This lexer will handle source code for PHP version 5.3
  * 
  * @param BufferClass* buffer contains the code to be tokenized. This function will NOT own the pointer.
+ * @param captureAllTokens if TRUE when inline HTML and single line comments are encountered they will returned 
+ *        as a lexeme. When false,
+ *        inline html ans single line comments are skipped entirely
  * @param YYCONDTYPE &condition the current state the the parser is in. this needs 
  * to be an argument to avoid global variables.
  * @return int the next token.
  */
-int Next53Token(BufferClass* buffer, YYCONDTYPE &condition);
+int Next53Token(BufferClass* buffer, bool captureAllTokens, YYCONDTYPE &condition);
 
 }
 

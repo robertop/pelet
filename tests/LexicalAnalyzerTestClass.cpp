@@ -696,6 +696,70 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleInlineHtml) {
 	CHECK_TOKEN(pelet::T_END);
 }
 
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldReturnInlineHtml) {
+	CreateFixtureFile("test.php", 
+		"<? foreach ($arrTabsList as $key=>$val) { ?>\n"
+		"print<br />\n"
+		"<?= 'hello' ?>\n"
+		"<?} ?>\n"
+		"text"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	Lexer53.SetCaptureAllTokens(true);
+	Lexer54.SetCaptureAllTokens(true);
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_FOREACH, wxT("foreach"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$arrTabsList"));
+	CHECK_TOKEN_LEXEME(pelet::T_AS, wxT("as"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$key"));
+	CHECK_TOKEN_LEXEME(pelet::T_DOUBLE_ARROW, wxT("=>"));
+	CHECK_TOKEN_LEXEME(pelet::T_VARIABLE, wxT("$val"));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME('{', wxT("{"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, wxT("\nprint<br />\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG_WITH_ECHO, wxT("<?="));
+	CHECK_TOKEN_LEXEME(pelet::T_CONSTANT_ENCAPSED_STRING, wxT("hello"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, wxT("\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<?"));
+	CHECK_TOKEN_LEXEME('}', wxT("}"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, wxT("\ntext"));
+	CHECK_TOKEN(pelet::T_END);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldReturnLineComments) {
+	CreateFixtureFile("test.php", 
+		"<? // this is a comment?>\n"
+		"<? phpinfo(); ?>\n"
+		"<? // done "
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	Lexer53.SetCaptureAllTokens(true);
+	Lexer54.SetCaptureAllTokens(true);
+	CHECK(LexerOpen(file));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, wxT(" this is a comment"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, wxT("\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_STRING, wxT("phpinfo"));
+	CHECK_TOKEN_LEXEME('(', wxT("("));
+	CHECK_TOKEN_LEXEME(')', wxT(")"));
+	CHECK_TOKEN_LEXEME(';', wxT(";"));
+	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, wxT("?>"));
+	CHECK_TOKEN_LEXEME(pelet::T_INLINE_HTML, wxT("\n"));
+	CHECK_TOKEN_LEXEME(pelet::T_OPEN_TAG, wxT("<? "));
+	CHECK_TOKEN_LEXEME(pelet::T_COMMENT, wxT(" done "));
+	CHECK_TOKEN(pelet::T_END);
+}
+
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFirstFunction) {
 	wxString code = _U(
 		"<?php echo"

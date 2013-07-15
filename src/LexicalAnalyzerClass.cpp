@@ -31,7 +31,8 @@ pelet::LexicalAnalyzerClass::LexicalAnalyzerClass(const std::string& fileName)
 	, Buffer(NULL)
 	, FileName()
 	, Condition(yycINLINE_HTML)
-	, Version(PHP_53) {
+	, Version(PHP_53) 
+	, CaptureAllTokens(false) {
 	OpenFile(fileName);
 }
 
@@ -40,7 +41,8 @@ pelet::LexicalAnalyzerClass::LexicalAnalyzerClass()
 	, Buffer(NULL)
 	, FileName()
 	, Condition(yycINLINE_HTML) 
-	, Version(PHP_53) {
+	, Version(PHP_53) 
+	, CaptureAllTokens(false) {
 }
 
 pelet::LexicalAnalyzerClass::~LexicalAnalyzerClass() {
@@ -85,13 +87,16 @@ bool pelet::LexicalAnalyzerClass::OpenString(const wxString& code) {
 void pelet::LexicalAnalyzerClass::SetVersion(Versions version) {
 	Version = version;
 }
+void pelet::LexicalAnalyzerClass::SetCaptureAllTokens(bool captureAllTokens) {
+	CaptureAllTokens = captureAllTokens;
+}
 
 int pelet::LexicalAnalyzerClass::NextToken() {
 	if (PHP_53 == Version) {
-		return Buffer ? pelet::Next53Token(Buffer, Condition) : T_END;
+		return Buffer ? pelet::Next53Token(Buffer, CaptureAllTokens, Condition) : T_END;
 	}
 	else {
-		return Buffer ? pelet::Next54Token(Buffer, Condition) : T_END;
+		return Buffer ? pelet::Next54Token(Buffer, CaptureAllTokens, Condition) : T_END;
 	}
 }
 

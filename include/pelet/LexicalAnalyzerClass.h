@@ -97,6 +97,15 @@ class PELET_API LexicalAnalyzerClass {
 	 * OpenString()
 	 */
 	void SetVersion(Versions version);
+
+	/**
+	 * if TRUE, inline HTML and single line comment are returned as a token and lexemes. 
+	 * If false, inline html and single line comments are skipped entirely.
+	 * The default (if this method is not called) is false.
+	 * Most of the times comments and inline HTML is not significant, but it may be significant
+	 * for certain tasks, like formatting source code.
+	 */
+	void SetCaptureAllTokens(bool captureAllTokens);
 	
 	/**
 	 * Clean up any resources after lexing
@@ -198,6 +207,13 @@ private:
 	 * The PHP version to handle
 	 */
 	Versions Version;
+
+	/**
+	 * if TRUE, inline HTML and single line comment are returned as a token and lexemes. 
+	 * If false, inline html and single line comments are skipped entirely.
+	 * The default is false
+	 */
+	bool CaptureAllTokens;
 	
 };
 

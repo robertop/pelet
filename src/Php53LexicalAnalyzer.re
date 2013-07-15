@@ -46,7 +46,7 @@
 // condition is actually a variable (reference) that is passed into the nextToken() function
 #define YYSETCONDITION(c)  condition = c
 
-int pelet::Next53Token(BufferClass* buffer, YYCONDTYPE &condition) {
+int pelet::Next53Token(BufferClass* buffer, bool captureAllTokens, YYCONDTYPE &condition) {
 	if (buffer->HasReachedEnd()) {
 		return T_END;
 	}
@@ -256,10 +256,33 @@ NOT
  *  <p><?php echo "hello"; // again ?></p>
  * when the close tag is encountered; put it back so that it can be tokenized
  */
-<LINE_COMMENT> NEWLINE { buffer->IncrementLine(); condition = yycSCRIPT; goto php_53_lexical_analyzer_next_token_start; }
-<LINE_COMMENT> EOF { return T_END; }
-<LINE_COMMENT> "?>" { condition = yycINLINE_HTML; buffer->TokenStart = buffer->Current - 2; return T_CLOSE_TAG; }
-<LINE_COMMENT> ANY { goto php_53_lexical_analyzer_next_token_start; }
+<LINE_COMMENT> NEWLINE { buffer->IncrementLine(); 
+                         condition = yycSCRIPT; 
+                         if (captureAllTokens) { 
+                           return T_COMMENT; 
+                         } 
+                         goto php_53_lexical_analyzer_next_token_start;
+                       }
+<LINE_COMMENT> EOF { if (captureAllTokens && (buffer->Current - 1) > buffer->TokenStart) { 
+                       buffer->Current--; 
+                       return T_COMMENT;  
+                     }
+                     return T_END; 
+                   }
+<LINE_COMMENT> "?>" { condition = yycINLINE_HTML; 
+                      if (captureAllTokens) {
+                        condition = yycSCRIPT; 
+                        buffer->Current -= 2; // 2 length of close tag
+                        return T_COMMENT;
+                      }
+                      buffer->TokenStart = buffer->Current - 2; 
+                      return T_CLOSE_TAG;
+                    }
+<LINE_COMMENT> ANY { if (captureAllTokens) {
+                       goto php_53_lexical_analyzer_next_char; 
+                     }
+                     goto php_53_lexical_analyzer_next_token_start; 
+                   }
 
 /*!ignore:re2c
  * by going to next_char the lexeme is KEPT; multi line comments are treated special
@@ -335,14 +358,29 @@ NOT
  * return token;
  * treat xml tags as inline html
  */
-<INLINE_HTML> '<?php' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> '<?xml' (WHITESPACE | NEWLINE) { goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> '<?=' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> '<?' (WHITESPACE | NEWLINE) { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> '<?' { condition = yycSCRIPT; buffer->Current = buffer->TokenStart; goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> NEWLINE { buffer->IncrementLine(); goto php_53_lexical_analyzer_next_token_start; }
-<INLINE_HTML> EOF { return T_END; }
-<INLINE_HTML> ANY { goto php_53_lexical_analyzer_next_token_start; }
+<INLINE_HTML> '<?xml' (WHITESPACE | NEWLINE) { if (captureAllTokens) goto php_53_lexical_analyzer_next_char;
+                                               goto php_53_lexical_analyzer_next_token_start;
+                                             }
+<INLINE_HTML> '<?' { condition = yycSCRIPT; 
+                      if (captureAllTokens && (buffer->Current - 2) > buffer->TokenStart) { 
+                        buffer->Current -= 2; // 2 = length of start tag
+                        return T_INLINE_HTML;  
+                      }
+                      else if (captureAllTokens) {
+                        buffer->Current -= 2; // 2 = length of start tag
+                        goto php_53_lexical_analyzer_next_token_start;
+                      }
+                      buffer->Current = buffer->TokenStart;
+                      goto php_53_lexical_analyzer_next_token_start;
+                    }
+<INLINE_HTML> NEWLINE { buffer->IncrementLine(); 
+                        if (captureAllTokens) goto php_53_lexical_analyzer_next_char;
+                        goto php_53_lexical_analyzer_next_token_start;
+                      }
+<INLINE_HTML> EOF { if (captureAllTokens && (buffer->Current - 1) > buffer->TokenStart) { buffer->Current--; return T_INLINE_HTML; } return T_END; }
+<INLINE_HTML> ANY { if (captureAllTokens) goto php_53_lexical_analyzer_next_char;
+                    goto php_53_lexical_analyzer_next_token_start;
+                  }
 
 /*!ignore:re2c
  * properties can be any valid identifier; including keywords; this is why they are 
