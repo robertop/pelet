@@ -39,7 +39,8 @@ class TestObserverClass :
 
 public:
 
-	
+	~TestObserverClass();
+
 	std::vector<UnicodeString> ClassNamespace, ClassName, ClassSignature, ClassComment,
 						NamespaceName,
 						NamespaceUseName, NamespaceAlias,
@@ -60,8 +61,20 @@ public:
 					MethodStartingPos, MethodEndingPos,
 					FunctionStartingPos, FunctionEndingPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
-	std::vector<pelet::ExpressionClass> Expressions;
 	
+	// these expression pointers will be deleted by the base ExpressionObserverClass
+	// functionality
+	std::vector<pelet::ScalarExpressionClass*> ScalarExpressions;
+	std::vector<pelet::ArrayExpressionClass*> ArrayExpressions;
+	std::vector<pelet::NewInstanceExpressionClass*> NewInstanceExpressions;
+	std::vector<pelet::VariableClass*> VariableExpressions;
+	std::vector<pelet::AssignmentExpressionClass*> AssignmentExpressions;
+	std::vector<pelet::AssignmentCompoundExpressionClass*> AssignmentCompoundExpressions;
+	std::vector<pelet::BinaryOperationClass*> BinaryOperations;
+	std::vector<pelet::UnaryOperationClass*> UnaryOperations;
+	std::vector<pelet::UnaryVariableOperationClass*> UnaryVariableOperations;
+	std::vector<pelet::TernaryOperationClass*> TernaryOperations;
+
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
 			
@@ -86,7 +99,7 @@ public:
 	void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos);
 	
 	void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment);
+		const pelet::VariableClass& variable, pelet::ExpressionClass* expression, const UnicodeString& comment);
 	
 	void DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
 			const UnicodeString& comment, const int lineNumber);
@@ -102,7 +115,22 @@ public:
 	void TraitInsteadOfFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& traitUsedClassName,
 		const UnicodeString& traitMethodName, const std::vector<UnicodeString>& insteadOfList);
 		
-	void ExpressionFound(const pelet::ExpressionClass& expression);
+	void ExpressionVariableFound(pelet::VariableClass* expression);
+
+	void ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression);
+
+	void ExpressionAssignmentCompoundFound(pelet::AssignmentCompoundExpressionClass* expression);
+
+	void ExpressionBinaryOperationFound(pelet::BinaryOperationClass* expression);
+
+	void ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression);
+
+	void ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression);
+
+	void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression);
+
+	void CopyToProperExpression(pelet::ExpressionClass* expr);
+
 };
 
 #endif

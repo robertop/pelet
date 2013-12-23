@@ -238,17 +238,51 @@ namespace pelet {
 
 class ParserVariableObserverClass : public ExpressionObserverClass {
 
+private:
+	
+	// only needed because variable constructor requires it
+	pelet::ScopeClass Scope;
+
 public:
 
-	std::vector<ExpressionClass> Expressions;
+	pelet::VariableClass Variable;
+
+	ParserVariableObserverClass() 
+	: Scope()
+	, Variable(Scope) {
+
+	}
 	
-	virtual void ExpressionFound(const ExpressionClass& expression) {
-		Expressions.push_back(expression);
+	void ExpressionVariableFound(pelet::VariableClass* expression) {
+		for (size_t i = 0; i < expression->ChainList.size(); ++i) {
+			
+			// don't copy expression pointers, as they will be no good
+			// after the observer goes out of scope
+			std::vector<pelet::ExpressionClass*> emptyArgs;
+			Variable.AppendToChain(expression->ChainList[i].Name, emptyArgs, expression->ChainList[i].IsFunction, expression->ChainList[i].IsStatic);
+		}
+	}
+
+	void ExpressionScalarFound(pelet::ScalarExpressionClass* expression) {
+		Variable.AppendToChain(expression->Value);
+	}
+
+	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) {
+		Variable.AppendToChain(expression->ClassName);
+		Variable.ExpressionType = expression->ExpressionType;
+		for (size_t i = 0; i < expression->ChainList.size(); ++i) {
+			
+			// don't copy expression pointers, as they will be no good
+			// after the observer goes out of scope
+			std::vector<pelet::ExpressionClass*> emptyArgs;
+			Variable.AppendToChain(expression->ChainList[i].Name, emptyArgs, expression->ChainList[i].IsFunction, expression->ChainList[i].IsStatic);
+		}
 	}
 };
+
 }
 
-void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::ExpressionClass& expression) {
+void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::VariableClass& variable) {
 	expressionString.trim();
 
 	// remove the operators if they are at the end; this prevents parse errors
@@ -272,7 +306,7 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 	if (!expressionString.endsWith(UNICODE_STRING_SIMPLE(";"))) {
 		expressionString += UNICODE_STRING_SIMPLE(";");
 	}
-	expression.Clear();
+	variable.Clear();
 
 	pelet::ParserVariableObserverClass localObserver;
 	pelet::FullParserObserverClass observers(NULL, NULL, NULL, NULL, &localObserver);
@@ -290,20 +324,18 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 		}
 		Lexer.Close();
 	}
-	if (!localObserver.Expressions.empty()) {
-		expression = localObserver.Expressions.back();
-	}
+	variable.Copy(localObserver.Variable);
 	if (endsWithObject) {
-		std::vector<pelet::ExpressionClass> args;
-		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, false);
+		std::vector<pelet::ExpressionClass*> args;
+		variable.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, false);
 	}
 	if (endsWithStatic) {
-		std::vector<pelet::ExpressionClass> args;
-		expression.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, true);
+		std::vector<pelet::ExpressionClass*> args;
+		variable.AppendToChain(UNICODE_STRING_SIMPLE(""), args, false, true);
 	}
 	if (endsWithNamespace) {
-		if (!expression.ChainList.empty()) {
-			expression.ChainList[0].Name += UNICODE_STRING_SIMPLE("\\");
+		if (!variable.ChainList.empty()) {
+			variable.ChainList[0].Name += UNICODE_STRING_SIMPLE("\\");
 		}
 	}
 }

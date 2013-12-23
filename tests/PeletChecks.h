@@ -42,4 +42,36 @@
 #define CHECK_UNISTR_EQUALS(expected, actual) \
 	CHECK_EQUAL(UNICODE_STRING_SIMPLE(expected), actual);
 
+
+/**
+ * A macro that checks that a variable is of type ScalarExpressionClass 
+ * and that the scalar has the given value
+ */
+#define CHECK_SCALAR(scalarValue, actualVar) \
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, actualVar->ExpressionType);\
+	CHECK_UNISTR_EQUALS(scalarValue, ((pelet::ScalarExpressionClass*)actualVar)->Value);
+
+/**
+ * A macro that checks that a variable is of type VariableClass 
+ * and that the expression has the given function nane
+ */
+#define CHECK_FUNCTION(funcName, actualVar) \
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, actualVar->ExpressionType);\
+	CHECK_UNISTR_EQUALS(funcName, ((pelet::VariableClass*)actualVar)->ChainList[0].Name);
+
+/**
+ * A macro that checks that a variable is of type VariableClass 
+ * and that the variable name is equal to the given value
+ */
+#define CHECK_VARIABLE(varName, actualVar) \
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, actualVar->ExpressionType); \
+	CHECK_UNISTR_EQUALS(varName, ((pelet::VariableClass*)actualVar)->ChainList[0].Name);
+
+
+/**
+ * A macro that checks that a variable is of type ArrayExpressionClass 
+ */
+#define CHECK_ARRAY(actualVar) \
+	CHECK_EQUAL(pelet::ExpressionClass::ARRAY, actualVar->ExpressionType);
+
 #endif

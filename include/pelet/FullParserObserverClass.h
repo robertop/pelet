@@ -271,23 +271,25 @@ public:
 
 	pelet::ExpressionClass* IncludeFound(pelet::ExpressionClass* expr, const int lineNumber);
 
-	pelet::ExpressionClass* ExpressionMakeAssignmentList(pelet::StatementListClass* assignmentList);
+	pelet::ExpressionClass* ExpressionMakeAssignmentList(pelet::StatementListClass* assignmentList, pelet::ExpressionClass* srcExpression);
 	pelet::ExpressionClass* AssignmentExpressionFromExpressionFound(pelet::VariableClass* variable, pelet::ExpressionClass* expression);
-	pelet::ExpressionClass* AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className);
+	pelet::ExpressionClass* AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className, pelet::StatementListClass* callArguments);
 	pelet::ExpressionClass* AssignmentExpressionFromVariableFound(pelet::VariableClass* variable, pelet::VariableClass* srcVariable);
 	pelet::ExpressionClass* ExpressionMakeAsAssignmentExpression(pelet::VariableClass* variable);
 	pelet::ExpressionClass* ExpressionMakeArray(pelet::StatementListClass* pairStatements);
+	pelet::NewInstanceExpressionClass* ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className, pelet::StatementListClass* callArguments);
 	pelet::ExpressionClass* ExpressionMakeClassConstant(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* constantName);
 	pelet::ExpressionClass* ExpressionMakeGlobalVariable(pelet::SemanticValueClass* value);
-	pelet::ExpressionClass* ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className);
 	pelet::ExpressionClass* ExpressionMakeObject(pelet::ExpressionClass* srcExpression);
 	pelet::ExpressionClass* ExpressionMakeScalar(pelet::ExpressionClass* srcExpression);
 	pelet::ExpressionClass* ExpressionMakeScalar(pelet::SemanticValueClass* srcValue);
 	pelet::ExpressionClass* ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName);
 	pelet::ExpressionClass* ExpressionMakeStaticVariable(pelet::SemanticValueClass* nameValue);
-	pelet::ExpressionClass* ExpressionMakeFromVariable(pelet::VariableClass* variableValue);
-	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::VariableClass* variableValue);
-	pelet::ExpressionClass* ExpressionAppendToChain(pelet::ExpressionClass* expression, pelet::ExpressionClass* restExpression);
+	pelet::ExpressionClass* ExpressionAssignmentCompoundOperation(int operatorToken, pelet::VariableClass* leftOperand, pelet::ExpressionClass* rightOperand);
+	pelet::ExpressionClass* ExpressionBinaryOperation(int operatorToken, pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* rightOperand);
+	pelet::ExpressionClass* ExpressionUnaryOperation(int operatorToken, pelet::ExpressionClass* operand);
+	pelet::ExpressionClass* ExpressionUnaryVariableOperation(int operatorToken, pelet::VariableClass* operand);
+	pelet::ExpressionClass* ExpressionTernaryOperation(pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* middleOperand, pelet::ExpressionClass* rightOperand);
 	pelet::ExpressionClass* ExpressionNil();
 	
 	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);
@@ -302,6 +304,8 @@ public:
 	pelet::VariableClass* VariableMakeAndAppendFunctionCall(pelet::StatementListClass* callArguments, bool isMethod);
 	pelet::VariableClass* VariableAppendArrayOffset(pelet::VariableClass* variable, pelet::ExpressionClass* offsetExpr);
 	pelet::VariableClass* VariableNil();
+
+	pelet::ExpressionClass* NewInstanceAppendToChain(pelet::ExpressionClass* newInstanceExpr, pelet::VariableClass* variable);
 	
 	void MakeAst(pelet::StatementListClass* statements);
 	

@@ -265,6 +265,27 @@ void pelet::CreateMagicMethodsAndProperties(std::vector<pelet::AstItemClass*>& a
 	delete[] buf;
 }
 
+pelet::ExpressionObserverClass::ExpressionObserverClass()
+: Statements() {
+}
+
+pelet::ExpressionObserverClass::~ExpressionObserverClass() {
+	CleanupStatements();
+}
+
+void pelet::ExpressionObserverClass::StatementOwnership(std::vector<pelet::AstItemClass*> statements) {
+	CleanupStatements();
+	Statements = statements;
+}
+
+void pelet::ExpressionObserverClass::CleanupStatements() {
+	std::vector<pelet::AstItemClass*>::iterator it;
+	for (it = Statements.begin(); it != Statements.end(); ++it) {
+		delete (*it);
+	}
+}
+
+
 pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
 	: AstItemClass()
 	, Type(type) {
@@ -299,11 +320,17 @@ void pelet::ConstantStatementClass::Init(pelet::QualifiedNameClass* functionName
 	}
 
 	// right now will only scalars are captured; so we may have only 1 param
-	if (params && params->Size() >= 1 && params->TypeAt(0) == pelet::StatementClass::SCALAR) {
-		Name = ((pelet::ScalarStatementClass*)params->At(0))->Scalar;
+	if (params && params->Size() >= 1 && params->TypeAt(0) == pelet::StatementClass::EXPRESSION) {
+		pelet::ExpressionClass* paramExpr =  (pelet::ExpressionClass*)params->At(0);
+		if (paramExpr->ExpressionType == pelet::ExpressionClass::SCALAR) {
+			Name = ((pelet::ScalarExpressionClass*)paramExpr)->Value;
+		}
 	}
-	if (params && params->Size() >= 2 && params->TypeAt(1) == pelet::StatementClass::SCALAR) {
-		Value = ((pelet::ScalarStatementClass*)params->At(1))->Scalar;
+	if (params && params->Size() >= 2 && params->TypeAt(1) == pelet::StatementClass::EXPRESSION) {
+		pelet::ExpressionClass* paramExpr =  (pelet::ExpressionClass*)params->At(1);
+		if (paramExpr->ExpressionType == pelet::ExpressionClass::SCALAR) {
+			Value = ((pelet::ScalarExpressionClass*)paramExpr)->Value;
+		}
 	}
 	LineNumber = lineNumber;
 	NamespaceName = UNICODE_STRING_SIMPLE("\\");
@@ -1183,13 +1210,27 @@ void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::Se
 }
 
 pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
-	: StatementClass(pelet::StatementClass::EXPRESSION)
-	, Comment()
-	, Scope(scope)
-	, ChainList()
-	, ArrayKeys()
-	, ExpressionType(SCALAR)
-	, LineNumber(0) {
+: StatementClass(pelet::StatementClass::EXPRESSION)
+, Scope(scope)
+, ExpressionType(SCALAR)
+, LineNumber(0) {
+
+}
+
+void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
+	Scope = src.Scope;
+	ExpressionType = src.ExpressionType;
+	Type = src.Type;
+	LineNumber = src.LineNumber;
+}
+
+/*
+pelet::ExpressionClass::ExpressionClass(const pelet::ExpressionClass& src)
+: StatementClass(pelet::StatementClass::EXPRESSION)
+, Scope(src.Scope)
+, ExpressionType(SCALAR)
+, LineNumber(0) {
+	Copy(src);
 }
 
 void pelet::ExpressionClass::Clear() {
@@ -1200,15 +1241,9 @@ void pelet::ExpressionClass::Clear() {
 	ExpressionType = pelet::ExpressionClass::SCALAR;
 	LineNumber = 0;
 }
-
-void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
-	Comment = src.Comment;
-	Scope = src.Scope;
-	ChainList = src.ChainList;
-	ArrayKeys = src.ArrayKeys;
-	ExpressionType = src.ExpressionType;
-	Type = src.Type;
-	LineNumber = src.LineNumber;
+pelet::ExpressionClass& pelet::ExpressionClass::operator=(const pelet::ExpressionClass& src) {
+	Copy(src);
+	return *this;
 }
 
 void pelet::ExpressionClass::Copy(const pelet::VariableClass& variable) {
@@ -1257,23 +1292,6 @@ void pelet::ExpressionClass::ToNewCall(const UnicodeString& className) {
 	ChainList.push_back(objectCall);
 }
 
-void pelet::ExpressionClass::ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& propertyName, bool isMethod) {
-	Clear();
-	ExpressionType = FUNCTION_CALL;
-	if (!className.isEmpty()) {
-		pelet::VariablePropertyClass objectCall;
-		objectCall.Name = className;
-		ChainList.push_back(objectCall);
-	}
-	if (!propertyName.isEmpty()) {
-		pelet::VariablePropertyClass objectCall;
-		objectCall.Name = propertyName;
-		objectCall.IsFunction = isMethod;
-		objectCall.IsStatic = true;
-		ChainList.push_back(objectCall);
-	}
-}
-
 void pelet::ExpressionClass::ToVariable(const UnicodeString& variableName) {
 	Clear();
 	ExpressionType = VARIABLE;
@@ -1316,26 +1334,141 @@ void pelet::ExpressionClass::ToConstant(const UnicodeString& className, const Un
 		ChainList.push_back(objectCall);
 	}
 }
+*/
+
+pelet::ScalarExpressionClass::ScalarExpressionClass()
+: ExpressionClass(ScopeClass())
+, Value() {
+	ExpressionType = pelet::ExpressionClass::SCALAR;
+}
+
+pelet::ScalarExpressionClass::ScalarExpressionClass(const ScopeClass& scope)
+: ExpressionClass(scope)
+, Value() {
+	ExpressionType = pelet::ExpressionClass::SCALAR;
+}
+
+pelet::ScalarExpressionClass::ScalarExpressionClass(const pelet::ScalarExpressionClass& src)
+: ExpressionClass(src.Scope) 
+, Value() {
+	ExpressionType = pelet::ExpressionClass::SCALAR;
+	Copy(src);
+}
+
+pelet::ScalarExpressionClass& pelet::ScalarExpressionClass::operator=(const pelet::ScalarExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::ScalarExpressionClass::Copy(const pelet::ScalarExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Value = src.Value;
+}
+
+void pelet::ScalarExpressionClass::Init(pelet::SemanticValueClass* value) {
+	if (value) {
+		Value = value->Lexeme;
+	}
+}
+
+pelet::NewInstanceExpressionClass::NewInstanceExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, ClassName() {
+	ExpressionType = pelet::ExpressionClass::NEW_CALL;
+}
+
+pelet::NewInstanceExpressionClass::NewInstanceExpressionClass(const pelet::NewInstanceExpressionClass& src)
+: ExpressionClass(src.Scope)
+, ClassName()
+, ChainList() {
+	ExpressionType = pelet::ExpressionClass::NEW_CALL;
+	Copy(src);
+}
+
+pelet::NewInstanceExpressionClass& pelet::NewInstanceExpressionClass::operator=(const pelet::NewInstanceExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::NewInstanceExpressionClass::Copy(const pelet::NewInstanceExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	ClassName = src.ClassName;
+	ChainList = src.ChainList;
+}
+
+void pelet::NewInstanceExpressionClass::AddStatementsAsArguments(pelet::StatementListClass* statements) {
+	if (statements) {
+		for (size_t i = 0; i < statements->Size(); ++i) {
+			if (pelet::StatementClass::EXPRESSION == statements->TypeAt(i)) {
+				CallArguments.push_back((pelet::ExpressionClass*)statements->At(i));
+			}
+		}
+	}
+}
+
+void pelet::NewInstanceExpressionClass::AddToChain(pelet::VariableClass* var) {
+	for (size_t i = 0; i < var->ChainList.size(); ++i) {
+		ChainList.push_back(var->ChainList[i]);
+	}
+}
+
+pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, ArrayKeys() {
+	ExpressionType = pelet::ExpressionClass::ARRAY;
+}
+
+pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ArrayExpressionClass& src)
+: ExpressionClass(src.Scope)
+, ArrayKeys() {
+	ExpressionType = pelet::ExpressionClass::ARRAY;
+	Copy(src);
+}
+
+pelet::ArrayExpressionClass& pelet::ArrayExpressionClass::operator=(const pelet::ArrayExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::ArrayExpressionClass::Copy(const pelet::ArrayExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	ArrayKeys = src.ArrayKeys;
+}
 
 
 pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
-	: StatementClass(pelet::StatementClass::VARIABLE)
-	, Comment()
-	, PhpDocType()
-	, ChainList()
-	, ArrayKey()
-	, Scope(scope)
-	, LineNumber(0) {
+: ExpressionClass(scope)
+, Comment()
+, PhpDocType()
+, ChainList()
+, ArrayKey() {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::VARIABLE;
+}
+
+pelet::VariableClass::VariableClass(const pelet::VariableClass& src)
+: ExpressionClass(src.Scope)
+, Comment()
+, PhpDocType()
+, ChainList()
+, ArrayKey() {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::VARIABLE;
+	Copy(src);
+}
+
+pelet::VariableClass& pelet::VariableClass::operator =(const pelet::VariableClass& src) {
+	Copy(src);
+	return *this;
 }
 
 void pelet::VariableClass::Copy(const pelet::VariableClass& src) {
+	pelet::ExpressionClass::Copy(src);
 	Comment = src.Comment;
 	PhpDocType = src.PhpDocType;
 	ChainList = src.ChainList;
 	Type = src.Type;
 	ArrayKey = src.ArrayKey;
-	Scope = src.Scope;
-	LineNumber = src.LineNumber;
 }
 
 void pelet::VariableClass::AppendToComment(pelet::SemanticValueClass* value) {
@@ -1362,13 +1495,29 @@ void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue) {
 }
 
 void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue,
-		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic) {
+		std::vector<pelet::ExpressionClass*> callArguments, bool isMethod, bool isStatic) {
 	pelet::VariablePropertyClass prop;
 	prop.Name = propertyValue;
 	prop.CallArguments = callArguments;
 	prop.IsFunction = isMethod;
 	prop.IsStatic = isStatic;
 	ChainList.push_back(prop);	
+}
+
+void pelet::VariableClass::ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& propertyName, bool isMethod) {
+	Clear();
+	if (!className.isEmpty()) {
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = className;
+		ChainList.push_back(objectCall);
+	}
+	if (!propertyName.isEmpty()) {
+		pelet::VariablePropertyClass objectCall;
+		objectCall.Name = propertyName;
+		objectCall.IsFunction = isMethod;
+		objectCall.IsStatic = true;
+		ChainList.push_back(objectCall);
+	}
 }
 
 pelet::SemanticValueClass::SemanticValueClass() 
@@ -1383,28 +1532,201 @@ pelet::SemanticValueClass::SemanticValueClass()
 
 pelet::AssignmentExpressionClass::AssignmentExpressionClass(const pelet::ScopeClass& scope)
 	: ExpressionClass(scope)
-	, Destination(scope) {
+	, Destination(scope) 
+	, Expression(NULL) {
 	Type = pelet::StatementClass::ASSIGNMENT;
 }
 
-void pelet::AssignmentExpressionClass::Set(pelet::ExpressionClass& src) {
-	Copy(src);
-	
-	// copy method will ovewrite the type property put it back to normal
+pelet::AssignmentExpressionClass::AssignmentExpressionClass(const pelet::AssignmentExpressionClass& src)
+: ExpressionClass(src.Scope)
+, Destination(src.Scope)
+, Expression(NULL) {
 	Type = pelet::StatementClass::ASSIGNMENT;
+	Copy(src);
+}
+
+pelet::AssignmentExpressionClass& pelet::AssignmentExpressionClass::operator=(const pelet::AssignmentExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::AssignmentExpressionClass::Copy(const pelet::AssignmentExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Destination.Copy(src.Destination);
+	Expression = src.Expression;
 }
 
 pelet::AssignmentListExpressionClass::AssignmentListExpressionClass(const pelet::ScopeClass& scope)
-	: ExpressionClass(scope)
-	, Destinations() {
+: ExpressionClass(scope)
+, Destinations() {
 	Type = pelet::StatementClass::ASSIGNMENT_LIST;
 }
 
-void pelet::AssignmentListExpressionClass::Set(pelet::ExpressionClass& src) {
-	Copy(src);
-	
-	// copy method will ovewrite the type property put it back to normal
+pelet::AssignmentListExpressionClass::AssignmentListExpressionClass(const pelet::AssignmentListExpressionClass& src)
+: ExpressionClass(src.Scope)
+, Destinations() {
 	Type = pelet::StatementClass::ASSIGNMENT_LIST;
+	Copy(src);
+}
+
+pelet::AssignmentListExpressionClass& pelet::AssignmentListExpressionClass::operator=(const pelet::AssignmentListExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::AssignmentListExpressionClass::Copy(const pelet::AssignmentListExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Destinations = src.Destinations;
+}
+
+
+pelet::AssignmentCompoundExpressionClass::AssignmentCompoundExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Variable(scope)
+, Operator(0) 
+, RightOperand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT_COMPOUND;
+}
+
+pelet::AssignmentCompoundExpressionClass::AssignmentCompoundExpressionClass(const pelet::AssignmentCompoundExpressionClass& src)
+: ExpressionClass(src.Scope)
+, Variable(src.Scope)
+, Operator(0) 
+, RightOperand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT_COMPOUND;
+	Copy(src);
+}
+
+pelet::AssignmentCompoundExpressionClass& pelet::AssignmentCompoundExpressionClass::operator=(const pelet::AssignmentCompoundExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::AssignmentCompoundExpressionClass::Copy(const pelet::AssignmentCompoundExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Variable.Copy(src.Variable);
+	Operator = src.Operator;
+	RightOperand = src.RightOperand;
+}
+
+pelet::BinaryOperationClass::BinaryOperationClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, LeftOperand(NULL)
+, Operator(0)
+, RightOperand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::BINARY_OPERATION;
+}
+
+pelet::BinaryOperationClass::BinaryOperationClass(const pelet::BinaryOperationClass& src)
+: ExpressionClass(src.Scope)
+, LeftOperand(NULL)
+, Operator(0)
+, RightOperand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::BINARY_OPERATION;
+	Copy(src);
+}
+
+pelet::BinaryOperationClass& pelet::BinaryOperationClass::operator=(const pelet::BinaryOperationClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::BinaryOperationClass::Copy(const pelet::BinaryOperationClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	LeftOperand = src.LeftOperand;
+	Operator = src.Operator;
+	RightOperand = src.RightOperand;
+}
+
+pelet::UnaryOperationClass::UnaryOperationClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Operator(0)
+, Operand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::UNARY_OPERATION;
+}
+
+pelet::UnaryOperationClass::UnaryOperationClass(const pelet::UnaryOperationClass& src) 
+: ExpressionClass(src.Scope)
+, Operator(0)
+, Operand(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::UNARY_OPERATION;
+	Copy(src);
+}
+
+pelet::UnaryOperationClass& pelet::UnaryOperationClass::operator=(const pelet::UnaryOperationClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::UnaryOperationClass::Copy(const pelet::UnaryOperationClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Operator = src.Operator;
+	Operand = src.Operand;
+}
+
+pelet::UnaryVariableOperationClass::UnaryVariableOperationClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Operator(0)
+, Variable(scope) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::UNARY_VARIABLE_OPERATION;
+}
+
+pelet::UnaryVariableOperationClass::UnaryVariableOperationClass(const pelet::UnaryVariableOperationClass& src)
+: ExpressionClass(src.Scope)
+, Operator(0)
+, Variable(src.Scope) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::UNARY_VARIABLE_OPERATION;
+	Copy(src);
+}
+
+pelet::UnaryVariableOperationClass& pelet::UnaryVariableOperationClass::operator=(const pelet::UnaryVariableOperationClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::UnaryVariableOperationClass::Copy(const pelet::UnaryVariableOperationClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Operator = src.Operator;
+	Variable.Copy(src.Variable);
+}
+
+pelet::TernaryOperationClass::TernaryOperationClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Expression1(NULL)
+, Expression2(NULL)
+, Expression3(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::TERNARY_OPERATION;
+}
+
+pelet::TernaryOperationClass::TernaryOperationClass(const pelet::TernaryOperationClass& src) 
+: ExpressionClass(src.Scope)
+, Expression1(NULL)
+, Expression2(NULL)
+, Expression3(NULL) {
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::TERNARY_OPERATION;
+	Copy(src);
+}
+
+pelet::TernaryOperationClass& pelet::TernaryOperationClass::operator=(const pelet::TernaryOperationClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::TernaryOperationClass::Copy(const pelet::TernaryOperationClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Expression1 = src.Expression1;
+	Expression2 = src.Expression2;
+	Expression3 = src.Expression3;
 }
 
 pelet::ScopeClass::ScopeClass()
@@ -1559,22 +1881,31 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass()
-	: Name()
-	, CallArguments()
-	, IsFunction(false)
-	, IsStatic(false) {
+: Name()
+, CallArguments()
+, IsFunction(false)
+, IsStatic(false) {
 }
 
-pelet::ScalarStatementClass::ScalarStatementClass()
-	: StatementClass(pelet::StatementClass::SCALAR) 
-	, Scalar() {
-
+pelet::VariablePropertyClass::VariablePropertyClass(const pelet::VariablePropertyClass& src) 
+: Name()
+, CallArguments()
+, IsFunction(false)
+, IsStatic(false) {
+	Copy(src);
 }
 
-void pelet::ScalarStatementClass::Init(pelet::SemanticValueClass* value) {
-	if (value) {
-		Scalar = value->Lexeme;
-	}
+
+pelet::VariablePropertyClass& pelet::VariablePropertyClass::operator=(const pelet::VariablePropertyClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::VariablePropertyClass::Copy(const pelet::VariablePropertyClass& src) {
+	Name = src.Name;
+	CallArguments = src.CallArguments;
+	IsFunction = src.IsFunction;
+	IsStatic = src.IsStatic;
 }
 
 pelet::IncludeStatementClass::IncludeStatementClass() 
@@ -1586,7 +1917,10 @@ pelet::IncludeStatementClass::IncludeStatementClass()
 
 void pelet::IncludeStatementClass::Init(pelet::StatementClass* scalar, int lineNumber) {
 	LineNumber = lineNumber;
-	if (scalar && pelet::StatementClass::SCALAR == scalar->Type) {
-		File = ((pelet::ScalarStatementClass*)scalar)->Scalar;
+	if (scalar && pelet::StatementClass::EXPRESSION == scalar->Type) {
+		pelet::ExpressionClass* expr = (pelet::ExpressionClass*) scalar;
+		if (expr->ExpressionType == pelet::ExpressionClass::SCALAR) {
+			File = ((pelet::ScalarExpressionClass*)expr)->Value;
+		}
 	}
 }

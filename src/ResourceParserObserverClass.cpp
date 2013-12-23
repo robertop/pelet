@@ -295,10 +295,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 
 			// NIL is anything we want to skip on purpose
 			break;
-		case pelet::StatementClass::VARIABLE:
-
-			// we only want variables that are in assignments for now
-			break;
 		case pelet::StatementClass::PROPERTY_DECLARATION:
 			if (Member) {
 				memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
@@ -334,8 +330,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 					Member->TraitUseFound(traitUse->NamespaceName, traitUse->ClassName, traitUse->UsedTraits[i]);
 				}
 			}
-			break;
-		case pelet::StatementClass::SCALAR:
 			break;
 		}
 	}

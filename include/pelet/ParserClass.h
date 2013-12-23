@@ -404,7 +404,7 @@ public:
 	 * the variable name actually ended.
 	 * @param expression the expression's name and "chain" list. The  properties of this object will be reset every call.
 	 */
-	void ParseExpression(UnicodeString expressionString, ExpressionClass& expression);
+	void ParseExpression(UnicodeString expressionString, pelet::VariableClass& variable);
 	
 private:
 

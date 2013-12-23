@@ -24,6 +24,9 @@
  */
 #include <TestObserverClass.h> 
 
+TestObserverClass::~TestObserverClass() {
+}
+
 void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 		const UnicodeString& comment, const int lineNumber) {
 	ClassNamespace.push_back(namespaceName);
@@ -93,34 +96,54 @@ void TestObserverClass::FunctionScope(const UnicodeString& namespaceName, const 
 }
 
 void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-	const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment) {
+									  const pelet::VariableClass& variable, pelet::ExpressionClass* expression, const UnicodeString& comment) {
 	VariableClassNamespace.push_back(namespaceName);
 	VariableClassName.push_back(className);
 	VariableMethodName.push_back(methodName);
 	VariableName.push_back(variable.ChainList[0].Name);
 	VariableComment.push_back(variable.Comment);
 	VariableArrayKeys.push_back(variable.ArrayKey);
-	VariableExpressionTypes.push_back(expression.ExpressionType);
+	if (expression) {
+		VariableExpressionTypes.push_back(expression->ExpressionType);
+	}
+	else {
+		VariableExpressionTypes.push_back(pelet::ExpressionClass::UNKNOWN);
+	}
 	UnicodeString typeString;
-	for (size_t i = 0; i < expression.ChainList.size(); ++i) {
-		UnicodeString prop;
-		if (expression.ChainList[i].IsStatic && i > 0) {
-			prop = UNICODE_STRING_SIMPLE("::");
+	if (expression && expression->ExpressionType == pelet::ExpressionClass::VARIABLE) {
+		pelet::VariableClass* srcVar = (pelet::VariableClass*) expression;
+		for (size_t i = 0; i < srcVar->ChainList.size(); ++i) {
+			UnicodeString prop;
+			if (srcVar->ChainList[i].IsStatic && i > 0) {
+				prop = UNICODE_STRING_SIMPLE("::");
+			}
+			else if (i > 0) {
+				prop = UNICODE_STRING_SIMPLE("->");
+			}
+			prop.append(srcVar->ChainList[i].Name);
+			if (srcVar->ChainList[i].IsFunction) {
+				prop.append(UNICODE_STRING_SIMPLE("()"));
+			}
+			typeString.append(prop);
 		}
-		else if (i > 0) {
-			prop = UNICODE_STRING_SIMPLE("->");
+	}
+	if (expression && expression->ExpressionType == pelet::ExpressionClass::ARRAY) {
+		pelet::ArrayExpressionClass* srcArray = (pelet::ArrayExpressionClass*) expression;
+		for (size_t i = 0; i < srcArray->ArrayKeys.size(); ++i) {
+			VariableExpressionArrayKeys.push_back(srcArray->ArrayKeys[i]);
 		}
-		prop.append(expression.ChainList[i].Name);
-		if (expression.ChainList[i].IsFunction) {
-			prop.append(UNICODE_STRING_SIMPLE("()"));
-		}
-		typeString.append(prop);
+	}
+	if (expression && expression->ExpressionType == pelet::ExpressionClass::NEW_CALL) {
+		pelet::NewInstanceExpressionClass* newInstance = (pelet::NewInstanceExpressionClass*) expression;
+		typeString = newInstance->ClassName;
+	}
+	if (expression && expression->ExpressionType == pelet::ExpressionClass::SCALAR) {
+		pelet::ScalarExpressionClass* scalarExpr = (pelet::ScalarExpressionClass*) expression;
+		typeString = scalarExpr->Value;
 	}
 	VariableExpressionChainList.push_back(typeString);
 	VariablePhpDocType.push_back(variable.PhpDocType);
-	for (size_t i = 0; i < expression.ArrayKeys.size(); ++i) {
-		VariableExpressionArrayKeys.push_back(expression.ArrayKeys[i]);
-	}
+	
 }
 
 void TestObserverClass::DefineDeclarationFound(const UnicodeString& namespaceName, const UnicodeString& variableName, const UnicodeString& variableValue, 
@@ -164,7 +187,30 @@ void TestObserverClass::TraitInsteadOfFound(const UnicodeString& namespaceName, 
 	}
 }
 
-void TestObserverClass::ExpressionFound(const pelet::ExpressionClass& expression) {
-	Expressions.push_back(expression);
+void TestObserverClass::ExpressionVariableFound(pelet::VariableClass* expression) {
+	VariableExpressions.push_back(expression);
 }
 
+void TestObserverClass::ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression) {
+	AssignmentExpressions.push_back(expression);
+}
+
+void TestObserverClass::ExpressionAssignmentCompoundFound(pelet::AssignmentCompoundExpressionClass* expression) {
+	AssignmentCompoundExpressions.push_back(expression);
+}
+
+void TestObserverClass::ExpressionBinaryOperationFound(pelet::BinaryOperationClass* expression) {
+	BinaryOperations.push_back(expression);
+}
+
+void TestObserverClass::ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression) {
+	UnaryOperations.push_back(expression);
+}
+
+void TestObserverClass::ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression) {
+	UnaryVariableOperations.push_back(expression);
+}
+
+void TestObserverClass::ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression) {
+	TernaryOperations.push_back(expression);
+}

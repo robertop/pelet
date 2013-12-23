@@ -1076,9 +1076,9 @@ ctor_arguments:
 
 common_scalar:
 		T_LNUMBER 															{ if (observers.DoCaptureScalars) {
-																				pelet::ScalarStatementClass* scalarStmt;
-																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
-																				$$ = scalarStmt;
+																				pelet::ScalarExpressionClass* scalarExpr;
+																				AST_INIT_ARGS(scalarExpr, pelet::ScalarExpressionClass, $1);
+																				$$ = scalarExpr;
 																			  }
 																			  else { 
 																			    $$ = 0; 
@@ -1086,18 +1086,18 @@ common_scalar:
 																			}
 	|	T_DNUMBER 															{ 
 																			  if (observers.DoCaptureScalars) {
-																				pelet::ScalarStatementClass* scalarStmt;
-																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
-																				$$ = scalarStmt;
+																				pelet::ScalarExpressionClass* scalarExpr;
+																				AST_INIT_ARGS(scalarExpr, pelet::ScalarExpressionClass, $1);
+																				$$ = scalarExpr;
 																			  }
 																			  else { 
 																			    $$ = 0; 
 																			  }
 																			}
 	|	T_CONSTANT_ENCAPSED_STRING											{ if (observers.DoCaptureScalars) {
-																				pelet::ScalarStatementClass* scalarStmt;
-																				AST_INIT_ARGS(scalarStmt, pelet::ScalarStatementClass, $1);
-																				$$ = scalarStmt;
+																				pelet::ScalarExpressionClass* scalarExpr;
+																				AST_INIT_ARGS(scalarExpr, pelet::ScalarExpressionClass, $1);
+																				$$ = scalarExpr;
 																			  }
 																			  else { 
 																			    $$ = 0; 

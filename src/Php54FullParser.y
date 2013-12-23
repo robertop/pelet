@@ -44,8 +44,9 @@
 %left <semanticValue> '^'
 %left <semanticValue> '&'
 %nonassoc T_IS_EQUAL T_IS_NOT_EQUAL T_IS_IDENTICAL T_IS_NOT_IDENTICAL
-%nonassoc <semanticValue> '<' 
-%nonassoc T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL
+%nonassoc <semanticValue> '<'
+%nonassoc <semanticValue> '>' 
+%nonassoc T_IS_SMALLER_OR_EQUAL T_IS_GREATER_OR_EQUAL
 %left T_SL T_SR
 %left <semanticValue> '+' '-' '.'
 %left <semanticValue> '*' '/' '%'
@@ -270,10 +271,10 @@
 %type <statementList> echo_expr_list
 %type <statementList> for_expr
 %type <statementList> non_empty_for_expr
-%type <expression> chaining_method_or_property
-%type <expression> chaining_dereference
-%type <expression> chaining_instance_call
-%type <expression> instance_call
+%type <variable> chaining_method_or_property
+%type <variable> chaining_dereference
+%type <variable> chaining_instance_call
+%type <variable> instance_call
 %type <expression> new_expr
 %type <expression> expr_without_variable
 %type <semanticValue> function
@@ -288,7 +289,7 @@
 %type <semanticValue> dynamic_class_name_variable_property
 %type <expression> exit_expr
 %type <expression> backticks_expr
-%type <semanticValue> ctor_arguments
+%type <statementList> ctor_arguments
 %type <expression> common_scalar
 %type <expression> static_scalar
 %type <expression> static_class_constant
@@ -450,7 +451,8 @@ unticked_statement:
 		additional_catches																			{ $$ = observers.StatementListAppend($3, 
 																											observers.AssignmentExpressionFromNewFound(
 																											observers.VariableStart($8), 
-																											$7));
+																											$7,
+																											NULL));
 																									  $$ = observers.StatementListMerge($$, $11);
 																									  $$ = observers.StatementListMerge($$, $13); }
 	|	T_THROW expr ';'																			{ $$ = observers.StatementListMakeAndAppend($2); }
@@ -471,7 +473,8 @@ additional_catch:
 	T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'				
 	'{' inner_statement_list '}'										{ $$ = observers.StatementListMakeAndAppend(observers.AssignmentExpressionFromNewFound(
 																			   observers.VariableStart($4), 
-																			   $3));
+																			   $3,
+																			   NULL));
 																		  observers.StatementListMerge($$, $7); }
 ;
 
@@ -838,98 +841,98 @@ non_empty_for_expr:
 ;
 
 chaining_method_or_property:
-		chaining_method_or_property variable_property 			{ $$ = observers.ExpressionAppendToChain($1, $2); }
-	|	variable_property										{ $$ = observers.ExpressionMakeFromVariable($1); }
+		chaining_method_or_property variable_property 			{ $$ = observers.VariableAppendToChain($1, $2); }
+	|	variable_property										{ $$ = $1; }
 ;
 
 chaining_dereference:
 		chaining_dereference '[' dim_offset ']'					{ $$ = $1; }
-	|	'[' dim_offset ']'										{ $$ = observers.ExpressionNil(); }
+	|	'[' dim_offset ']'										{ $$ = observers.VariableNil(); }
 ;
 
 chaining_instance_call:
-		chaining_dereference chaining_method_or_property 				{ $$ = $2; }
+		chaining_dereference chaining_method_or_property 				{ $$ = observers.VariableAppendToChain($1, $2); }
 	|	chaining_dereference 											{ $$ = $1; }
 	|	chaining_method_or_property 									{ $$ = $1; }
 ;
 
 instance_call:
-		/* empty */ 													{ $$ = observers.ExpressionNil(); }
+		/* empty */ 													{ $$ = observers.VariableNil(); }
 	|	chaining_instance_call											{ $$ = $1; }
 ;
 
 new_expr:
-		T_NEW class_name_reference ctor_arguments									{ $$ = observers.ExpressionMakeNewInstanceCall($2);  }
+		T_NEW class_name_reference ctor_arguments									{ $$ = observers.ExpressionMakeNewInstanceCall($2, $3);  }
 ;
 
 expr_without_variable:
-		T_LIST '(' assignment_list ')' '=' expr						{ $$ = observers.ExpressionMakeAssignmentList($3); }
+		T_LIST '(' assignment_list ')' '=' expr						{ $$ = observers.ExpressionMakeAssignmentList($3, $6); }
 	|	variable '=' expr											{ $$ = observers.AssignmentExpressionFromExpressionFound($1, $3); }
 	|	variable '=' '&' variable									{ $$ = observers.AssignmentExpressionFromVariableFound($1, $4); }
-	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ $$ = observers.AssignmentExpressionFromNewFound($1, $5); }
+	|	variable '=' '&' T_NEW class_name_reference ctor_arguments	{ $$ = observers.AssignmentExpressionFromNewFound($1, $5, $6); }
 	|	T_CLONE expr												{ $$ = $2; }
-	|	variable T_PLUS_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_MINUS_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_MUL_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_DIV_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_CONCAT_EQUAL expr								{ $$ = observers.ExpressionNil(); }
-	|	variable T_MOD_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_AND_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_OR_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_XOR_EQUAL expr 									{ $$ = observers.ExpressionNil(); }
-	|	variable T_SL_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	variable T_SR_EQUAL expr									{ $$ = observers.ExpressionNil(); }
-	|	rw_variable T_INC 											{ $$ = observers.ExpressionNil(); }
-	|	T_INC rw_variable 											{ $$ = observers.ExpressionNil(); }
-	|	rw_variable T_DEC 											{ $$ = observers.ExpressionNil(); }
-	|	T_DEC rw_variable 											{ $$ = observers.ExpressionNil(); }
-	|	expr T_BOOLEAN_OR expr										{ $$ = observers.ExpressionNil(); }
-	|	expr T_BOOLEAN_AND expr										{ $$ = observers.ExpressionNil(); }
-	|	expr T_LOGICAL_OR expr 										{ $$ = observers.ExpressionNil(); }
-	|	expr T_LOGICAL_AND expr										{ $$ = observers.ExpressionNil(); }
-	|	expr T_LOGICAL_XOR expr										{ $$ = observers.ExpressionNil(); }
-	|	expr '|' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '&' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '^' expr 												{ $$ = observers.ExpressionNil(); }
-	|	expr '.' expr 												{ $$ = observers.ExpressionNil(); }
-	|	expr '+' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '-' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '*' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '/' expr												{ $$ = observers.ExpressionNil(); }
-	|	expr '%' expr 												{ $$ = observers.ExpressionNil(); }
-	| 	expr T_SL expr 												{ $$ = observers.ExpressionNil(); }
-	|	expr T_SR expr												{ $$ = observers.ExpressionNil(); }
-	|	'+' expr %prec T_INC										{ $$ = observers.ExpressionNil(); }
-	|	'-' expr %prec T_INC										{ $$ = observers.ExpressionNil(); }
-	|	'!' expr													{ $$ = observers.ExpressionNil(); }
-	|	'~' expr													{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_IDENTICAL expr									{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_NOT_IDENTICAL expr 								{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_EQUAL expr										{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_NOT_EQUAL expr 									{ $$ = observers.ExpressionNil(); }
-	|	expr '<' expr 												{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_SMALLER_OR_EQUAL expr								{ $$ = observers.ExpressionNil(); }
-	|	expr '>' expr 												{ $$ = observers.ExpressionNil(); }
-	|	expr T_IS_GREATER_OR_EQUAL expr								{ $$ = observers.ExpressionNil(); }
+	|	variable T_PLUS_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_MINUS_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_MUL_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_DIV_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_CONCAT_EQUAL expr								{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_MOD_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_AND_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_OR_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_XOR_EQUAL expr 									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_SL_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	variable T_SR_EQUAL expr									{ $$ = observers.ExpressionAssignmentCompoundOperation($2->Token, $1, $3); }
+	|	rw_variable T_INC 											{ $$ = observers.ExpressionUnaryVariableOperation($2->Token, $1); }
+	|	T_INC rw_variable 											{ $$ = observers.ExpressionUnaryVariableOperation($1->Token, $2); }
+	|	rw_variable T_DEC 											{ $$ = observers.ExpressionUnaryVariableOperation($2->Token, $1); }
+	|	T_DEC rw_variable 											{ $$ = observers.ExpressionUnaryVariableOperation($1->Token, $2); }
+	|	expr T_BOOLEAN_OR expr										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_BOOLEAN_AND expr										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_LOGICAL_OR expr 										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_LOGICAL_AND expr										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_LOGICAL_XOR expr										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '|' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '&' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '^' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '.' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '+' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '-' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '*' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '/' expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '%' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	| 	expr T_SL expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_SR expr												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	'+' expr %prec T_INC										{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	'-' expr %prec T_INC										{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	'!' expr													{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	'~' expr													{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	expr T_IS_IDENTICAL expr									{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_IS_NOT_IDENTICAL expr 								{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_IS_EQUAL expr										{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_IS_NOT_EQUAL expr 									{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '<' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_IS_SMALLER_OR_EQUAL expr								{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr '>' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
+	|	expr T_IS_GREATER_OR_EQUAL expr								{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
 	|	expr T_INSTANCEOF class_name_reference						{ $$ = observers.ExpressionNil(); }
 	|	'(' expr ')'  												{ $$ = $2; }
 	|	new_expr													{ $$ = $1; }
-	|	'(' new_expr ')' instance_call								{ $$ = observers.ExpressionAppendToChain($2, $4); }
+	|	'(' new_expr ')' instance_call								{ $$ = observers.NewInstanceAppendToChain($2, $4); }
 	|	expr '?' 
 		expr ':' 
-		expr														{ $$ = observers.ExpressionNil(); }
+		expr														{ $$ = observers.ExpressionTernaryOperation($1, $3, $5); }
 	|	expr '?' ':' 
-		expr     													{ $$ = observers.ExpressionNil(); }
+		expr     													{ $$ = observers.ExpressionTernaryOperation($1, $4, NULL); }
 	|	internal_functions_in_yacc									{ $$ = $1; }
-	|	T_INT_CAST expr 											{ $$ = observers.ExpressionMakeScalar($2); }
-	|	T_DOUBLE_CAST expr  										{ $$ = observers.ExpressionMakeScalar($2); }
-	|	T_STRING_CAST expr 											{ $$ = observers.ExpressionMakeScalar($2); }
+	|	T_INT_CAST expr 											{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	T_DOUBLE_CAST expr  										{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	T_STRING_CAST expr 											{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
 	|	T_ARRAY_CAST expr  											{ $$ = observers.ExpressionMakeArray(observers.StatementListMakeAndAppend($2)); }
-	|	T_OBJECT_CAST expr  										{ $$ = observers.ExpressionMakeObject($2); }
-	|	T_BOOL_CAST expr											{ $$ = observers.ExpressionMakeScalar($2); }
-	|	T_UNSET_CAST expr											{ $$ = $2; }
-	|	T_EXIT exit_expr											{ $$ = observers.ExpressionNil(); }
-	|	'@' expr													{ $$ = $2; }
+	|	T_OBJECT_CAST expr  										{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	T_BOOL_CAST expr											{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	T_UNSET_CAST expr											{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	T_EXIT exit_expr											{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
+	|	'@' expr													{ $$ = observers.ExpressionUnaryOperation($1->Token, $2); }
 	|	scalar														{ $$ = $1;}
 	|	T_ARRAY '(' array_pair_list ')'								{ $$ = observers.ExpressionMakeArray($3); }
  	|	'[' array_pair_list ']'										{ $$ = observers.ExpressionMakeArray($2); }
@@ -1024,8 +1027,8 @@ backticks_expr:
 ;
 
 ctor_arguments:
-		/* empty */									{ $$ = observers.SemanticValueNil(); }
-	|	'(' function_call_parameter_list ')'
+		/* empty */									{ $$ = observers.StatementListNil(); }
+	|	'(' function_call_parameter_list ')'		{ $$ = $2; }
 ;
 
 common_scalar:
@@ -1090,7 +1093,7 @@ non_empty_static_array_pair_list:
 ;
 
 expr:
-		r_variable						 { $$ = observers.ExpressionMakeFromVariable($1); }
+		r_variable						 { $$ = $1; }
 	|	expr_without_variable
 ;
 

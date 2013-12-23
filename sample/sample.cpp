@@ -391,7 +391,7 @@ public:
 	 * @see pelet::VariableClass
 	 */
 	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const pelet::VariableClass& variable, const pelet::ExpressionClass& expression, const UnicodeString& comment) {
+		const pelet::VariableClass& variable, pelet::ExpressionClass* expression, const UnicodeString& comment) {
 		UFILE* ufout = u_finit(stdout, NULL, NULL);
 		UnicodeString scope;
 		if (className.isEmpty() && methodName.isEmpty()) {
@@ -404,33 +404,34 @@ public:
 			scope = className + UNICODE_STRING_SIMPLE("::") + methodName;
 		}
 		UnicodeString type;
-		if (pelet::ExpressionClass::ARRAY == expression.ExpressionType) {
+		if (pelet::ExpressionClass::ARRAY == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is an array");
 		}
-		else if (pelet::ExpressionClass::SCALAR == expression.ExpressionType) {
+		else if (pelet::ExpressionClass::SCALAR == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is a primitive");
 		}
-		else if (pelet::ExpressionClass::VARIABLE == expression.ExpressionType) {
+		else if (pelet::ExpressionClass::VARIABLE == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is a variable expression. ");
 			type += UNICODE_STRING_SIMPLE("Chain list is: ");
-			for (size_t i = 0; i < expression.ChainList.size(); ++i) {
-				if (expression.ChainList[i].IsStatic && i > 0) {
+			pelet::VariableClass* srcVariable = (pelet::VariableClass*) expression;
+			for (size_t i = 0; i < srcVariable->ChainList.size(); ++i) {
+				if (srcVariable->ChainList[i].IsStatic && i > 0) {
 					type += UNICODE_STRING_SIMPLE("::");
 				}
 				else if (i > 0) {
 					type += UNICODE_STRING_SIMPLE("->");
 				}
-				type += expression.ChainList[i].Name;
-				if (expression.ChainList[i].IsFunction) {
+				type += srcVariable->ChainList[i].Name;
+				if (srcVariable->ChainList[i].IsFunction) {
 					type += UNICODE_STRING_SIMPLE("()");
 				}
-				if (i < (expression.ChainList.size() - 1)) {
+				if (i < (srcVariable->ChainList.size() - 1)) {
 					type += UNICODE_STRING_SIMPLE(", ");
 				}
 			}
 			
 		}
-		else if (pelet::ExpressionClass::UNKNOWN == expression.ExpressionType) {
+		else if (pelet::ExpressionClass::UNKNOWN == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is of unknown type.");
 		}
 		if (!variable.PhpDocType.isEmpty()) {

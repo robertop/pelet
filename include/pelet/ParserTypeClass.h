@@ -35,14 +35,23 @@ namespace pelet {
 
 // these classes are defined below.
 class StatementClass;
+class StatementListClass;
 class TokenPositionClass;
 class SemanticValueClass;
 class ConstantClass;
 class AstItemClass;
 class ParametersListClass;
+class QualifiedNameClass;
 class ExpressionClass;
 class VariableClass;
-class QualifiedNameClass;
+class AssignmentExpressionClass;
+class AssignmentCompoundExpressionClass;
+class BinaryOperationClass;
+class UnaryOperationClass;
+class UnaryVariableOperationClass;
+class TernaryOperationClass;
+class ScalarExpressionClass;
+class NewInstanceExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -316,13 +325,13 @@ public:
 	 *        variable is globally scoped.
 	 * @param const VariableClass& variable the name of the variable that was found, along with any array keys that were used
 	 *       in the left hand of the assignment. 
-	 * @param const ExpressionClass& expression the expression assigned to the variable
+	 * @param const ExpressionClass* expression the expression assigned to the variable. do not take ownership of the pointer.
 	 * @param const UnicodeString& comment PHPDoc attached to the variable
 	 * 
 	 * @see pelet::VariableClass
 	 */
 	virtual void VariableFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
-		const VariableClass& variable, const ExpressionClass& expression, const UnicodeString& comment) { }
+		const VariableClass& variable, pelet::ExpressionClass* expression, const UnicodeString& comment) { }
 };
 
 /**
@@ -331,18 +340,113 @@ public:
  * method when an expression has been parsed. This interface is most useful when needing to parse
  * a single expression.
  * The observer will get notified as the buffer is being parsed.
+ * A note about pointers:
+ * All of the expression pointers are owned by ExpressionObserverClass and will be 
+ * deleted when ExpressionObserverClass goes out of scope.  They can also be 
+ * cleaned up manually.
  */
 class PELET_API ExpressionObserverClass {
 
 public:
 
+	ExpressionObserverClass();
+
+	virtual ~ExpressionObserverClass();
+
 	/**
-	 * Override this method to get the pseudo-parse tree for a single expression.
+	 * Override this method to get the pseudo-parse tree for a single varaible expression.($x, $x->func())
 	 * 
-	 * @param expression the expression that was parsed
-	 * @see pelet::ExpressionClass
+	 * @param expression the variable expression that was parsed.
+	 * @see pelet::AssignmentExpressionClass
 	 */
-	virtual void ExpressionFound(const ExpressionClass& expression) { }
+	virtual void ExpressionVariableFound(pelet::VariableClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a single assignment expression.($x = $y)
+	 * 
+	 * @param expression the assignment expression that was parsed.
+	 * @see pelet::AssignmentExpressionClass
+	 */
+	virtual void ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a single compound assignment expression ($x += $y).
+	 * 
+	 * @param expression the assignment expression that was parsed.
+	 * @see pelet::AssignmentCompoundExpressionClass
+	 */
+	virtual void ExpressionAssignmentCompoundFound(pelet::AssignmentCompoundExpressionClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a binary operation expression ($x + $y).
+	 * 
+	 * @param expression the binary expression that was parsed.
+	 * @see pelet::BinaryOperationClass
+	 */
+	virtual void ExpressionBinaryOperationFound(pelet::BinaryOperationClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a unary expression operation expression (!feof()).
+	 * 
+	 * @param expression the unary expression that was parsed.
+	 * @see pelet::UnaryOperationClass
+	 */
+	virtual void ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a unary variable operation expression ($x++).
+	 * 
+	 * @param expression the unary expression that was parsed.
+	 * @see pelet::UnaryOperationClass
+	 */
+	virtual void ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a ternary operation expression ($x ? $y : $z).
+	 * 
+	 * @param expression the ternary expression that was parsed.
+	 * @see pelet::TernaryOperationClass
+	 */
+	virtual void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a scalar expression (NAME).
+	 * could be a number, string, or a namespace/class name;
+	 * 
+	 * @param expression the scalar expression that was parsed.
+	 * @see pelet::ScalarExpressionClass
+	 */
+	virtual void ExpressionScalarFound(pelet::ScalarExpressionClass* expression) { }
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a new instance expression ( new MyClass).
+	 * 
+	 * @param expression the new instance expression that was parsed.
+	 * @see pelet::NewInstanceExpressionClass
+	 */
+	virtual void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) { }
+
+	/**
+	 * this method will take ownership of the given statement pointers. after a call
+	 * to this method, this object will now own all of the pointers
+	 * and will delete the statements sometime later. This will usually be called by the
+	 * parser.
+	 */
+	void StatementOwnership(std::vector<pelet::AstItemClass*> statements);
+
+	/**
+	 * Cleanup (delete) the statements given to StatementOwnership() This will
+	 * be called when this object goes out of scope, but it can be called earlier if needed.
+	 * However it should not be called inside the callbacks.
+	 */
+	void CleanupStatements();
+
+private:
+
+	/**
+	 * This class will own the pointers.
+	 */
+	std::vector<pelet::AstItemClass*> Statements;
 };
 
 /**
@@ -509,9 +613,7 @@ public:
 		
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
-		EXPRESSION,
-		VARIABLE,		// 15
-		SCALAR
+		EXPRESSION
 	};
 	
 	Types Type;
@@ -615,8 +717,9 @@ class PELET_API VariablePropertyClass {
 	/**
 	 * If this property is a method, then this vector will contain the function call
 	 * arguments.
+	 * This class will NOT own any of the pointers
 	 */
-	std::vector<pelet::ExpressionClass> CallArguments;
+	std::vector<pelet::ExpressionClass*> CallArguments;
 
 	/**
 	 * If TRUE then this property is  a function call.
@@ -630,6 +733,12 @@ class PELET_API VariablePropertyClass {
 	bool IsStatic;
 	
 	VariablePropertyClass();
+
+	VariablePropertyClass(const pelet::VariablePropertyClass& src);
+
+	pelet::VariablePropertyClass& operator=(const pelet::VariablePropertyClass& src);
+
+	void Copy(const pelet::VariablePropertyClass& src);
 };
 
 
@@ -643,9 +752,6 @@ class PELET_API VariablePropertyClass {
  * - a function call (myFunct(), myFunct(1, 'one'))
  * - a long variable property / method chain   ($this->getName()->toString()->trim()->length)
  *
- * The following are currently not supported:
- * - an operation between 2 variables (arithmetic, boolean, bitwise)
- * - an operation between 1 variables and another expression
  * 
  * 
  * *** Note that simple array syntax is only possible in the PHP 5.4 parser.
@@ -660,38 +766,22 @@ public:
 		VARIABLE,
 		FUNCTION_CALL,
 		NEW_CALL,
+		ASSIGNMENT_COMPOUND,
+		BINARY_OPERATION,
+		UNARY_OPERATION,
+		UNARY_VARIABLE_OPERATION,
+		TERNARY_OPERATION,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
-	/**
-	 * The comment that is attached to the function call / variable.
-	 */
-	UnicodeString Comment;
-	
 	/**
 	 * The function where this expression is located.
 	 */
 	ScopeClass Scope;
 
 	/**
-	 * In the case of a variable; this is the list of  properties / methods
-	 * that were successively invoked.
-	 * For example; the expression "$this->name->toString()" will have 3 items in
-	 * the chain list "$this" "->name" and "->toString()".
+	 * The kind of expression.
 	 */
-	std::vector<pelet::VariablePropertyClass> ChainList;
-	
-	/**
-	 * In case this expression is an array declaration, this list will contain the
-	 * array keys of the declared array. For example, for the expression:
-	 * array('one' => 1, 'two' => 2)
-	 * then ArrayKeys will contain 2 items: "one" and "two"
-	 * Note that only scalar keys are supported for now
-	 * Also note that if the source code does not define keys then this list will be empty
-	 * as well; for example array(1, 2) will not produce any array keys.
-	 */
-	std::vector<UnicodeString> ArrayKeys;
-
 	ExpressionTypes ExpressionType;
 	
 	/**
@@ -702,44 +792,111 @@ public:
 
 	ExpressionClass(const pelet::ScopeClass& scope);
 
-	/**
-	 * Add a property to the variable chain list
-	 
-	 * @param propertyValue the token of the property/method to chain
-	 * @param callArguments if property is a function call, this is the
-	 *        arguments to that call
-	 * @param isMethod TRUE if the property is a method
-	 * @param operatorValue the token of the operation, used to determine if this is a static call '::'
-	 */
-	void AppendToChain(SemanticValueClass* propertyValue,
-		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, SemanticValueClass* operatorValue);
-		
-	/**
-	 * Add a property to the variable chain list
-	 
-	 * @param propertyName the lexeme of the property/method to chain
-	 * @param callArguments if property is a function call, this is the
-	 *        arguments to that call
-	 * @param isMethod TRUE if the property is a method
-	 * @param isStatic TRUE if this is a static operation '::'
-	*/
-	void AppendToChain(const UnicodeString& propertyName, 
-		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
-
-	void Clear();
 	void Copy(const ExpressionClass& src);
-	void Copy(const VariableClass& variable);
-	void ToNewCall(const UnicodeString& className);
-	void ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& functionName, bool isMethod);
-	void ToVariable(const UnicodeString& variableName);
-	void ToScalar(const UnicodeString& scalarValue);
-	void ToConstant(const UnicodeString& className, const UnicodeString& constantName);
-	UnicodeString FirstValue() const;
+};
+
+/**
+ * This class will represent a single PHP scalar. An scalar is either
+ * a string, an integer, a double. 
+ * Examples: ("name", 123, 123.43)
+ */
+class PELET_API ScalarExpressionClass : public ExpressionClass {
+
+public:
+
+	UnicodeString Value;
+
+	ScalarExpressionClass();
+
+	ScalarExpressionClass(const ScopeClass& scope);
+
+	ScalarExpressionClass(const pelet::ScalarExpressionClass& src);
+
+	pelet::ScalarExpressionClass& operator=(const pelet::ScalarExpressionClass& src);
+
+	void Copy(const pelet::ScalarExpressionClass& src);
+
+	void Init(pelet::SemanticValueClass* value);
+};
+
+/**
+ * This class represents an array expressoin. The array keys list will contain the
+ * array keys of the declared array. For example, for the expression:
+ * array('one' => 1, 'two' => 2)
+ * then ArrayKeys will contain 2 items: "one" and "two"
+ * Note that only scalar keys are supported for now
+ * Also note that if the source code does not define keys then this list will be empty
+ * as well; for example array(1, 2) will not produce any array keys (ArrayKeys will be empty).
+ */
+class PELET_API ArrayExpressionClass : public ExpressionClass {
+
+public:
+
+	std::vector<UnicodeString> ArrayKeys;
+
+	ArrayExpressionClass(const ScopeClass& scope);
+
+	ArrayExpressionClass(const pelet::ArrayExpressionClass& src);
+
+	pelet::ArrayExpressionClass& operator=(const pelet::ArrayExpressionClass& src);
+
+	void Copy(const pelet::ArrayExpressionClass& src);
 
 };
 
 /**
- * The SymbolClass represents one PHP variable. This is different from an expression, as scalars and arrays are not variables.
+ * This class will represent an invocation of "new"; creation of a PHP 
+ * object.
+ * Example: new MyClass()
+ */
+class PELET_API NewInstanceExpressionClass : public ExpressionClass {
+
+public:
+
+	UnicodeString ClassName;
+
+	/**
+	 * method calls or property accesses that follow the new call
+	 * for example 
+	 * new MyClass()->userName
+	 * ChainList will have 1 item; the Name will be "userName"
+	 *
+	 * Example 2:
+	 * * new MyClass()->userName->getLength()
+	 * ChainList will have 2 item; 
+	 * item 1's Name will be "userName"
+	 * item 2' Name will be "getLegth()" and IsFunction will be TRUE
+	 */
+	std::vector<VariablePropertyClass> ChainList;
+
+	/**
+	 * these are the call arguments to the class constructor.
+	 * this class will not own these pointers
+	 */
+	std::vector<pelet::ExpressionClass*> CallArguments;
+
+	NewInstanceExpressionClass(const ScopeClass& scope);
+
+	NewInstanceExpressionClass(const pelet::NewInstanceExpressionClass& src);
+
+	pelet::NewInstanceExpressionClass& operator=(const pelet::NewInstanceExpressionClass& src);
+
+	void Copy(const pelet::NewInstanceExpressionClass& src);
+
+	/**
+	 * add the give var's chain list to this object
+	 */
+	void AddToChain(pelet::VariableClass* var);
+
+	/**
+	 * adds the statements from the given statement list as call arguments
+	 * the given list may be null
+	 */
+	void AddStatementsAsArguments(pelet::StatementListClass* statements);
+};
+
+/**
+ * The VariableClass represents one PHP variable. This is different from an expression, as scalars and arrays are not variables.
  * A variable is:
  * 
  * - a simple variable ($name)
@@ -749,7 +906,7 @@ public:
  * - a static member (MyClass::$instance)
  *
  */
-class PELET_API VariableClass : public StatementClass {
+class PELET_API VariableClass : public ExpressionClass {
 
 public:
 
@@ -790,19 +947,12 @@ public:
 	 * For example, for the variable $samples['one'], 'one' is the ArrayKey
 	 */
 	UnicodeString ArrayKey;
-	
-	/**
-	 * The function where this variable is located.
-	 */
-	ScopeClass Scope;
-		
-	/**
-	 * The line number in the source code where the variable was located in
-	 * @see LexicalAnalyzerClass::GetLineNumber
-	 */
-	int LineNumber;
 		
 	VariableClass(const pelet::ScopeClass& scope);
+
+	VariableClass(const pelet::VariableClass& src);
+
+	pelet::VariableClass& operator=(const pelet::VariableClass& src);
 
 	/**
 	 * Copies all symbol properties from src to this object.
@@ -823,12 +973,14 @@ public:
 	 * Add a property to the variable chain list
 	 * @param operatorLexeme the lexeme of the operation
 	 * @param callArguments if property is a function call, this is the
-	 *        arguments to that call
+	 *        arguments to that call. this class will not own any of the pointers
 	 * @param isMethod TRUE if the property is a method
 	 * @param isStatic if TRUE if the property is accessed statically ('::')
 	 */
 	void AppendToChain(const UnicodeString& propertyValue, 
-		std::vector<pelet::ExpressionClass> callArguments, bool isMethod, bool isStatic);
+		std::vector<pelet::ExpressionClass*> callArguments, bool isMethod, bool isStatic);
+
+	void ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& functionName, bool isMethod);
 };
 
 /**
@@ -1126,7 +1278,7 @@ public:
  * variable = expression
  * 
  * The right hand side of the equals sign (the value to assign) will be stored
- * in the properties inherited from the expression class
+ * in the Expression variable.
  */
 class PELET_API AssignmentExpressionClass : public ExpressionClass {
 		
@@ -1137,12 +1289,21 @@ class PELET_API AssignmentExpressionClass : public ExpressionClass {
 	 */
 	VariableClass Destination;
 
+	/**
+	 * The right side of the equals sign, the expression that was 
+	 * assigned to the variable.
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* Expression;
+
 	AssignmentExpressionClass(const pelet::ScopeClass& scope);
 
-	/**
-	 * Copies the expression properties from src.
-	 */
-	void Set(pelet::ExpressionClass& src);	
+	AssignmentExpressionClass(const pelet::AssignmentExpressionClass& src);
+
+	pelet::AssignmentExpressionClass& operator=(const pelet::AssignmentExpressionClass& src);
+
+	void Copy(const pelet::AssignmentExpressionClass& src);
+
 };
 
 /**
@@ -1151,7 +1312,7 @@ class PELET_API AssignmentExpressionClass : public ExpressionClass {
  * list(variable1, variable2, variable3) = expression
  * 
  * The right hand side of the equals sign (the value to assign) will be stored
- * in the properties inherited from the expression class
+ * in the expression
  */
 class PELET_API AssignmentListExpressionClass : public ExpressionClass {
 		
@@ -1162,13 +1323,227 @@ class PELET_API AssignmentListExpressionClass : public ExpressionClass {
 	 */
 	std::vector<VariableClass> Destinations;
 
+	/**
+	 * The right side of the equals sign, the expression that was 
+	 * assigned to the variables.
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* Expression;
+
 	AssignmentListExpressionClass(const pelet::ScopeClass& scope);
 
-	/**
-	 * Copies the expression properties from src.
-	 */
-	void Set(pelet::ExpressionClass& src);	
+	AssignmentListExpressionClass(const pelet::AssignmentListExpressionClass& src);
+
+	pelet::AssignmentListExpressionClass& operator=(const pelet::AssignmentListExpressionClass& src);
+
+	void Copy(const pelet::AssignmentListExpressionClass& src);
+
 };
+
+
+/**
+ * Holds both sides of a 2-operand compound assignment expression in the form
+ * 
+ * Variable <OP> Expression
+ * 
+ * where <OP> is "+=", "-=", "*=", "/=", ".=",
+ *  "%=", "&=", "|=", "^=", "<<=", ">>=" 
+ *
+ * The left operand is stored in Variable member, the 
+ * right operand is stored in the RightOperand member
+ */
+class PELET_API AssignmentCompoundExpressionClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * The left hand side of the expression
+	 */
+	VariableClass Variable;
+
+	/**
+	 * the operation being done
+	 * one of pelet::Tokens
+	 */
+	int Operator;
+
+	/**
+	 * the value assigned to the variable
+	 * This pointer is NOT owned by this class.
+	 */
+	pelet::ExpressionClass* RightOperand;
+
+	AssignmentCompoundExpressionClass(const pelet::ScopeClass& scope);
+
+	AssignmentCompoundExpressionClass(const pelet::AssignmentCompoundExpressionClass& src);
+
+	pelet::AssignmentCompoundExpressionClass& operator=(const pelet::AssignmentCompoundExpressionClass& src);
+
+	void Copy(const pelet::AssignmentCompoundExpressionClass& src);
+};
+
+/**
+ * Holds both sides of a 2-expression operation in the form
+ * 
+ * LeftOperand <OP> RightOperand
+ * 
+ * where <OP> is "||", "&&", "or", "and", "xor",
+ *  "|", "&", "^", ".", "+", "-", "*", "/", "%",
+ * "<<", ">>", "===", "!===", "==", "!=", "<", "<=",
+ * ">", ">=", "instanceof",
+ *
+ * The left operand is stored in LeftOperand member, the 
+ * right operand is stored in the RightOperand member
+ */
+class PELET_API BinaryOperationClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * The left hand side of the expression
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* LeftOperand;
+
+	/**
+	 * the operation being done
+	 * one of pelet::Tokens
+	 */
+	int Operator;
+
+	/**
+	 * the value assigned to the variable
+	 * This pointer is NOT owned by this class.
+	 */
+	pelet::ExpressionClass* RightOperand;
+
+	BinaryOperationClass(const pelet::ScopeClass& scope);
+
+	BinaryOperationClass(const pelet::BinaryOperationClass& src);
+
+	pelet::BinaryOperationClass& operator=(const pelet::BinaryOperationClass& src);
+
+	void Copy(const pelet::BinaryOperationClass& src);
+};
+
+/**
+ * Holds a unary operation in the form
+ * 
+ * <OP> operand or
+ * operand <OP>
+ * 
+ * where <OP> is "++" (postfix), "++" (prefix), "--" (postfix),
+ * "--" (prefix),  "+", "-", "!", "~", "(int)",
+ * "(double)", "(float)", "(string)", "(array)",
+ * "(object)", "(bool)", "(boolean)", "(unset)",
+ * "exit", "@"
+ *
+ * The operand is stored in the Operand member
+ */
+class PELET_API UnaryOperationClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * the operation being done
+	 */
+	int Operator;
+	
+	
+	/**
+	 * the value being manipulated
+	 * This pointer is NOT owned by this class.
+	 */
+	pelet::ExpressionClass* Operand;
+
+	
+	UnaryOperationClass(const pelet::ScopeClass& scope);
+
+	UnaryOperationClass(const pelet::UnaryOperationClass& src);
+
+	pelet::UnaryOperationClass& operator=(const pelet::UnaryOperationClass& src);
+
+	void Copy(const pelet::UnaryOperationClass& src);
+
+};
+
+/**
+ * Holds a unary operation in the form
+ * 
+ * <OP> operand or
+ * operand <OP>
+ * 
+ * where <OP> is "++" (postfix), "++" (prefix), "--" (postfix),
+ * "--" (prefix), 
+ *
+ * The operand is stored in the Operand member
+ */
+class PELET_API UnaryVariableOperationClass : public ExpressionClass {
+		
+	public:	
+
+	/**
+	 * the operation being done
+	 */
+	int Operator;	
+	
+	/**
+	 * the variable being manipulated
+	 */
+	pelet::VariableClass Variable;
+
+	UnaryVariableOperationClass(const pelet::ScopeClass& scope);
+
+	UnaryVariableOperationClass(const pelet::UnaryVariableOperationClass& src);
+
+	pelet::UnaryVariableOperationClass& operator=(const pelet::UnaryVariableOperationClass& src);
+
+	void Copy(const pelet::UnaryVariableOperationClass& src);
+
+};
+
+/**
+ * Holds both sides of a 3-expression operation in the form
+ * 
+ * expression1 ? expression2 : expression3
+ * 
+ * expression1 is stored in Expression1, expression2 is stored
+ * in Expression2 and expression3 is stored in Expression3
+ * 
+ */
+class PELET_API TernaryOperationClass : public ExpressionClass {
+		
+	public:
+
+	/**
+	 * The left hand side of the expression
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* Expression1;
+
+	/**
+	 * The middle hand side of the expression
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* Expression2;
+
+	/**
+	 * The right side of the expression. note that this may be
+	 * invalid (NULL) for ternary expressions that don't have 3 expressions
+	 * This pointer is NOT owned by this class.
+	 */
+	pelet::ExpressionClass* Expression3;
+
+	TernaryOperationClass(const pelet::ScopeClass& scope);
+
+	TernaryOperationClass(const pelet::TernaryOperationClass& src);
+
+	pelet::TernaryOperationClass& operator=(const pelet::TernaryOperationClass& src);
+
+	void Copy(const pelet::TernaryOperationClass& src);
+
+};
+
 
 /**
  * Class that will group a token along with the position
@@ -1469,18 +1844,6 @@ public:
 	pelet::ClassMemberSymbolClass* SetModifier(pelet::SemanticValueClass* modifierValue);
 };
 
-class PELET_API ScalarStatementClass : public StatementClass {
-
-public: 
-
-	UnicodeString Scalar;
-
-	ScalarStatementClass();
-
-	void Init(pelet::SemanticValueClass* value);
-
-};
-
 class PELET_API IncludeStatementClass : public StatementClass {
 
 public: 
@@ -1501,6 +1864,22 @@ public:
 	void Init(pelet::StatementClass* scalar, int lineNumber);
 
 };
+
+/**
+ * useful macros to alleviate tedious type casting 
+ * expression pointers into their type.  Note that the macros
+ * also assert that the expression type macthes
+ */
+#define PCEA(var) (pelet::AssignmentExpressionClass*)var
+#define PCEL(var) (pelet::AssignmentListExpressionClass*)var
+#define PCEB(var) (pelet::BinaryOperationClass*)var
+#define PCEU(var) (pelet::UnaryOperationClass*)var
+#define PCEUV(var) (pelet::UnaryVariableOperationClass*)var
+#define PCET(var) (pelet::TernaryOperationClass*)var
+#define PCEV(var) (pelet::VariableClass*)var
+#define PCER(var) (pelet::ArrayExpressionClass*)var
+#define PCES(var) (pelet::ScalarExpressionClass*)var
+#define PCEN(var) (pelet::NewInstanceExpressionClass*)var
 
 /**
  * This is the parser type that the bison parser uses. A grammar rules outputs

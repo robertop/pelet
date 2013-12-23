@@ -55,7 +55,7 @@ newaction {
 		code = os.execute(cmd) 
 		if os.is("windows") then
 			-- in windows line macros dont work correctly
-			cmd = "bison --no-lines --warnings=error " ..
+			cmd = "bison --warnings=error " ..
 				" -o " .. normalizepath("src/Php53FullParser.cpp") .. " " ..
 				normalizepath("src/Php53FullParser.y")
 		else 
@@ -85,7 +85,7 @@ newaction {
 		
 		if os.is("windows") then
 			-- in windows line macros dont work correctly
-			cmd = "bison --no-lines --warnings=error "  ..
+			cmd = "bison --warnings=error "  ..
 				" -o " .. normalizepath("src/Php54FullParser.cpp") .. " " ..
 				normalizepath("src/Php54FullParser.y")
 		else
