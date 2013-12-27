@@ -1871,6 +1871,7 @@ public:
  * also assert that the expression type macthes
  */
 #define PCEA(var) (pelet::AssignmentExpressionClass*)var
+#define PCEAR(var) (pelet::ArrayExpressionClass*)var
 #define PCEL(var) (pelet::AssignmentListExpressionClass*)var
 #define PCEB(var) (pelet::BinaryOperationClass*)var
 #define PCEU(var) (pelet::UnaryOperationClass*)var

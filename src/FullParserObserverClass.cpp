@@ -693,6 +693,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 	}
 
 	// go through the list of statements and send the correct notifications
+	pelet::AssignmentExpressionClass* assignmentExpr;
 	for (size_t i = 0; i < statements->Size(); ++i) {
 		pelet::StatementClass::Types type = statements->TypeAt(i);
 		pelet::StatementClass* stmt = statements->At(i);
@@ -731,7 +732,13 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmt;
 				switch (expr->ExpressionType) {
 				case pelet::ExpressionClass::ASSIGNMENT:
-					ExpressionObserver->ExpressionAssignmentFound((pelet::AssignmentExpressionClass*)expr);
+					assignmentExpr = (pelet::AssignmentExpressionClass*)expr;
+					ExpressionObserver->ExpressionAssignmentFound(assignmentExpr);
+					if (Variable) {
+						Variable->VariableFound(assignmentExpr->Scope.NamespaceName, 
+							assignmentExpr->Scope.ClassName, assignmentExpr->Scope.MethodName, 
+							assignmentExpr->Destination, assignmentExpr->Expression, assignmentExpr->Destination.Comment);
+					}
 					break;
 				case pelet::ExpressionClass::ASSIGNMENT_COMPOUND:
 					ExpressionObserver->ExpressionAssignmentCompoundFound((pelet::AssignmentCompoundExpressionClass*)expr);

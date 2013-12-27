@@ -1428,6 +1428,28 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithNewInstance) {
 	CHECK_VARIABLE("$name", newExpr->CallArguments[1]);	
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithArray) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$result = array('123' => 456, '789' => 'abc'); \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* assignment = Observer.AssignmentExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, assignment->Destination.ChainList);
+	pelet::VariableClass* var = &assignment->Destination;
+	CHECK_VARIABLE("$result", var);
+
+	CHECK_EQUAL(pelet::ExpressionClass::ARRAY, assignment->Expression->ExpressionType);
+
+	pelet::ArrayExpressionClass* newExpr = PCEAR(assignment->Expression);
+	CHECK_VECTOR_SIZE(2, newExpr->ArrayKeys);
+	CHECK_UNISTR_EQUALS("123", newExpr->ArrayKeys[0]);
+	CHECK_UNISTR_EQUALS("789", newExpr->ArrayKeys[1]);
+}
+
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	bool isGood = Parser.LintFile(file, LintResults);
