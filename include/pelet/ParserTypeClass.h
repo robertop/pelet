@@ -427,6 +427,14 @@ public:
 	virtual void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) { }
 
 	/**
+	 * Override this method to get the pseudo-parse tree for a function argument.
+	 * 
+	 * @param expression the new instance expression that was parsed.
+	 * @see pelet::VariableClass
+	 */
+	virtual void ExpressionFunctionArgumentFound(pelet::VariableClass* variable) {}
+
+	/**
 	 * this method will take ownership of the given statement pointers. after a call
 	 * to this method, this object will now own all of the pointers
 	 * and will delete the statements sometime later. This will usually be called by the
@@ -764,7 +772,6 @@ public:
 		SCALAR, //strings, ints, doubles, booleans are all lumped in, as PHP automatically casts 
 		ARRAY,
 		VARIABLE,
-		FUNCTION_CALL,
 		NEW_CALL,
 		ASSIGNMENT_COMPOUND,
 		BINARY_OPERATION,

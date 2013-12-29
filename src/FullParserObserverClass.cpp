@@ -49,35 +49,52 @@ void pelet::FullParserObserverClass::NamespaceAliasClear() {
 }
 
 void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::ParametersListClass& parameters, UnicodeString currentNamespaceName, UnicodeString currentClassName, UnicodeString currentMethodName) {
-	if (!Class && !Member && !Function && !Variable && !ExpressionObserver) {
+	if (!Variable && !ExpressionObserver) {
 		return;
 	}
 	size_t paramCount = parameters.GetCount();
-	if (paramCount > 0 && Variable) {
+	if (paramCount > 0) {
 		UnicodeString paramName,
 		              paramType;
 		UnicodeString comment;
 		for (size_t i = 0; i < paramCount; ++i) {
-			pelet::VariableClass variable(Scope);
-			
+
+			// making this a pointer so that the expression observer
+			// receives a pointer just like all other callbacks
+			// but also we want to keep the same memory ownership semantics
+			// ie. we want the pointer to be alive until the observer
+			// dies.
+			pelet::VariableClass* variable = new pelet::VariableClass(Scope);
+			AllAstItems.push_back(variable);
+
 			parameters.Param(i, paramName, paramType);
 			
-			variable.AppendToChain(paramName);
-			variable.PhpDocType = paramType;
+			variable->AppendToChain(paramName);
+			variable->PhpDocType = paramType;
 			if (!paramType.isEmpty()) {
-				pelet::NewInstanceExpressionClass newCallExpr(Scope);
-				newCallExpr.ClassName = paramType;
-				Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, variable, &newCallExpr, comment);
-			} else {
-				pelet::ExpressionClass unknownExpression(Scope);
-				unknownExpression.ExpressionType = pelet::ExpressionClass::UNKNOWN;
-				Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, variable, &unknownExpression, comment);
+				pelet::NewInstanceExpressionClass* newCallExpr = new pelet::NewInstanceExpressionClass(Scope);
+				AllAstItems.push_back(newCallExpr);
+
+				newCallExpr->ClassName = paramType;
+				if (Variable) {
+					Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, *variable, newCallExpr, comment);
+				}
+				if (ExpressionObserver) {
+					ExpressionObserver->ExpressionFunctionArgumentFound(variable);
+				}
+			} 
+			else {
+				pelet::ExpressionClass* unknownExpression = new pelet::ExpressionClass(Scope);
+				unknownExpression->ExpressionType = pelet::ExpressionClass::UNKNOWN;
+				if (Variable) {
+					Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, *variable, unknownExpression, comment);
+				}
+				if (ExpressionObserver) {
+					ExpressionObserver->ExpressionFunctionArgumentFound(variable);
+				}
 			}		
 		}
 	}
-
-	// remove any expressions that were created by the static scalar rules
-	// ie default argument values
 }
 
 void pelet::FullParserObserverClass::NotifyLocalVariableTypeHint(const UnicodeString& comment) {
@@ -684,13 +701,6 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::Expr
 }
 
 void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
-	if (ExpressionObserver) {
-		
-		// we give ownership to the expression observer if it exists
-		// otherwise we still own these pointers
-		ExpressionObserver->StatementOwnership(AllAstItems);
-		AllAstItems.clear();	
-	}
 
 	// go through the list of statements and send the correct notifications
 	pelet::AssignmentExpressionClass* assignmentExpr;
@@ -792,7 +802,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
-			if (Function || Variable) {
+			if (Function || Variable || ExpressionObserver) {
 				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 
 				// remove the 'public' we are re-using the ClassMember symbol which always assumes a
@@ -807,7 +817,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
 					                        memberSymbol->GetReturnType(), comment, memberSymbol->StartingLineNumber);
 				}
-				if (Variable) {
+				if (Variable || ExpressionObserver) {
 					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
 				}
 				if (Function) {
@@ -843,7 +853,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		case pelet::StatementClass::METHOD_DECLARATION:
-			if (Member || Variable) {
+			if (Member || Variable || ExpressionObserver) {
 				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
@@ -858,7 +868,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
 					                    memberSymbol->GetReturnType(), memberSymbol->GetComment(), visibility, isStatic, memberSymbol->StartingLineNumber);
 				}
-				if (Variable) {
+				if (Variable || ExpressionObserver) {
 					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
 				}
 				if (Member) {
@@ -922,6 +932,16 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		}
+	}
+
+	if (ExpressionObserver) {
+		
+		// we give ownership to the expression observer if it exists
+		// otherwise we still own these pointers
+		// doing this AFTER the callbacks because the NotifyVariablesFromParameterList
+		// method can add items to the AllAstItems list
+		ExpressionObserver->StatementOwnership(AllAstItems);
+		AllAstItems.clear();	
 	}
 }
 

@@ -214,3 +214,7 @@ void TestObserverClass::ExpressionUnaryVariableOperationFound(pelet::UnaryVariab
 void TestObserverClass::ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression) {
 	TernaryOperations.push_back(expression);
 }
+
+void TestObserverClass::ExpressionFunctionArgumentFound(pelet::VariableClass* variable) {
+	VariableExpressions.push_back(variable);
+}

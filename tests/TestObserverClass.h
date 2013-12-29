@@ -129,7 +129,7 @@ public:
 
 	void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression);
 
-	void CopyToProperExpression(pelet::ExpressionClass* expr);
+	void ExpressionFunctionArgumentFound(pelet::VariableClass* variable);
 
 };
 
