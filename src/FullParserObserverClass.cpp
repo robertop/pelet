@@ -539,13 +539,12 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 }
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeGlobalVariable(pelet::SemanticValueClass* value) {
-	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
+	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (value) {
-		newExpr->Destination.AppendToChain(value->Lexeme);
+		newVar->AppendToChain(value->Lexeme);
 	}
-	AllAstItems.push_back(newExpr);
-	return newExpr;
+	AllAstItems.push_back(newVar);
+	return newVar;
 }
 
 pelet::NewInstanceExpressionClass* pelet::FullParserObserverClass::ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className, 
@@ -617,13 +616,12 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCa
 }
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeStaticVariable(pelet::SemanticValueClass* nameValue) {
-	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
-	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
+	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (nameValue) {
-		newExpr->Destination.AppendToChain(nameValue->Lexeme);
+		newVar->AppendToChain(nameValue->Lexeme);
 	}
-	AllAstItems.push_back(newExpr);
-	return newExpr;
+	AllAstItems.push_back(newVar);
+	return newVar;
 }
 
 pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendArrayOffset(pelet::VariableClass* arrayVariable, pelet::ExpressionClass* offsetExpr) {
@@ -690,6 +688,35 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionNil() {
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
+
+pelet::StatementListClass* pelet::FullParserObserverClass::GlobalVariablesStatementMake(pelet::StatementListClass* variables) {
+	pelet::GlobalVariableStatementClass* globalVars =  new pelet::GlobalVariableStatementClass();
+	for (size_t i = 0; i < variables->Size(); ++i) {
+		if (pelet::StatementClass::EXPRESSION == variables->TypeAt(i)) {
+			pelet::ExpressionClass* expr = (pelet::ExpressionClass*) variables->At(i);
+			if (pelet::ExpressionClass::VARIABLE == expr->ExpressionType) {
+				globalVars->Variables.push_back((pelet::VariableClass*)expr);
+			}
+		}
+	}
+	AllAstItems.push_back(globalVars);
+	return StatementListMakeAndAppend(globalVars);
+}
+
+pelet::StatementListClass* pelet::FullParserObserverClass::StaticVariablesStatementMake(pelet::StatementListClass* variables) {
+	pelet::StaticVariableStatementClass* staticVars =  new pelet::StaticVariableStatementClass();
+	for (size_t i = 0; i < variables->Size(); ++i) {
+		if (pelet::StatementClass::EXPRESSION == variables->TypeAt(i)) {
+			pelet::ExpressionClass* expr = (pelet::ExpressionClass*) variables->At(i);
+			if (pelet::ExpressionClass::VARIABLE == expr->ExpressionType) {
+				staticVars->Variables.push_back((pelet::VariableClass*)expr);
+			}
+		}
+	}
+	AllAstItems.push_back(staticVars);
+	return StatementListMakeAndAppend(staticVars);
+}
+
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::ExpressionClass* expr, const int lineNumber) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
@@ -929,6 +956,39 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				for (size_t i = 0; i < traitUse->UsedTraits.size(); ++i) {
 					Member->TraitUseFound(traitUse->NamespaceName, traitUse->ClassName, traitUse->UsedTraits[i]);
 				}
+			}
+			break;
+		case pelet::StatementClass::GLOBAL_VARIABLE_DECLARATION:
+			if (Variable) {
+				pelet::GlobalVariableStatementClass * globalStmt = (pelet::GlobalVariableStatementClass*)stmt;
+				for (size_t i = 0; i < globalStmt->Variables.size(); ++i) {
+					pelet::VariableClass* globalVar = globalStmt->Variables[i];
+					pelet::ExpressionClass* unknownExpr = new pelet::ExpressionClass(globalVar->Scope);
+					unknownExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
+					Variable->VariableFound(globalVar->Scope.NamespaceName, 
+						globalVar->Scope.ClassName, globalVar->Scope.MethodName, 
+						*globalVar, unknownExpr, globalVar->Comment);
+				}
+			}
+			if (ExpressionObserver) {
+				ExpressionObserver->StatementGlobalVariablesFound((pelet::GlobalVariableStatementClass*)stmt);
+			}
+			break;
+
+		case pelet::StatementClass::STATIC_VARIABLE_DECLARATION:
+			if (Variable) {
+				pelet::StaticVariableStatementClass * staticStmt = (pelet::StaticVariableStatementClass*)stmt;
+				for (size_t i = 0; i < staticStmt->Variables.size(); ++i) {
+					pelet::VariableClass* staticVar = staticStmt->Variables[i];
+					pelet::ExpressionClass* unknownExpr = new pelet::ExpressionClass(staticVar->Scope);
+					unknownExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
+					Variable->VariableFound(staticVar->Scope.NamespaceName, 
+						staticVar->Scope.ClassName, staticVar->Scope.MethodName, 
+						*staticVar, unknownExpr, staticVar->Comment);
+				}
+			}
+			if (ExpressionObserver) {
+				ExpressionObserver->StatementStaticVariablesFound((pelet::StaticVariableStatementClass*)stmt);
 			}
 			break;
 		}

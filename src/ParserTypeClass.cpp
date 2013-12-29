@@ -1617,6 +1617,18 @@ void pelet::TernaryOperationClass::Copy(const pelet::TernaryOperationClass& src)
 	Expression3 = src.Expression3;
 }
 
+pelet::GlobalVariableStatementClass::GlobalVariableStatementClass()
+: StatementClass(pelet::StatementClass::GLOBAL_VARIABLE_DECLARATION)
+, Variables() {
+
+}
+
+pelet::StaticVariableStatementClass::StaticVariableStatementClass()
+: StatementClass(pelet::StatementClass::STATIC_VARIABLE_DECLARATION)
+, Variables() {
+
+}
+
 pelet::ScopeClass::ScopeClass()
 	: NamespaceName()
 	, ClassName()

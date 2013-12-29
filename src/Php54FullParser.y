@@ -425,8 +425,8 @@ unticked_statement:
 	|	T_RETURN ';'																				{ $$ = observers.StatementListNil(); };
 	|	T_RETURN expr_without_variable ';'															{ $$ = observers.StatementListMakeAndAppend($2); };
 	|	T_RETURN variable ';'																		{ $$ = observers.StatementListMakeAndAppend($2); };
-	|	T_GLOBAL global_var_list ';'																{ $$ = $2; }
-	|	T_STATIC static_var_list ';'																{ $$ = $2; }
+	|	T_GLOBAL global_var_list ';'																{ $$ = observers.GlobalVariablesStatementMake($2); }
+	|	T_STATIC static_var_list ';'																{ $$ = observers.StaticVariablesStatementMake($2); }
 	|	T_ECHO echo_expr_list ';'																	{ $$ = $2; }
 	|	T_INLINE_HTML																				{ $$ = observers.StatementListNil(); }
 	|	expr ';'																					{ $$ = observers.StatementListMakeAndAppend($1); }

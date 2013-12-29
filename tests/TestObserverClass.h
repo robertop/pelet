@@ -131,6 +131,11 @@ public:
 
 	void ExpressionFunctionArgumentFound(pelet::VariableClass* variable);
 
+	void StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables);
+
+	void StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables);
+
+
 };
 
 #endif

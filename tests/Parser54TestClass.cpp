@@ -1466,6 +1466,36 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithFunctionArgument) {
 	CHECK_UNISTR_EQUALS("Db", Observer.VariableExpressions[1]->PhpDocType);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithGlobalDeclaration) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"global $a, $db; \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.VariableExpressions);
+	
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions[0]->ChainList);
+	CHECK_VARIABLE("$a", Observer.VariableExpressions[0]);
+
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions[1]->ChainList);
+	CHECK_VARIABLE("$db", Observer.VariableExpressions[1]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithStaticDeclaration) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"static $a = 1, $db = 0;  \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(2, Observer.VariableExpressions);
+	
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions[0]->ChainList);
+	CHECK_VARIABLE("$a", Observer.VariableExpressions[0]);
+
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions[1]->ChainList);
+	CHECK_VARIABLE("$db", Observer.VariableExpressions[1]);
+}
+
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	bool isGood = Parser.LintFile(file, LintResults);

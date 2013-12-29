@@ -52,6 +52,8 @@ class UnaryVariableOperationClass;
 class TernaryOperationClass;
 class ScalarExpressionClass;
 class NewInstanceExpressionClass;
+class GlobalVariableStatementClass;
+class StaticVariableStatementClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -429,10 +431,26 @@ public:
 	/**
 	 * Override this method to get the pseudo-parse tree for a function argument.
 	 * 
-	 * @param expression the new instance expression that was parsed.
+	 * @param variable the variable that was parsed.
 	 * @see pelet::VariableClass
 	 */
 	virtual void ExpressionFunctionArgumentFound(pelet::VariableClass* variable) {}
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a global variable declaration
+	 * 
+	 * @param variables the global variables that were parsed
+	 * @see pelet::GlobalVariableStatementClass
+	 */
+	virtual void StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables) {}
+
+	/**
+	 * Override this method to get the pseudo-parse tree for a static variable declaration
+	 * 
+	 * @param variables the global variables that were parsed
+	 * @see pelet::StaticVariableStatementClass
+	 */
+	virtual void StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables) {}
 
 	/**
 	 * this method will take ownership of the given statement pointers. after a call
@@ -618,9 +636,11 @@ public:
 		TRAIT_ALIAS_DECLARATION,
 		TRAIT_INSTEADOF_DECLARATION,  // 10
 		FUNCTION_DECLARATION,
+		GLOBAL_VARIABLE_DECLARATION,
+		STATIC_VARIABLE_DECLARATION,
 		
 		ASSIGNMENT,
-		ASSIGNMENT_LIST,
+		ASSIGNMENT_LIST,    //15
 		EXPRESSION
 	};
 	
@@ -1551,6 +1571,44 @@ class PELET_API TernaryOperationClass : public ExpressionClass {
 
 };
 
+/**
+ * This class represents a list of variables
+ * declared as global ie. 
+ * 
+ * global $var1, $var2
+ */
+class PELET_API GlobalVariableStatementClass : public StatementClass {
+
+public:
+
+	/**
+	 * the variables declared global
+	 * the pointers will NOT be owned by this class
+	 */
+	std::vector<pelet::VariableClass*> Variables;
+
+	GlobalVariableStatementClass();
+
+};
+
+/**
+ * This class represents a list of variables
+ * declared as static
+ *
+ * static $var1, $var = 0;
+ */
+class PELET_API StaticVariableStatementClass : public StatementClass {
+
+public:
+
+	/**
+	 * the variables declared static
+	 * the pointers will NOT be owned by this class
+	 */
+	std::vector<pelet::VariableClass*> Variables;
+
+	StaticVariableStatementClass();
+};
 
 /**
  * Class that will group a token along with the position

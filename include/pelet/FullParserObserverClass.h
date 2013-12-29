@@ -316,7 +316,10 @@ public:
 	pelet::StatementListClass* StatementListMakeAndAppend(pelet::StatementClass* statement);
 	pelet::StatementListClass* StatementListMerge(pelet::StatementListClass* a, pelet::StatementListClass* b); 
 	pelet::StatementListClass* StatementListNil();
-			
+	
+	pelet::StatementListClass* GlobalVariablesStatementMake(pelet::StatementListClass* variables);
+	pelet::StatementListClass* StaticVariablesStatementMake(pelet::StatementListClass* variables);
+
 	/**
 	 * clear any namespace aliases. This should be called when multiple namespaces
 	 * are declared in a single file

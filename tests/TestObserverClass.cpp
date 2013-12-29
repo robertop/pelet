@@ -218,3 +218,15 @@ void TestObserverClass::ExpressionTernaryOperationFound(pelet::TernaryOperationC
 void TestObserverClass::ExpressionFunctionArgumentFound(pelet::VariableClass* variable) {
 	VariableExpressions.push_back(variable);
 }
+
+void TestObserverClass::StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables) {
+	for (size_t i = 0; i < variables->Variables.size(); ++i) {
+		VariableExpressions.push_back(variables->Variables[i]);
+	}
+}
+
+void TestObserverClass::StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables) {
+	for (size_t i = 0; i < variables->Variables.size(); ++i) {
+		VariableExpressions.push_back(variables->Variables[i]);
+	}
+}
