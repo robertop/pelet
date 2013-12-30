@@ -645,10 +645,16 @@ public:
 	};
 	
 	Types Type;
-	
-	StatementClass(Types type);
-	
+
 	virtual ~StatementClass();
+
+protected:
+		
+	/**
+	 * protected, at this class is an abstract class that needs to be
+	 * inherited from to be useful.
+	 */
+	StatementClass(Types type);	
 };
 
 /**
