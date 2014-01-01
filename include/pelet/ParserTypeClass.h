@@ -758,6 +758,15 @@ class PELET_API VariablePropertyClass {
 	std::vector<pelet::ExpressionClass*> CallArguments;
 
 	/**
+	 * When this property is an array access, then this
+	 * will be the expression inside the array access operator
+	 * for example:  the property $users[$name] 
+	 * will have ArrayAccess = VariableClass instance.
+	 * This class will NOT own this pointer.
+	 */
+	pelet::ExpressionClass* ArrayAccess;
+
+	/**
 	 * If TRUE then this property is  a function call.
 	 */
 	bool IsFunction;
@@ -767,6 +776,15 @@ class PELET_API VariablePropertyClass {
 	 * If FALSE then this property was accessed with the object operator ('->')
 	 */
 	bool IsStatic;
+
+	/**
+	 * bool TRUE if this property or method contains a array access
+	 * for example for $users['name'] this will be 2 VariableProperty
+	 * instances, the first with Name = "users", IsArrayAccess = false, and 
+	 * the second with Name = "", IsArrayAccess = true and ArrayAccess = a 
+	 * ScalarExpressionClass instance
+	 */
+	bool IsArrayAccess;
 	
 	VariablePropertyClass();
 
@@ -964,7 +982,8 @@ public:
 };
 
 /**
- * The VariableClass represents one PHP variable. This is different from an expression, as scalars and arrays are not variables.
+ * The VariableClass represents one PHP variable. This is different from other
+ * expressions such as scalars and arrays, as scalars and arrays are not variables.
  * A variable is:
  * 
  * - a simple variable ($name)
@@ -1010,12 +1029,6 @@ public:
 	 */
 	std::vector<pelet::VariablePropertyClass> ChainList;
 	
-	/**
-	 * If this variable is an array, then the ArrayKey is the key that is assigned
-	 * For example, for the variable $samples['one'], 'one' is the ArrayKey
-	 */
-	UnicodeString ArrayKey;
-		
 	VariableClass(const pelet::ScopeClass& scope);
 
 	VariableClass(const pelet::VariableClass& src);

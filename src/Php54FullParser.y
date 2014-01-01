@@ -1116,7 +1116,7 @@ variable:
 		variable_properties						{ $$ = observers.VariableMake($1, $3, $4, $5); }
 	|	base_variable_with_function_calls		{ $$ = observers.VariableMake($1, NULL, NULL, NULL); }
 ;
-
+	
 variable_properties:
 		variable_properties variable_property		{ $$ = observers.VariableAppendToChain($1, $2); }
 	|	/* empty */									{ $$ = observers.VariableNil(); }
@@ -1128,8 +1128,8 @@ variable_property:
 ;
 
 array_method_dereference:
-		array_method_dereference '[' dim_offset ']'				{ $$ = observers.VariableNil();}
-	|	method '[' dim_offset ']'								{ $$ = observers.VariableNil(); }
+		array_method_dereference '[' dim_offset ']'				{ $$ = observers.VariableAppendArrayOffset($1, $3);}
+	|	method '[' dim_offset ']'								{ $$ = observers.VariableAppendArrayOffset($1, $3); }
 ;
 
 method:
@@ -1138,7 +1138,7 @@ method:
 
 method_or_not:
 		method						{ $$ = $1; } 
-	|	array_method_dereference	{ $$ = observers.VariableNil(); }
+	|	array_method_dereference	{ $$ = $1; }
 	|	/* empty */ 				{ $$ = observers.VariableNil(); }
 ;
 
@@ -1157,8 +1157,8 @@ variable_class_name:
 ;
 
 array_function_dereference:
-		array_function_dereference '[' dim_offset ']'				{ $$ = $1; }
-	|	function_call '[' dim_offset ']'							{ $$ = $1; }
+		array_function_dereference '[' dim_offset ']'				{ $$ = observers.VariableAppendArrayOffset($1, $3); }
+	|	function_call '[' dim_offset ']'							{ $$ = observers.VariableAppendArrayOffset($1, $3); }
 ;
 
 base_variable_with_function_calls:
@@ -1195,7 +1195,7 @@ object_property:
 ;
 
 object_dim_list:
-		object_dim_list '[' dim_offset ']'			{ $$ = observers.VariableNil(); }
+		object_dim_list '[' dim_offset ']'			{ $$ = observers.VariableAppendArrayOffset($1, $3); }
 	|	object_dim_list '{' expr '}'				{ $$ = observers.VariableNil(); }
 	|	variable_name								{ $$ = $1; }
 ;

@@ -1093,7 +1093,7 @@ object_property:
 ;
 
 object_dim_list:
-		object_dim_list '[' dim_offset ']'			{ $$ = observers.VariableNil(); }
+		object_dim_list '[' dim_offset ']'			{ $$ = observers.VariableAppendArrayOffset($1, $3); }
 	|	object_dim_list '{' expr '}'				{ $$ = observers.VariableNil(); }
 	|	variable_name								{ $$ = $1; }
 ;

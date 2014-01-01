@@ -270,20 +270,25 @@ TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithChainConstruct
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithFunctionArrayDereference) {
 	UnicodeString code = _U("array_merge($expr1, $expr2)[0]->method()");
 	Parser.ParseExpression(code, ParsedVar);
-	CHECK_VECTOR_SIZE(2, ParsedVar.ChainList);
+	CHECK_VECTOR_SIZE(3, ParsedVar.ChainList);
 	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, ParsedVar.ExpressionType);
 	CHECK_UNISTR_EQUALS("array_merge", ParsedVar.ChainList[0].Name);
-	CHECK_UNISTR_EQUALS("method", ParsedVar.ChainList[1].Name);
+	
+	CHECK(ParsedVar.ChainList[1].IsArrayAccess);
+
+	CHECK_UNISTR_EQUALS("method", ParsedVar.ChainList[2].Name);
+	CHECK(ParsedVar.ChainList[2].IsFunction);
 }
 
 TEST_FIXTURE(Parser54ExpressionTestClass, ParseChainExpressionWithMethodArrayDereference) {
 	UnicodeString code = _U("$this->func($expr1, $expr2)[0]->method()");
 	Parser.ParseExpression(code, ParsedVar);
-	CHECK_VECTOR_SIZE(3, ParsedVar.ChainList);
+	CHECK_VECTOR_SIZE(4, ParsedVar.ChainList);
 	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, ParsedVar.ExpressionType);
 	CHECK_UNISTR_EQUALS("$this", ParsedVar.ChainList[0].Name);
 	CHECK_UNISTR_EQUALS("func", ParsedVar.ChainList[1].Name);
-	CHECK_UNISTR_EQUALS("method", ParsedVar.ChainList[2].Name);
+	CHECK(ParsedVar.ChainList[2].IsArrayAccess);
+	CHECK_UNISTR_EQUALS("method", ParsedVar.ChainList[3].Name);
 }
 
 }
@@ -1368,7 +1373,9 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithVariable) {
 	pelet::VariableClass* var = Observer.VariableExpressions[0];
 	CHECK_VARIABLE("$_GET", var);
 	
-	CHECK_UNISTR_EQUALS("name", var->ArrayKey);
+	CHECK_VECTOR_SIZE(2, var->ChainList);
+	CHECK(var->ChainList[1].IsArrayAccess);
+	CHECK_SCALAR("name", var->ChainList[1].ArrayAccess);
 }
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithAssignmentCompound) { 
@@ -1451,6 +1458,61 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithArray) {
 	CHECK_SCALAR("456", newExpr->ArrayPairs[0]->Value);
 	CHECK_SCALAR("789", newExpr->ArrayPairs[1]->Key);
 	CHECK_SCALAR("abc", newExpr->ArrayPairs[1]->Value);
+}
+
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithArrayAccess) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$result = $users['123']->counts['abc']; \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* assignment = Observer.AssignmentExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, assignment->Destination.ChainList);
+	pelet::VariableClass* var = &assignment->Destination;
+	CHECK_VARIABLE("$result", var);
+
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, assignment->Expression->ExpressionType);
+
+	pelet::VariableClass* newExpr = PCEV(assignment->Expression);
+
+	CHECK_VECTOR_SIZE(4, newExpr->ChainList);
+	CHECK_UNISTR_EQUALS("$users", newExpr->ChainList[0].Name);
+	CHECK(newExpr->ChainList[1].IsArrayAccess);
+	CHECK_SCALAR("123", newExpr->ChainList[1].ArrayAccess);
+	CHECK_UNISTR_EQUALS("counts", newExpr->ChainList[2].Name);
+	CHECK(newExpr->ChainList[3].IsArrayAccess);
+	CHECK_SCALAR("abc", newExpr->ChainList[3].ArrayAccess);
+}
+
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithArrayAccessFromFunctionReturn) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$result = getUsers()['123']->counts['abc']; \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* assignment = Observer.AssignmentExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, assignment->Destination.ChainList);
+	pelet::VariableClass* var = &assignment->Destination;
+	CHECK_VARIABLE("$result", var);
+
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, assignment->Expression->ExpressionType);
+
+	pelet::VariableClass* newExpr = PCEV(assignment->Expression);
+
+	CHECK_VECTOR_SIZE(4, newExpr->ChainList);
+	CHECK_UNISTR_EQUALS("getUsers", newExpr->ChainList[0].Name);
+	CHECK(newExpr->ChainList[0].IsFunction);
+	CHECK(newExpr->ChainList[1].IsArrayAccess);
+	CHECK_SCALAR("123", newExpr->ChainList[1].ArrayAccess);
+	CHECK_UNISTR_EQUALS("counts", newExpr->ChainList[2].Name);
+	CHECK(newExpr->ChainList[3].IsArrayAccess);
+	CHECK_SCALAR("abc", newExpr->ChainList[3].ArrayAccess);
 }
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithFunctionArgument) { 

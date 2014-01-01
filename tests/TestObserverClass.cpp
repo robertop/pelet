@@ -102,7 +102,14 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	VariableMethodName.push_back(methodName);
 	VariableName.push_back(variable.ChainList[0].Name);
 	VariableComment.push_back(variable.Comment);
-	VariableArrayKeys.push_back(variable.ArrayKey);
+	UnicodeString arrayKey;
+	if (variable.ChainList.size() > 1 && variable.ChainList[1].IsArrayAccess && variable.ChainList[1].ArrayAccess) {
+		if (pelet::ExpressionClass::SCALAR == variable.ChainList[1].ArrayAccess->ExpressionType) {
+			pelet::ScalarExpressionClass* accessExpr = (pelet::ScalarExpressionClass*)variable.ChainList[1].ArrayAccess;
+			arrayKey = accessExpr->Value;
+		}
+	}
+	VariableArrayKeys.push_back(arrayKey);
 	if (expression) {
 		VariableExpressionTypes.push_back(expression->ExpressionType);
 	}

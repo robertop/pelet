@@ -636,9 +636,10 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeStaticVari
 }
 
 pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendArrayOffset(pelet::VariableClass* arrayVariable, pelet::ExpressionClass* offsetExpr) {
-	if (pelet::ExpressionClass::SCALAR == offsetExpr->ExpressionType) {
-		arrayVariable->ArrayKey = ((pelet::ScalarExpressionClass*)offsetExpr)->Value;
-	}
+	pelet::VariablePropertyClass arrayProp;
+	arrayProp.ArrayAccess = offsetExpr;
+	arrayProp.IsArrayAccess = true;
+	arrayVariable->ChainList.push_back(arrayProp);
 	return arrayVariable;
 }
 
@@ -1341,6 +1342,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendToChain(pele
 		variable->ChainList.back().CallArguments = callArguments->ChainList[0].CallArguments;
 		variable->ChainList.back().IsFunction = callArguments->ChainList[0].IsFunction;
 		variable->ChainList.back().IsStatic = false;
+		variable->ChainList.back().IsArrayAccess = callArguments->ChainList[0].IsArrayAccess;
+		variable->ChainList.back().ArrayAccess = callArguments->ChainList[0].ArrayAccess;
 	}
 	return variable;
 }
@@ -1369,19 +1372,29 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendToChain(pele
 
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, 
 		pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties) {
-	if (firstProperty && firstPropertyCallArguments && !firstProperty->ChainList.empty() && !firstPropertyCallArguments->ChainList.empty()) {
+	
+	// if we have function arguments, it means that the first property is a method
+	if (firstProperty && !firstProperty->ChainList.empty() && firstPropertyCallArguments && !firstPropertyCallArguments->ChainList.empty()) {
 		baseName->AppendToChain(firstProperty->ChainList[0].Name, firstPropertyCallArguments->ChainList[0].CallArguments, 
-			firstPropertyCallArguments->ChainList[0].IsFunction, firstPropertyCallArguments->ChainList[0].IsStatic);
-	}
-	else if (firstProperty && !firstProperty->ChainList.empty()) {
+			firstPropertyCallArguments->ChainList[0].IsFunction, firstPropertyCallArguments->ChainList[0].IsStatic);	
 		
-		// a property not a function call
-		baseName->AppendToChain(firstProperty->ChainList[0].Name, firstProperty->ChainList[0].CallArguments, 
-			false, false);
+		// call arguments could have array accesses ie.func1()[0]
+		std::vector<pelet::VariablePropertyClass>::const_iterator it = firstPropertyCallArguments->ChainList.begin();
+		++it;
+		for (; it != firstPropertyCallArguments->ChainList.end(); ++it) {
+			baseName->ChainList.push_back(*it);
+		}
+	}
+	else if (firstProperty) {
+		std::vector<pelet::VariablePropertyClass>::const_iterator it;
+		for (it = firstProperty->ChainList.begin(); it != firstProperty->ChainList.end(); ++it) {
+			baseName->ChainList.push_back(*it);
+		}
 	}
 	if (restProperties) {
-		for (size_t i = 0; i < restProperties->ChainList.size(); ++i) {
-			baseName->ChainList.push_back(restProperties->ChainList[i]);
+		std::vector<pelet::VariablePropertyClass>::const_iterator it;
+		for (it = restProperties->ChainList.begin(); it != restProperties->ChainList.end(); ++it) {
+			baseName->ChainList.push_back(*it);
 		}
 	}
 	return baseName;

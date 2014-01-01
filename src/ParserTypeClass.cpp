@@ -1354,8 +1354,7 @@ pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
 , Comment()
 , PhpDocType()
-, ChainList()
-, ArrayKey() {
+, ChainList() {
 	Type = pelet::StatementClass::EXPRESSION;
 	ExpressionType = pelet::ExpressionClass::VARIABLE;
 }
@@ -1364,8 +1363,7 @@ pelet::VariableClass::VariableClass(const pelet::VariableClass& src)
 : ExpressionClass(src.Scope)
 , Comment()
 , PhpDocType()
-, ChainList()
-, ArrayKey() {
+, ChainList() {
 	Type = pelet::StatementClass::EXPRESSION;
 	ExpressionType = pelet::ExpressionClass::VARIABLE;
 	Copy(src);
@@ -1382,7 +1380,6 @@ void pelet::VariableClass::Copy(const pelet::VariableClass& src) {
 	PhpDocType = src.PhpDocType;
 	ChainList = src.ChainList;
 	Type = src.Type;
-	ArrayKey = src.ArrayKey;
 }
 
 void pelet::VariableClass::AppendToComment(pelet::SemanticValueClass* value) {
@@ -1395,7 +1392,6 @@ void pelet::VariableClass::Clear() {
 	Comment.remove();
 	PhpDocType.remove();
 	ChainList.clear();
-	ArrayKey.remove();
 	Scope.Clear();
 	LineNumber = 0;
 }
@@ -1809,18 +1805,21 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 pelet::VariablePropertyClass::VariablePropertyClass()
 : Name()
 , CallArguments()
+, ArrayAccess(NULL)
 , IsFunction(false)
-, IsStatic(false) {
+, IsStatic(false) 
+, IsArrayAccess(false) {
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass(const pelet::VariablePropertyClass& src) 
 : Name()
 , CallArguments()
+, ArrayAccess(NULL)
 , IsFunction(false)
-, IsStatic(false) {
+, IsStatic(false) 
+, IsArrayAccess(false) {
 	Copy(src);
 }
-
 
 pelet::VariablePropertyClass& pelet::VariablePropertyClass::operator=(const pelet::VariablePropertyClass& src) {
 	Copy(src);
@@ -1830,8 +1829,10 @@ pelet::VariablePropertyClass& pelet::VariablePropertyClass::operator=(const pele
 void pelet::VariablePropertyClass::Copy(const pelet::VariablePropertyClass& src) {
 	Name = src.Name;
 	CallArguments = src.CallArguments;
+	ArrayAccess = src.ArrayAccess;
 	IsFunction = src.IsFunction;
 	IsStatic = src.IsStatic;
+	IsArrayAccess = src.IsArrayAccess;
 }
 
 pelet::IncludeStatementClass::IncludeStatementClass() 

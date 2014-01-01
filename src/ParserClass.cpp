@@ -256,10 +256,14 @@ public:
 	void ExpressionVariableFound(pelet::VariableClass* expression) {
 		for (size_t i = 0; i < expression->ChainList.size(); ++i) {
 			
-			// don't copy expression pointers, as they will be no good
+			// don't copy expression pointers from CallArguments or ArrayAccess, 
+			// as they will be no good
 			// after the observer goes out of scope
 			std::vector<pelet::ExpressionClass*> emptyArgs;
-			Variable.AppendToChain(expression->ChainList[i].Name, emptyArgs, expression->ChainList[i].IsFunction, expression->ChainList[i].IsStatic);
+			Variable.AppendToChain(expression->ChainList[i].Name, 
+				emptyArgs, expression->ChainList[i].IsFunction, 
+				expression->ChainList[i].IsStatic);
+			Variable.ChainList.back().IsArrayAccess = expression->ChainList[i].IsArrayAccess; 
 		}
 	}
 
