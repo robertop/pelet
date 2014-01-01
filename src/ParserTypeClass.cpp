@@ -1300,15 +1300,42 @@ void pelet::NewInstanceExpressionClass::AddToChain(pelet::VariableClass* var) {
 	}
 }
 
+pelet::ArrayPairExpressionClass::ArrayPairExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Key(NULL)
+, Value(NULL) {
+	ExpressionType = pelet::ExpressionClass::ARRAY_PAIR;
+}
+
+pelet::ArrayPairExpressionClass::ArrayPairExpressionClass(const pelet::ArrayPairExpressionClass& src)
+: ExpressionClass(src.Scope)
+, Key(NULL)
+, Value(NULL) {
+	ExpressionType = pelet::ExpressionClass::ARRAY_PAIR;
+	Copy(src);
+}
+
+pelet::ArrayPairExpressionClass& pelet::ArrayPairExpressionClass::operator=(const pelet::ArrayPairExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::ArrayPairExpressionClass::Copy(const pelet::ArrayPairExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Key = src.Key;
+	Value = src.Value;
+}
+
+
 pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
-, ArrayKeys() {
+, ArrayPairs() {
 	ExpressionType = pelet::ExpressionClass::ARRAY;
 }
 
 pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ArrayExpressionClass& src)
 : ExpressionClass(src.Scope)
-, ArrayKeys() {
+, ArrayPairs() {
 	ExpressionType = pelet::ExpressionClass::ARRAY;
 	Copy(src);
 }
@@ -1320,9 +1347,8 @@ pelet::ArrayExpressionClass& pelet::ArrayExpressionClass::operator=(const pelet:
 
 void pelet::ArrayExpressionClass::Copy(const pelet::ArrayExpressionClass& src) {
 	pelet::ExpressionClass::Copy(src);
-	ArrayKeys = src.ArrayKeys;
+	ArrayPairs = src.ArrayPairs;
 }
-
 
 pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)

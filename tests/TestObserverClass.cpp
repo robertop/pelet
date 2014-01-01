@@ -129,8 +129,11 @@ void TestObserverClass::VariableFound(const UnicodeString& namespaceName, const 
 	}
 	if (expression && expression->ExpressionType == pelet::ExpressionClass::ARRAY) {
 		pelet::ArrayExpressionClass* srcArray = (pelet::ArrayExpressionClass*) expression;
-		for (size_t i = 0; i < srcArray->ArrayKeys.size(); ++i) {
-			VariableExpressionArrayKeys.push_back(srcArray->ArrayKeys[i]);
+		for (size_t i = 0; i < srcArray->ArrayPairs.size(); ++i) {
+			pelet::ArrayPairExpressionClass* pair = srcArray->ArrayPairs[i];
+			if (pair->Key && pelet::ExpressionClass::SCALAR == pair->Key->ExpressionType) {
+				VariableExpressionArrayKeys.push_back(((pelet::ScalarExpressionClass*)pair->Key)->Value);
+			}
 		}
 	}
 	if (expression && expression->ExpressionType == pelet::ExpressionClass::NEW_CALL) {

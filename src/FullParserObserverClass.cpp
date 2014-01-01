@@ -433,17 +433,28 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ConstantMake(pelet::S
 	return StatementListMakeAndAppend(constant);
 }
 
+pelet::StatementListClass* pelet::FullParserObserverClass::ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value) {
+	pelet::StatementListClass* stmtList = StatementListMake();
+	pelet::ArrayPairExpressionClass* pair = new pelet::ArrayPairExpressionClass(Scope);
+	pair->Key = key;
+	pair->Value = value;
+	stmtList->Push(pair);
+
+	AllAstItems.push_back(pair);
+	return stmtList;
+}
+
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeArray(pelet::StatementListClass* pairStatements) {
 	pelet::ArrayExpressionClass* newExpr = new pelet::ArrayExpressionClass(Scope);
 
-	// populate the array keys [that are scalar strings]
+	// populate the array pairs
 	for (size_t i = 0; i < pairStatements->Size(); ++i) {
 		pelet::StatementClass::Types type =  pairStatements->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* pairExpr = (pelet::ExpressionClass*) pairStatements->At(i);
-			if (pelet::ExpressionClass::SCALAR == pairExpr->ExpressionType) {
-				pelet::ScalarExpressionClass* scalar = (pelet::ScalarExpressionClass*) pairStatements->At(i);
-				newExpr->ArrayKeys.push_back(scalar->Value);
+			if (pelet::ExpressionClass::ARRAY_PAIR == pairExpr->ExpressionType) {
+				pelet::ArrayPairExpressionClass* pair = (pelet::ArrayPairExpressionClass*) pairStatements->At(i);
+				newExpr->ArrayPairs.push_back(pair);
 			}
 		}
 	}

@@ -1259,8 +1259,9 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserver) {
 	CHECK_ARRAY(myFunctVar->ChainList[0].CallArguments[0]);
 
 	pelet::ArrayExpressionClass* arrayExpr = (pelet::ArrayExpressionClass*)myFunctVar->ChainList[0].CallArguments[0];
-	CHECK_VECTOR_SIZE(1, arrayExpr->ArrayKeys);
-	CHECK_UNISTR_EQUALS("key_one", arrayExpr->ArrayKeys[0]);
+	CHECK_VECTOR_SIZE(1, arrayExpr->ArrayPairs);
+	CHECK_SCALAR("key_one", arrayExpr->ArrayPairs[0]->Key);
+	CHECK_SCALAR("1", arrayExpr->ArrayPairs[0]->Value);
 }
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithObjects) {
@@ -1445,9 +1446,11 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithArray) {
 	CHECK_EQUAL(pelet::ExpressionClass::ARRAY, assignment->Expression->ExpressionType);
 
 	pelet::ArrayExpressionClass* newExpr = PCEAR(assignment->Expression);
-	CHECK_VECTOR_SIZE(2, newExpr->ArrayKeys);
-	CHECK_UNISTR_EQUALS("123", newExpr->ArrayKeys[0]);
-	CHECK_UNISTR_EQUALS("789", newExpr->ArrayKeys[1]);
+	CHECK_VECTOR_SIZE(2, newExpr->ArrayPairs);
+	CHECK_SCALAR("123", newExpr->ArrayPairs[0]->Key);
+	CHECK_SCALAR("456", newExpr->ArrayPairs[0]->Value);
+	CHECK_SCALAR("789", newExpr->ArrayPairs[1]->Key);
+	CHECK_SCALAR("abc", newExpr->ArrayPairs[1]->Value);
 }
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithFunctionArgument) { 

@@ -1227,14 +1227,26 @@ array_pair_list:
 ;
 
 non_empty_array_pair_list:
-		non_empty_array_pair_list ',' expr T_DOUBLE_ARROW expr					{ $$ = observers.StatementListAppend($1, $3); }
-	|	non_empty_array_pair_list ',' expr										{ $$ = $1; }
-	|	expr T_DOUBLE_ARROW expr												{ $$ = observers.StatementListMakeAndAppend($1); }
-	|	expr																	{ $$ = observers.StatementListMake(); }
-	|	non_empty_array_pair_list ',' expr T_DOUBLE_ARROW '&' w_variable		{ $$ = observers.StatementListAppend($1, $3); }
-	|	non_empty_array_pair_list ',' '&' w_variable							{ $$ = $1; }
-	|	expr T_DOUBLE_ARROW '&' w_variable										{ $$ = observers.StatementListMakeAndAppend($1); }	
-	|	'&' w_variable															{ $$ = observers.StatementListMake(); }
+		non_empty_array_pair_list ',' expr T_DOUBLE_ARROW expr					{ $$ = observers.StatementListMerge($1, 
+                                                                                         observers.ExpressionMakeArrayPair($3, $5)
+                                                                                       ); 
+                                                                                }
+	|	non_empty_array_pair_list ',' expr										{ $$ = observers.StatementListMerge($1, 
+                                                                                         observers.ExpressionMakeArrayPair(NULL, $3)
+                                                                                       ); 
+                                                                                }
+	|	expr T_DOUBLE_ARROW expr												{ $$ = observers.ExpressionMakeArrayPair($1, $3); }
+	|	expr																	{ $$ = observers.ExpressionMakeArrayPair(NULL, $1); }
+	|	non_empty_array_pair_list ',' expr T_DOUBLE_ARROW '&' w_variable		{ $$ = observers.StatementListMerge($1, 
+                                                                                         observers.ExpressionMakeArrayPair($3, $6)
+                                                                                       ); 
+                                                                                }
+	|	non_empty_array_pair_list ',' '&' w_variable							{ $$ = observers.StatementListMerge($1, 
+                                                                                         observers.ExpressionMakeArrayPair(NULL, $4)
+                                                                                       ); 
+                                                                                }
+	|	expr T_DOUBLE_ARROW '&' w_variable										{ $$ = observers.ExpressionMakeArrayPair($1, $4); }	
+	|	'&' w_variable															{ $$ = observers.ExpressionMakeArrayPair(NULL, $2); }
 ;
 
 encaps_list:

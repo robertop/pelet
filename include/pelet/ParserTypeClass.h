@@ -54,6 +54,8 @@ class ScalarExpressionClass;
 class NewInstanceExpressionClass;
 class GlobalVariableStatementClass;
 class StaticVariableStatementClass;
+class ArrayPairExpressionClass;
+
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -804,6 +806,7 @@ public:
 		UNARY_OPERATION,
 		UNARY_VARIABLE_OPERATION,
 		TERNARY_OPERATION,
+		ARRAY_PAIR,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -853,19 +856,51 @@ public:
 };
 
 /**
- * This class represents an array expressoin. The array keys list will contain the
- * array keys of the declared array. For example, for the expression:
+ * This class represents 1 key-value pair in a 
+ * array creation expression. This class will not
+ * own the expression pointers.
+ */
+class ArrayPairExpressionClass : public ExpressionClass {
+
+public:
+	
+	/**
+	 * This will be NULL if the array does not have a key
+	 * defined. This class will not own the expression pointer
+	 */
+	pelet::ExpressionClass* Key;
+
+	/**
+	* This class will not
+	* own the expression pointer
+	*/
+	pelet::ExpressionClass* Value;
+
+	ArrayPairExpressionClass(const pelet::ScopeClass& scope);
+
+	ArrayPairExpressionClass(const pelet::ArrayPairExpressionClass& src);
+
+	pelet::ArrayPairExpressionClass& operator=(const pelet::ArrayPairExpressionClass& src);
+
+	void Copy(const pelet::ArrayPairExpressionClass& src);
+};
+
+/**
+ * This class represents an array expression. The ArrayPairs contains the list of
+ * key-value pairs of an array. For example, for the expression:
  * array('one' => 1, 'two' => 2)
- * then ArrayKeys will contain 2 items: "one" and "two"
- * Note that only scalar keys are supported for now
- * Also note that if the source code does not define keys then this list will be empty
- * as well; for example array(1, 2) will not produce any array keys (ArrayKeys will be empty).
+ * then ArrayPairs will contain 2 items: the pair "one", 1 (a scalar expression
+ * as the key and a scalar expression as the value) and "two" (a scalar expression
+ * as the key and a scalar expression as the value)
+ * Note that if the source code does not define keys then this key will be NULL
+ * as well; for example array(1, 2) will not produce any array keys (ArrayPairs will
+ * still have 2 items, but the keys will be empty).
  */
 class PELET_API ArrayExpressionClass : public ExpressionClass {
 
 public:
 
-	std::vector<UnicodeString> ArrayKeys;
+	std::vector<pelet::ArrayPairExpressionClass*> ArrayPairs;
 
 	ArrayExpressionClass(const ScopeClass& scope);
 
