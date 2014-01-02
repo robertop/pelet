@@ -383,7 +383,7 @@ pelet::StatementListClass* pelet::StatementListClass::Push(pelet::StatementClass
 	return this;
 }
 
-pelet::StatementListClass* pelet::StatementListClass::PushAll(pelet::StatementListClass* statements) {
+pelet::StatementListClass* pelet::StatementListClass::PushAll(const pelet::StatementListClass* statements) {
 	if (statements) {
 		for (size_t i = 0; i < statements->Statements.size(); ++i) {
 			Statements.push_back(statements->Statements[i]);
@@ -1649,6 +1649,36 @@ pelet::StaticVariableStatementClass::StaticVariableStatementClass()
 : StatementClass(pelet::StatementClass::STATIC_VARIABLE_DECLARATION)
 , Variables() {
 
+}
+
+pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope) 
+, Parameters() 
+, LexicalVars() 
+, Statements() {
+	ExpressionType = pelet::ExpressionClass::CLOSURE;
+}
+
+pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ClosureExpressionClass& src)
+: ExpressionClass(src.Scope) 
+, Parameters() 
+, LexicalVars() 
+, Statements() {
+	ExpressionType = pelet::ExpressionClass::CLOSURE;
+	Copy(src);
+}
+
+pelet::ClosureExpressionClass& pelet::ClosureExpressionClass::operator=(const pelet::ClosureExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::ClosureExpressionClass::Copy(const pelet::ClosureExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Parameters = src.Parameters;
+	LexicalVars = src.LexicalVars;
+	Statements.Clear();
+	Statements.PushAll(&src.Statements);
 }
 
 pelet::ScopeClass::ScopeClass()

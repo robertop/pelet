@@ -1312,6 +1312,35 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithStaticDeclaration) {
 	CHECK_VARIABLE("$db", Observer.VariableExpressions[1]);
 }
 
+TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithClosure) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$func = function($a, $b) use ($c) {  \n"
+		"  return $a - $b - $c; \n"
+		"};\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	CHECK_VARIABLE("$func", (&Observer.AssignmentExpressions[0]->Destination));
+
+	CHECK_EQUAL(pelet::ExpressionClass::CLOSURE, Observer.AssignmentExpressions[0]->Expression->ExpressionType);
+
+	pelet::ClosureExpressionClass* closure = (pelet::ClosureExpressionClass*)Observer.AssignmentExpressions[0]->Expression;
+	CHECK_VECTOR_SIZE(2, closure->Parameters);
+	CHECK_VARIABLE("$a", closure->Parameters[0]);
+	CHECK_VARIABLE("$b", closure->Parameters[1]);
+	CHECK_VECTOR_SIZE(1, closure->LexicalVars);
+	CHECK_VARIABLE("$c", closure->LexicalVars[0]);
+	CHECK_EQUAL(1, closure->Statements.Size());
+
+	CHECK_EQUAL(pelet::StatementClass::EXPRESSION, closure->Statements.TypeAt(0));
+	pelet::StatementClass* stmt = closure->Statements.At(0);
+	pelet::ExpressionClass* expr = (pelet::ExpressionClass*) stmt;
+	CHECK_EQUAL(pelet::ExpressionClass::BINARY_OPERATION, expr->ExpressionType);
+}
+
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	bool isGood = Parser.LintFile(file, LintResults);

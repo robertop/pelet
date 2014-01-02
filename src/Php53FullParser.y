@@ -859,7 +859,7 @@ expr_without_variable:
 	|	T_PRINT expr 												{ $$ = observers.ExpressionMakeScalar($2); }	
 	|	function is_reference 
 		'(' parameter_list ')' 
-		lexical_vars '{' inner_statement_list '}'					{ $$ = observers.ExpressionNil();  }
+		lexical_vars '{' inner_statement_list '}'					{ $$ = observers.ExpressionMakeClosure($4, $6, $8);  }
 ;
 
 function:
@@ -868,14 +868,20 @@ function:
 
 lexical_vars:
 		/* empty */									{ $$ = observers.StatementListNil(); }
-	|	T_USE '(' lexical_var_list ')'				{ $$ = observers.StatementListNil(); }
+	|	T_USE '(' lexical_var_list ')'				{ $$ = $3; }
 ;
 
 lexical_var_list:
-		lexical_var_list ',' T_VARIABLE				{ $$ = $1; }
-	|	lexical_var_list ',' '&' T_VARIABLE			{ $$ = $1; }
-	|	T_VARIABLE									{ $$ = observers.StatementListNil(); }
-	|	'&' T_VARIABLE								{ $$ = observers.StatementListNil(); }
+		lexical_var_list ',' T_VARIABLE				{ $$ = observers.StatementListAppend($1, 
+														       observers.VariableStart($3)
+		                                                   ); 
+		                                            }
+	|	lexical_var_list ',' '&' T_VARIABLE			{ $$ = observers.StatementListAppend($1, 
+	                                                         observers.VariableStart($4)
+		                                                   ); 
+		                                            }
+	|	T_VARIABLE									{ $$ = observers.StatementListMakeAndAppend(observers.VariableStart($1)); }
+	|	'&' T_VARIABLE								{ $$ = observers.StatementListMakeAndAppend(observers.VariableStart($2)); }
 ;
 
 function_call:

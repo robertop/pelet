@@ -701,6 +701,34 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionNil() {
 	return newExpr;
 }
 
+pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
+	pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts) {
+		pelet::ClosureExpressionClass* closure = new pelet::ClosureExpressionClass(Scope);
+		for (size_t i = 0; i < parameters->GetCount(); ++i) {
+			UnicodeString param, type;
+			parameters->Param(i, param, type);
+			
+			pelet::VariableClass* var = new pelet::VariableClass(Scope);
+			AllAstItems.push_back(var);
+			var->AppendToChain(param);
+			var->PhpDocType = type;
+			closure->Parameters.push_back(var);
+			
+		}
+		for (size_t i = 0; i < lexicalVars->Size(); ++i) {
+			if (pelet::StatementClass::EXPRESSION == lexicalVars->TypeAt(i)) {
+				pelet::ExpressionClass* expr = (pelet::ExpressionClass*) lexicalVars->At(i);
+				if (pelet::ExpressionClass::VARIABLE == expr->ExpressionType) {
+					closure->LexicalVars.push_back((pelet::VariableClass*)lexicalVars->At(i));
+				}
+			}
+		}
+		closure->Statements.PushAll(stmts);
+
+		AllAstItems.push_back(closure);
+		return closure;
+}
+
 pelet::StatementListClass* pelet::FullParserObserverClass::GlobalVariablesStatementMake(pelet::StatementListClass* variables) {
 	pelet::GlobalVariableStatementClass* globalVars =  new pelet::GlobalVariableStatementClass();
 	for (size_t i = 0; i < variables->Size(); ++i) {

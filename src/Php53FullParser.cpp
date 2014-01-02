@@ -809,22 +809,22 @@ static const yytype_uint16 yyrline[] =
      826,   827,   828,   829,   830,   831,   832,   833,   834,   835,
      836,   837,   838,   839,   840,   841,   844,   846,   847,   848,
      849,   850,   851,   852,   853,   854,   855,   856,   857,   858,
-     859,   860,   866,   870,   871,   875,   876,   877,   878,   882,
-     884,   887,   889,   891,   893,   895,   897,   902,   903,   904,
-     905,   909,   910,   911,   915,   916,   920,   922,   926,   927,
-     931,   935,   936,   937,   941,   942,   943,   947,   948,   952,
-     953,   954,   955,   956,   957,   958,   959,   960,   961,   962,
-     963,   967,   968,   969,   970,   971,   972,   973,   974,   978,
-     982,   983,   984,   985,   986,   987,   988,   989,   993,   994,
-     998,   999,  1003,  1004,  1005,  1006,  1010,  1011,  1015,  1019,
-    1023,  1027,  1031,  1035,  1036,  1040,  1045,  1046,  1050,  1051,
-    1055,  1056,  1060,  1064,  1065,  1069,  1070,  1071,  1075,  1076,
-    1077,  1081,  1082,  1086,  1087,  1091,  1092,  1096,  1097,  1098,
-    1102,  1103,  1107,  1108,  1112,  1113,  1117,  1118,  1119,  1123,
-    1124,  1128,  1132,  1136,  1137,  1138,  1142,  1146,  1147,  1151,
-    1152,  1153,  1154,  1158,  1159,  1160,  1161,  1162,  1163,  1167,
-    1168,  1169,  1173,  1174,  1175,  1176,  1177,  1178,  1179,  1183,
-    1184,  1188,  1189
+     859,   860,   866,   870,   871,   875,   879,   883,   884,   888,
+     890,   893,   895,   897,   899,   901,   903,   908,   909,   910,
+     911,   915,   916,   917,   921,   922,   926,   928,   932,   933,
+     937,   941,   942,   943,   947,   948,   949,   953,   954,   958,
+     959,   960,   961,   962,   963,   964,   965,   966,   967,   968,
+     969,   973,   974,   975,   976,   977,   978,   979,   980,   984,
+     988,   989,   990,   991,   992,   993,   994,   995,   999,  1000,
+    1004,  1005,  1009,  1010,  1011,  1012,  1016,  1017,  1021,  1025,
+    1029,  1033,  1037,  1041,  1042,  1046,  1051,  1052,  1056,  1057,
+    1061,  1062,  1066,  1070,  1071,  1075,  1076,  1077,  1081,  1082,
+    1083,  1087,  1088,  1092,  1093,  1097,  1098,  1102,  1103,  1104,
+    1108,  1109,  1113,  1114,  1118,  1119,  1123,  1124,  1125,  1129,
+    1130,  1134,  1138,  1142,  1143,  1144,  1148,  1152,  1153,  1157,
+    1158,  1159,  1160,  1164,  1165,  1166,  1167,  1168,  1169,  1173,
+    1174,  1175,  1179,  1180,  1181,  1182,  1183,  1184,  1185,  1189,
+    1190,  1194,  1195
 };
 #endif
 
@@ -5324,7 +5324,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 862 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.expression) = observers.ExpressionNil();  ;}
+    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (9)].parametersList), (yyvsp[(6) - (9)].statementList), (yyvsp[(8) - (9)].statementList));  ;}
     break;
 
   case 253:
@@ -5338,720 +5338,726 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 871 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); ;}
+    { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); ;}
     break;
 
   case 255:
 
 /* Line 1455 of yacc.c  */
 #line 875 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (3)].statementList); ;}
+    { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), 
+														       observers.VariableStart((yyvsp[(3) - (3)].semanticValue))
+		                                                   ); 
+		                                            ;}
     break;
 
   case 256:
 
 /* Line 1455 of yacc.c  */
-#line 876 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.statementList) = (yyvsp[(1) - (4)].statementList); ;}
+#line 879 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+    { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), 
+	                                                         observers.VariableStart((yyvsp[(4) - (4)].semanticValue))
+		                                                   ); 
+		                                            ;}
     break;
 
   case 257:
 
 /* Line 1455 of yacc.c  */
-#line 877 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); ;}
+#line 883 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(1) - (1)].semanticValue))); ;}
     break;
 
   case 258:
 
 /* Line 1455 of yacc.c  */
-#line 878 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); ;}
+#line 884 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(2) - (2)].semanticValue))); ;}
     break;
 
   case 259:
 
 /* Line 1455 of yacc.c  */
-#line 883 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 889 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCall((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(3) - (4)].statementList), analyzer.GetLineNumber()); ;}
     break;
 
   case 260:
 
 /* Line 1455 of yacc.c  */
-#line 886 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 892 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromDeclaredNamespace((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(5) - (6)].statementList), analyzer.GetLineNumber()); ;}
     break;
 
   case 261:
 
 /* Line 1455 of yacc.c  */
-#line 888 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 894 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromAbsoluteNamespace((yyvsp[(2) - (5)].qualifiedName), (yyvsp[(4) - (5)].statementList), analyzer.GetLineNumber()); ;}
     break;
 
   case 262:
 
 /* Line 1455 of yacc.c  */
-#line 890 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 896 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeStaticMethodCall((yyvsp[(1) - (6)].qualifiedName), (yyvsp[(3) - (6)].semanticValue), (yyvsp[(5) - (6)].statementList), analyzer.GetLineNumber()); ;}
     break;
 
   case 263:
 
 /* Line 1455 of yacc.c  */
-#line 892 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 898 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 264:
 
 /* Line 1455 of yacc.c  */
-#line 894 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 900 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 265:
 
 /* Line 1455 of yacc.c  */
-#line 896 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 902 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 266:
 
 /* Line 1455 of yacc.c  */
-#line 898 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 904 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 267:
 
 /* Line 1455 of yacc.c  */
-#line 902 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 908 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); ;}
     break;
 
   case 268:
 
 /* Line 1455 of yacc.c  */
-#line 903 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 909 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
     break;
 
   case 269:
 
 /* Line 1455 of yacc.c  */
-#line 904 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 910 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); ;}
     break;
 
   case 270:
 
 /* Line 1455 of yacc.c  */
-#line 905 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 911 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); ;}
     break;
 
   case 271:
 
 /* Line 1455 of yacc.c  */
-#line 909 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 915 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
     break;
 
   case 272:
 
 /* Line 1455 of yacc.c  */
-#line 910 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 916 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); ;}
     break;
 
   case 273:
 
 /* Line 1455 of yacc.c  */
-#line 911 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 917 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); ;}
     break;
 
   case 274:
 
 /* Line 1455 of yacc.c  */
-#line 915 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 921 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
     break;
 
   case 275:
 
 /* Line 1455 of yacc.c  */
-#line 916 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 922 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); ;}
     break;
 
   case 276:
 
 /* Line 1455 of yacc.c  */
-#line 921 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 927 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); ;}
     break;
 
   case 277:
 
 /* Line 1455 of yacc.c  */
-#line 922 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 928 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); ;}
     break;
 
   case 278:
 
 /* Line 1455 of yacc.c  */
-#line 926 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 932 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = (yyvsp[(1) - (2)].semanticValue); ;}
     break;
 
   case 279:
 
 /* Line 1455 of yacc.c  */
-#line 927 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 933 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 281:
 
 /* Line 1455 of yacc.c  */
-#line 935 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 941 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 282:
 
 /* Line 1455 of yacc.c  */
-#line 936 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 942 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 283:
 
 /* Line 1455 of yacc.c  */
-#line 937 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 943 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (3)].expression); ;}
     break;
 
   case 284:
 
 /* Line 1455 of yacc.c  */
-#line 941 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 947 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 285:
 
 /* Line 1455 of yacc.c  */
-#line 942 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 948 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 286:
 
 /* Line 1455 of yacc.c  */
-#line 943 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 949 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 287:
 
 /* Line 1455 of yacc.c  */
-#line 947 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 953 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); ;}
     break;
 
   case 288:
 
 /* Line 1455 of yacc.c  */
-#line 948 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 954 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); ;}
     break;
 
   case 289:
 
 /* Line 1455 of yacc.c  */
-#line 952 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 958 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 290:
 
 /* Line 1455 of yacc.c  */
-#line 953 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 959 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 291:
 
 /* Line 1455 of yacc.c  */
-#line 954 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 960 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 292:
 
 /* Line 1455 of yacc.c  */
-#line 955 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 961 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 293:
 
 /* Line 1455 of yacc.c  */
-#line 956 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 962 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 294:
 
 /* Line 1455 of yacc.c  */
-#line 957 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 963 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 295:
 
 /* Line 1455 of yacc.c  */
-#line 958 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 964 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 296:
 
 /* Line 1455 of yacc.c  */
-#line 959 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 965 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 297:
 
 /* Line 1455 of yacc.c  */
-#line 960 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 966 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 298:
 
 /* Line 1455 of yacc.c  */
-#line 961 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 967 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 299:
 
 /* Line 1455 of yacc.c  */
-#line 962 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 968 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].semanticValue)); ;}
     break;
 
   case 300:
 
 /* Line 1455 of yacc.c  */
-#line 963 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 969 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (2)].semanticValue)); ;}
     break;
 
   case 301:
 
 /* Line 1455 of yacc.c  */
-#line 967 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 973 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 302:
 
 /* Line 1455 of yacc.c  */
-#line 968 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 974 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 303:
 
 /* Line 1455 of yacc.c  */
-#line 969 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 975 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 304:
 
 /* Line 1455 of yacc.c  */
-#line 970 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 976 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 305:
 
 /* Line 1455 of yacc.c  */
-#line 971 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 977 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 306:
 
 /* Line 1455 of yacc.c  */
-#line 972 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 978 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 307:
 
 /* Line 1455 of yacc.c  */
-#line 973 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 979 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(3) - (4)].semanticValue)); ;}
     break;
 
   case 309:
 
 /* Line 1455 of yacc.c  */
-#line 978 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 984 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); ;}
     break;
 
   case 310:
 
 /* Line 1455 of yacc.c  */
-#line 982 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 988 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 311:
 
 /* Line 1455 of yacc.c  */
-#line 983 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 989 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); ;}
     break;
 
   case 312:
 
 /* Line 1455 of yacc.c  */
-#line 984 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 990 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant((yyvsp[(1) - (1)].qualifiedName)); ;}
     break;
 
   case 313:
 
 /* Line 1455 of yacc.c  */
-#line 985 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 991 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName))); ;}
     break;
 
   case 314:
 
 /* Line 1455 of yacc.c  */
-#line 986 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 992 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName))); ;}
     break;
 
   case 316:
 
 /* Line 1455 of yacc.c  */
-#line 988 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 994 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].expression)); ;}
     break;
 
   case 317:
 
 /* Line 1455 of yacc.c  */
-#line 989 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 995 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (3)].semanticValue)); ;}
     break;
 
   case 318:
 
 /* Line 1455 of yacc.c  */
-#line 993 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 999 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 320:
 
 /* Line 1455 of yacc.c  */
-#line 998 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1004 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.isComma) = false; ;}
     break;
 
   case 321:
 
 /* Line 1455 of yacc.c  */
-#line 999 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1005 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.isComma) = true; ;}
     break;
 
   case 322:
 
 /* Line 1455 of yacc.c  */
-#line 1003 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1009 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 323:
 
 /* Line 1455 of yacc.c  */
-#line 1004 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1010 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 324:
 
 /* Line 1455 of yacc.c  */
-#line 1005 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1011 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 325:
 
 /* Line 1455 of yacc.c  */
-#line 1006 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1012 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 326:
 
 /* Line 1455 of yacc.c  */
-#line 1010 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1016 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].variable); ;}
     break;
 
   case 331:
 
 /* Line 1455 of yacc.c  */
-#line 1030 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1036 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (5)].variable), (yyvsp[(3) - (5)].variable), (yyvsp[(4) - (5)].variable), (yyvsp[(5) - (5)].variable)); ;}
     break;
 
   case 332:
 
 /* Line 1455 of yacc.c  */
-#line 1031 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1037 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (1)].variable), NULL, NULL, NULL); ;}
     break;
 
   case 333:
 
 /* Line 1455 of yacc.c  */
-#line 1035 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1041 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(1) - (2)].variable), (yyvsp[(2) - (2)].variable)); ;}
     break;
 
   case 334:
 
 /* Line 1455 of yacc.c  */
-#line 1036 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1042 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 335:
 
 /* Line 1455 of yacc.c  */
-#line 1041 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1047 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(2) - (3)].variable), (yyvsp[(3) - (3)].variable), (yyvsp[(1) - (3)].semanticValue));  ;}
     break;
 
   case 336:
 
 /* Line 1455 of yacc.c  */
-#line 1045 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1051 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeAndAppendFunctionCall((yyvsp[(2) - (3)].statementList), true); ;}
     break;
 
   case 337:
 
 /* Line 1455 of yacc.c  */
-#line 1046 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1052 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 339:
 
 /* Line 1455 of yacc.c  */
-#line 1051 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1057 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(2) - (2)].variable); ;}
     break;
 
   case 340:
 
 /* Line 1455 of yacc.c  */
-#line 1055 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1061 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableStartStaticMember((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].variable)); ;}
     break;
 
   case 341:
 
 /* Line 1455 of yacc.c  */
-#line 1056 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1062 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 342:
 
 /* Line 1455 of yacc.c  */
-#line 1060 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1066 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); ;}
     break;
 
   case 344:
 
 /* Line 1455 of yacc.c  */
-#line 1065 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1071 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); ;}
     break;
 
   case 346:
 
 /* Line 1455 of yacc.c  */
-#line 1070 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1076 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(2) - (2)].variable); ;}
     break;
 
   case 348:
 
 /* Line 1455 of yacc.c  */
-#line 1075 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1081 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); ;}
     break;
 
   case 349:
 
 /* Line 1455 of yacc.c  */
-#line 1076 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1082 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 351:
 
 /* Line 1455 of yacc.c  */
-#line 1081 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1087 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 352:
 
 /* Line 1455 of yacc.c  */
-#line 1082 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1088 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 353:
 
 /* Line 1455 of yacc.c  */
-#line 1086 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1092 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 354:
 
 /* Line 1455 of yacc.c  */
-#line 1087 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1093 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); ;}
     break;
 
   case 355:
 
 /* Line 1455 of yacc.c  */
-#line 1091 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1097 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); ;}
     break;
 
   case 356:
 
 /* Line 1455 of yacc.c  */
-#line 1092 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1098 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); ;}
     break;
 
   case 357:
 
 /* Line 1455 of yacc.c  */
-#line 1096 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1102 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); ;}
     break;
 
   case 358:
 
 /* Line 1455 of yacc.c  */
-#line 1097 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1103 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 359:
 
 /* Line 1455 of yacc.c  */
-#line 1098 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1104 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); ;}
     break;
 
   case 360:
 
 /* Line 1455 of yacc.c  */
-#line 1102 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1108 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     {  (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); ;}
     break;
 
   case 361:
 
 /* Line 1455 of yacc.c  */
-#line 1103 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1109 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); ;}
     break;
 
   case 364:
 
 /* Line 1455 of yacc.c  */
-#line 1112 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1118 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].statementList)); ;}
     break;
 
   case 365:
 
 /* Line 1455 of yacc.c  */
-#line 1113 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1119 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); ;}
     break;
 
   case 366:
 
 /* Line 1455 of yacc.c  */
-#line 1117 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1123 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].variable)); ;}
     break;
 
   case 367:
 
 /* Line 1455 of yacc.c  */
-#line 1118 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1124 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); ;}
     break;
 
   case 368:
 
 /* Line 1455 of yacc.c  */
-#line 1119 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1125 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); ;}
     break;
 
   case 369:
 
 /* Line 1455 of yacc.c  */
-#line 1123 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1129 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); ;}
     break;
 
   case 370:
 
 /* Line 1455 of yacc.c  */
-#line 1124 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1130 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); ;}
     break;
 
   case 371:
 
 /* Line 1455 of yacc.c  */
-#line 1128 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1134 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (5)].expression), (yyvsp[(5) - (5)].expression))
                                                                                        ); 
@@ -6061,7 +6067,7 @@ yyreduce:
   case 372:
 
 /* Line 1455 of yacc.c  */
-#line 1132 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1138 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(3) - (3)].expression))
                                                                                        ); 
@@ -6071,21 +6077,21 @@ yyreduce:
   case 373:
 
 /* Line 1455 of yacc.c  */
-#line 1136 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1142 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); ;}
     break;
 
   case 374:
 
 /* Line 1455 of yacc.c  */
-#line 1137 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1143 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(1) - (1)].expression)); ;}
     break;
 
   case 375:
 
 /* Line 1455 of yacc.c  */
-#line 1138 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1144 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (6)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (6)].expression), (yyvsp[(6) - (6)].variable))
                                                                                        ); 
@@ -6095,7 +6101,7 @@ yyreduce:
   case 376:
 
 /* Line 1455 of yacc.c  */
-#line 1142 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1148 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (4)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(4) - (4)].variable))
                                                                                        ); 
@@ -6105,189 +6111,189 @@ yyreduce:
   case 377:
 
 /* Line 1455 of yacc.c  */
-#line 1146 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1152 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (4)].expression), (yyvsp[(4) - (4)].variable)); ;}
     break;
 
   case 378:
 
 /* Line 1455 of yacc.c  */
-#line 1147 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1153 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(2) - (2)].variable)); ;}
     break;
 
   case 379:
 
 /* Line 1455 of yacc.c  */
-#line 1151 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1157 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); ;}
     break;
 
   case 380:
 
 /* Line 1455 of yacc.c  */
-#line 1152 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1158 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); ;}
     break;
 
   case 381:
 
 /* Line 1455 of yacc.c  */
-#line 1153 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1159 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); ;}
     break;
 
   case 382:
 
 /* Line 1455 of yacc.c  */
-#line 1154 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1160 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); ;}
     break;
 
   case 383:
 
 /* Line 1455 of yacc.c  */
-#line 1158 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1164 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 384:
 
 /* Line 1455 of yacc.c  */
-#line 1159 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1165 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 385:
 
 /* Line 1455 of yacc.c  */
-#line 1160 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1166 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 386:
 
 /* Line 1455 of yacc.c  */
-#line 1161 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1167 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 387:
 
 /* Line 1455 of yacc.c  */
-#line 1162 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1168 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 388:
 
 /* Line 1455 of yacc.c  */
-#line 1163 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1169 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 389:
 
 /* Line 1455 of yacc.c  */
-#line 1167 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1173 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 390:
 
 /* Line 1455 of yacc.c  */
-#line 1168 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1174 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 391:
 
 /* Line 1455 of yacc.c  */
-#line 1169 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1175 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 392:
 
 /* Line 1455 of yacc.c  */
-#line 1173 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1179 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 393:
 
 /* Line 1455 of yacc.c  */
-#line 1174 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1180 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 394:
 
 /* Line 1455 of yacc.c  */
-#line 1175 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1181 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); ;}
     break;
 
   case 395:
 
 /* Line 1455 of yacc.c  */
-#line 1176 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1182 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); ;}
     break;
 
   case 396:
 
 /* Line 1455 of yacc.c  */
-#line 1177 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1183 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 397:
 
 /* Line 1455 of yacc.c  */
-#line 1178 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1184 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); ;}
     break;
 
   case 398:
 
 /* Line 1455 of yacc.c  */
-#line 1179 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1185 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); ;}
     break;
 
   case 399:
 
 /* Line 1455 of yacc.c  */
-#line 1183 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1189 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 400:
 
 /* Line 1455 of yacc.c  */
-#line 1184 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1190 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
   case 401:
 
 /* Line 1455 of yacc.c  */
-#line 1188 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1194 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); ;}
     break;
 
   case 402:
 
 /* Line 1455 of yacc.c  */
-#line 1189 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1195 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 6291 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.cpp"
+#line 6297 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -6499,6 +6505,6 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 1192 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
+#line 1198 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53FullParser.y"
 
 

@@ -831,6 +831,7 @@ public:
 		TERNARY_OPERATION,
 		ARRAY_PAIR,
 		INCLUDE,  // (10) for now, include, include_once, require, require_once are all the same
+		CLOSURE,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -1108,7 +1109,7 @@ public:
 	 * @param list of statements to add to this list
 	 * This class will NOT own any of the statement pointers.
 	 */
-	pelet::StatementListClass* PushAll(pelet::StatementListClass* statementList);
+	pelet::StatementListClass* PushAll(const pelet::StatementListClass* statementList);
 
 	/**
 	 * @param statement to add to this list
@@ -1629,6 +1630,37 @@ class PELET_API TernaryOperationClass : public ExpressionClass {
 
 	void Copy(const pelet::TernaryOperationClass& src);
 
+};
+
+class ClosureExpressionClass : public ExpressionClass {
+
+public:
+
+	/**
+	 * parameters to the closure. This class will not own
+	 * the pointers.
+	 */
+	std::vector<pelet::VariableClass*> Parameters;
+
+	/**
+	 * variables "use" by the closure. This class will not own
+	 * the pointers.
+	 */
+	std::vector<pelet::VariableClass*> LexicalVars;
+
+	/**
+	 * statements declared by the closure.  This class will not
+	 * own any of the statement pointers.
+	 */
+	pelet::StatementListClass Statements;
+
+	ClosureExpressionClass(const pelet::ScopeClass& scope);
+
+	ClosureExpressionClass(const pelet::ClosureExpressionClass& src);
+
+	pelet::ClosureExpressionClass& operator=(const pelet::ClosureExpressionClass& src);
+
+	void Copy(const pelet::ClosureExpressionClass& src);
 };
 
 /**
