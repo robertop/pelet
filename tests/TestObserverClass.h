@@ -74,6 +74,7 @@ public:
 	std::vector<pelet::UnaryOperationClass*> UnaryOperations;
 	std::vector<pelet::UnaryVariableOperationClass*> UnaryVariableOperations;
 	std::vector<pelet::TernaryOperationClass*> TernaryOperations;
+	std::vector<pelet::IncludeExpressionClass*> IncludeExpressions;
 
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
 			const UnicodeString& comment, const int lineNumber);
@@ -135,7 +136,7 @@ public:
 
 	void StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables);
 
-
+	void ExpressionIncludeFound(pelet::IncludeExpressionClass* expr);
 };
 
 #endif

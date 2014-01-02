@@ -213,7 +213,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		pelet::TraitAliasClass* traitAlias;
 		pelet::TraitUseClass* traitUse;
 		pelet::TraitInsteadOfClass* traitInsteadOf;
-		pelet::IncludeStatementClass* include;
 		switch(type) {
 		case pelet::StatementClass::ASSIGNMENT:
 			break;
@@ -235,6 +234,13 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 			}
 			break;
 		case pelet::StatementClass::EXPRESSION:
+			if (Class) {
+				pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmt;
+				if (expr->ExpressionType == pelet::ExpressionClass::INCLUDE) {
+					pelet::IncludeExpressionClass* includeExpr = (pelet::IncludeExpressionClass*)expr;
+					Class->IncludeFound(includeExpr->File, includeExpr->LineNumber);	
+				}
+			}
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
 			if (Function) {
@@ -252,12 +258,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 										memberSymbol->GetReturnType(), memberSymbol->GetComment(), memberSymbol->StartingLineNumber);
 				Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
-			}
-			break;
-		case pelet::StatementClass::INCLUDE_STATEMENT:
-			if (Class) {
-				include = (pelet::IncludeStatementClass*) stmt;
-				Class->IncludeFound(include->File, include->LineNumber);
 			}
 			break;
 		case pelet::StatementClass::ASSIGNMENT_LIST:

@@ -1139,6 +1139,23 @@ TEST_FIXTURE(Parser54TestClass, IncludeLineNumber) {
 	CHECK_EQUAL(7, Observer.IncludeLineNumber[3]);
 }
 
+TEST_FIXTURE(Parser54TestClass, IncludeWithExpressionObserver) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"require __DIR__ . '/db_functions_0.php';\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.IncludeFile);
+	CHECK_VECTOR_SIZE(1, Observer.IncludeLineNumber);
+	CHECK_EQUAL(1, Observer.IncludeLineNumber[0]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.IncludeExpressions);
+	CHECK_EQUAL(pelet::ExpressionClass::BINARY_OPERATION, Observer.IncludeExpressions[0]->Expression->ExpressionType);
+
+	pelet::BinaryOperationClass* binary = (pelet::BinaryOperationClass*)Observer.IncludeExpressions[0]->Expression;
+	CHECK_SCALAR("/db_functions_0.php", binary->RightOperand);
+}
+
 TEST_FIXTURE(Parser54TestClass, NamespaceAlias) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetFunctionObserver(&Observer);

@@ -6544,9 +6544,9 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1346 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53ResourceParser.y"
-    { pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
-												  (yyval.statement) = includeStmt;
+    { pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
+												  (yyval.statement) = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												;}
     break;
@@ -6562,9 +6562,9 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1352 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53ResourceParser.y"
-    { pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
-												  (yyval.statement) = includeStmt;
+    { pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
+												  (yyval.statement) = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												;}
     break;
@@ -6587,9 +6587,9 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1359 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53ResourceParser.y"
-    { pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
-												  (yyval.statement) = includeStmt;
+    { pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
+												  (yyval.statement) = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												;}
     break;
@@ -6605,9 +6605,9 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1365 "c:\\Users\\Roberto\\Documents\\mvc-editor\\lib\\pelet\\src\\Php53ResourceParser.y"
-    { pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
-												  (yyval.statement) = includeStmt;
+    { pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), (yyvsp[(3) - (3)].statement), analyzer.GetLineNumber());
+												  (yyval.statement) = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												;}
     break;

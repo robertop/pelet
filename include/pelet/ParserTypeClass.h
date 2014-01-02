@@ -55,7 +55,7 @@ class NewInstanceExpressionClass;
 class GlobalVariableStatementClass;
 class StaticVariableStatementClass;
 class ArrayPairExpressionClass;
-
+class IncludeExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -455,6 +455,14 @@ public:
 	virtual void StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables) {}
 
 	/**
+	 * Override this method to get the pseudo-parse tree for an include expression.
+	 * 
+	 * @param the expression that was parsed.
+	 * @see pelet::IncludeExpressionClass
+	 */
+	virtual void ExpressionIncludeFound(pelet::IncludeExpressionClass* expr) {}
+
+	/**
 	 * this method will take ownership of the given statement pointers. after a call
 	 * to this method, this object will now own all of the pointers
 	 * and will delete the statements sometime later. This will usually be called by the
@@ -628,22 +636,19 @@ public:
 		NIL = 0,
 		CLASS_DECLARATION,
 		DEFINE_DECLARATION,
-		INCLUDE_STATEMENT,
 		NAMESPACE_DECLARATION,
-		NAMESPACE_USE, // 5
-		
-		METHOD_DECLARATION,
+		NAMESPACE_USE,
+		METHOD_DECLARATION,           // 5
 		PROPERTY_DECLARATION,
 		TRAIT_USE_DECLARATION,
 		TRAIT_ALIAS_DECLARATION,
-		TRAIT_INSTEADOF_DECLARATION,  // 10
-		FUNCTION_DECLARATION,
+		TRAIT_INSTEADOF_DECLARATION,  
+		FUNCTION_DECLARATION,         // 10
 		GLOBAL_VARIABLE_DECLARATION,
 		STATIC_VARIABLE_DECLARATION,
-		
 		ASSIGNMENT,
-		ASSIGNMENT_LIST,    //15
-		EXPRESSION
+		ASSIGNMENT_LIST,    
+		EXPRESSION                    // 15
 	};
 	
 	Types Type;
@@ -820,11 +825,12 @@ public:
 		VARIABLE,
 		NEW_CALL,
 		ASSIGNMENT_COMPOUND,
-		BINARY_OPERATION,
+		BINARY_OPERATION,           // 5
 		UNARY_OPERATION,
 		UNARY_VARIABLE_OPERATION,
 		TERNARY_OPERATION,
 		ARRAY_PAIR,
+		INCLUDE,  // (10) for now, include, include_once, require, require_once are all the same
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -1963,7 +1969,7 @@ public:
 	pelet::ClassMemberSymbolClass* SetModifier(pelet::SemanticValueClass* modifierValue);
 };
 
-class PELET_API IncludeStatementClass : public StatementClass {
+class PELET_API IncludeExpressionClass : public ExpressionClass {
 
 public: 
 
@@ -1978,10 +1984,26 @@ public:
 	 */
 	int LineNumber;
 
-	IncludeStatementClass();
+	/**
+	 * the expression that is given to the include/require statement
+	 */
+	pelet::ExpressionClass* Expression;
 
-	void Init(pelet::StatementClass* scalar, int lineNumber);
+	IncludeExpressionClass();
 
+	IncludeExpressionClass(const pelet::ScopeClass& scope);
+
+	IncludeExpressionClass(const pelet::IncludeExpressionClass& src);
+
+	pelet::IncludeExpressionClass& operator=(const pelet::IncludeExpressionClass& src);
+
+	void Copy(const pelet::IncludeExpressionClass& src);
+
+	void Init(pelet::StatementClass* stmt, int lineNumber);
+
+private:
+
+	pelet::ScopeClass Scope;
 };
 
 /**

@@ -1835,18 +1835,42 @@ void pelet::VariablePropertyClass::Copy(const pelet::VariablePropertyClass& src)
 	IsArrayAccess = src.IsArrayAccess;
 }
 
-pelet::IncludeStatementClass::IncludeStatementClass() 
-	: StatementClass(pelet::StatementClass::INCLUDE_STATEMENT)
-	, File() 
-	, LineNumber(0) {
-
+pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::ScopeClass& scope) 
+: ExpressionClass(scope)
+, File() 
+, Expression(NULL)
+, LineNumber(0) 
+, Scope(scope) {
+	ExpressionType = pelet::ExpressionClass::INCLUDE;
 }
 
-void pelet::IncludeStatementClass::Init(pelet::StatementClass* scalar, int lineNumber) {
+pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::IncludeExpressionClass& src) 
+: ExpressionClass(src.Scope)
+, File() 
+, Expression(NULL)
+, LineNumber(0) {
+	ExpressionType = pelet::ExpressionClass::INCLUDE;
+	Copy(src);
+}
+
+pelet::IncludeExpressionClass& pelet::IncludeExpressionClass::operator=(const pelet::IncludeExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::IncludeExpressionClass::Copy(const pelet::IncludeExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	File = src.File;
+	Expression = src.Expression;
+	LineNumber = src.LineNumber;
+}
+
+void pelet::IncludeExpressionClass::Init(pelet::StatementClass* stmt, int lineNumber) {
 	LineNumber = lineNumber;
-	if (scalar && pelet::StatementClass::EXPRESSION == scalar->Type) {
-		pelet::ExpressionClass* expr = (pelet::ExpressionClass*) scalar;
-		if (expr->ExpressionType == pelet::ExpressionClass::SCALAR) {
+	if (stmt && stmt->Type == pelet::StatementClass::EXPRESSION) {
+		pelet::ExpressionClass* expr = (pelet::ExpressionClass*) stmt;
+		Expression = expr;
+		if (expr && pelet::ExpressionClass::SCALAR == expr->ExpressionType) {
 			File = ((pelet::ScalarExpressionClass*)expr)->Value;
 		}
 	}

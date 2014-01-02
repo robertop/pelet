@@ -731,10 +731,8 @@ pelet::StatementListClass* pelet::FullParserObserverClass::StaticVariablesStatem
 
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::ExpressionClass* expr, const int lineNumber) {
-	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->Copy(*expr);
-	newExpr->Type = pelet::ExpressionClass::INCLUDE_STATEMENT;
-	newExpr->LineNumber = lineNumber;
+	pelet::IncludeExpressionClass* newExpr = new pelet::IncludeExpressionClass(Scope);
+	newExpr->Init(expr, lineNumber);
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -813,6 +811,9 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				case pelet::ExpressionClass::NEW_CALL:
 					ExpressionObserver->ExpressionNewInstanceFound((pelet::NewInstanceExpressionClass*)expr);
 					break;
+				case pelet::ExpressionClass::INCLUDE:
+					ExpressionObserver->ExpressionIncludeFound((pelet::IncludeExpressionClass*)expr);
+					break;
 				default:
 					break;
 				}
@@ -838,6 +839,10 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 													  var->Comment, var->LineNumber);
 					}
 				}
+				else if (expr->ExpressionType == pelet::ExpressionClass::INCLUDE) {
+					pelet::IncludeExpressionClass* includeExpr = (pelet::IncludeExpressionClass*)expr;
+					Class->IncludeFound(includeExpr->File, includeExpr->LineNumber);	
+				}
 			}
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
@@ -862,22 +867,6 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				if (Function) {
 					Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
-				}
-			}
-			break;
-		case pelet::StatementClass::INCLUDE_STATEMENT:
-			if (Class) {
-				pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmt;
-				if (pelet::ExpressionClass::SCALAR == expr->ExpressionType) {
-					pelet::ScalarExpressionClass* scalarExpr = (pelet::ScalarExpressionClass*)expr;
-					Class->IncludeFound(scalarExpr->Value, scalarExpr->LineNumber);
-				} else {
-
-					// not sure what to do for include statements
-					// with variables; ie. " include $file; "
-					// for now just propagate an empty name
-					UnicodeString empty;
-					Class->IncludeFound(empty, expr->LineNumber);
 				}
 			}
 			break;

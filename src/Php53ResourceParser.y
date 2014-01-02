@@ -1342,28 +1342,28 @@ internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')'			{ $$ = 0; }
 	|	T_EMPTY '(' variable ')'				{ $$ = 0; }
 	|	T_INCLUDE								{ observers.DoCaptureScalars = true; }
-		expr  									{ pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
-												  $$ = includeStmt;
+		expr  									{ pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), $3, analyzer.GetLineNumber());
+												  $$ = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												} 
 	|	T_INCLUDE_ONCE							{ observers.DoCaptureScalars = true; }
-		expr 									{ pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
-												  $$ = includeStmt;
+		expr 									{ pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), $3, analyzer.GetLineNumber());
+												  $$ = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												} 
 	|	T_EVAL '(' expr ')' 					{ $$ = 0; }
 	|	T_REQUIRE								{ observers.DoCaptureScalars = true; }
-		expr  									{ pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
-												  $$ = includeStmt;
+		expr  									{ pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), $3, analyzer.GetLineNumber());
+												  $$ = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												} 
 	|	T_REQUIRE_ONCE							{ observers.DoCaptureScalars = true; }
-		expr 									{ pelet::IncludeStatementClass* includeStmt;
-												  AST_INIT_ARGS(includeStmt, pelet::IncludeStatementClass, $3, analyzer.GetLineNumber());
-												  $$ = includeStmt;
+		expr 									{ pelet::IncludeExpressionClass* includeExpr;
+												  AST_INIT_CARGS(includeExpr, pelet::IncludeExpressionClass, observers.GetScope(), $3, analyzer.GetLineNumber());
+												  $$ = includeExpr;
 												  observers.DoCaptureScalars = false;  
 												}	 
 ;

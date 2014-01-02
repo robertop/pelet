@@ -55,6 +55,23 @@
 #define AST_INIT_ARGS(dest, clazz, ...) dest = new clazz; dest->Init(__VA_ARGS__); observers.Adopt(dest);
 
 /**
+ * This macro will create the an instance of the given class on the heap
+ * and will assign it to dest. Also, it will set the pointer to be owner
+ * by the ResourceParserObserver instance, that way memory will be
+ * cleaned up properly. Additionally, the constructor of clazz will take
+ * 1 argument, Additionally, the macro will call the new instance's
+ * Init() method, giving all of the parameters given. For example a macro call
+ * 
+ *    AST_INIT_CARGS($$, UNICODE_STRING_SIMPLE("name"), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("clazz"))
+ *
+ * will create a new pelet::QualifiedNameClass with "name" as a constructor argument;
+ * and will call the Init method with a single parameter "clazz"
+ *
+ * The calling code must contain a variable observers of type pelet::ResourceParserObserverClass
+ */
+#define AST_INIT_CARGS(dest, clazz, cArg, ...) dest = new clazz(cArg); dest->Init(__VA_ARGS__); observers.Adopt(dest);
+
+/**
  * This macro *initializes* stmtListDest with all of the statements in stmtListSrc.
  *
  * note that these are "shallow" copies; it assumes all pointers are owned by pelet::ResourceParserObserverClass

@@ -240,3 +240,9 @@ void TestObserverClass::StatementStaticVariablesFound(pelet::StaticVariableState
 		VariableExpressions.push_back(variables->Variables[i]);
 	}
 }
+
+void TestObserverClass::ExpressionIncludeFound(pelet::IncludeExpressionClass *expr) {
+	IncludeFile.push_back(expr->File);
+	IncludeLineNumber.push_back(expr->LineNumber);
+	IncludeExpressions.push_back(expr);
+}
