@@ -45,6 +45,7 @@ class QualifiedNameClass;
 class ExpressionClass;
 class VariableClass;
 class AssignmentExpressionClass;
+class AssignmentListExpressionClass;
 class AssignmentCompoundExpressionClass;
 class BinaryOperationClass;
 class UnaryOperationClass;
@@ -56,6 +57,7 @@ class GlobalVariableStatementClass;
 class StaticVariableStatementClass;
 class ArrayPairExpressionClass;
 class IncludeExpressionClass;
+class ClosureExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -374,6 +376,14 @@ public:
 	virtual void ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression) { }
 
 	/**
+	 * Override this method to get the pseudo-parse tree for a single assignment list expression.(list($x, $z) = $y)
+	 * 
+	 * @param expression the assignment list expression that was parsed.
+	 * @see pelet::AssignmentListExpressionClass
+	 */
+	virtual void ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression) { }
+
+	/**
 	 * Override this method to get the pseudo-parse tree for a single compound assignment expression ($x += $y).
 	 * 
 	 * @param expression the assignment expression that was parsed.
@@ -461,6 +471,16 @@ public:
 	 * @see pelet::IncludeExpressionClass
 	 */
 	virtual void ExpressionIncludeFound(pelet::IncludeExpressionClass* expr) {}
+
+	/**
+	 * Override this method to get the pseudo-parse tree for closure expression.
+	 * The closure expression contains the list of expressions that were inside the
+	 * closure.
+	 * 
+	 * @param the expression that was parsed.
+	 * @see pelet::ClosureExpressionClass
+	 */
+	virtual void ExpressionClosureFound(pelet::ClosureExpressionClass* expr) {}
 
 	/**
 	 * this method will take ownership of the given statement pointers. after a call
@@ -646,9 +666,7 @@ public:
 		FUNCTION_DECLARATION,         // 10
 		GLOBAL_VARIABLE_DECLARATION,
 		STATIC_VARIABLE_DECLARATION,
-		ASSIGNMENT,
-		ASSIGNMENT_LIST,    
-		EXPRESSION                    // 15
+		EXPRESSION
 	};
 	
 	Types Type;
@@ -768,6 +786,8 @@ class PELET_API VariablePropertyClass {
 	 * for example:  the property $users[$name] 
 	 * will have ArrayAccess = VariableClass instance.
 	 * This class will NOT own this pointer.
+	 * note that his may be NULL for empty array access 
+	 * ie. $arr[] = 1;
 	 */
 	pelet::ExpressionClass* ArrayAccess;
 
@@ -832,6 +852,8 @@ public:
 		ARRAY_PAIR,
 		INCLUDE,  // (10) for now, include, include_once, require, require_once are all the same
 		CLOSURE,
+		ASSIGNMENT,
+		ASSIGNMENT_LIST,
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 

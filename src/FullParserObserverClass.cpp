@@ -773,17 +773,6 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 		pelet::StatementClass::Types type = statements->TypeAt(i);
 		pelet::StatementClass* stmt = statements->At(i);
 		switch(type) {
-		case pelet::StatementClass::ASSIGNMENT:
-			if (ExpressionObserver) {
-				ExpressionObserver->ExpressionAssignmentFound((pelet::AssignmentExpressionClass*)stmt);
-			}
-			if (Variable) {
-				pelet::AssignmentExpressionClass* expr = (pelet::AssignmentExpressionClass*)stmt;
-				Variable->VariableFound(expr->Destination.Scope.NamespaceName, 
-					expr->Destination.Scope.ClassName, expr->Destination.Scope.MethodName, 
-					expr->Destination, expr->Expression, expr->Destination.Comment);
-			}
-			break;
 		case pelet::StatementClass::CLASS_DECLARATION:
 			if (Class || Member) {
 				pelet::ClassSymbolClass* classSymbol = (pelet::ClassSymbolClass*) stmt;
@@ -803,17 +792,33 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		case pelet::StatementClass::EXPRESSION:
+			if (Variable) {
+				pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmt;
+				if (pelet::ExpressionClass::ASSIGNMENT == expr->ExpressionType) {
+					pelet::AssignmentExpressionClass* expr = (pelet::AssignmentExpressionClass*)stmt;
+					Variable->VariableFound(expr->Destination.Scope.NamespaceName, 
+						expr->Destination.Scope.ClassName, expr->Destination.Scope.MethodName, 
+						expr->Destination, expr->Expression, expr->Destination.Comment);
+				}
+				else if (pelet::ExpressionClass::ASSIGNMENT_LIST == expr->ExpressionType) {
+					pelet::AssignmentListExpressionClass* expr = (pelet::AssignmentListExpressionClass*)stmt;
+					for (size_t i = 0; i < expr->Destinations.size(); ++i) {
+						Variable->VariableFound(expr->Scope.NamespaceName, 
+							expr->Scope.ClassName, expr->Scope.MethodName, 
+							expr->Destinations[i], expr->Expression, expr->Destinations[i].Comment);
+					}
+				}
+			}
+
 			if (ExpressionObserver) {
 				pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmt;
 				switch (expr->ExpressionType) {
 				case pelet::ExpressionClass::ASSIGNMENT:
 					assignmentExpr = (pelet::AssignmentExpressionClass*)expr;
 					ExpressionObserver->ExpressionAssignmentFound(assignmentExpr);
-					if (Variable) {
-						Variable->VariableFound(assignmentExpr->Scope.NamespaceName, 
-							assignmentExpr->Scope.ClassName, assignmentExpr->Scope.MethodName, 
-							assignmentExpr->Destination, assignmentExpr->Expression, assignmentExpr->Destination.Comment);
-					}
+					break;
+				case pelet::ExpressionClass::ASSIGNMENT_LIST:
+					ExpressionObserver->ExpressionAssignmentListFound((pelet::AssignmentListExpressionClass*)expr);
 					break;
 				case pelet::ExpressionClass::ASSIGNMENT_COMPOUND:
 					ExpressionObserver->ExpressionAssignmentCompoundFound((pelet::AssignmentCompoundExpressionClass*)expr);
@@ -841,6 +846,9 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					break;
 				case pelet::ExpressionClass::INCLUDE:
 					ExpressionObserver->ExpressionIncludeFound((pelet::IncludeExpressionClass*)expr);
+					break;
+				case pelet::ExpressionClass::CLOSURE:
+					ExpressionObserver->ExpressionClosureFound((pelet::ClosureExpressionClass*)expr);
 					break;
 				default:
 					break;
@@ -895,16 +903,6 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				if (Function) {
 					Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
-				}
-			}
-			break;
-		case pelet::StatementClass::ASSIGNMENT_LIST:
-			if (Variable) {
-				pelet::AssignmentListExpressionClass* expr = (pelet::AssignmentListExpressionClass*)stmt;
-				for (size_t i = 0; i < expr->Destinations.size(); ++i) {
-					Variable->VariableFound(expr->Scope.NamespaceName, 
-						expr->Scope.ClassName, expr->Scope.MethodName, 
-						expr->Destinations[i], expr->Expression, expr->Destinations[i].Comment);
 				}
 			}
 			break;
@@ -1235,7 +1233,6 @@ void pelet::FullParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameCl
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeAsAssignmentExpression(pelet::VariableClass* variable) {
 	pelet::AssignmentExpressionClass* newExpr =  new pelet::AssignmentExpressionClass(Scope);
 	newExpr->Destination.Copy(*variable);
-	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
 	
 	pelet::ExpressionClass* assignedExpr = new pelet::ExpressionClass(variable->Scope);
 	assignedExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
@@ -1476,13 +1473,16 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 	for (size_t i = 0; i < classStatements->Size(); ++i) {
 		bool isThisAssignment = false;
 		pelet::AssignmentExpressionClass* expr = NULL;
-		if (pelet::StatementClass::ASSIGNMENT == classStatements->TypeAt(i)) {
-			expr = (pelet::AssignmentExpressionClass*)classStatements->At(i);
-			
-			// the chain list must have 2 items: "$this" and the property name
-			if (expr->Destination.ChainList.size() == 2 && expr->Destination.ChainList[0].Name == UNICODE_STRING_SIMPLE("$this") 
-					&& !expr->Destination.ChainList[0].IsFunction && !expr->Destination.ChainList[1].IsFunction) {
-				isThisAssignment = true;
+		if (pelet::StatementClass::EXPRESSION == classStatements->TypeAt(i)) {
+			pelet::ExpressionClass* baseExpr = (pelet::ExpressionClass*)classStatements->At(i);
+			if (pelet::ExpressionClass::ASSIGNMENT == baseExpr->ExpressionType) {
+				expr = (pelet::AssignmentExpressionClass*)baseExpr;
+				
+				// the chain list must have 2 items: "$this" and the property name
+				if (expr->Destination.ChainList.size() == 2 && expr->Destination.ChainList[0].Name == UNICODE_STRING_SIMPLE("$this") 
+						&& !expr->Destination.ChainList[0].IsFunction && !expr->Destination.ChainList[1].IsFunction) {
+					isThisAssignment = true;
+				}
 			}
 		}
 		if (isThisAssignment) {

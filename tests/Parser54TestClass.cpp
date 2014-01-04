@@ -1316,7 +1316,8 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithBinaryOperators) {
 	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
 	
 	pelet::AssignmentExpressionClass* expr = Observer.AssignmentExpressions[0];
-	
+	CHECK_EQUAL(pelet::ExpressionClass::ASSIGNMENT, expr->ExpressionType);
+
 	CHECK_VECTOR_SIZE(1, expr->Destination.ChainList);
 	CHECK_UNISTR_EQUALS("$result", expr->Destination.ChainList[0].Name);
 
@@ -1605,6 +1606,22 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithClosure) {
 	pelet::StatementClass* stmt = closure->Statements.At(0);
 	pelet::ExpressionClass* expr = (pelet::ExpressionClass*) stmt;
 	CHECK_EQUAL(pelet::ExpressionClass::BINARY_OPERATION, expr->ExpressionType);
+}
+
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithAssignmentList) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"list($result, $value) = calculate(); \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentListExpressions);
+	
+	pelet::AssignmentListExpressionClass* expr = Observer.AssignmentListExpressions[0];
+	CHECK_EQUAL(pelet::ExpressionClass::ASSIGNMENT_LIST, expr->ExpressionType);
+
+	CHECK_VECTOR_SIZE(2, expr->Destinations);
+	CHECK_VARIABLE("$result", (&(expr->Destinations[0])));
+	CHECK_VARIABLE("$value", (&(expr->Destinations[1])));
 }
 
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnTrueOnValidFile) {

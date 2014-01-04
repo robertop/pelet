@@ -246,3 +246,7 @@ void TestObserverClass::ExpressionIncludeFound(pelet::IncludeExpressionClass *ex
 	IncludeLineNumber.push_back(expr->LineNumber);
 	IncludeExpressions.push_back(expr);
 }
+
+void TestObserverClass::ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression) {
+	AssignmentListExpressions.push_back(expression);
+}

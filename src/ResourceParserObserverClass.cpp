@@ -214,8 +214,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		pelet::TraitUseClass* traitUse;
 		pelet::TraitInsteadOfClass* traitInsteadOf;
 		switch(type) {
-		case pelet::StatementClass::ASSIGNMENT:
-			break;
 		case pelet::StatementClass::CLASS_DECLARATION:
 			if (Class) {
 				classSymbol = (pelet::ClassSymbolClass*) stmt;
@@ -259,8 +257,6 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}
-			break;
-		case pelet::StatementClass::ASSIGNMENT_LIST:
 			break;
 		case pelet::StatementClass::METHOD_DECLARATION:
 			if (Member) {

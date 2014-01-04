@@ -1444,14 +1444,16 @@ pelet::AssignmentExpressionClass::AssignmentExpressionClass(const pelet::ScopeCl
 	: ExpressionClass(scope)
 	, Destination(scope) 
 	, Expression(NULL) {
-	Type = pelet::StatementClass::ASSIGNMENT;
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT;
 }
 
 pelet::AssignmentExpressionClass::AssignmentExpressionClass(const pelet::AssignmentExpressionClass& src)
 : ExpressionClass(src.Scope)
 , Destination(src.Scope)
 , Expression(NULL) {
-	Type = pelet::StatementClass::ASSIGNMENT;
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT;
 	Copy(src);
 }
 
@@ -1469,13 +1471,15 @@ void pelet::AssignmentExpressionClass::Copy(const pelet::AssignmentExpressionCla
 pelet::AssignmentListExpressionClass::AssignmentListExpressionClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
 , Destinations() {
-	Type = pelet::StatementClass::ASSIGNMENT_LIST;
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT_LIST;
 }
 
 pelet::AssignmentListExpressionClass::AssignmentListExpressionClass(const pelet::AssignmentListExpressionClass& src)
 : ExpressionClass(src.Scope)
 , Destinations() {
-	Type = pelet::StatementClass::ASSIGNMENT_LIST;
+	Type = pelet::StatementClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::ASSIGNMENT_LIST;
 	Copy(src);
 }
 
