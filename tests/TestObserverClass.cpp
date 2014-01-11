@@ -250,3 +250,7 @@ void TestObserverClass::ExpressionIncludeFound(pelet::IncludeExpressionClass *ex
 void TestObserverClass::ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression) {
 	AssignmentListExpressions.push_back(expression);
 }
+
+void TestObserverClass::ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) {
+	NewInstanceExpressions.push_back(expression);
+}

@@ -140,6 +140,8 @@ public:
 	void ExpressionIncludeFound(pelet::IncludeExpressionClass* expr);
 
 	void ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression);
+
+	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression);
 };
 
 #endif

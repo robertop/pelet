@@ -1216,6 +1216,31 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithNewInstance) {
 	CHECK_VARIABLE("$name", newExpr->CallArguments[1]);	
 }
 
+TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithNewInstanceImportedAlias) { 
+	
+	// test that we resolve the name into a fully qualified name
+	// based on the imported namespaces
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace Util; \n"
+		"use Db\\Adapter\\Mysql as MysqlDb; \n"
+		"new MysqlDb(); \n"
+		"new QueryClass(); \n"
+		"new Db\\ResultClass(); \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(3, Observer.NewInstanceExpressions);
+	
+	pelet::NewInstanceExpressionClass* newExpr = PCEN(Observer.NewInstanceExpressions[0]);
+	CHECK_UNISTR_EQUALS("\\Db\\Adapter\\Mysql", newExpr->ClassName);
+
+	newExpr = PCEN(Observer.NewInstanceExpressions[1]);
+	CHECK_UNISTR_EQUALS("\\Util\\QueryClass", newExpr->ClassName);
+	
+	newExpr = PCEN(Observer.NewInstanceExpressions[2]);
+	CHECK_UNISTR_EQUALS("\\Util\\Db\\ResultClass", newExpr->ClassName);
+}
+
 TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithArray) { 
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(
