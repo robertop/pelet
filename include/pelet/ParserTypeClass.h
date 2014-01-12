@@ -873,6 +873,12 @@ public:
 	 */
 	int LineNumber;
 
+	/**
+	 * The character position in the source where the expression was located. 
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	int Pos;
+
 	ExpressionClass(const pelet::ScopeClass& scope);
 
 	void Copy(const ExpressionClass& src);

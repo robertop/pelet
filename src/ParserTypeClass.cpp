@@ -1213,7 +1213,8 @@ pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)
 : StatementClass(pelet::StatementClass::EXPRESSION)
 , Scope(scope)
 , ExpressionType(SCALAR)
-, LineNumber(0) {
+, LineNumber(0) 
+, Pos(0) {
 
 }
 
@@ -1222,6 +1223,7 @@ void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
 	ExpressionType = src.ExpressionType;
 	Type = src.Type;
 	LineNumber = src.LineNumber;
+	Pos = src.Pos;
 }
 
 pelet::ScalarExpressionClass::ScalarExpressionClass()

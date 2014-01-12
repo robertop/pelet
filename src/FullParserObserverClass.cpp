@@ -72,6 +72,8 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 			variable->AppendToChain(paramName);
 			variable->PhpDocType = paramType;
 			if (!paramType.isEmpty()) {
+
+				// TODO: set correct line/pos
 				pelet::NewInstanceExpressionClass* newCallExpr = new pelet::NewInstanceExpressionClass(Scope);
 				AllAstItems.push_back(newCallExpr);
 
@@ -243,6 +245,8 @@ void pelet::FullGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::FullP
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::AssignmentExpressionFromExpressionFound(pelet::VariableClass* variable, pelet::ExpressionClass* expression) {
 	pelet::AssignmentExpressionClass* newExpr =  new pelet::AssignmentExpressionClass(Scope);
+	newExpr->LineNumber = variable->LineNumber;
+	newExpr->Pos = variable->Pos;
 	newExpr->Destination = *variable;
 	newExpr->Expression = expression;
 	AllAstItems.push_back(newExpr);
@@ -252,10 +256,14 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::AssignmentExpressionFrom
 pelet::ExpressionClass* pelet::FullParserObserverClass::AssignmentExpressionFromNewFound(pelet::VariableClass* variable, pelet::QualifiedNameClass* className, 
 																						pelet::StatementListClass* callArguments) {
 	pelet::NewInstanceExpressionClass* classExpr =  new pelet::NewInstanceExpressionClass(Scope);
+	classExpr->LineNumber = variable->LineNumber;
+	classExpr->Pos = variable->Pos;
 	classExpr->ClassName = Scope.FullyQualify(*className, DeclaredNamespace);
 	classExpr->AddStatementsAsArguments(callArguments);
 
 	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
+	newExpr->LineNumber = variable->LineNumber;
+	newExpr->Pos = variable->Pos;
 	newExpr->Destination = *variable;
 	newExpr->Expression = classExpr;
 
@@ -266,6 +274,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::AssignmentExpressionFrom
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::AssignmentExpressionFromVariableFound(pelet::VariableClass* variable, pelet::VariableClass* srcVariable) {
 	pelet::AssignmentExpressionClass* newExpr = new pelet::AssignmentExpressionClass(Scope);
+	newExpr->LineNumber = variable->LineNumber;
+	newExpr->Pos = variable->Pos;
 	newExpr->Destination = *variable;
 	newExpr->Expression = srcVariable;
 
@@ -436,6 +446,14 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ConstantMake(pelet::S
 pelet::StatementListClass* pelet::FullParserObserverClass::ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value) {
 	pelet::StatementListClass* stmtList = StatementListMake();
 	pelet::ArrayPairExpressionClass* pair = new pelet::ArrayPairExpressionClass(Scope);
+	if (key) {
+		pair->LineNumber = key->LineNumber;
+		pair->Pos = key->Pos;
+	}
+	else if (value) {
+		pair->LineNumber = value->LineNumber;
+		pair->Pos = value->Pos;
+	}
 	pair->Key = key;
 	pair->Value = value;
 	stmtList->Push(pair);
@@ -452,6 +470,10 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeArray(pele
 		pelet::StatementClass::Types type =  pairStatements->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* pairExpr = (pelet::ExpressionClass*) pairStatements->At(i);
+			if (!newExpr->LineNumber) {
+				newExpr->LineNumber = pairExpr->LineNumber;
+				newExpr->Pos = pairExpr->Pos;
+			}
 			if (pelet::ExpressionClass::ARRAY_PAIR == pairExpr->ExpressionType) {
 				pelet::ArrayPairExpressionClass* pair = (pelet::ArrayPairExpressionClass*) pairStatements->At(i);
 				newExpr->ArrayPairs.push_back(pair);
@@ -469,6 +491,10 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeAssignment
 		pelet::StatementClass::Types type =  assignmentList->TypeAt(i);
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* expr = (pelet::ExpressionClass*)assignmentList->At(i);
+			if (!newExpr->LineNumber) {
+				newExpr->LineNumber = expr->LineNumber;
+				newExpr->Pos = expr->Pos;
+			}
 			if (expr->ExpressionType == pelet::ExpressionClass::VARIABLE) {
 				pelet::VariableClass* singleVariable = (pelet::VariableClass*) expr;
 				if (singleVariable->ChainList.size() <= 1) {
@@ -487,6 +513,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClassConst
 	UnicodeString constantNameString;
 	if (constantName) {
 		constantNameString = constantName->Lexeme;
+		newExpr->LineNumber = constantName->LineNumber;
+		newExpr->Pos = constantName->Pos;
 	}
 	newExpr->ToStaticFunctionCall(fullClassName, constantNameString, false);
 	AllAstItems.push_back(newExpr);
@@ -506,6 +534,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCall(p
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			varCallArguments.push_back(singleExpr);
+			newVar->Pos = singleExpr->Pos;
 		}
 	}
 	
@@ -525,6 +554,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			varCallArguments.push_back(singleExpr);
+			newVar->LineNumber = singleExpr->LineNumber;
+			newVar->Pos = singleExpr->Pos;
 		}
 	}
 	UnicodeString fullFunctionName = functionName->ToSignature() ;
@@ -541,6 +572,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			varCallArguments.push_back(singleExpr);
+			newVar->LineNumber = singleExpr->LineNumber;
+			newVar->Pos = singleExpr->Pos;
 		}
 	}
 	UnicodeString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
@@ -553,6 +586,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeGlobalVari
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (value) {
 		newVar->AppendToChain(value->Lexeme);
+		newVar->LineNumber = value->LineNumber;
+		newVar->Pos = value->Pos;
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -561,6 +596,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeGlobalVari
 pelet::NewInstanceExpressionClass* pelet::FullParserObserverClass::ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className, 
 																								 pelet::StatementListClass* callArguments) {
 	pelet::NewInstanceExpressionClass* newExpr = new pelet::NewInstanceExpressionClass(Scope);
+	
+	// TODO: set the correct line/pos 
 	newExpr->ClassName = Scope.FullyQualify(*className, DeclaredNamespace);
 	newExpr->AddStatementsAsArguments(callArguments);
 	AllAstItems.push_back(newExpr);
@@ -578,6 +615,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::NewInstanceAppendToChain
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeObject(pelet::ExpressionClass* srcExpression) {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
+	newExpr->LineNumber = srcExpression->LineNumber;
+	newExpr->Pos = srcExpression->Pos;
 	newExpr->Copy(*srcExpression);
 	newExpr->ExpressionType = pelet::ExpressionClass::VARIABLE;
 	AllAstItems.push_back(newExpr);
@@ -586,6 +625,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeObject(pel
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pelet::ExpressionClass* srcExpression) {
 	pelet::ScalarExpressionClass* newExpr = new pelet::ScalarExpressionClass(Scope);
+	newExpr->LineNumber = srcExpression->LineNumber;
+	newExpr->Pos = srcExpression->Pos;
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
@@ -593,6 +634,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pel
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pelet::SemanticValueClass* srcValue) {
 	pelet::ScalarExpressionClass* newExpr = new pelet::ScalarExpressionClass(Scope);
 	if (srcValue) {
+		newExpr->LineNumber = srcValue->LineNumber;
+		newExpr->Pos = srcValue->Pos;
 		newExpr->Value = srcValue->Lexeme;
 	}
 	AllAstItems.push_back(newExpr);
@@ -601,6 +644,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pel
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName) {
 	pelet::ScalarExpressionClass* newExpr = new pelet::ScalarExpressionClass(Scope);
+
+	// TODO: set line/pos
 	newExpr->Value = constantName->ToSignature();
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -609,6 +654,9 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFrom
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
 		pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
+
+	// TODO: fill in pos
+	newVar->LineNumber = lineNumber;
 	std::vector<pelet::ExpressionClass*> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
@@ -630,6 +678,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeStaticVari
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (nameValue) {
 		newVar->AppendToChain(nameValue->Lexeme);
+		newVar->LineNumber = nameValue->LineNumber;
+		newVar->Pos = nameValue->Pos;
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -645,6 +695,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendArrayOffset(
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionAssignmentCompoundOperation(int operatorToken, pelet::VariableClass* leftOperand, pelet::ExpressionClass* rightOperand) {
 	pelet::AssignmentCompoundExpressionClass* operation = new pelet::AssignmentCompoundExpressionClass(Scope);
+	operation->LineNumber = leftOperand->LineNumber;
+	operation->Pos = leftOperand->Pos;
 	operation->Operator = operatorToken;
 	operation->Variable = *leftOperand;
 	operation->RightOperand = rightOperand;
@@ -655,6 +707,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionAssignmentComp
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionBinaryOperation(int operatorToken, pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* rightOperand) {
 	pelet::BinaryOperationClass* operation = new pelet::BinaryOperationClass(Scope);
+	operation->LineNumber = leftOperand->LineNumber;
+	operation->Pos = leftOperand->Pos;
 	operation->Operator = operatorToken;
 	operation->LeftOperand = leftOperand;
 	operation->RightOperand = rightOperand;
@@ -665,6 +719,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionBinaryOperatio
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionUnaryOperation(int operatorToken, pelet::ExpressionClass* operand) {
 	pelet::UnaryOperationClass* operation = new pelet::UnaryOperationClass(Scope);
+	operation->LineNumber = operand->LineNumber;
+	operation->Pos = operand->Pos;
 	operation->Operator = operatorToken;
 	operation->Operand = operand;
 
@@ -674,6 +730,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionUnaryOperation
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionUnaryVariableOperation(int operatorToken, pelet::VariableClass* operand) {
 	pelet::UnaryVariableOperationClass* operation = new pelet::UnaryVariableOperationClass(Scope);
+	operation->LineNumber = operand->LineNumber;
+	operation->Pos = operand->Pos;
 	operation->Operator = operatorToken;
 	operation->Variable.Copy(*operand);
 
@@ -683,6 +741,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionUnaryVariableO
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionTernaryOperation(pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* middleOperand, pelet::ExpressionClass* rightOperand) {
 	pelet::TernaryOperationClass* operation = new pelet::TernaryOperationClass(Scope);
+	operation->LineNumber = leftOperand->LineNumber;
+	operation->Pos = leftOperand->Pos;
 	operation->Expression1 = leftOperand;
 	operation->Expression2 = middleOperand;
 	if (rightOperand) {
@@ -710,6 +770,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
 			
 			pelet::VariableClass* var = new pelet::VariableClass(Scope);
 			AllAstItems.push_back(var);
+
+			// TODO: fill in line number, pos
 			var->AppendToChain(param);
 			var->PhpDocType = type;
 			closure->Parameters.push_back(var);
@@ -718,6 +780,10 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
 		for (size_t i = 0; i < lexicalVars->Size(); ++i) {
 			if (pelet::StatementClass::EXPRESSION == lexicalVars->TypeAt(i)) {
 				pelet::ExpressionClass* expr = (pelet::ExpressionClass*) lexicalVars->At(i);
+				if (!closure->LineNumber) {
+					closure->LineNumber = expr->LineNumber;
+					closure->Pos = expr->Pos;
+				}
 				if (pelet::ExpressionClass::VARIABLE == expr->ExpressionType) {
 					closure->LexicalVars.push_back((pelet::VariableClass*)lexicalVars->At(i));
 				}
@@ -760,6 +826,8 @@ pelet::StatementListClass* pelet::FullParserObserverClass::StaticVariablesStatem
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::ExpressionClass* expr, const int lineNumber) {
 	pelet::IncludeExpressionClass* newExpr = new pelet::IncludeExpressionClass(Scope);
+	newExpr->LineNumber = expr->LineNumber;
+	newExpr->Pos = expr->Pos;
 	newExpr->Init(expr, lineNumber);
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -1232,9 +1300,13 @@ void pelet::FullParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameCl
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeAsAssignmentExpression(pelet::VariableClass* variable) {
 	pelet::AssignmentExpressionClass* newExpr =  new pelet::AssignmentExpressionClass(Scope);
+	newExpr->LineNumber = variable->LineNumber;
+	newExpr->Pos = variable->Pos;
 	newExpr->Destination.Copy(*variable);
 	
 	pelet::ExpressionClass* assignedExpr = new pelet::ExpressionClass(variable->Scope);
+	assignedExpr->LineNumber = variable->LineNumber;
+	assignedExpr->Pos = variable->Pos;
 	assignedExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
 
 	newExpr->Expression = assignedExpr;
@@ -1370,6 +1442,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeAndAppendFunct
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			varCallArguments.push_back(singleExpr);
+			newVar->LineNumber = singleExpr->LineNumber;
+			newVar->Pos = singleExpr->Pos;
 		}
 	}
 	newVar->AppendToChain(UNICODE_STRING_SIMPLE(""), varCallArguments, isMethod, false);
@@ -1434,6 +1508,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableStart(pelet::Seman
 pelet::VariableClass* pelet::FullParserObserverClass::VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (className && memberName) {
+		newVar->LineNumber = memberName->LineNumber;
+		newVar->Pos = memberName->Pos;
 		newVar->AppendToChain(Scope.FullyQualify(*className, DeclaredNamespace));
 		
 		// dont handle variable static members for now ClassName::${$varName}
