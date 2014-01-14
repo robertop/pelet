@@ -87,6 +87,7 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 			} 
 			else {
 				pelet::ExpressionClass* unknownExpression = new pelet::ExpressionClass(Scope);
+				AllAstItems.push_back(unknownExpression);
 				unknownExpression->ExpressionType = pelet::ExpressionClass::UNKNOWN;
 				if (Variable) {
 					Variable->VariableFound(currentNamespaceName, currentClassName, currentMethodName, *variable, unknownExpression, comment);
