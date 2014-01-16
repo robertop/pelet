@@ -1501,6 +1501,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableStart(pelet::Seman
 		newVar->AppendToChain(variableValue->Lexeme);
 		newVar->Comment = variableValue->Comment;
 		newVar->LineNumber = variableValue->LineNumber;
+		newVar->Pos = variableValue->Pos;
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;
