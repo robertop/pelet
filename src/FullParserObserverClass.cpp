@@ -1247,7 +1247,7 @@ pelet::SemanticValueClass* pelet::FullParserObserverClass::SemanticValueNil() {
 }
 
 pelet::StatementListClass* pelet::FullParserObserverClass::StatementListAppend(pelet::StatementListClass* statementList, pelet::StatementClass* statement) {
-	statementList->Push(statement);
+	statementList->PushFront(statement);
 	return statementList;
 }
 
