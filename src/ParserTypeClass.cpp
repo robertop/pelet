@@ -1796,6 +1796,7 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 		return fullyQualified;
 	}
 
+
 	// does name use an alias?
 	UnicodeString alias;
 	UnicodeString qualified = name.ToSignature();
@@ -1805,6 +1806,13 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 	}
 	else {
 		alias.setTo(qualified);
+	}
+	if (alias == UNICODE_STRING_SIMPLE("parent") ||
+		alias == UNICODE_STRING_SIMPLE("static") ||
+		alias == UNICODE_STRING_SIMPLE("self")) {
+
+		// these keywords can be used as class names
+		return alias;
 	}
 	UnicodeString fullNamespace = ResolveAlias(alias);
 	if (!fullNamespace.isEmpty() && index >= 0) {
