@@ -327,6 +327,11 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 				}
 			}
 			break;
+		case pelet::StatementClass::GLOBAL_VARIABLE_DECLARATION:
+		case pelet::StatementClass::STATIC_VARIABLE_DECLARATION:
+		
+			// when parsing resources, we skip over any and all variables
+			break;
 		}
 	}
 }

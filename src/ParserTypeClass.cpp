@@ -184,6 +184,7 @@ static UChar* ParametersFromSignature(const pelet::ScopeClass& scope, const pele
 		}
 		paramsNext = u_strtok_r(NULL, commaDelims, &commaSaveState);
 	}
+	delete[] paramsBuffer;
 	return next;
 }
 
@@ -1874,8 +1875,8 @@ void pelet::VariablePropertyClass::Copy(const pelet::VariablePropertyClass& src)
 pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::ScopeClass& scope) 
 : ExpressionClass(scope)
 , File() 
-, Expression(NULL)
 , LineNumber(0) 
+, Expression(NULL)
 , Scope(scope) {
 	ExpressionType = pelet::ExpressionClass::INCLUDE;
 }
@@ -1883,8 +1884,9 @@ pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::ScopeClass& s
 pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::IncludeExpressionClass& src) 
 : ExpressionClass(src.Scope)
 , File() 
-, Expression(NULL)
-, LineNumber(0) {
+, LineNumber(0) 
+, Expression(NULL) 
+, Scope(src.Scope) {
 	ExpressionType = pelet::ExpressionClass::INCLUDE;
 	Copy(src);
 }

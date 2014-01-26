@@ -1060,6 +1060,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				for (size_t i = 0; i < globalStmt->Variables.size(); ++i) {
 					pelet::VariableClass* globalVar = globalStmt->Variables[i];
 					pelet::ExpressionClass* unknownExpr = new pelet::ExpressionClass(globalVar->Scope);
+					AllAstItems.push_back(unknownExpr);
 					unknownExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
 					Variable->VariableFound(globalVar->Scope.NamespaceName, 
 						globalVar->Scope.ClassName, globalVar->Scope.MethodName, 
@@ -1078,6 +1079,7 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					pelet::VariableClass* staticVar = staticStmt->Variables[i];
 					pelet::ExpressionClass* unknownExpr = new pelet::ExpressionClass(staticVar->Scope);
 					unknownExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
+					AllAstItems.push_back(unknownExpr);
 					Variable->VariableFound(staticVar->Scope.NamespaceName, 
 						staticVar->Scope.ClassName, staticVar->Scope.MethodName, 
 						*staticVar, unknownExpr, staticVar->Comment);
