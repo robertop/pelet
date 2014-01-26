@@ -69,6 +69,11 @@ void pelet::FullParserObserverClass::NotifyVariablesFromParameterList(pelet::Par
 
 			parameters.Param(i, paramName, paramType);
 			
+			// remove the reference operator if it exists
+			if (!paramName.isEmpty() && paramName[0] == '&') {
+				paramName.remove(0, 1);
+			}
+			
 			variable->AppendToChain(paramName);
 			variable->PhpDocType = paramType;
 			if (!paramType.isEmpty()) {
@@ -1249,7 +1254,8 @@ pelet::SemanticValueClass* pelet::FullParserObserverClass::SemanticValueNil() {
 }
 
 pelet::StatementListClass* pelet::FullParserObserverClass::StatementListAppend(pelet::StatementListClass* statementList, pelet::StatementClass* statement) {
-	statementList->PushFront(statement);
+	statementList->Push(statement);
+	//statementList->PushFront(statement);
 	return statementList;
 }
 
