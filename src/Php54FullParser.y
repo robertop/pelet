@@ -406,7 +406,9 @@ unticked_statement:
 																									  $$ = observers.StatementListMerge($$, $6);
 																									  $$ = observers.StatementListMerge($$, $7);
 																									  $$ = observers.StatementListMerge($$, $8); }
-	|	T_WHILE '(' expr  ')' while_statement														{ $$ = observers.StatementListAppend($5, $3); }
+	|	T_WHILE '(' expr  ')' while_statement														{ $$ = observers.StatementListMakeAndAppend($3);
+																										  $$ = observers.StatementListMerge($$, $5);
+																										}
 	|	T_DO statement T_WHILE '(' expr ')' ';'														{ $$ = observers.StatementListAppend($2, $5); }
 	|	T_FOR
 			'('
@@ -1278,7 +1280,7 @@ encaps_var_offset:
 ;
 
 internal_functions_in_yacc:
-		T_ISSET '(' isset_variables ')'			{ $$ = observers.ExpressionNil(); }
+		T_ISSET '(' isset_variables ')'			{ $$ = $3; }
 	|	T_EMPTY '(' variable ')'				{ $$ = observers.ExpressionNil(); }
 	|	T_INCLUDE expr  						{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 	|	T_INCLUDE_ONCE expr 					{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
@@ -1288,8 +1290,8 @@ internal_functions_in_yacc:
 ;
 
 isset_variables:
-		variable							{ $$ = observers.ExpressionNil(); }
-	|	isset_variables ',' variable		{ $$ = observers.ExpressionNil(); }
+		variable							{ $$ = observers.ExpressionIsset($1); }
+	|	isset_variables ',' variable		{ $$ = observers.ExpressionIssetMerge((pelet::IssetExpressionClass*)$1, $3); }
 ;
 
 class_constant:

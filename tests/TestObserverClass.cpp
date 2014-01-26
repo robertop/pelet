@@ -254,3 +254,7 @@ void TestObserverClass::ExpressionAssignmentListFound(pelet::AssignmentListExpre
 void TestObserverClass::ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) {
 	NewInstanceExpressions.push_back(expression);
 }
+
+void TestObserverClass::ExpressionIssetFound(pelet::IssetExpressionClass* expression) {
+	IssetExpressions.push_back(expression);
+}

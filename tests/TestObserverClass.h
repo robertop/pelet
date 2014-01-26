@@ -75,6 +75,7 @@ public:
 	std::vector<pelet::UnaryVariableOperationClass*> UnaryVariableOperations;
 	std::vector<pelet::TernaryOperationClass*> TernaryOperations;
 	std::vector<pelet::IncludeExpressionClass*> IncludeExpressions;
+	std::vector<pelet::IssetExpressionClass*> IssetExpressions;
 	std::vector<pelet::AssignmentListExpressionClass*> AssignmentListExpressions;
 
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
@@ -142,6 +143,8 @@ public:
 	void ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression);
 
 	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression);
+	
+	void ExpressionIssetFound(pelet::IssetExpressionClass* expression);
 };
 
 #endif

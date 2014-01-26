@@ -1921,3 +1921,29 @@ void pelet::IncludeExpressionClass::Init(pelet::StatementClass* stmt, int lineNu
 		}
 	}
 }
+
+
+pelet::IssetExpressionClass::IssetExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Expressions() {
+	ExpressionType = pelet::ExpressionClass::ISSET;
+}
+
+	
+pelet::IssetExpressionClass::IssetExpressionClass(const pelet::IssetExpressionClass& src) 
+: ExpressionClass(src.Scope)
+, Expressions() {
+	ExpressionType = pelet::ExpressionClass::ISSET;
+	Copy(src);
+}
+	
+
+pelet::IssetExpressionClass& pelet::IssetExpressionClass::operator=(const pelet::IssetExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::IssetExpressionClass::Copy(const pelet::IssetExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Expressions = src.Expressions;
+}

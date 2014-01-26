@@ -58,6 +58,7 @@ class StaticVariableStatementClass;
 class ArrayPairExpressionClass;
 class IncludeExpressionClass;
 class ClosureExpressionClass;
+class IssetExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -481,6 +482,16 @@ public:
 	 * @see pelet::ClosureExpressionClass
 	 */
 	virtual void ExpressionClosureFound(pelet::ClosureExpressionClass* expr) {}
+	
+	/**
+	 * Override this method to get the pseudo-parse tree for an isset expression.
+	 * The isset expression contains the list of expressions that were inside the
+	 * isset call.
+	 * 
+	 * @param the expression that was parsed.
+	 * @see pelet::IssetExpressionClass
+	 */
+	virtual void ExpressionIssetFound(pelet::IssetExpressionClass* expr) {}
 
 	/**
 	 * this method will take ownership of the given statement pointers. after a call
@@ -854,6 +865,7 @@ public:
 		CLOSURE,
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
+		ISSET, 
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -1689,6 +1701,31 @@ public:
 	pelet::ClosureExpressionClass& operator=(const pelet::ClosureExpressionClass& src);
 
 	void Copy(const pelet::ClosureExpressionClass& src);
+};
+
+/**
+ * This class represents a list of variables
+ * declared inside an isset statement ie. 
+ * 
+ * isset($var1, $var2)
+ */
+class PELET_API IssetExpressionClass : public ExpressionClass {
+
+public:
+
+	/**
+	 * the expression inside the isset statement
+	 * the pointers will NOT be owned by this class
+	 */
+	std::vector<pelet::ExpressionClass*> Expressions;
+
+	IssetExpressionClass(const pelet::ScopeClass& scope);
+
+	IssetExpressionClass(const pelet::IssetExpressionClass& src);
+
+	pelet::IssetExpressionClass& operator=(const pelet::IssetExpressionClass& src);
+
+	void Copy(const pelet::IssetExpressionClass& src);
 };
 
 /**

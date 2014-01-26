@@ -1633,6 +1633,35 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithClosure) {
 	CHECK_EQUAL(pelet::ExpressionClass::BINARY_OPERATION, expr->ExpressionType);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithIsset) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$result = isset($users['123']); \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* assignment = Observer.AssignmentExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, assignment->Destination.ChainList);
+	pelet::VariableClass* var = &assignment->Destination;
+	CHECK_VARIABLE("$result", var);
+
+	CHECK_EQUAL(pelet::ExpressionClass::ISSET, assignment->Expression->ExpressionType);
+
+	pelet::IssetExpressionClass* newExpr = (pelet::IssetExpressionClass*) assignment->Expression;
+	
+	CHECK_VECTOR_SIZE(1, newExpr->Expressions);
+	
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, newExpr->Expressions[0]->ExpressionType);
+
+	var = PCEV(newExpr->Expressions[0]);
+	CHECK_VECTOR_SIZE(2, var->ChainList);
+	CHECK_UNISTR_EQUALS("$users", var->ChainList[0].Name);
+	CHECK(var->ChainList[1].IsArrayAccess);
+	CHECK_SCALAR("123", var->ChainList[1].ArrayAccess);
+}
+
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithAssignmentList) {
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(
