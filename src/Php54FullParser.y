@@ -610,9 +610,13 @@ switch_case_list:
 
 case_list:
 		/* empty */															{ $$ = observers.StatementListNil(); } 
-	|	case_list T_CASE expr case_separator inner_statement_list			{ $$ = observers.StatementListMakeAndAppend($3); 
-																			  observers.StatementListMerge($$, $5); }
-	|	case_list T_DEFAULT case_separator inner_statement_list				{ $$ = $4; }
+	|	case_list T_CASE expr case_separator inner_statement_list		{ $$ = $1;
+																				  observers.StatementListAppend($$, $3);
+																			      observers.StatementListMerge($$, $5); 
+																				}
+	|	case_list T_DEFAULT case_separator inner_statement_list			{ $$ = $1; 
+																				  observers.StatementListMerge($$, $4);
+																				}
 ;
 
 case_separator:

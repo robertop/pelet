@@ -938,7 +938,19 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				case pelet::ExpressionClass::CLOSURE:
 					ExpressionObserver->ExpressionClosureFound((pelet::ClosureExpressionClass*)expr);
 					break;
-				default:
+				case pelet::ExpressionClass::ISSET:
+					ExpressionObserver->ExpressionIssetFound((pelet::IssetExpressionClass*)expr);
+					break;
+				case pelet::ExpressionClass::ARRAY:
+					ExpressionObserver->ExpressionArrayFound((pelet::ArrayExpressionClass*)expr);
+					break;
+				case pelet::ExpressionClass::ARRAY_PAIR:
+				
+					// array pairs are never on their own, they always come inside an array
+					break;
+				case pelet::ExpressionClass::UNKNOWN:
+				
+					// we wont notify on unknow stuff
 					break;
 				}
 			}

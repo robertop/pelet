@@ -1662,6 +1662,53 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithIsset) {
 	CHECK_SCALAR("123", var->ChainList[1].ArrayAccess);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithIssetAssignment) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"if(isset($users[$name = $class->getName()])) return 1; else return 0; \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.IssetExpressions);
+	
+	CHECK_EQUAL(pelet::ExpressionClass::ISSET, Observer.IssetExpressions[0]->ExpressionType);
+
+	pelet::IssetExpressionClass* newExpr = Observer.IssetExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, newExpr->Expressions);
+	
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, newExpr->Expressions[0]->ExpressionType);
+
+	pelet::VariableClass* var = PCEV(newExpr->Expressions[0]);
+	CHECK_VECTOR_SIZE(2, var->ChainList);
+	CHECK_UNISTR_EQUALS("$users", var->ChainList[0].Name);
+	CHECK(var->ChainList[1].IsArrayAccess);
+	
+	pelet::ExpressionClass* expr = var->ChainList[1].ArrayAccess;
+	CHECK_EQUAL(pelet::ExpressionClass::ASSIGNMENT, expr->ExpressionType);
+	pelet::AssignmentExpressionClass* assignment = PCEA(expr);
+	
+	CHECK_VARIABLE("$name", (&assignment->Destination));
+}
+
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithCaseStatement) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"switch ($result) {\n"
+		"  case 1: { $good = true; }\n"
+		"  case -1: { $unknown = true; }\n"
+		"  case 0: { $good = false; }\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions);
+	CHECK_VECTOR_SIZE(3, Observer.AssignmentExpressions);
+	
+	CHECK_VARIABLE("$result", Observer.VariableExpressions[0]);
+	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[0]->Destination)));
+	CHECK_VARIABLE("$unknown", (&(Observer.AssignmentExpressions[1]->Destination)));
+	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[2]->Destination)));
+}
+
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithAssignmentList) {
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(

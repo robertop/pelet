@@ -55,6 +55,7 @@ class ScalarExpressionClass;
 class NewInstanceExpressionClass;
 class GlobalVariableStatementClass;
 class StaticVariableStatementClass;
+class ArrayExpressionClass;
 class ArrayPairExpressionClass;
 class IncludeExpressionClass;
 class ClosureExpressionClass;
@@ -492,6 +493,17 @@ public:
 	 * @see pelet::IssetExpressionClass
 	 */
 	virtual void ExpressionIssetFound(pelet::IssetExpressionClass* expr) {}
+	
+	/**
+	 * Override this method to get the pseudo-parse tree for a single array expression.
+	 * array(1, 2 => 3)
+	 * note that this callback will get called if the array is the entire expression,
+	 * 
+	 * 
+	 * @param expression the variable expression that was parsed.
+	 * @see pelet::AssignmentExpressionClass
+	 */
+	virtual void ExpressionArrayFound(pelet::ArrayExpressionClass* expression) { }
 
 	/**
 	 * this method will take ownership of the given statement pointers. after a call
