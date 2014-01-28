@@ -191,7 +191,7 @@ SINGLE_SYMBOLS = [;:,.\[\]()|^&+-/*=%!~$<>?@{}`];
 <SCRIPT> '(' WHITESPACE* 'boolean' WHITESPACE* ')' { return T_BOOL_CAST; }
 <SCRIPT> '(' WHITESPACE* 'bool' WHITESPACE* ')' { return T_BOOL_CAST; }
 <SCRIPT> '(' WHITESPACE* 'unset' WHITESPACE* ')' { return T_UNSET_CAST; }
-
+<SCRIPT> '(' WHITESPACE* 'binary' WHITESPACE* ')' { return T_STRING_CAST; }
 
 /*!ignore:re2c
  * longest symbols first; because they need to take precedence when consuming
