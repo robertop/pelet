@@ -432,7 +432,10 @@ unticked_statement:
 			';'
 				for_expr
 			')'
-			for_statement																			{ $$ = observers.StatementListMerge($3, $9); }
+			for_statement																			{ $$ = observers.StatementListMerge($3, $5); 
+																									  $$ = observers.StatementListMerge($$, $7); 
+																									  $$ = observers.StatementListMerge($$, $9); 
+																									}
 	|	T_SWITCH '(' expr ')' switch_case_list														{ $$ = observers.StatementListAppend($5, $3); }
 	|	T_BREAK ';'																					{ $$ = observers.StatementListNil(); };
 	|	T_BREAK expr ';'																			{ $$ = observers.StatementListMakeAndAppend($2); };
