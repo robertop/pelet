@@ -294,6 +294,7 @@ public:
 	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts);
 	pelet::ExpressionClass* ExpressionIsset(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionIssetMerge(pelet::IssetExpressionClass* isset, pelet::ExpressionClass* expr);
+	pelet::ExpressionClass* ExpressionEval(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionNil();
 	
 	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);

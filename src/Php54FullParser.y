@@ -1288,7 +1288,7 @@ internal_functions_in_yacc:
 	|	T_EMPTY '(' variable ')'				{ $$ = observers.ExpressionNil(); }
 	|	T_INCLUDE expr  						{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 	|	T_INCLUDE_ONCE expr 					{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
-	|	T_EVAL '(' expr ')' 					{ $$ = observers.ExpressionNil(); }
+	|	T_EVAL '(' expr ')' 					{ $$ = observers.ExpressionEval($3); }
 	|	T_REQUIRE expr  						{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 	|	T_REQUIRE_ONCE expr 					{ $$ = observers.IncludeFound($2, analyzer.GetLineNumber()); } 
 ;

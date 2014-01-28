@@ -6764,7 +6764,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 1291 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54FullParser.y"
-    { (yyval.expression) = observers.ExpressionNil(); }
+    { (yyval.expression) = observers.ExpressionEval((yyvsp[(3) - (4)].expression)); }
     break;
 
   case 444:

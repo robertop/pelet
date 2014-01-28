@@ -1922,7 +1922,6 @@ void pelet::IncludeExpressionClass::Init(pelet::StatementClass* stmt, int lineNu
 	}
 }
 
-
 pelet::IssetExpressionClass::IssetExpressionClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
 , Expressions() {
@@ -1946,4 +1945,29 @@ pelet::IssetExpressionClass& pelet::IssetExpressionClass::operator=(const pelet:
 void pelet::IssetExpressionClass::Copy(const pelet::IssetExpressionClass& src) {
 	pelet::ExpressionClass::Copy(src);
 	Expressions = src.Expressions;
+}
+
+pelet::EvalExpressionClass::EvalExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Expression() {
+	ExpressionType = pelet::ExpressionClass::EVAL;
+}
+
+	
+pelet::EvalExpressionClass::EvalExpressionClass(const pelet::EvalExpressionClass& src) 
+: ExpressionClass(src.Scope)
+, Expression() {
+	ExpressionType = pelet::ExpressionClass::EVAL;
+	Copy(src);
+}
+	
+
+pelet::EvalExpressionClass& pelet::EvalExpressionClass::operator=(const pelet::EvalExpressionClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::EvalExpressionClass::Copy(const pelet::EvalExpressionClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Expression = src.Expression;
 }

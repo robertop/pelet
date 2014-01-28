@@ -813,7 +813,14 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionIssetMerge(pel
 	isset->Expressions.push_back(expr);
 	return isset;
 }
-	
+
+pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionEval(pelet::ExpressionClass* expr) {
+	pelet::EvalExpressionClass* eval = new pelet::EvalExpressionClass(Scope);
+	eval->Expression = expr;
+
+	AllAstItems.push_back(eval);
+	return eval;
+}
 	
 pelet::StatementListClass* pelet::FullParserObserverClass::GlobalVariablesStatementMake(pelet::StatementListClass* variables) {
 	pelet::GlobalVariableStatementClass* globalVars =  new pelet::GlobalVariableStatementClass();
@@ -940,6 +947,9 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					break;
 				case pelet::ExpressionClass::ISSET:
 					ExpressionObserver->ExpressionIssetFound((pelet::IssetExpressionClass*)expr);
+					break;
+				case pelet::ExpressionClass::EVAL:
+					ExpressionObserver->ExpressionEvalFound((pelet::EvalExpressionClass*)expr);
 					break;
 				case pelet::ExpressionClass::ARRAY:
 					ExpressionObserver->ExpressionArrayFound((pelet::ArrayExpressionClass*)expr);

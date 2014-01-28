@@ -60,6 +60,7 @@ class ArrayPairExpressionClass;
 class IncludeExpressionClass;
 class ClosureExpressionClass;
 class IssetExpressionClass;
+class EvalExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -501,9 +502,18 @@ public:
 	 * 
 	 * 
 	 * @param expression the variable expression that was parsed.
-	 * @see pelet::AssignmentExpressionClass
+	 * @see pelet::ArrayExpressionClass
 	 */
 	virtual void ExpressionArrayFound(pelet::ArrayExpressionClass* expression) { }
+	
+	/**
+	 * Override this method to get the pseudo-parse tree for an eval expression.
+	 * eval('code')
+	 * 
+	 * @param expression the eval expression that was parsed.
+	 * @see pelet::EvalExpressionClass
+	 */
+	virtual void ExpressionEvalFound(pelet::EvalExpressionClass* expression) { }
 
 	/**
 	 * this method will take ownership of the given statement pointers. after a call
@@ -878,6 +888,7 @@ public:
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
 		ISSET, 
+		EVAL,   // (15)
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -1738,6 +1749,30 @@ public:
 	pelet::IssetExpressionClass& operator=(const pelet::IssetExpressionClass& src);
 
 	void Copy(const pelet::IssetExpressionClass& src);
+};
+
+/**
+ * This class represents an eval expression
+ * 
+ * eval($var1)
+ */
+class PELET_API EvalExpressionClass : public ExpressionClass {
+
+public:
+
+	/**
+	 * the expression inside the eval statement
+	 * the pointers will NOT be owned by this class
+	 */
+	pelet::ExpressionClass* Expression;
+
+	EvalExpressionClass(const pelet::ScopeClass& scope);
+
+	EvalExpressionClass(const pelet::EvalExpressionClass& src);
+
+	pelet::EvalExpressionClass& operator=(const pelet::EvalExpressionClass& src);
+
+	void Copy(const pelet::EvalExpressionClass& src);
 };
 
 /**
