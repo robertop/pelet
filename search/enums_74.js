@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['types',['Types',['../classpelet_1_1_symbol_class.html#a2da45600f2e1257c827bbcec47884cf7',1,'pelet::SymbolClass']]]
+  ['tokenids',['TokenIds',['../classpelet_1_1TokenClass.html#a3c75c661dee18e25a8fa4fd3ad18e8e9',1,'pelet::TokenClass']]],
+  ['tokens',['Tokens',['../namespacepelet.html#a2f19d390f08da8ac1d5fd8125f412429',1,'pelet']]]
 ];

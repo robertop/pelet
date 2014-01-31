@@ -1,21 +1,13 @@
 var searchData=
 [
-  ['classaddtoimplements',['ClassAddToImplements',['../classpelet_1_1_observer_quad_class.html#a19efb657ccde9e9a8eec6678c391a1df',1,'pelet::ObserverQuadClass']]],
-  ['classend',['ClassEnd',['../classpelet_1_1_observer_quad_class.html#a44116fa042413f499cdeabc061755ed5',1,'pelet::ObserverQuadClass']]],
-  ['classfound',['ClassFound',['../classpelet_1_1_class_observer_class.html#aaeb75388b82678f54c99727a566e9884',1,'pelet::ClassObserverClass::ClassFound()'],['../classpelet_1_1_observer_quad_class.html#a1653d98c5975450999af95e8b443f7e5',1,'pelet::ObserverQuadClass::ClassFound()']]],
-  ['classmemberfound',['ClassMemberFound',['../classpelet_1_1_observer_quad_class.html#a1325896df03f83baf4350477aeebf0c7',1,'pelet::ObserverQuadClass']]],
-  ['classmethodend',['ClassMethodEnd',['../classpelet_1_1_observer_quad_class.html#a08ea6414aedff8c4eab0b4a6c767df1d',1,'pelet::ObserverQuadClass']]],
-  ['classsetextends',['ClassSetExtends',['../classpelet_1_1_observer_quad_class.html#aa03057e0c264ca14b1c67960b62c8f5c',1,'pelet::ObserverQuadClass']]],
-  ['classsetname',['ClassSetName',['../classpelet_1_1_observer_quad_class.html#a1e163cbeb95d3b8471cd7603f5518d24',1,'pelet::ObserverQuadClass']]],
-  ['classstart',['ClassStart',['../classpelet_1_1_observer_quad_class.html#a2ac1bd66aef97d8926305ecf89df3a52',1,'pelet::ObserverQuadClass']]],
-  ['clear',['Clear',['../classpelet_1_1_lint_results_class.html#a80e653c73c1b24fb60cac55da7af2c10',1,'pelet::LintResultsClass']]],
-  ['clearexpressions',['ClearExpressions',['../classpelet_1_1_observer_quad_class.html#ab73fef36fce43000d68800b2a4ca41c3',1,'pelet::ObserverQuadClass']]],
-  ['close',['Close',['../classpelet_1_1_language_discovery_class.html#ac09bc38233824b736ca285626fa968af',1,'pelet::LanguageDiscoveryClass::Close()'],['../classpelet_1_1_lexical_analyzer_class.html#a37ef84a7d3656dc0dcbfb1e317c71add',1,'pelet::LexicalAnalyzerClass::Close()'],['../classpelet_1_1_buffer_class.html#ab27cb9975a20c54d3909b3e5dff3b825',1,'pelet::BufferClass::Close()'],['../classpelet_1_1_u_char_buffered_file_class.html#abdc7d12b83a27a2f828590b487c79616',1,'pelet::UCharBufferedFileClass::Close()'],['../classpelet_1_1_u_char_buffer_class.html#a73af5b7bbe456da1e9c2d71a268a70d5',1,'pelet::UCharBufferClass::Close()']]],
-  ['copy',['Copy',['../classpelet_1_1_lint_results_class.html#ae54797f80dc121f42212ebb68ac19e7e',1,'pelet::LintResultsClass::Copy()'],['../classpelet_1_1_symbol_class.html#ab658ad0ad6157d0b540dc6a9b05be9bd',1,'pelet::SymbolClass::Copy()']]],
-  ['createparameterwithoptionalclassname',['CreateParameterWithOptionalClassName',['../classpelet_1_1_observer_quad_class.html#a1e8f595b9e0bac49466d00e91443b350',1,'pelet::ObserverQuadClass']]],
-  ['currentexpressionappendtochain',['CurrentExpressionAppendToChain',['../classpelet_1_1_observer_quad_class.html#a0fdbfa124f827f91f072a185a664be55',1,'pelet::ObserverQuadClass']]],
-  ['currentexpressionasstaticmember',['CurrentExpressionAsStaticMember',['../classpelet_1_1_observer_quad_class.html#a82035b001c72741d53d42ca771945efc',1,'pelet::ObserverQuadClass']]],
-  ['currentexpressionpushasclassconstant',['CurrentExpressionPushAsClassConstant',['../classpelet_1_1_observer_quad_class.html#a79b88dc08c64dc10eeb7a704821d6746',1,'pelet::ObserverQuadClass']]],
-  ['currentexpressionpushasfunctioncall',['CurrentExpressionPushAsFunctionCall',['../classpelet_1_1_observer_quad_class.html#a080beca5467d8c279123aaaad17e5705',1,'pelet::ObserverQuadClass']]],
-  ['currentexpressionpushasvariable',['CurrentExpressionPushAsVariable',['../classpelet_1_1_observer_quad_class.html#a7107b1bf0ec52eb9ef537ddb762212c1',1,'pelet::ObserverQuadClass']]]
+  ['classend',['ClassEnd',['../classpelet_1_1ClassObserverClass.html#a617ebe58cadc066acb8deb54ad6160b9',1,'pelet::ClassObserverClass']]],
+  ['classfound',['ClassFound',['../classpelet_1_1ClassObserverClass.html#a6c4b8bd79f691966303ab4dfb62c16ae',1,'pelet::ClassObserverClass']]],
+  ['cleanupstatements',['CleanupStatements',['../classpelet_1_1ExpressionObserverClass.html#a484225340a5684d57881b3fa4b56fdda',1,'pelet::ExpressionObserverClass']]],
+  ['clear',['Clear',['../classpelet_1_1LintResultsClass.html#a80e653c73c1b24fb60cac55da7af2c10',1,'pelet::LintResultsClass::Clear()'],['../classpelet_1_1ScopeClass.html#aa0eebe1725658bf37dfef4b4be1cb49d',1,'pelet::ScopeClass::Clear()'],['../classpelet_1_1StatementListClass.html#a2193366344fb691c917d4176b1a49f33',1,'pelet::StatementListClass::Clear()']]],
+  ['clearaliases',['ClearAliases',['../classpelet_1_1ScopeClass.html#a2963ddafd2e4ccb73c6f192df0f9f481',1,'pelet::ScopeClass']]],
+  ['close',['Close',['../classpelet_1_1LanguageDiscoveryClass.html#ac09bc38233824b736ca285626fa968af',1,'pelet::LanguageDiscoveryClass::Close()'],['../classpelet_1_1LexicalAnalyzerClass.html#a37ef84a7d3656dc0dcbfb1e317c71add',1,'pelet::LexicalAnalyzerClass::Close()'],['../classpelet_1_1BufferClass.html#ab27cb9975a20c54d3909b3e5dff3b825',1,'pelet::BufferClass::Close()'],['../classpelet_1_1UCharBufferedFileClass.html#abdc7d12b83a27a2f828590b487c79616',1,'pelet::UCharBufferedFileClass::Close()'],['../classpelet_1_1UCharBufferClass.html#a73af5b7bbe456da1e9c2d71a268a70d5',1,'pelet::UCharBufferClass::Close()']]],
+  ['copy',['Copy',['../classpelet_1_1LintResultsClass.html#ae54797f80dc121f42212ebb68ac19e7e',1,'pelet::LintResultsClass::Copy()'],['../classpelet_1_1VariableClass.html#a7b7dfcf9bd13460b54ee39f29fd61e60',1,'pelet::VariableClass::Copy()']]],
+  ['createmagicmethodsandproperties',['CreateMagicMethodsAndProperties',['../classpelet_1_1FullParserObserverClass.html#a098df5e878f3df0dc156fe580aba847e',1,'pelet::FullParserObserverClass::CreateMagicMethodsAndProperties()'],['../classpelet_1_1ResourceParserObserverClass.html#a1b87762a2d3763b0e4266a68593786d9',1,'pelet::ResourceParserObserverClass::CreateMagicMethodsAndProperties()'],['../namespacepelet.html#afcf663182409dce7e3c11e4ba717b429',1,'pelet::CreateMagicMethodsAndProperties()']]],
+  ['createwithoptionaltype',['CreateWithOptionalType',['../classpelet_1_1ParametersListClass.html#a3c974fb1189077c21e1ad00aaabe618e',1,'pelet::ParametersListClass']]],
+  ['currentscope',['CurrentScope',['../classpelet_1_1FullParserObserverClass.html#a9f5875895df6f2a05b068cfd0b7fad0b',1,'pelet::FullParserObserverClass']]]
 ];

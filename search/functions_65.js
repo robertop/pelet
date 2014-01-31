@@ -1,11 +1,19 @@
 var searchData=
 [
-  ['exceptioncatchfound',['ExceptionCatchFound',['../classpelet_1_1_observer_quad_class.html#a395741c3ffc8bd748734d8f0fb6b0fa1',1,'pelet::ObserverQuadClass']]],
-  ['expressionascallargument',['ExpressionAsCallArgument',['../classpelet_1_1_observer_quad_class.html#a8963fe768de2cecb04d32a6628f131ba',1,'pelet::ObserverQuadClass']]],
-  ['expressionfound',['ExpressionFound',['../classpelet_1_1_expression_observer_class.html#af7ac882f881a22c105238bf26ff7eb7a',1,'pelet::ExpressionObserverClass::ExpressionFound()'],['../classpelet_1_1_observer_quad_class.html#a94363807aa77e3d3d1250acae2ea2f24',1,'pelet::ObserverQuadClass::ExpressionFound()']]],
-  ['expressionpushnewarray',['ExpressionPushNewArray',['../classpelet_1_1_observer_quad_class.html#a95ed9315caa69bebae64033223dc711e',1,'pelet::ObserverQuadClass']]],
-  ['expressionpushnewinstancecall',['ExpressionPushNewInstanceCall',['../classpelet_1_1_observer_quad_class.html#a05bc49b2b49261e103f327e50cd86948',1,'pelet::ObserverQuadClass']]],
-  ['expressionpushnewscalar',['ExpressionPushNewScalar',['../classpelet_1_1_observer_quad_class.html#ab80bb0244acc9ba82c75e88ead0d014d',1,'pelet::ObserverQuadClass']]],
-  ['expressionpushnewunknown',['ExpressionPushNewUnknown',['../classpelet_1_1_observer_quad_class.html#a92cccb282b046d0a453e269c3ac4f0e1',1,'pelet::ObserverQuadClass']]],
-  ['expressionpushnewvariable',['ExpressionPushNewVariable',['../classpelet_1_1_observer_quad_class.html#ae386a1ad953846cf9273fd17486c9454',1,'pelet::ObserverQuadClass']]]
+  ['expressionarrayfound',['ExpressionArrayFound',['../classpelet_1_1ExpressionObserverClass.html#a848acd17b6af003ed36e9ee6b485a2ae',1,'pelet::ExpressionObserverClass']]],
+  ['expressionassignmentcompoundfound',['ExpressionAssignmentCompoundFound',['../classpelet_1_1ExpressionObserverClass.html#a5e1c104c1c41f27627c7d919b1cb10da',1,'pelet::ExpressionObserverClass']]],
+  ['expressionassignmentfound',['ExpressionAssignmentFound',['../classpelet_1_1ExpressionObserverClass.html#a373082c7934dca5620626a6f0f424e52',1,'pelet::ExpressionObserverClass']]],
+  ['expressionassignmentlistfound',['ExpressionAssignmentListFound',['../classpelet_1_1ExpressionObserverClass.html#a4043d8748fafbf61e5054c452cc4af4e',1,'pelet::ExpressionObserverClass']]],
+  ['expressionbinaryoperationfound',['ExpressionBinaryOperationFound',['../classpelet_1_1ExpressionObserverClass.html#a65b12ce3ecde1600f2ca62d2aab16b7d',1,'pelet::ExpressionObserverClass']]],
+  ['expressionclosurefound',['ExpressionClosureFound',['../classpelet_1_1ExpressionObserverClass.html#a315bf49e58f60a3fc8afa5b72f14480f',1,'pelet::ExpressionObserverClass']]],
+  ['expressionevalfound',['ExpressionEvalFound',['../classpelet_1_1ExpressionObserverClass.html#affb347f3a2f04f637869b8475a1a40d6',1,'pelet::ExpressionObserverClass']]],
+  ['expressionfunctionargumentfound',['ExpressionFunctionArgumentFound',['../classpelet_1_1ExpressionObserverClass.html#a7c8a2b63a699e02f350b1422dab79699',1,'pelet::ExpressionObserverClass']]],
+  ['expressionincludefound',['ExpressionIncludeFound',['../classpelet_1_1ExpressionObserverClass.html#a36f68eb2bbb51c03047765c043728d7d',1,'pelet::ExpressionObserverClass']]],
+  ['expressionissetfound',['ExpressionIssetFound',['../classpelet_1_1ExpressionObserverClass.html#aecd3ba7af6e38007da999b11817eccb3',1,'pelet::ExpressionObserverClass']]],
+  ['expressionnewinstancefound',['ExpressionNewInstanceFound',['../classpelet_1_1ExpressionObserverClass.html#a0f0c0ae39bd06e83bcab83d0024afc9d',1,'pelet::ExpressionObserverClass']]],
+  ['expressionscalarfound',['ExpressionScalarFound',['../classpelet_1_1ExpressionObserverClass.html#a6788a4ab2ca09cc9d5c2acdd8148d7f5',1,'pelet::ExpressionObserverClass']]],
+  ['expressionternaryoperationfound',['ExpressionTernaryOperationFound',['../classpelet_1_1ExpressionObserverClass.html#aef049bf7be989b44858095fc276e593f',1,'pelet::ExpressionObserverClass']]],
+  ['expressionunaryoperationfound',['ExpressionUnaryOperationFound',['../classpelet_1_1ExpressionObserverClass.html#a9dd05270eff9fec27dd9be318f0b7b7c',1,'pelet::ExpressionObserverClass']]],
+  ['expressionunaryvariableoperationfound',['ExpressionUnaryVariableOperationFound',['../classpelet_1_1ExpressionObserverClass.html#a7f93c26d89b09b74d5fa0aa856bd4fae',1,'pelet::ExpressionObserverClass']]],
+  ['expressionvariablefound',['ExpressionVariableFound',['../classpelet_1_1ExpressionObserverClass.html#a16cbbd5b2d97d5af6059bbf3e099cec8',1,'pelet::ExpressionObserverClass']]]
 ];

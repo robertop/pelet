@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['callarguments',['CallArguments',['../classpelet_1_1_expression_class.html#a0388daf2a470248705dc1f7d8e824a6d',1,'pelet::ExpressionClass']]],
-  ['chainlist',['ChainList',['../classpelet_1_1_expression_class.html#a3aa0b55966d4e73e6a5f575b22e4cbd4',1,'pelet::ExpressionClass::ChainList()'],['../classpelet_1_1_symbol_class.html#a9cba6577eb40a0399844c5eba0635d55',1,'pelet::SymbolClass::ChainList()']]],
-  ['characterposition',['CharacterPosition',['../classpelet_1_1_lint_results_class.html#a7488cbed46c5c7d28a3203ce50b769c3',1,'pelet::LintResultsClass']]],
-  ['comment',['Comment',['../classpelet_1_1_semantic_value_class.html#a1bd049a567220e108857b668871d6509',1,'pelet::SemanticValueClass::Comment()'],['../classpelet_1_1_expression_class.html#a2d5a0ea3087271b38810e977ee0ef4d6',1,'pelet::ExpressionClass::Comment()'],['../classpelet_1_1_symbol_class.html#ad453bb67f608d44a11f021cde6e3e52c',1,'pelet::SymbolClass::Comment()']]],
-  ['current',['Current',['../classpelet_1_1_buffer_class.html#ac8579b66a77cb90f961d39d0ed0d4753',1,'pelet::BufferClass']]]
+  ['callarguments',['CallArguments',['../classpelet_1_1VariablePropertyClass.html#a70cbf5d7771e45d8fcdcdcf4f7480955',1,'pelet::VariablePropertyClass::CallArguments()'],['../classpelet_1_1NewInstanceExpressionClass.html#a669ea7aac89680d2e3126d2dbc3e3546',1,'pelet::NewInstanceExpressionClass::CallArguments()']]],
+  ['chainlist',['ChainList',['../classpelet_1_1NewInstanceExpressionClass.html#a758bfdd37bcde726c96fb709f252105c',1,'pelet::NewInstanceExpressionClass::ChainList()'],['../classpelet_1_1VariableClass.html#a1317a5613f28eb5f9661cecf41b8240f',1,'pelet::VariableClass::ChainList()']]],
+  ['characterposition',['CharacterPosition',['../classpelet_1_1LintResultsClass.html#a7488cbed46c5c7d28a3203ce50b769c3',1,'pelet::LintResultsClass']]],
+  ['classname',['ClassName',['../classpelet_1_1ScopeClass.html#a8c60ff5586c61237b1d9da73454311c8',1,'pelet::ScopeClass::ClassName()'],['../classpelet_1_1TraitUseClass.html#a9deb54f0e1780ee84b897e5cf9f5764b',1,'pelet::TraitUseClass::ClassName()'],['../classpelet_1_1TraitAliasClass.html#a524faac8516e401b4b2bc98880d39e04',1,'pelet::TraitAliasClass::ClassName()'],['../classpelet_1_1TraitInsteadOfClass.html#a33101a64d0395a13235c0209f2ae3802',1,'pelet::TraitInsteadOfClass::ClassName()'],['../classpelet_1_1ClassSymbolClass.html#a9393e4370b3000f363389e65284ec6a0',1,'pelet::ClassSymbolClass::ClassName()']]],
+  ['comment',['Comment',['../classpelet_1_1QualifiedNameClass.html#a85be14c9d53eab660be846e2222aaaf8',1,'pelet::QualifiedNameClass::Comment()'],['../classpelet_1_1VariableClass.html#a14d9857455ee382885a2f5c7c563bed2',1,'pelet::VariableClass::Comment()'],['../classpelet_1_1SemanticValueClass.html#a387f2e709c88d183358fa234df31a050',1,'pelet::SemanticValueClass::Comment()']]],
+  ['current',['Current',['../classpelet_1_1BufferClass.html#ac8579b66a77cb90f961d39d0ed0d4753',1,'pelet::BufferClass']]]
 ];

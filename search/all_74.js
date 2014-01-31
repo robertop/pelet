@@ -1,9 +1,20 @@
 var searchData=
 [
-  ['token',['Token',['../classpelet_1_1_semantic_value_class.html#ab5bb0ac9605eed884dc312ebe75add0d',1,'pelet::SemanticValueClass']]],
-  ['tokenclass',['TokenClass',['../classpelet_1_1_token_class.html',1,'pelet']]],
-  ['tokenstart',['TokenStart',['../classpelet_1_1_buffer_class.html#a549dba8e6780eb2ed2213f4c442e8c01',1,'pelet::BufferClass']]],
-  ['tosignature',['ToSignature',['../classpelet_1_1_parameters_list_class.html#aa74667b2e2f2f7146d81c94eaba8cfb2',1,'pelet::ParametersListClass']]],
-  ['type',['Type',['../classpelet_1_1_symbol_class.html#ac0ae7e74c8904254b33f3388b7b5a619',1,'pelet::SymbolClass']]],
-  ['types',['Types',['../classpelet_1_1_symbol_class.html#a2da45600f2e1257c827bbcec47884cf7',1,'pelet::SymbolClass']]]
+  ['t_5fend',['T_END',['../namespacepelet.html#a2f19d390f08da8ac1d5fd8125f412429a70047db2eb71ae6a6cdf07e4d8cd568d',1,'pelet']]],
+  ['ternaryoperationclass',['TernaryOperationClass',['../classpelet_1_1TernaryOperationClass.html',1,'pelet']]],
+  ['token',['Token',['../classpelet_1_1TokenPositionClass.html#a2f329bfccaadd62129ef03b53a14315a',1,'pelet::TokenPositionClass::Token()'],['../classpelet_1_1SemanticValueClass.html#ab5bb0ac9605eed884dc312ebe75add0d',1,'pelet::SemanticValueClass::Token()']]],
+  ['tokenclass',['TokenClass',['../classpelet_1_1TokenClass.html',1,'pelet']]],
+  ['tokenids',['TokenIds',['../classpelet_1_1TokenClass.html#a3c75c661dee18e25a8fa4fd3ad18e8e9',1,'pelet::TokenClass']]],
+  ['tokenpositionclass',['TokenPositionClass',['../classpelet_1_1TokenPositionClass.html',1,'pelet']]],
+  ['tokens',['Tokens',['../namespacepelet.html#a2f19d390f08da8ac1d5fd8125f412429',1,'pelet']]],
+  ['tokenstart',['TokenStart',['../classpelet_1_1BufferClass.html#a549dba8e6780eb2ed2213f4c442e8c01',1,'pelet::BufferClass']]],
+  ['tosignature',['ToSignature',['../classpelet_1_1QualifiedNameClass.html#a6acf8a0b3361e117b0c04c5378b449fd',1,'pelet::QualifiedNameClass::ToSignature()'],['../classpelet_1_1ParametersListClass.html#aa74667b2e2f2f7146d81c94eaba8cfb2',1,'pelet::ParametersListClass::ToSignature()']]],
+  ['traitaliasclass',['TraitAliasClass',['../classpelet_1_1TraitAliasClass.html',1,'pelet']]],
+  ['traitaliasfound',['TraitAliasFound',['../classpelet_1_1ClassMemberObserverClass.html#aadecd4c52cf4711470a27b7087f13c16',1,'pelet::ClassMemberObserverClass']]],
+  ['traitinsteadofclass',['TraitInsteadOfClass',['../classpelet_1_1TraitInsteadOfClass.html',1,'pelet']]],
+  ['traitinsteadoffound',['TraitInsteadOfFound',['../classpelet_1_1ClassMemberObserverClass.html#a873085fc5d2378fb4e6d5bffe05004b4',1,'pelet::ClassMemberObserverClass']]],
+  ['traitmethodreferencename',['TraitMethodReferenceName',['../classpelet_1_1TraitAliasClass.html#a998e52f944b744da473e652b452edbd0',1,'pelet::TraitAliasClass::TraitMethodReferenceName()'],['../classpelet_1_1TraitInsteadOfClass.html#a4f67434d7e67a31f362887793e4d20ac',1,'pelet::TraitInsteadOfClass::TraitMethodReferenceName()']]],
+  ['traituseclass',['TraitUseClass',['../classpelet_1_1TraitUseClass.html',1,'pelet']]],
+  ['traitusedclassname',['TraitUsedClassName',['../classpelet_1_1TraitAliasClass.html#a62790345b75b00a56fab1fa0fac21ef1',1,'pelet::TraitAliasClass::TraitUsedClassName()'],['../classpelet_1_1TraitInsteadOfClass.html#ac85b99e7ee69c99d6ebc41651ca45187',1,'pelet::TraitInsteadOfClass::TraitUsedClassName()']]],
+  ['traitusefound',['TraitUseFound',['../classpelet_1_1ClassMemberObserverClass.html#aa846b797984aff84399156f6100ae1f3',1,'pelet::ClassMemberObserverClass']]]
 ];

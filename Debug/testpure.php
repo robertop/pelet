@@ -1,0 +1,1 @@
+<?php class MyClass {  function myFunct() {    $'gag's = 'hello' "again" $not gaging;  }}
