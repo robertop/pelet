@@ -60,6 +60,7 @@ void pelet::LexicalAnalyzerClass::Close() {
 
 bool pelet::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 	Close();
+	ParserError = UNICODE_STRING_SIMPLE("");
 	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
 	Buffer = bufferFile;
 	FileName = newFile;
@@ -69,9 +70,10 @@ bool pelet::LexicalAnalyzerClass::OpenFile(const std::string& newFile) {
 
 bool pelet::LexicalAnalyzerClass::OpenFile(FILE* file) {
 	Close();
-	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
-	Buffer = bufferFile;
 	FileName = "";
+	ParserError = UNICODE_STRING_SIMPLE("");
+	UCharBufferedFileClass* bufferFile =  new UCharBufferedFileClass();
+	Buffer = bufferFile;	
 	Condition = yycINLINE_HTML;
 	return bufferFile->OpenFile(file);
 }
@@ -79,6 +81,7 @@ bool pelet::LexicalAnalyzerClass::OpenFile(FILE* file) {
 bool pelet::LexicalAnalyzerClass::OpenString(const UnicodeString& code) {
 	Close();
 	FileName = "";
+	ParserError = UNICODE_STRING_SIMPLE("");
 	Condition = yycSCRIPT;
 	pelet::UCharBufferClass* memBuffer = new UCharBufferClass();
 	Buffer = memBuffer;
