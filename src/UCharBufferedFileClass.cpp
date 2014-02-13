@@ -176,8 +176,8 @@ void pelet::UCharBufferedFileClass::AppendToLexeme(int minToGet) {
 		
 		// since Limit points to the last character of the string (not past), we do +1 
 		int validContentsCount = (Limit - TokenStart + 1); 
-		int charsToGet;
-		UChar* startOfFreeSpace;
+		int charsToGet = 0;
+		UChar* startOfFreeSpace = 0;
 		if (TokenStart > Buffer) {
 			RemoveLeadingSlackSpace();
 			startOfFreeSpace = Buffer + validContentsCount; 
