@@ -41,7 +41,9 @@ class PELET_API BufferClass {
 
 public:
 
-	BufferClass();	
+	BufferClass();
+	
+	virtual ~BufferClass();
 	
 	/**
 	 * The position of the current character. This pointer may be reassigned from one lexeme to the 

@@ -45,6 +45,10 @@ pelet::BufferClass::BufferClass()
 		
 }
 
+pelet::BufferClass::~BufferClass() {
+	
+}
+
 void pelet::BufferClass::IncrementLine() {
 	LineNumber++;
 }
