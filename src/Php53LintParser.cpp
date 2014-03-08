@@ -74,7 +74,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 268 of yacc.c  */
-#line 1 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53LintParser.y"
+#line 1 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53LintParser.y"
 
 /**
  * This software is released under the terms of the MIT License
@@ -119,7 +119,7 @@
 
 
 /* Line 268 of yacc.c  */
-#line 123 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53LintParser.cpp"
+#line 123 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53LintParser.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -290,7 +290,7 @@
 
 
 /* Line 343 of yacc.c  */
-#line 294 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53LintParser.cpp"
+#line 294 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53LintParser.cpp"
 
 #ifdef short
 # undef short
@@ -3707,7 +3707,7 @@ yyreduce:
       
 
 /* Line 1806 of yacc.c  */
-#line 3711 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53LintParser.cpp"
+#line 3711 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53LintParser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3938,6 +3938,6 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1069 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php53LintParser.y"
+#line 1069 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53LintParser.y"
 
 

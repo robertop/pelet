@@ -1459,6 +1459,24 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithCaseStatement) {
 	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[2]->Destination)));
 }
 
+TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithCaseAssignmentStatement) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"switch (($result  = 0)) {\n"
+		"  case 1: { $good = true; }\n"
+		"  case -1: { $unknown = true; }\n"
+		"  case 0: { $good = false; }\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(4, Observer.AssignmentExpressions);
+	
+	CHECK_VARIABLE("$result", (&(Observer.AssignmentExpressions[0]->Destination)));
+	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[1]->Destination)));
+	CHECK_VARIABLE("$unknown", (&(Observer.AssignmentExpressions[2]->Destination)));
+	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[3]->Destination)));
+}
+
 TEST_FIXTURE(Parser53TestClass, LintFileShouldReturnTrueOnValidFile) {
 	std::string file = TestProjectDir + "test.php";
 	bool isGood = Parser.LintFile(file, LintResults);

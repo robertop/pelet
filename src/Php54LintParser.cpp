@@ -74,7 +74,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 268 of yacc.c  */
-#line 1 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54LintParser.y"
+#line 1 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54LintParser.y"
 
 
 /**
@@ -120,7 +120,7 @@
 
 
 /* Line 268 of yacc.c  */
-#line 124 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54LintParser.cpp"
+#line 124 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54LintParser.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -291,7 +291,7 @@
 
 
 /* Line 343 of yacc.c  */
-#line 295 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54LintParser.cpp"
+#line 295 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54LintParser.cpp"
 
 #ifdef short
 # undef short
@@ -3820,7 +3820,7 @@ yyreduce:
       
 
 /* Line 1806 of yacc.c  */
-#line 3824 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54LintParser.cpp"
+#line 3824 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54LintParser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4051,5 +4051,5 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1121 "/home/roberto/workspace/mvc-editor/lib/pelet/src/Php54LintParser.y"
+#line 1121 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54LintParser.y"
 

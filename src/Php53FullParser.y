@@ -436,7 +436,9 @@ unticked_statement:
 																									  $$ = observers.StatementListMerge($$, $7); 
 																									  $$ = observers.StatementListMerge($$, $9); 
 																									}
-	|	T_SWITCH '(' expr ')' switch_case_list														{ $$ = observers.StatementListAppend($5, $3); }
+	|	T_SWITCH '(' expr ')' switch_case_list														{ $$ = observers.StatementListMakeAndAppend($3); 
+																										  $$ = observers.StatementListMerge($$, $5);
+ 																										}
 	|	T_BREAK ';'																					{ $$ = observers.StatementListNil(); };
 	|	T_BREAK expr ';'																			{ $$ = observers.StatementListMakeAndAppend($2); };
 	|	T_CONTINUE ';'																				{ $$ = observers.StatementListNil(); };
