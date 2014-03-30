@@ -301,7 +301,12 @@ public:
 	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromDeclaredNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
+	
+	// two versions of VariableMakeStaticMethodCall
+	// one for php 5.3, one for php 5.4 since
+	// php 5.4 supports Class::{$method}() function calls
 	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
+	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::VariableClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue);
 	pelet::VariableClass* VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);

@@ -657,6 +657,7 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFrom
 	return newExpr;
 }
 
+
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
 		pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
@@ -675,6 +676,29 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCa
 	newVar->AppendToChain(Scope.FullyQualify(*className, DeclaredNamespace));
 	if (methodName) {
 		newVar->AppendToChain(methodName->Lexeme, varCallArguments, true, true);
+	}
+	AllAstItems.push_back(newVar);
+	return newVar;
+}
+
+pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
+		pelet::VariableClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
+	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
+
+	// TODO: fill in pos
+	newVar->LineNumber = lineNumber;
+	std::vector<pelet::ExpressionClass*> varCallArguments;
+	for (size_t i = 0; i < callArguments->Size(); ++i) {
+		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
+		if (pelet::StatementClass::EXPRESSION == type) {
+			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
+			varCallArguments.push_back(singleExpr);
+		}
+	}
+	
+	newVar->AppendToChain(Scope.FullyQualify(*className, DeclaredNamespace));
+	if (methodName && !methodName->ChainList.empty()) {
+		newVar->AppendToChain(methodName->ChainList[0].Name, varCallArguments, true, true);
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;

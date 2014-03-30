@@ -1122,11 +1122,11 @@ function_call:
 																						  observers.DoCaptureScalars = false;
 																						  observers.DoCaptureCallArguments = false; 
 																						}
-	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
+	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_name '(' 
 			function_call_parameter_list')'												{ $$ = 0; }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
 			function_call_parameter_list ')'											{ $$ = 0; }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '('
+	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_name '('
 			function_call_parameter_list ')'											{ $$ = 0; }
 	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
 			function_call_parameter_list ')'											{ $$ = 0; }

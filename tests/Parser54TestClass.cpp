@@ -1834,6 +1834,23 @@ TEST_FIXTURE(Parser54TestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK(LintResults.LineNumber > 0);
 }
 
+TEST_FIXTURE(Parser54TestClass, LintStringWithVariableMethodCall) {
+	UnicodeString code = _U(
+	"class MyClass {\n"
+	"\n"
+	"	static function myFunc1() { return '1'; }\n"
+	"	static function myFunc2() { return '2'; }\n"
+	"	\n"
+	"	static function getMe($i) {\n"
+	"		$strProp = \"myFunc{$i}\";\n"
+	"		return self::{$strProp}();\n"
+	"	}\n"
+	"}\n"
+	);
+	CHECK_EQUAL(true, Parser.LintString(code, LintResults));
+	CHECK(LintResults.Error.length() == 0);
+}
+
 TEST_FIXTURE(Parser54TestClass, LintFileShouldReturnFalseOnBadCode) {
 	CreateFixtureFile("testpure.php", 
 		"<?php $'gag's = 'hello' \"again\" $not gaging;");

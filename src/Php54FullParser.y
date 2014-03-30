@@ -986,11 +986,11 @@ function_call:
 		function_call_parameter_list ')' 												{ $$ = observers.VariableMakeFunctionCallFromDeclaredNamespace($3, $5, analyzer.GetLineNumber()); }
 	|	T_NS_SEPARATOR namespace_name '(' 												
 				function_call_parameter_list ')'										{ $$ = observers.VariableMakeFunctionCallFromAbsoluteNamespace($2, $4, analyzer.GetLineNumber()); }
-	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' 
+	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_name '(' 
 			function_call_parameter_list')'												{ $$ = observers.VariableMakeStaticMethodCall($1, $3, $5, analyzer.GetLineNumber()); }
 	|	class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
 			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '('
+	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_name '('
 			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
 	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM variable_without_objects '('
 			function_call_parameter_list ')'											{ $$ = observers.VariableNil(); }
