@@ -5,7 +5,7 @@ pelet is a PHP parser library written in C++.  This is library does not produce 
 appplication,  it is meant to be integrated into programs that need to inspect PHP
 source code (source code editors / IDEs targeting PHP). As an example, an editor may
 use pelet to figure out the classes that were declared in a particular source code
-file. pelet was born out of the [MVC Editor](http://code.google.com/p/mvc-editor) 
+file. pelet was born out of the [Triumph 4 PHP](http://triumph4php.com) 
 project.
 
 The pelet project aims to conform to the PHP syntax to its fullest.  Currently, pelet
