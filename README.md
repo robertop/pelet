@@ -133,7 +133,7 @@ the included sample program covers 90% of the functionality. If you are having p
 up and running, you can browse the [docs online] http://robertop.github.com/pelet/ .
 Here you will find API docs, as well as some higher-level docs explaining the implementation details.
 You can contact also the me directly; see my Github [profile page] (https://github.com/robertop) or E-mail me
-at roberto@mvceditor.com. If I find that I cannot handle the volume of requests I may setup a forum or mailing list.
+at roberto@triumph4php.com. If I find that I cannot handle the volume of requests I may setup a forum or mailing list.
 
 To report bugs or feature requests please use the [Issues] (https://github.com/robertop/pelet/issues)
 page of the pelet Github project. 
