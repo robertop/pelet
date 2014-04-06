@@ -717,7 +717,13 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeStaticVari
 
 pelet::VariableClass* pelet::FullParserObserverClass::VariableAppendArrayOffset(pelet::VariableClass* arrayVariable, pelet::ExpressionClass* offsetExpr) {
 	pelet::VariablePropertyClass arrayProp;
-	arrayProp.ArrayAccess = offsetExpr;
+	
+	// watch out for expressions with the array push operator $a[]=
+	// in this case we want ArrayAccess to be NULL
+	if (offsetExpr->Type != pelet::StatementClass::EXPRESSION
+		|| offsetExpr->ExpressionType != pelet::ExpressionClass::UNKNOWN) {
+		arrayProp.ArrayAccess = offsetExpr;
+	}
 	arrayProp.IsArrayAccess = true;
 	arrayVariable->ChainList.push_back(arrayProp);
 	return arrayVariable;
@@ -786,7 +792,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionTernaryOperati
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionNil() {
 	pelet::ExpressionClass* newExpr = new pelet::ExpressionClass(Scope);
-	newExpr->Type = pelet::ExpressionClass::NIL;
+	newExpr->Type = pelet::ExpressionClass::EXPRESSION;
+	newExpr->ExpressionType = pelet::ExpressionClass::UNKNOWN;
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
