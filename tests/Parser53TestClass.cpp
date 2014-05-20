@@ -411,20 +411,27 @@ TEST_FIXTURE(Parser53TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 		"	protected $protectedVar; \n"
 		"	final private $constFinal = 44;\n"
 		"	var $publicVar;\n"
+		"	static public function myPublicStatic() {}\n"
 		"} \n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
-	CHECK_VECTOR_SIZE(3, Observer.MethodClassName);
+	CHECK_VECTOR_SIZE(4, Observer.MethodClassName);
 	CHECK_UNISTR_EQUALS("Runnable", Observer.MethodClassName[0]);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.MethodClassName[1]);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.MethodClassName[2]);
+	CHECK_UNISTR_EQUALS("MyRunnable", Observer.MethodClassName[3]);
 	CHECK_UNISTR_EQUALS("run", Observer.MethodName[0]);
 	CHECK_UNISTR_EQUALS("run", Observer.MethodName[1]);
 	CHECK_UNISTR_EQUALS("myPrivate", Observer.MethodName[2]);
-	CHECK_VECTOR_SIZE(3, Observer.MethodSignature);
+	CHECK_UNISTR_EQUALS("myPublicStatic", Observer.MethodName[3]);
+	CHECK_VECTOR_SIZE(4, Observer.MethodSignature);
 	CHECK_UNISTR_EQUALS("public abstract function run()", Observer.MethodSignature[0]);
 	CHECK_UNISTR_EQUALS("public function run()", Observer.MethodSignature[1]);
 	CHECK_UNISTR_EQUALS("private function& myPrivate()", Observer.MethodSignature[2]);
+	CHECK_UNISTR_EQUALS("public static function myPublicStatic()", Observer.MethodSignature[3]);
+	CHECK_EQUAL(pelet::TokenClass::PUBLIC, Observer.MethodVisibility[3]);
+	CHECK(Observer.MethodIsStatic[3]);
+
 	CHECK_VECTOR_SIZE(6, Observer.PropertyClassName);
 	CHECK_UNISTR_EQUALS("Runnable", Observer.PropertyClassName[0]);
 	CHECK_UNISTR_EQUALS("MyRunnable", Observer.PropertyClassName[1]);

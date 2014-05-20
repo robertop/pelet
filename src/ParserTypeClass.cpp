@@ -991,16 +991,29 @@ pelet::StatementListClass* pelet::ClassMemberSymbolClass::MakeVariables(pelet::S
 
 pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::SetModifier(pelet::SemanticValueClass* modifierValue) {
 	if (modifierValue) {
-		IsAbstractMember = pelet::T_ABSTRACT == modifierValue->Token;
-		IsFinalMember = pelet::T_FINAL == modifierValue->Token;
-		IsConstMember = pelet::T_CONST == modifierValue->Token;
-		IsStaticMember = pelet::T_STATIC == modifierValue->Token;
 		if (pelet::T_PUBLIC == modifierValue->Token) {
 			SetAsPublic();
-		} else if (pelet::T_PROTECTED == modifierValue->Token) {
+		} 
+		else if (pelet::T_PROTECTED == modifierValue->Token) {
 			SetAsProtected();
-		} else if (pelet::T_PRIVATE == modifierValue->Token) {
+		} 
+		else if (pelet::T_PRIVATE == modifierValue->Token) {
 			SetAsPrivate();
+		}
+
+		// no else statements here
+		// abstract/static could be together with public/private
+		if (pelet::T_ABSTRACT == modifierValue->Token) {
+			IsAbstractMember = true;
+		}
+		if (pelet::T_FINAL == modifierValue->Token) {
+			IsFinalMember = true;
+		}
+		if (pelet::T_CONST == modifierValue->Token) {
+			IsConstMember = true;
+		}
+		if (pelet::T_STATIC == modifierValue->Token) {
+			IsStaticMember = true;
 		}
 	}
 	return this;
