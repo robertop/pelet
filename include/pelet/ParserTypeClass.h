@@ -686,6 +686,17 @@ public:
 	bool IsGlobalScope() const;
 	
 	bool IsGlobalNamespace() const;
+	
+	/**
+	 * true if this scope is a closure anonymous function
+	 * scope
+	 */
+	bool IsAnonymousScope() const;
+	
+	/**
+	 * @return int unique number of anonymous function count
+	 */
+	int GetAnonymousFunctionCount() const;
 
 	/**
 	 * A map of the current aliases of the parsed file.
@@ -748,8 +759,17 @@ public:
 	 *        is defined in.  this is always fully qualified.
 	 */
 	UnicodeString FullyQualify(const pelet::QualifiedNameClass& name, 
-		const pelet::QualifiedNameClass& declaredNamespace) const;	
-
+		const pelet::QualifiedNameClass& declaredNamespace) const;
+	
+	/**
+	 *
+	 * @param isAnonymous TRUE if this scope represents a closure,
+	 *        false if not.
+	 * @param anonymousFunctionCount the number of anymous functions 
+	 *        found in the current class/method
+	 */
+	void SetIsAnonymous(bool isAnonymous, int anonymousFunctionCount = -1);
+	
 	/**
 	 * copy a scope
 	 */
@@ -764,6 +784,15 @@ private:
 	 * gets copied when an instance of this object is copied.
 	 */
 	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* NamespaceAliases;
+	
+	/**
+	 * -1 scope is not anonymous
+	 *  0 scope is first anonymous function seen in this class/method/function
+	 *  1 scope is the second anonymous function seen in this class/method/function 
+	 *  2 scope is the third anonymous function seen in this class/method/function
+	 *  3+ ...
+	 */
+	int AnonymousFunctionCount;
 
 };
 

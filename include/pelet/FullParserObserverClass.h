@@ -351,6 +351,10 @@ public:
 	
 	void SetCurrentMemberName(pelet::SemanticValueClass* value);
 	
+	void IncrementAnonymousFunctionCount();
+	
+	void EndAnonymousFunction();
+	
 	void SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName);
 	
 	/**
@@ -432,6 +436,15 @@ private:
 	 * keep track of all ParserTypes to delete them at the end
 	 */
 	std::vector<AstItemClass*> AllAstItems;
+	
+	/**
+	 * -1 scope is not anonymous
+	 *  0 scope is first anonymous function seen in this class/method/function
+	 *  1 scope is the second anonymous function seen in this class/method/function 
+	 *  2 scope is the third anonymous function seen in this class/method/function
+	 *  3+ ...
+	 */
+	int AnonymousFunctionCount;
 };
 
 /**

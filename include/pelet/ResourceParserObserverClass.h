@@ -119,6 +119,10 @@ public:
 	void SetCurrentMemberName(pelet::SemanticValueClass* value);
 	
 	void SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName);
+	
+	void IncrementAnonymousFunctionCount();
+	
+	void EndAnonymousFunction();
 
 	const pelet::ScopeClass& GetScope() const;
 
@@ -161,6 +165,15 @@ private:
 	 * This object will NOT own the pointer
 	 */
 	FunctionObserverClass* Function;
+	
+	/**
+	 * -1 scope is not anonymous
+	 *  0 scope is first anonymous function seen in this class/method/function
+	 *  1 scope is the second anonymous function seen in this class/method/function 
+	 *  2 scope is the third anonymous function seen in this class/method/function
+	 *  3+ ...
+	 */
+	int AnonymousFunctionCount;
 };
 
 /**
