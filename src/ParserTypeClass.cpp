@@ -1939,6 +1939,7 @@ pelet::ScopeClass::ScopeClass()
 	, ClassName()
 	, MethodName()
 	, NamespaceAliases(NULL)
+	, AnonymousFunctionCount(-1)
 {
 }
 
@@ -1954,6 +1955,7 @@ pelet::ScopeClass::ScopeClass(const pelet::ScopeClass& src)
 	, ClassName()
 	, MethodName()
 	, NamespaceAliases(NULL)
+	, AnonymousFunctionCount(-1)
 {
 	Copy(src);
 }
@@ -1965,6 +1967,7 @@ void pelet::ScopeClass::Clear() {
 	if (NamespaceAliases) {
 		NamespaceAliases->clear();
 	}
+	AnonymousFunctionCount = -1;
 }
 
 void pelet::ScopeClass::ClearAliases() {
@@ -1986,6 +1989,7 @@ void pelet::ScopeClass::Copy(const pelet::ScopeClass& src) {
 	else if (NamespaceAliases && src.NamespaceAliases) {
 		*NamespaceAliases = *src.NamespaceAliases;
 	}
+	AnonymousFunctionCount = src.AnonymousFunctionCount;
 }
 
 void pelet::ScopeClass::operator =(const pelet::ScopeClass& scope) {
@@ -2000,6 +2004,10 @@ bool pelet::ScopeClass::IsGlobalNamespace() const {
 	return UNICODE_STRING_SIMPLE("\\").compare(NamespaceName) == 0 || NamespaceName.isEmpty();
 }
 
+bool pelet::ScopeClass::IsAnonymousScope() const {
+	return AnonymousFunctionCount >= 0;
+}
+
 void pelet::ScopeClass::AddNamespaceAlias(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias) {
 	if (!NamespaceAliases) {
 		NamespaceAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>();
@@ -2009,7 +2017,7 @@ void pelet::ScopeClass::AddNamespaceAlias(const UnicodeString& namespaceName, co
 	// add the beginning slash if not there
 	UnicodeString fullyQualified;
 	if (namespaceName.indexOf(UNICODE_STRING_SIMPLE("\\")) != 0) {
-		fullyQualified.append(UNICODE_STRING_SIMPLE("\\"));		
+		fullyQualified.append(UNICODE_STRING_SIMPLE("\\"));
 	}
 	fullyQualified.append(namespaceName);
 	(*NamespaceAliases)[namespaceAlias] = fullyQualified;
@@ -2091,6 +2099,19 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 		fullyQualified = fullName.ToSignature();
 	}
 	return fullyQualified;
+}
+
+void pelet::ScopeClass::SetIsAnonymous(bool isAnonymousFunction, int anonymousFunctionCount) {
+	if (isAnonymousFunction) {
+		AnonymousFunctionCount = anonymousFunctionCount;
+	}
+	else {
+		AnonymousFunctionCount = -1;
+	}
+}
+
+int pelet::ScopeClass::GetAnonymousFunctionCount() const {
+	return AnonymousFunctionCount;
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass()

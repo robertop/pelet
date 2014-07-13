@@ -115,7 +115,8 @@ pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObse
 	, DeclaredNamespace()
 	, Class(classObserver)
 	, Member(memberObserver)
-	, Function(functionObserver) {
+	, Function(functionObserver)
+	, AnonymousFunctionCount(-1) {
 
 }
 
@@ -138,10 +139,23 @@ void pelet::ResourceParserObserverClass::NamespaceUseAddScope(pelet::NamespaceUs
 
 void pelet::ResourceParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
 	Scope.ClassName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	AnonymousFunctionCount = -1;
+	Scope.SetIsAnonymous(false);
 }
 
 void pelet::ResourceParserObserverClass::SetCurrentMemberName(pelet::SemanticValueClass* value) {
 	Scope.MethodName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	AnonymousFunctionCount = -1;
+	Scope.SetIsAnonymous(false);
+}
+
+void pelet::ResourceParserObserverClass::IncrementAnonymousFunctionCount() {
+	AnonymousFunctionCount++;
+	Scope.SetIsAnonymous(true, AnonymousFunctionCount);
+}
+
+void pelet::ResourceParserObserverClass::EndAnonymousFunction() {
+	Scope.SetIsAnonymous(false);
 }
 
 void pelet::ResourceParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName) {

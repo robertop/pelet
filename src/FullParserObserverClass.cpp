@@ -37,7 +37,8 @@ pelet::FullParserObserverClass::FullParserObserverClass(ClassObserverClass* clas
 	, Function(functionObserver)
 	, Variable(variableObserver)
 	, ExpressionObserver(expressionObserver)
-	, AllAstItems() {
+	, AllAstItems() 
+	, AnonymousFunctionCount(-1) {
 }
 
 pelet::FullParserObserverClass::~FullParserObserverClass() {
@@ -1369,10 +1370,23 @@ pelet::StatementListClass* pelet::FullParserObserverClass::StatementListNil() {
 
 void pelet::FullParserObserverClass::SetCurrentClassName(pelet::SemanticValueClass* value) {
 	Scope.ClassName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	AnonymousFunctionCount = -1;
+	Scope.SetIsAnonymous(false);
 }
 
 void pelet::FullParserObserverClass::SetCurrentMemberName(pelet::SemanticValueClass* value) {
 	Scope.MethodName = value ? value->Lexeme : UNICODE_STRING_SIMPLE("");
+	AnonymousFunctionCount = -1;
+	Scope.SetIsAnonymous(false);
+}
+
+void pelet::FullParserObserverClass::IncrementAnonymousFunctionCount() {
+	AnonymousFunctionCount++;
+	Scope.SetIsAnonymous(true, AnonymousFunctionCount);
+}
+
+void pelet::FullParserObserverClass::EndAnonymousFunction() {
+	Scope.SetIsAnonymous(false);
 }
 
 void pelet::FullParserObserverClass::SetDeclaredNamespace(pelet::QualifiedNameClass* qualifiedName) {

@@ -1872,6 +1872,44 @@ TEST_FIXTURE(Parser54TestClass, LintStringShouldReturnFalseOnBadCode) {
 	CHECK(LintResults.LineNumber > 0);
 }
 
+TEST_FIXTURE(Parser54TestClass, ScanStringShouldReturnScopeBadAnonymousScope) {
+	UnicodeString code = _U(
+		"<?php "
+		"class MyClass { "
+		" function myFunct() { "
+		"   call_user_func(function() {\n"
+		"     $'gag's = 'hello' \"again\" $not gaging; "
+		);
+	CHECK_EQUAL(false, Parser.ScanString(code, LintResults));
+	CHECK(LintResults.Error.length() > 0);
+	CHECK(LintResults.LineNumber > 0);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+	CHECK(LintResults.Scope.IsAnonymousScope());
+	CHECK_EQUAL(0, LintResults.Scope.GetAnonymousFunctionCount());
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringShouldReturnScopeMultipleBadAnonymousScope) {
+	UnicodeString code = _U(
+		"<?php "
+		"class MyClass { "
+		" \n"
+		" function myFunct() { "
+		"   call_user_func(function() {\n"
+		"     $newName = '';\n"
+		"   });\n"
+		"   call_user_func(function() {\n"
+		"     $'gag's = 'hello' \"again\" $not gaging; "
+		);
+	CHECK_EQUAL(false, Parser.ScanString(code, LintResults));
+	CHECK(LintResults.Error.length() > 0);
+	CHECK(LintResults.LineNumber > 0);
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("MyClass"), LintResults.Scope.ClassName); 
+	CHECK_EQUAL(UNICODE_STRING_SIMPLE("myFunct"), LintResults.Scope.MethodName);
+	CHECK(LintResults.Scope.IsAnonymousScope());
+	CHECK_EQUAL(1, LintResults.Scope.GetAnonymousFunctionCount());
+}
+
 TEST_FIXTURE(Parser54TestClass, LintStringWithVariableMethodCall) {
 	UnicodeString code = _U(
 	"class MyClass {\n"

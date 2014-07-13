@@ -1059,13 +1059,19 @@ expr_without_variable:
 	|	'@'  expr															{ $$ = $2; }
 	|	scalar																{ $$ = $1; }
 	|	T_ARRAY '(' array_pair_list ')'										{ $$ = 0; }
- 	|	'[' array_pair_list ']'												{ $$ = 0; }					
+ 	|	'[' array_pair_list ']'												{ $$ = 0; }
 	|	'`' backticks_expr '`'												{ $$ = 0; }
 	|	T_PRINT expr														{ $$ = 0; }
 	|	function is_reference '(' 
-			parameter_list ')' lexical_vars '{' inner_statement_list '}'	{ $$ = 0; }
+			parameter_list ')' lexical_vars '{' 						{ observers.IncrementAnonymousFunctionCount(); }
+			inner_statement_list '}'										{ observers.EndAnonymousFunction();
+																			  $$ = 0; 
+																			}
 	|	T_STATIC function is_reference '(' 
-			parameter_list ')' lexical_vars '{' inner_statement_list '}'	{ $$ = 0; } /* TODO what statements are these? */
+			parameter_list ')' lexical_vars '{' 						{ observers.IncrementAnonymousFunctionCount(); }
+			inner_statement_list '}'										{ observers.EndAnonymousFunction(); 
+																			  $$ = 0; 
+																			} /* TODO what statements are these? */
 ;
 
 function:
