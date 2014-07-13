@@ -286,6 +286,233 @@ void pelet::ExpressionObserverClass::CleanupStatements() {
 	}
 }
 
+pelet::AnyExpressionObserverClass::AnyExpressionObserverClass()
+: ExpressionObserverClass() {
+	
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionVariableFound(pelet::VariableClass* expression) {
+	CheckVariable(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression) {
+	CheckExpression(&expression->Destination);
+	CheckExpression(expression->Expression);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionAssignmentCompoundFound(pelet::AssignmentCompoundExpressionClass* expression) {
+	CheckExpression(&expression->Variable);
+	CheckExpression(expression->RightOperand);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionBinaryOperationFound(pelet::BinaryOperationClass* expression) {
+	CheckExpression(expression->LeftOperand);
+	CheckExpression(expression->RightOperand);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression) {
+	CheckExpression(expression->Operand);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression) {
+	CheckVariable(&expression->Variable);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression) {
+	CheckExpression(expression->Expression1);
+	CheckExpression(expression->Expression2);
+	if (expression->Expression3) {
+		CheckExpression(expression->Expression3);
+	}
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionScalarFound(pelet::ScalarExpressionClass* expression) {
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression) {
+	std::vector<pelet::ExpressionClass*>::const_iterator constructorArg = expression->CallArguments.begin();
+	for (; constructorArg != expression->CallArguments.end(); ++constructorArg) {
+		CheckExpression(*constructorArg);
+	}
+
+	// check any function args to any chained method calls.
+	std::vector<pelet::VariablePropertyClass>::const_iterator prop = expression->ChainList.begin();
+	for (; prop != expression->ChainList.end(); ++prop) {
+		std::vector<pelet::ExpressionClass*>::const_iterator chainArg = prop->CallArguments.begin();
+		for (; chainArg != prop->CallArguments.end(); ++chainArg) {
+			CheckExpression(*chainArg);
+		}
+	}
+	
+	OnAnyExpression(expression);
+} 
+
+void pelet::AnyExpressionObserverClass::StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables) {
+	for (size_t i = 0; i < variables->Variables.size(); ++i) {
+		CheckVariable(variables->Variables[i]);
+	}
+}
+
+void pelet::AnyExpressionObserverClass::StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables) {
+	for (size_t i = 0; i < variables->Variables.size(); ++i) {
+		CheckVariable(variables->Variables[i]);
+	}
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionIncludeFound(pelet::IncludeExpressionClass* expr) {
+	CheckExpression(expr->Expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionClosureFound(pelet::ClosureExpressionClass* expr) {
+	for (size_t i = 0; i < expr->Parameters.size(); ++i) {
+		CheckVariable(expr->Parameters[i]);
+	}
+	
+	for (size_t i = 0; i < expr->LexicalVars.size(); ++i) {
+		CheckVariable(expr->LexicalVars[i]);
+	}
+
+	// check the closure's inner statements
+	// we could have nested closures
+	for (size_t i = 0; i < expr->Statements.Size(); ++i) {
+		if (pelet::StatementClass::EXPRESSION == expr->Statements.TypeAt(i)) {
+			CheckExpression((pelet::ExpressionClass*)expr->Statements.At(i));
+		}
+	}
+	
+	OnAnyExpression(expr);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression) {
+
+	// check any array accesses in the destination variables
+	// ie $user[$name]
+	for (size_t i = 0; i < expression->Destinations.size(); ++i) {
+		pelet::VariableClass var = expression->Destinations[i];
+		CheckExpression(&var);
+	}
+	
+	CheckExpression(expression->Expression);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionIssetFound(pelet::IssetExpressionClass* expression) {
+
+	// check any array accesses in the destination variables
+	// ie $user[$name]
+	for (size_t i = 0; i < expression->Expressions.size(); ++i) {
+		CheckExpression(expression->Expressions[i]);
+	}
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionArrayFound(pelet::ArrayExpressionClass* expression) {
+	for (size_t i = 0; i < expression->ArrayPairs.size(); ++i) {
+		pelet::ArrayPairExpressionClass* pair = expression->ArrayPairs[i];
+		if (pair->Key) {
+			CheckExpression(pair->Key);
+		}
+		CheckExpression(pair->Value);
+	}
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionEvalFound(pelet::EvalExpressionClass* expression) {
+	CheckExpression(expression->Expression);
+	OnAnyExpression(expression);
+}
+
+void pelet::AnyExpressionObserverClass::CheckExpression(pelet::ExpressionClass* expr) {
+	switch (expr->ExpressionType) {
+	case pelet::ExpressionClass::ARRAY:
+		ExpressionArrayFound((pelet::ArrayExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::ASSIGNMENT:
+		ExpressionAssignmentFound((pelet::AssignmentExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::ASSIGNMENT_COMPOUND:
+		ExpressionAssignmentCompoundFound((pelet::AssignmentCompoundExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::ASSIGNMENT_LIST:
+		ExpressionAssignmentListFound((pelet::AssignmentListExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::BINARY_OPERATION:
+		ExpressionBinaryOperationFound((pelet::BinaryOperationClass*)expr);
+		break;
+	case pelet::ExpressionClass::NEW_CALL:
+		ExpressionNewInstanceFound((pelet::NewInstanceExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::SCALAR:
+		ExpressionScalarFound((pelet::ScalarExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::TERNARY_OPERATION:
+		ExpressionTernaryOperationFound((pelet::TernaryOperationClass*)expr);
+		break;
+	case pelet::ExpressionClass::UNARY_OPERATION:
+		ExpressionUnaryOperationFound((pelet::UnaryOperationClass*)expr);
+		break;
+	case pelet::ExpressionClass::UNARY_VARIABLE_OPERATION:
+		ExpressionUnaryVariableOperationFound((pelet::UnaryVariableOperationClass*)expr);
+		break;
+	case pelet::ExpressionClass::VARIABLE:
+		CheckVariable((pelet::VariableClass*)expr);
+		break;
+	case pelet::ExpressionClass::INCLUDE:
+		ExpressionIncludeFound((pelet::IncludeExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::CLOSURE:
+		ExpressionClosureFound((pelet::ClosureExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::ISSET:
+		ExpressionIssetFound((pelet::IssetExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::EVAL:
+		ExpressionEvalFound((pelet::EvalExpressionClass*)expr);
+		break;
+	case pelet::ExpressionClass::ARRAY_PAIR:
+	
+		// we dont get array pairs by themselves, they come in 
+		// with the array
+		break;
+	case pelet::ExpressionClass::UNKNOWN:
+	
+		// cannot check unknown expressions
+		break;
+	}
+}
+
+void pelet::AnyExpressionObserverClass::CheckVariable(pelet::VariableClass* variable) {
+	
+	// a variable could contain method calls, array accesses etc
+	for (size_t i = 0; i < variable->ChainList.size(); ++i) {
+		pelet::VariablePropertyClass prop = variable->ChainList[i];
+		if (prop.IsFunction) {
+
+			// check the function parameters
+			std::vector<pelet::ExpressionClass*>::const_iterator itArg;
+			for (itArg = prop.CallArguments.begin(); itArg != prop.CallArguments.end(); ++itArg) {
+				CheckExpression(*itArg);
+			}
+		}
+		else if (prop.IsArrayAccess && prop.ArrayAccess) {
+
+			// check for array accesees ie $user[$name]
+			CheckExpression(variable->ChainList[i].ArrayAccess);
+		}
+		else if (!prop.IsArrayAccess) {
+			
+			// this is a normal property call
+		}
+	}
+	OnAnyExpression(variable);
+}
 
 pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
 	: AstItemClass()
@@ -1675,7 +1902,9 @@ pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ScopeClass& s
 : ExpressionClass(scope) 
 , Parameters() 
 , LexicalVars() 
-, Statements() {
+, Statements() 
+, StartingPosition(0)
+, EndingPosition(0) {
 	ExpressionType = pelet::ExpressionClass::CLOSURE;
 }
 
@@ -1683,7 +1912,9 @@ pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ClosureExpres
 : ExpressionClass(src.Scope) 
 , Parameters() 
 , LexicalVars() 
-, Statements() {
+, Statements() 
+, StartingPosition(0)
+, EndingPosition(0) {
 	ExpressionType = pelet::ExpressionClass::CLOSURE;
 	Copy(src);
 }
@@ -1699,6 +1930,8 @@ void pelet::ClosureExpressionClass::Copy(const pelet::ClosureExpressionClass& sr
 	LexicalVars = src.LexicalVars;
 	Statements.Clear();
 	Statements.PushAll(&src.Statements);
+	StartingPosition = src.StartingPosition;
+	EndingPosition = src.EndingPosition;
 }
 
 pelet::ScopeClass::ScopeClass()

@@ -1661,6 +1661,8 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithClosure) {
 	CHECK_VARIABLE("$b", closure->Parameters[1]);
 	CHECK_VECTOR_SIZE(1, closure->LexicalVars);
 	CHECK_VARIABLE("$c", closure->LexicalVars[0]);
+	CHECK_EQUAL(34, closure->StartingPosition);
+	CHECK_EQUAL(62, closure->EndingPosition);
 	CHECK_EQUAL((size_t)1, closure->Statements.Size());
 
 	CHECK_EQUAL(pelet::StatementClass::EXPRESSION, closure->Statements.TypeAt(0));

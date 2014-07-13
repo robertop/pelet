@@ -291,7 +291,8 @@ public:
 	pelet::ExpressionClass* ExpressionUnaryVariableOperation(int operatorToken, pelet::VariableClass* operand);
 	pelet::ExpressionClass* ExpressionTernaryOperation(pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* middleOperand, pelet::ExpressionClass* rightOperand);
 	pelet::StatementListClass* ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value);
-	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts);
+	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts, 
+		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);
 	pelet::ExpressionClass* ExpressionIsset(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionIssetMerge(pelet::IssetExpressionClass* isset, pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionEval(pelet::ExpressionClass* expr);

@@ -812,8 +812,11 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionNil() {
 }
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
-	pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts) {
+	pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts,
+	pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue) {
 		pelet::ClosureExpressionClass* closure = new pelet::ClosureExpressionClass(Scope);
+		closure->StartingPosition = startingPositionTokenValue->Pos;
+		closure->EndingPosition = endingPositionTokenValue->Pos;
 		for (size_t i = 0; i < parameters->GetCount(); ++i) {
 			UnicodeString param, type;
 			parameters->Param(i, param, type);

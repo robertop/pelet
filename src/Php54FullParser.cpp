@@ -5744,14 +5744,14 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 954 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (9)].parametersList), (yyvsp[(6) - (9)].statementList), (yyvsp[(8) - (9)].statementList));   }
+    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (9)].parametersList), (yyvsp[(6) - (9)].statementList), (yyvsp[(8) - (9)].statementList), (yyvsp[(7) - (9)].semanticValue), (yyvsp[(9) - (9)].semanticValue));   }
     break;
 
   case 288:
 
 /* Line 1806 of yacc.c  */
 #line 956 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(5) - (10)].parametersList), (yyvsp[(7) - (10)].statementList), (yyvsp[(9) - (10)].statementList));  }
+    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(5) - (10)].parametersList), (yyvsp[(7) - (10)].statementList), (yyvsp[(9) - (10)].statementList), (yyvsp[(8) - (10)].semanticValue), (yyvsp[(10) - (10)].semanticValue));  }
     break;
 
   case 290:

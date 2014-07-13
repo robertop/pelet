@@ -951,9 +951,9 @@ expr_without_variable:
 	|	T_PRINT expr 												{ $$ = observers.ExpressionMakeScalar($2); }	
 	|	function is_reference 
 		'(' parameter_list ')' 
-		lexical_vars '{' inner_statement_list '}'					{ $$ = observers.ExpressionMakeClosure($4, $6, $8);   }
+		lexical_vars '{' inner_statement_list '}'					{ $$ = observers.ExpressionMakeClosure($4, $6, $8, $7, $9);   }
 	|	T_STATIC function is_reference '(' 
-			parameter_list ')' lexical_vars '{' inner_statement_list '}'			{ $$ = observers.ExpressionMakeClosure($5, $7, $9);  }
+			parameter_list ')' lexical_vars '{' inner_statement_list '}'			{ $$ = observers.ExpressionMakeClosure($5, $7, $9, $8, $10);  }
 ;
 
 function:

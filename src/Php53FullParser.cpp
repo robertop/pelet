@@ -5364,7 +5364,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 872 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (9)].parametersList), (yyvsp[(6) - (9)].statementList), (yyvsp[(8) - (9)].statementList));  }
+    { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (9)].parametersList), (yyvsp[(6) - (9)].statementList), (yyvsp[(8) - (9)].statementList), (yyvsp[(7) - (9)].semanticValue), (yyvsp[(9) - (9)].semanticValue));  }
     break;
 
   case 253:

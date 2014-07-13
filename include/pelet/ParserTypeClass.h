@@ -348,11 +348,28 @@ public:
  * this type will be passed to the ParserClass; the parser will call the appropriate
  * method when an expression has been parsed. This interface is most useful when needing to parse
  * a single expression.
- * The observer will get notified as the buffer is being parsed.
  * A note about pointers:
  * All of the expression pointers are owned by ExpressionObserverClass and will be 
  * deleted when ExpressionObserverClass goes out of scope.  They can also be 
- * cleaned up manually.
+ * cleaned up manually by calling CleanupStatements() but it should rarely
+ * need to be done.
+ * 
+ * FAQ: Why isn't an observer method being called?
+ * 
+ * Each callback (ExpressionVariableFound, ExpressionIncludeFound, etc...) is
+ * called when the top-level statement matches the callback.
+ * For example, in this expression:
+ * 
+ * $x += $this->myMethod($y, $z) + $this->another();
+ * 
+ * the ONLY callback that will be called is
+ * ExpressionCompounAssignment.  The ExpressionVariableFound
+ * and the ExpressionBinaryOperationFound will NOT be called
+ * because they were not the top-level statement. However,
+ * the the binary operation expressions will
+ * be given as the Expression of the compound assignment, and
+ * the binary operation expression will have Variable 
+ * for the left and right hand sides.
  */
 class PELET_API ExpressionObserverClass {
 
@@ -364,6 +381,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a single varaible expression.($x, $x->func())
+	 * This method only gets called when the top-level statement is a variable. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the variable expression that was parsed.
 	 * @see pelet::AssignmentExpressionClass
@@ -372,6 +391,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a single assignment expression.($x = $y)
+	 * This method only gets called when the top-level statement is an assignment. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the assignment expression that was parsed.
 	 * @see pelet::AssignmentExpressionClass
@@ -380,6 +401,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a single assignment list expression.(list($x, $z) = $y)
+	 * This method only gets called when the top-level statement is a list assignment. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the assignment list expression that was parsed.
 	 * @see pelet::AssignmentListExpressionClass
@@ -388,6 +411,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a single compound assignment expression ($x += $y).
+	 *  This method only gets called when the top-level statement is a compound assignment. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the assignment expression that was parsed.
 	 * @see pelet::AssignmentCompoundExpressionClass
@@ -396,6 +421,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a binary operation expression ($x + $y).
+	 *  This method only gets called when the top-level statement is a binary operation. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the binary expression that was parsed.
 	 * @see pelet::BinaryOperationClass
@@ -404,6 +431,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a unary expression operation expression (!feof()).
+	 * This method only gets called when the top-level statement is a unary operation. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the unary expression that was parsed.
 	 * @see pelet::UnaryOperationClass
@@ -412,6 +441,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a unary variable operation expression ($x++).
+	 *  This method only gets called when the top-level statement is a unary variable operation. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the unary expression that was parsed.
 	 * @see pelet::UnaryOperationClass
@@ -420,6 +451,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a ternary operation expression ($x ? $y : $z).
+	 * This method only gets called when the top-level statement is a ternary operation. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the ternary expression that was parsed.
 	 * @see pelet::TernaryOperationClass
@@ -429,6 +462,9 @@ public:
 	/**
 	 * Override this method to get the pseudo-parse tree for a scalar expression (NAME).
 	 * could be a number, string, or a namespace/class name;
+	 * This method only gets called when the top-level statement is a scalar. See
+	 * the ExpressionObserverClass class comment for more info.
+	 * 
 	 * 
 	 * @param expression the scalar expression that was parsed.
 	 * @see pelet::ScalarExpressionClass
@@ -437,7 +473,9 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a new instance expression ( new MyClass).
-	 * 
+	 * This method only gets called when the top-level statement is a new operation. See
+	 * the ExpressionObserverClass class comment for more info.
+	* 
 	 * @param expression the new instance expression that was parsed.
 	 * @see pelet::NewInstanceExpressionClass
 	 */
@@ -469,6 +507,8 @@ public:
 
 	/**
 	 * Override this method to get the pseudo-parse tree for an include expression.
+	 * This method only gets called when the top-level statement is an include expression. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param the expression that was parsed.
 	 * @see pelet::IncludeExpressionClass
@@ -479,6 +519,8 @@ public:
 	 * Override this method to get the pseudo-parse tree for closure expression.
 	 * The closure expression contains the list of expressions that were inside the
 	 * closure.
+	 * This method only gets called when the top-level statement is a closure. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param the expression that was parsed.
 	 * @see pelet::ClosureExpressionClass
@@ -489,6 +531,8 @@ public:
 	 * Override this method to get the pseudo-parse tree for an isset expression.
 	 * The isset expression contains the list of expressions that were inside the
 	 * isset call.
+	 * This method only gets called when the top-level statement is an isset() expression. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param the expression that was parsed.
 	 * @see pelet::IssetExpressionClass
@@ -498,8 +542,8 @@ public:
 	/**
 	 * Override this method to get the pseudo-parse tree for a single array expression.
 	 * array(1, 2 => 3)
-	 * note that this callback will get called if the array is the entire expression,
-	 * 
+	 * This method only gets called when the top-level statement is an array expression. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the variable expression that was parsed.
 	 * @see pelet::ArrayExpressionClass
@@ -509,6 +553,8 @@ public:
 	/**
 	 * Override this method to get the pseudo-parse tree for an eval expression.
 	 * eval('code')
+	 * This method only gets called when the top-level statement is an eval() call. See
+	 * the ExpressionObserverClass class comment for more info.
 	 * 
 	 * @param expression the eval expression that was parsed.
 	 * @see pelet::EvalExpressionClass
@@ -536,6 +582,64 @@ private:
 	 * This class will own the pointers.
 	 */
 	std::vector<pelet::AstItemClass*> Statements;
+};
+
+/**
+ * A "simple" observer useful when needing to recursively descend down
+ * the AST to look a single type of expression.  For example, in this
+ * expression
+ * 
+ *  $x += $this->myMethod($y, $z) + $this->another();
+ * 
+ * the OnAnyExpression() method will be called 5 times
+ * with the following parameters
+ * 
+ * VariableExpression - $x
+ * VariableExpression - $y
+ * Variable - $this->another()
+ * Variable - this->method($y, $z)
+ * AssignmentCompoundExpression - $x += $this->myMethod($y, $z) + $this->another()
+ * 
+ * This class should only be used if you don't care about at what 
+ * position in the AST an expression is located; for example, when the
+ * callback is called with a variable there is no way to know whether the variable
+ * is part of a binary operation, function call, or array access.
+ */
+class PELET_API AnyExpressionObserverClass : public ExpressionObserverClass {
+	
+	
+	public:
+	
+	AnyExpressionObserverClass();
+	
+	/**
+	 * Override this method so that you can be called when recursing down the
+	 * AST. 
+	 * The expression can be of any kind.
+	 */
+	virtual void OnAnyExpression(pelet::ExpressionClass* expression) = 0;
+	
+	// the rest of the methods below should NOT be overriden
+	void ExpressionVariableFound(pelet::VariableClass* expression);
+	void ExpressionAssignmentFound(pelet::AssignmentExpressionClass* expression);
+	void ExpressionAssignmentListFound(pelet::AssignmentListExpressionClass* expression);
+	void ExpressionAssignmentCompoundFound(pelet::AssignmentCompoundExpressionClass* expression);
+	void ExpressionBinaryOperationFound(pelet::BinaryOperationClass* expression);
+	void ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression);
+	void ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression);
+	void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression);
+	void ExpressionScalarFound(pelet::ScalarExpressionClass* expression);
+	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression);
+	void StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables);
+	void StatementStaticVariablesFound(pelet::StaticVariableStatementClass* variables);
+	void ExpressionIncludeFound(pelet::IncludeExpressionClass* expr);
+	void ExpressionClosureFound(pelet::ClosureExpressionClass* expr);
+	void ExpressionIssetFound(pelet::IssetExpressionClass* expr);
+	void ExpressionArrayFound(pelet::ArrayExpressionClass* expression);
+	void ExpressionEvalFound(pelet::EvalExpressionClass* expression);
+	
+	void CheckExpression(pelet::ExpressionClass* expression);
+	void CheckVariable(pelet::VariableClass* variable);
 };
 
 /**
@@ -1716,6 +1820,18 @@ public:
 	 * own any of the statement pointers.
 	 */
 	pelet::StatementListClass Statements;
+	
+	/** 
+	 * character position of closure body, 0 based 
+	 * StartingPosition is the position of the start brace '{'
+	 */
+	int StartingPosition;
+	
+	/** 
+	 * character position of closure body, 0 based 
+	 * EndingPosition is the position of the end brace '}' 
+	 */
+	int EndingPosition;
 
 	ClosureExpressionClass(const pelet::ScopeClass& scope);
 
