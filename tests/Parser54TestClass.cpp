@@ -1387,6 +1387,28 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithTernaryOperators) {
 	CHECK_UNISTR_EQUALS("40", expr3->Value);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithInstanceOfOperators) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$result = $x instanceof MyClass; \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* expr = Observer.AssignmentExpressions[0];
+	
+	CHECK_VECTOR_SIZE(1, expr->Destination.ChainList);
+	pelet::VariableClass* var = &expr->Destination;
+	CHECK_VARIABLE("$result", var);
+
+	CHECK_EQUAL(pelet::ExpressionClass::INSTANCEOF_OPERATION, expr->Expression->ExpressionType);	
+	pelet::InstanceOfOperationClass* instanceOf = PCEIO(expr->Expression);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, instanceOf->Expression1->ExpressionType);
+	pelet::VariableClass* expr1 = PCEV(instanceOf->Expression1);
+	CHECK_VARIABLE("$x", expr1);
+	CHECK_UNISTR_EQUALS("MyClass", instanceOf->ClassName);
+}
+
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithVariable) {
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(

@@ -2350,6 +2350,8 @@ private:
  * useful macros to alleviate tedious type casting 
  * expression pointers into their type.  Note that the macros
  * also assert that the expression type macthes
+ * 
+ * PCE == pelet cast expression
  */
 #define PCEA(var) (pelet::AssignmentExpressionClass*)var
 #define PCEAR(var) (pelet::ArrayExpressionClass*)var
@@ -2358,6 +2360,7 @@ private:
 #define PCEU(var) (pelet::UnaryOperationClass*)var
 #define PCEUV(var) (pelet::UnaryVariableOperationClass*)var
 #define PCET(var) (pelet::TernaryOperationClass*)var
+#define PCEIO(var) (pelet::InstanceOfOperationClass*)var
 #define PCEV(var) (pelet::VariableClass*)var
 #define PCER(var) (pelet::ArrayExpressionClass*)var
 #define PCES(var) (pelet::ScalarExpressionClass*)var
