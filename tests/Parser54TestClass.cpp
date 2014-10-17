@@ -1787,6 +1787,22 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithCaseAssignmentStatement) {
 	CHECK_VARIABLE("$good", (&(Observer.AssignmentExpressions[3]->Destination)));
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithForeach) {
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"foreach ($rows as $item) {\n"
+		"	$i++;\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions);
+	CHECK_VARIABLE("$rows", Observer.VariableExpressions[0]);
+	
+	// the foreach is an implicit assignment of $item , the AST
+	// returend is an assignment expression
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	CHECK_VARIABLE("$item", (&(Observer.AssignmentExpressions[0]->Destination)));
+}
 
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithAssignmentList) {
 	Parser.SetExpressionObserver(&Observer);

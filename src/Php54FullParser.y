@@ -441,12 +441,14 @@ unticked_statement:
 	|	T_FOREACH '(' variable T_AS								
 		foreach_variable foreach_optional_arg ')'
 		foreach_statement																			{ $$ = observers.StatementListMake();
+																									  $$ = observers.StatementListAppend($$, $3);
 																									  $$ = observers.StatementListAppend($$, $5);
 																									  $$ = observers.StatementListAppend($$, $6);
 																									  $$ = observers.StatementListMerge($$, $8); }
 	|	T_FOREACH '(' expr_without_variable T_AS
 		variable foreach_optional_arg ')'
 		foreach_statement																			{ $$ = observers.StatementListMake();
+																									  $$ = observers.StatementListAppend($$, $3);
 																									  $$ = observers.StatementListAppend($$, observers.ExpressionMakeAsAssignmentExpression($5));
 																									  $$ = observers.StatementListAppend($$, $6);
 																									  $$ = observers.StatementListMerge($$, $8); }

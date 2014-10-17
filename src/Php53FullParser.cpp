@@ -791,42 +791,42 @@ static const yytype_uint16 yyrline[] =
      386,   387,   388,   389,   393,   394,   398,   399,   403,   404,
      405,   406,   410,   411,   415,   416,   420,   424,   426,   427,
      439,   442,   443,   444,   445,   446,   447,   448,   449,   450,
-     451,   452,   453,   454,   455,   461,   467,   468,   469,   479,
-     480,   484,   485,   489,   490,   494,   503,   504,   508,   512,
-     516,   520,   521,   526,   525,   535,   534,   548,   547,   556,
-     557,   558,   562,   563,   568,   572,   573,   578,   579,   584,
-     585,   589,   590,   594,   595,   599,   600,   604,   605,   609,
-     610,   614,   615,   619,   620,   621,   622,   626,   627,   631,
-     637,   638,   642,   643,   647,   648,   655,   656,   663,   664,
-     668,   669,   673,   674,   679,   680,   681,   682,   683,   684,
-     685,   686,   690,   691,   692,   696,   697,   701,   702,   703,
-     704,   705,   706,   710,   711,   715,   716,   717,   721,   722,
-     723,   724,   728,   729,   733,   734,   736,   735,   743,   744,
-     748,   749,   753,   754,   758,   759,   763,   764,   765,   766,
-     767,   768,   772,   773,   774,   775,   779,   781,   785,   786,
-     790,   791,   795,   796,   800,   801,   802,   803,   804,   805,
-     806,   807,   808,   809,   810,   811,   812,   813,   814,   815,
-     816,   817,   818,   819,   820,   821,   822,   823,   824,   825,
-     826,   827,   828,   829,   830,   831,   832,   833,   834,   835,
-     836,   837,   838,   839,   840,   841,   842,   843,   844,   845,
-     846,   847,   848,   849,   850,   851,   854,   856,   857,   858,
-     859,   860,   861,   862,   863,   864,   865,   866,   867,   868,
-     869,   872,   870,   882,   886,   887,   891,   895,   899,   900,
-     904,   906,   909,   911,   913,   915,   917,   919,   924,   925,
-     926,   927,   931,   932,   933,   937,   938,   942,   944,   948,
-     949,   953,   957,   958,   959,   963,   964,   965,   969,   970,
-     974,   975,   976,   977,   978,   979,   980,   981,   982,   983,
-     984,   985,   989,   990,   991,   992,   993,   994,   995,   996,
-    1000,  1004,  1005,  1006,  1007,  1008,  1009,  1010,  1011,  1015,
-    1016,  1020,  1021,  1025,  1026,  1027,  1028,  1032,  1033,  1037,
-    1041,  1045,  1049,  1053,  1057,  1058,  1062,  1067,  1068,  1072,
-    1073,  1077,  1078,  1082,  1086,  1087,  1091,  1092,  1093,  1097,
-    1098,  1099,  1103,  1104,  1108,  1109,  1113,  1114,  1118,  1119,
-    1120,  1124,  1125,  1129,  1130,  1134,  1135,  1139,  1140,  1141,
-    1145,  1146,  1150,  1154,  1158,  1159,  1160,  1164,  1168,  1169,
-    1173,  1174,  1175,  1176,  1180,  1181,  1182,  1183,  1184,  1185,
-    1189,  1190,  1191,  1195,  1196,  1197,  1198,  1199,  1200,  1201,
-    1205,  1206,  1210,  1211
+     451,   452,   453,   454,   455,   462,   469,   470,   471,   481,
+     482,   486,   487,   491,   492,   496,   505,   506,   510,   514,
+     518,   522,   523,   528,   527,   537,   536,   550,   549,   558,
+     559,   560,   564,   565,   570,   574,   575,   580,   581,   586,
+     587,   591,   592,   596,   597,   601,   602,   606,   607,   611,
+     612,   616,   617,   621,   622,   623,   624,   628,   629,   633,
+     639,   640,   644,   645,   649,   650,   657,   658,   665,   666,
+     670,   671,   675,   676,   681,   682,   683,   684,   685,   686,
+     687,   688,   692,   693,   694,   698,   699,   703,   704,   705,
+     706,   707,   708,   712,   713,   717,   718,   719,   723,   724,
+     725,   726,   730,   731,   735,   736,   738,   737,   745,   746,
+     750,   751,   755,   756,   760,   761,   765,   766,   767,   768,
+     769,   770,   774,   775,   776,   777,   781,   783,   787,   788,
+     792,   793,   797,   798,   802,   803,   804,   805,   806,   807,
+     808,   809,   810,   811,   812,   813,   814,   815,   816,   817,
+     818,   819,   820,   821,   822,   823,   824,   825,   826,   827,
+     828,   829,   830,   831,   832,   833,   834,   835,   836,   837,
+     838,   839,   840,   841,   842,   843,   844,   845,   846,   847,
+     848,   849,   850,   851,   852,   853,   856,   858,   859,   860,
+     861,   862,   863,   864,   865,   866,   867,   868,   869,   870,
+     871,   874,   872,   884,   888,   889,   893,   897,   901,   902,
+     906,   908,   911,   913,   915,   917,   919,   921,   926,   927,
+     928,   929,   933,   934,   935,   939,   940,   944,   946,   950,
+     951,   955,   959,   960,   961,   965,   966,   967,   971,   972,
+     976,   977,   978,   979,   980,   981,   982,   983,   984,   985,
+     986,   987,   991,   992,   993,   994,   995,   996,   997,   998,
+    1002,  1006,  1007,  1008,  1009,  1010,  1011,  1012,  1013,  1017,
+    1018,  1022,  1023,  1027,  1028,  1029,  1030,  1034,  1035,  1039,
+    1043,  1047,  1051,  1055,  1059,  1060,  1064,  1069,  1070,  1074,
+    1075,  1079,  1080,  1084,  1088,  1089,  1093,  1094,  1095,  1099,
+    1100,  1101,  1105,  1106,  1110,  1111,  1115,  1116,  1120,  1121,
+    1122,  1126,  1127,  1131,  1132,  1136,  1137,  1141,  1142,  1143,
+    1147,  1148,  1152,  1156,  1160,  1161,  1162,  1166,  1170,  1171,
+    1175,  1176,  1177,  1178,  1182,  1183,  1184,  1185,  1186,  1187,
+    1191,  1192,  1193,  1197,  1198,  1199,  1200,  1201,  1202,  1203,
+    1207,  1208,  1212,  1213
 };
 #endif
 
@@ -4022,6 +4022,7 @@ yyreduce:
 /* Line 1806 of yacc.c  */
 #line 457 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake();
+																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (8)].variable));
 																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), (yyvsp[(5) - (8)].expression));
 																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), (yyvsp[(6) - (8)].expression));
 																									  (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(8) - (8)].statementList)); }
@@ -4030,8 +4031,9 @@ yyreduce:
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 463 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 464 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake();
+																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (8)].expression));
 																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), observers.ExpressionMakeAsAssignmentExpression((yyvsp[(5) - (8)].variable)));
 																									  (yyval.statementList) = observers.StatementListAppend((yyval.statementList), (yyvsp[(6) - (8)].expression));
 																									  (yyval.statementList) = observers.StatementListMerge((yyval.statementList), (yyvsp[(8) - (8)].statementList)); }
@@ -4040,21 +4042,21 @@ yyreduce:
   case 56:
 
 /* Line 1806 of yacc.c  */
-#line 467 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 469 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 468 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 470 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 472 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 474 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(3) - (13)].statementList), 
 																											observers.AssignmentExpressionFromNewFound(
 																											observers.VariableStart((yyvsp[(8) - (13)].semanticValue)), 
@@ -4067,49 +4069,49 @@ yyreduce:
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 479 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 481 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (3)].expression)); }
     break;
 
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 480 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 482 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 61:
 
 /* Line 1806 of yacc.c  */
-#line 484 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 486 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 62:
 
 /* Line 1806 of yacc.c  */
-#line 485 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 487 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 489 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 491 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 490 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 492 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.StatementListMerge((yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 65:
 
 /* Line 1806 of yacc.c  */
-#line 495 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 497 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.AssignmentExpressionFromNewFound(
 																			   observers.VariableStart((yyvsp[(4) - (8)].semanticValue)), 
 																			   (yyvsp[(3) - (8)].qualifiedName),
@@ -4120,42 +4122,42 @@ yyreduce:
   case 66:
 
 /* Line 1806 of yacc.c  */
-#line 503 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 505 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 67:
 
 /* Line 1806 of yacc.c  */
-#line 504 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 506 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (3)].statementList); }
     break;
 
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 520 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 522 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.isMethod) = false; }
     break;
 
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 521 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 523 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.isMethod) = true; }
     break;
 
   case 73:
 
 /* Line 1806 of yacc.c  */
-#line 526 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 528 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.SetCurrentMemberName((yyvsp[(3) - (6)].semanticValue)); }
     break;
 
   case 74:
 
 /* Line 1806 of yacc.c  */
-#line 527 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 529 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeFunction((yyvsp[(3) - (10)].semanticValue), (yyvsp[(2) - (10)].isMethod), (yyvsp[(1) - (10)].semanticValue), (yyvsp[(5) - (10)].parametersList), (yyvsp[(8) - (10)].semanticValue), (yyvsp[(10) - (10)].semanticValue));
 											  observers.StatementListMerge((yyval.statementList), (yyvsp[(9) - (10)].statementList)); 
 											  observers.SetCurrentMemberName(NULL);
@@ -4165,14 +4167,14 @@ yyreduce:
   case 75:
 
 /* Line 1806 of yacc.c  */
-#line 535 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 537 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.SetCurrentClassName((yyvsp[(2) - (4)].semanticValue)); }
     break;
 
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 536 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 538 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassSymbolMake((yyvsp[(2) - (8)].semanticValue), (yyvsp[(1) - (8)].classSymbol), (yyvsp[(3) - (8)].classSymbol), (yyvsp[(4) - (8)].classSymbol), (yyvsp[(8) - (8)].semanticValue));
 											  observers.DeclareAssignedPropertiesFromAssignments((yyvsp[(7) - (8)].statementList));
 											 
@@ -4189,14 +4191,14 @@ yyreduce:
   case 77:
 
 /* Line 1806 of yacc.c  */
-#line 548 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 550 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.SetCurrentClassName((yyvsp[(2) - (3)].semanticValue)); }
     break;
 
   case 78:
 
 /* Line 1806 of yacc.c  */
-#line 549 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 551 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassSymbolMake((yyvsp[(2) - (7)].semanticValue), (yyvsp[(1) - (7)].classSymbol), NULL, (yyvsp[(3) - (7)].classSymbol), (yyvsp[(7) - (7)].semanticValue));
 											  observers.StatementListMerge((yyval.statementList), (yyvsp[(6) - (7)].statementList)); 
 											  observers.SetCurrentClassName(NULL);    
@@ -4206,210 +4208,210 @@ yyreduce:
   case 79:
 
 /* Line 1806 of yacc.c  */
-#line 556 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 558 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart((yyvsp[(1) - (1)].semanticValue), false, false, false, false); }
     break;
 
   case 80:
 
 /* Line 1806 of yacc.c  */
-#line 557 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 559 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart((yyvsp[(1) - (2)].semanticValue), true, false, false, false); }
     break;
 
   case 81:
 
 /* Line 1806 of yacc.c  */
-#line 558 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 560 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart((yyvsp[(1) - (2)].semanticValue), false, true, false, false); }
     break;
 
   case 82:
 
 /* Line 1806 of yacc.c  */
-#line 562 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 564 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart(NULL, false, false, false, false); }
     break;
 
   case 83:
 
 /* Line 1806 of yacc.c  */
-#line 564 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 566 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolExtends((yyvsp[(2) - (2)].qualifiedName)); }
     break;
 
   case 84:
 
 /* Line 1806 of yacc.c  */
-#line 568 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 570 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart((yyvsp[(1) - (1)].semanticValue), false, false, true, false); }
     break;
 
   case 85:
 
 /* Line 1806 of yacc.c  */
-#line 572 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 574 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart(NULL, false, false, false, false); }
     break;
 
   case 86:
 
 /* Line 1806 of yacc.c  */
-#line 574 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 576 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); }
     break;
 
   case 87:
 
 /* Line 1806 of yacc.c  */
-#line 578 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 580 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolStart(NULL, false, false, false, false); }
     break;
 
   case 88:
 
 /* Line 1806 of yacc.c  */
-#line 580 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 582 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = (yyvsp[(2) - (2)].classSymbol); }
     break;
 
   case 89:
 
 /* Line 1806 of yacc.c  */
-#line 584 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 586 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolAddToImplements((yyvsp[(1) - (1)].qualifiedName)); }
     break;
 
   case 90:
 
 /* Line 1806 of yacc.c  */
-#line 585 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 587 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classSymbol) = observers.ClassSymbolAddToImplements((yyvsp[(1) - (3)].classSymbol), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 91:
 
 /* Line 1806 of yacc.c  */
-#line 589 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 591 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) =  observers.ExpressionNil(); }
     break;
 
   case 92:
 
 /* Line 1806 of yacc.c  */
-#line 590 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 592 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 93:
 
 /* Line 1806 of yacc.c  */
-#line 594 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 596 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeAsAssignmentExpression((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 94:
 
 /* Line 1806 of yacc.c  */
-#line 595 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 597 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeAsAssignmentExpression((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 95:
 
 /* Line 1806 of yacc.c  */
-#line 599 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 601 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 96:
 
 /* Line 1806 of yacc.c  */
-#line 600 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 602 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 97:
 
 /* Line 1806 of yacc.c  */
-#line 604 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 606 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 98:
 
 /* Line 1806 of yacc.c  */
-#line 605 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 607 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 99:
 
 /* Line 1806 of yacc.c  */
-#line 609 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 611 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 100:
 
 /* Line 1806 of yacc.c  */
-#line 610 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 612 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 101:
 
 /* Line 1806 of yacc.c  */
-#line 614 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 616 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 102:
 
 /* Line 1806 of yacc.c  */
-#line 615 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 617 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 103:
 
 /* Line 1806 of yacc.c  */
-#line 619 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 621 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 104:
 
 /* Line 1806 of yacc.c  */
-#line 620 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 622 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 105:
 
 /* Line 1806 of yacc.c  */
-#line 621 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 623 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 106:
 
 /* Line 1806 of yacc.c  */
-#line 622 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 624 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (5)].statementList); }
     break;
 
   case 107:
 
 /* Line 1806 of yacc.c  */
-#line 626 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 628 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 108:
 
 /* Line 1806 of yacc.c  */
-#line 627 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 629 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (5)].statementList);
 																				  observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (5)].expression));
 																			      observers.StatementListMerge((yyval.statementList), (yyvsp[(5) - (5)].statementList)); 
@@ -4419,7 +4421,7 @@ yyreduce:
   case 109:
 
 /* Line 1806 of yacc.c  */
-#line 631 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 633 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (4)].statementList); 
 																				  observers.StatementListMerge((yyval.statementList), (yyvsp[(4) - (4)].statementList));
 																				}
@@ -4428,28 +4430,28 @@ yyreduce:
   case 112:
 
 /* Line 1806 of yacc.c  */
-#line 642 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 644 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 113:
 
 /* Line 1806 of yacc.c  */
-#line 643 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 645 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 114:
 
 /* Line 1806 of yacc.c  */
-#line 647 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 649 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 115:
 
 /* Line 1806 of yacc.c  */
-#line 648 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 650 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); 
 															  observers.StatementListMerge((yyval.statementList), (yyvsp[(1) - (6)].statementList));
 															  observers.StatementListMerge((yyval.statementList), observers.StatementListMakeAndAppend((yyvsp[(4) - (6)].expression))); 
@@ -4459,14 +4461,14 @@ yyreduce:
   case 116:
 
 /* Line 1806 of yacc.c  */
-#line 655 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 657 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 117:
 
 /* Line 1806 of yacc.c  */
-#line 656 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 658 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); 
 																				  observers.StatementListMerge((yyval.statementList), (yyvsp[(1) - (7)].statementList));
 																			  	  observers.StatementListMerge((yyval.statementList), observers.StatementListMakeAndAppend((yyvsp[(4) - (7)].expression))); 
@@ -4476,280 +4478,280 @@ yyreduce:
   case 118:
 
 /* Line 1806 of yacc.c  */
-#line 663 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 665 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 119:
 
 /* Line 1806 of yacc.c  */
-#line 664 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 666 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (2)].statementList); }
     break;
 
   case 120:
 
 /* Line 1806 of yacc.c  */
-#line 668 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 670 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 121:
 
 /* Line 1806 of yacc.c  */
-#line 669 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 671 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (3)].statementList); }
     break;
 
   case 122:
 
 /* Line 1806 of yacc.c  */
-#line 673 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 675 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = (yyvsp[(1) - (1)].parametersList); }
     break;
 
   case 123:
 
 /* Line 1806 of yacc.c  */
-#line 674 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 676 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListNil(); }
     break;
 
   case 124:
 
 /* Line 1806 of yacc.c  */
-#line 679 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 681 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].semanticValue), false); }
     break;
 
   case 125:
 
 /* Line 1806 of yacc.c  */
-#line 680 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 682 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue), true); }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
-#line 681 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 683 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].semanticValue), true);}
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
-#line 682 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 684 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].semanticValue), false); }
     break;
 
   case 128:
 
 /* Line 1806 of yacc.c  */
-#line 683 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 685 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (4)].parametersList), (yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].semanticValue), false); }
     break;
 
   case 129:
 
 /* Line 1806 of yacc.c  */
-#line 684 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 686 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (5)].parametersList), (yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].semanticValue), true); }
     break;
 
   case 130:
 
 /* Line 1806 of yacc.c  */
-#line 685 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 687 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (7)].parametersList), (yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].semanticValue), true); }
     break;
 
   case 131:
 
 /* Line 1806 of yacc.c  */
-#line 686 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 688 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (6)].parametersList), (yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].semanticValue), false); }
     break;
 
   case 132:
 
 /* Line 1806 of yacc.c  */
-#line 690 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 692 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 133:
 
 /* Line 1806 of yacc.c  */
-#line 691 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 693 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 134:
 
 /* Line 1806 of yacc.c  */
-#line 692 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 694 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameCreate((yyvsp[(1) - (1)].semanticValue));}
     break;
 
   case 135:
 
 /* Line 1806 of yacc.c  */
-#line 696 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 698 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 136:
 
 /* Line 1806 of yacc.c  */
-#line 697 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 699 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) =  observers.StatementListNil(); }
     break;
 
   case 137:
 
 /* Line 1806 of yacc.c  */
-#line 701 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 703 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 138:
 
 /* Line 1806 of yacc.c  */
-#line 702 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 704 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 139:
 
 /* Line 1806 of yacc.c  */
-#line 703 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 705 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 140:
 
 /* Line 1806 of yacc.c  */
-#line 704 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 706 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 141:
 
 /* Line 1806 of yacc.c  */
-#line 705 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 707 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].variable)); }
     break;
 
   case 142:
 
 /* Line 1806 of yacc.c  */
-#line 706 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 708 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 143:
 
 /* Line 1806 of yacc.c  */
-#line 710 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 712 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 144:
 
 /* Line 1806 of yacc.c  */
-#line 711 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 713 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 145:
 
 /* Line 1806 of yacc.c  */
-#line 715 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 717 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeGlobalVariable((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 146:
 
 /* Line 1806 of yacc.c  */
-#line 716 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 718 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 147:
 
 /* Line 1806 of yacc.c  */
-#line 717 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 719 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 148:
 
 /* Line 1806 of yacc.c  */
-#line 721 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 723 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), observers.ExpressionMakeStaticVariable((yyvsp[(3) - (3)].semanticValue))); }
     break;
 
   case 149:
 
 /* Line 1806 of yacc.c  */
-#line 722 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 724 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (5)].statementList), observers.ExpressionMakeStaticVariable((yyvsp[(3) - (5)].semanticValue))); }
     break;
 
   case 150:
 
 /* Line 1806 of yacc.c  */
-#line 723 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 725 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.ExpressionMakeStaticVariable((yyvsp[(1) - (1)].semanticValue))); }
     break;
 
   case 151:
 
 /* Line 1806 of yacc.c  */
-#line 724 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 726 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.ExpressionMakeStaticVariable((yyvsp[(1) - (3)].semanticValue))); }
     break;
 
   case 152:
 
 /* Line 1806 of yacc.c  */
-#line 728 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 730 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 153:
 
 /* Line 1806 of yacc.c  */
-#line 729 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 731 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 154:
 
 /* Line 1806 of yacc.c  */
-#line 733 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 735 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariables((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].classMemberSymbol)); }
     break;
 
   case 155:
 
 /* Line 1806 of yacc.c  */
-#line 734 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 736 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 156:
 
 /* Line 1806 of yacc.c  */
-#line 736 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 738 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.SetCurrentMemberName((yyvsp[(4) - (7)].semanticValue)); }
     break;
 
   case 157:
 
 /* Line 1806 of yacc.c  */
-#line 737 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 739 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeMethod((yyvsp[(4) - (9)].semanticValue), (yyvsp[(1) - (9)].classMemberSymbol), (yyvsp[(3) - (9)].isMethod), (yyvsp[(2) - (9)].semanticValue), (yyvsp[(6) - (9)].parametersList), (yyvsp[(9) - (9)].classMemberSymbol)); 
 															  observers.SetCurrentMemberName(NULL);
 															}
@@ -4758,623 +4760,623 @@ yyreduce:
   case 158:
 
 /* Line 1806 of yacc.c  */
-#line 743 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 745 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberMakeBody(observers.StatementListNil(), (yyvsp[(1) - (1)].semanticValue), (yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 159:
 
 /* Line 1806 of yacc.c  */
-#line 744 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 746 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberMakeBody((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].semanticValue), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 160:
 
 /* Line 1806 of yacc.c  */
-#line 748 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 750 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 161:
 
 /* Line 1806 of yacc.c  */
-#line 749 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 751 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMakeAsPublicVariable((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 162:
 
 /* Line 1806 of yacc.c  */
-#line 753 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 755 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake(NULL); }
     break;
 
   case 163:
 
 /* Line 1806 of yacc.c  */
-#line 754 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 756 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 164:
 
 /* Line 1806 of yacc.c  */
-#line 758 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 760 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 165:
 
 /* Line 1806 of yacc.c  */
-#line 759 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 761 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolSetModifier((yyvsp[(1) - (2)].classMemberSymbol), (yyvsp[(2) - (2)].semanticValue)); }
     break;
 
   case 172:
 
 /* Line 1806 of yacc.c  */
-#line 772 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 774 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (3)].semanticValue), (yyvsp[(3) - (3)].semanticValue), false, analyzer.GetLineNumber())); }
     break;
 
   case 173:
 
 /* Line 1806 of yacc.c  */
-#line 773 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 775 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (5)].semanticValue), (yyvsp[(3) - (5)].semanticValue), false, analyzer.GetLineNumber()));  }
     break;
 
   case 174:
 
 /* Line 1806 of yacc.c  */
-#line 774 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 776 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(1) - (1)].semanticValue), (yyvsp[(1) - (1)].semanticValue), false, analyzer.GetLineNumber()); }
     break;
 
   case 175:
 
 /* Line 1806 of yacc.c  */
-#line 775 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 777 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(1) - (3)].semanticValue), (yyvsp[(1) - (3)].semanticValue), false, analyzer.GetLineNumber()); }
     break;
 
   case 176:
 
 /* Line 1806 of yacc.c  */
-#line 780 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 782 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (5)].semanticValue), (yyvsp[(3) - (5)].semanticValue), true, analyzer.GetLineNumber())); }
     break;
 
   case 177:
 
 /* Line 1806 of yacc.c  */
-#line 781 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 783 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(2) - (4)].semanticValue), (yyvsp[(1) - (4)].semanticValue), true, analyzer.GetLineNumber()); }
     break;
 
   case 178:
 
 /* Line 1806 of yacc.c  */
-#line 785 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 787 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 179:
 
 /* Line 1806 of yacc.c  */
-#line 786 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 788 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 180:
 
 /* Line 1806 of yacc.c  */
-#line 790 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 792 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 181:
 
 /* Line 1806 of yacc.c  */
-#line 791 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 793 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 182:
 
 /* Line 1806 of yacc.c  */
-#line 795 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 797 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) =  observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 183:
 
 /* Line 1806 of yacc.c  */
-#line 796 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 798 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 184:
 
 /* Line 1806 of yacc.c  */
-#line 800 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 802 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (6)].statementList), (yyvsp[(6) - (6)].expression)); }
     break;
 
   case 185:
 
 /* Line 1806 of yacc.c  */
-#line 801 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 803 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromExpressionFound((yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 186:
 
 /* Line 1806 of yacc.c  */
-#line 802 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 804 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromVariableFound((yyvsp[(1) - (4)].variable), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 187:
 
 /* Line 1806 of yacc.c  */
-#line 803 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 805 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromNewFound((yyvsp[(1) - (6)].variable), (yyvsp[(5) - (6)].qualifiedName), (yyvsp[(6) - (6)].statementList)); }
     break;
 
   case 188:
 
 /* Line 1806 of yacc.c  */
-#line 804 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 806 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeNewInstanceCall((yyvsp[(2) - (3)].qualifiedName), (yyvsp[(3) - (3)].statementList)); }
     break;
 
   case 189:
 
 /* Line 1806 of yacc.c  */
-#line 805 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 807 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 190:
 
 /* Line 1806 of yacc.c  */
-#line 806 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 808 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 191:
 
 /* Line 1806 of yacc.c  */
-#line 807 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 809 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 192:
 
 /* Line 1806 of yacc.c  */
-#line 808 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 810 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 193:
 
 /* Line 1806 of yacc.c  */
-#line 809 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 811 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 194:
 
 /* Line 1806 of yacc.c  */
-#line 810 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 812 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 195:
 
 /* Line 1806 of yacc.c  */
-#line 811 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 813 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 196:
 
 /* Line 1806 of yacc.c  */
-#line 812 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 814 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 197:
 
 /* Line 1806 of yacc.c  */
-#line 813 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 815 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 198:
 
 /* Line 1806 of yacc.c  */
-#line 814 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 816 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 199:
 
 /* Line 1806 of yacc.c  */
-#line 815 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 817 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 200:
 
 /* Line 1806 of yacc.c  */
-#line 816 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 818 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 201:
 
 /* Line 1806 of yacc.c  */
-#line 817 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 819 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(2) - (2)].semanticValue)->Token, (yyvsp[(1) - (2)].variable)); }
     break;
 
   case 202:
 
 /* Line 1806 of yacc.c  */
-#line 818 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 820 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 203:
 
 /* Line 1806 of yacc.c  */
-#line 819 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 821 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(2) - (2)].semanticValue)->Token, (yyvsp[(1) - (2)].variable)); }
     break;
 
   case 204:
 
 /* Line 1806 of yacc.c  */
-#line 820 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 822 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 205:
 
 /* Line 1806 of yacc.c  */
-#line 821 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 823 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 206:
 
 /* Line 1806 of yacc.c  */
-#line 822 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 824 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 207:
 
 /* Line 1806 of yacc.c  */
-#line 823 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 825 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 208:
 
 /* Line 1806 of yacc.c  */
-#line 824 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 826 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 209:
 
 /* Line 1806 of yacc.c  */
-#line 825 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 827 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 210:
 
 /* Line 1806 of yacc.c  */
-#line 826 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 828 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 211:
 
 /* Line 1806 of yacc.c  */
-#line 827 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 829 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 212:
 
 /* Line 1806 of yacc.c  */
-#line 828 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 830 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 213:
 
 /* Line 1806 of yacc.c  */
-#line 829 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 831 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 214:
 
 /* Line 1806 of yacc.c  */
-#line 830 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 832 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 215:
 
 /* Line 1806 of yacc.c  */
-#line 831 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 833 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 216:
 
 /* Line 1806 of yacc.c  */
-#line 832 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 834 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 217:
 
 /* Line 1806 of yacc.c  */
-#line 833 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 835 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 218:
 
 /* Line 1806 of yacc.c  */
-#line 834 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 836 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 219:
 
 /* Line 1806 of yacc.c  */
-#line 835 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 837 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 220:
 
 /* Line 1806 of yacc.c  */
-#line 836 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 838 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 221:
 
 /* Line 1806 of yacc.c  */
-#line 837 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 839 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 222:
 
 /* Line 1806 of yacc.c  */
-#line 838 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 840 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 223:
 
 /* Line 1806 of yacc.c  */
-#line 839 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 841 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 224:
 
 /* Line 1806 of yacc.c  */
-#line 840 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 842 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 225:
 
 /* Line 1806 of yacc.c  */
-#line 841 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 843 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 226:
 
 /* Line 1806 of yacc.c  */
-#line 842 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 844 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 227:
 
 /* Line 1806 of yacc.c  */
-#line 843 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 845 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 228:
 
 /* Line 1806 of yacc.c  */
-#line 844 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 846 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 229:
 
 /* Line 1806 of yacc.c  */
-#line 845 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 847 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 230:
 
 /* Line 1806 of yacc.c  */
-#line 846 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 848 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 231:
 
 /* Line 1806 of yacc.c  */
-#line 847 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 849 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 232:
 
 /* Line 1806 of yacc.c  */
-#line 848 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 850 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 233:
 
 /* Line 1806 of yacc.c  */
-#line 849 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 851 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionInstanceOfOperation((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 234:
 
 /* Line 1806 of yacc.c  */
-#line 850 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 852 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (3)].expression); }
     break;
 
   case 235:
 
 /* Line 1806 of yacc.c  */
-#line 853 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 855 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionTernaryOperation((yyvsp[(1) - (5)].expression), (yyvsp[(3) - (5)].expression), (yyvsp[(5) - (5)].expression)); }
     break;
 
   case 236:
 
 /* Line 1806 of yacc.c  */
-#line 855 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 857 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionTernaryOperation((yyvsp[(1) - (4)].expression), (yyvsp[(4) - (4)].expression), NULL); }
     break;
 
   case 237:
 
 /* Line 1806 of yacc.c  */
-#line 856 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 858 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 238:
 
 /* Line 1806 of yacc.c  */
-#line 857 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 859 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 239:
 
 /* Line 1806 of yacc.c  */
-#line 858 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 860 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 240:
 
 /* Line 1806 of yacc.c  */
-#line 859 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 861 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 241:
 
 /* Line 1806 of yacc.c  */
-#line 860 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 862 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeArray(observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].expression))); }
     break;
 
   case 242:
 
 /* Line 1806 of yacc.c  */
-#line 861 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 863 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 243:
 
 /* Line 1806 of yacc.c  */
-#line 862 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 864 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 244:
 
 /* Line 1806 of yacc.c  */
-#line 863 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 865 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 245:
 
 /* Line 1806 of yacc.c  */
-#line 864 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 866 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 246:
 
 /* Line 1806 of yacc.c  */
-#line 865 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 867 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 247:
 
 /* Line 1806 of yacc.c  */
-#line 866 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 868 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression);}
     break;
 
   case 248:
 
 /* Line 1806 of yacc.c  */
-#line 867 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 869 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeArray((yyvsp[(3) - (4)].statementList)); }
     break;
 
   case 249:
 
 /* Line 1806 of yacc.c  */
-#line 868 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 870 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].expression)); /* results of backtick operator is a string */ }
     break;
 
   case 250:
 
 /* Line 1806 of yacc.c  */
-#line 869 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 871 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (2)].expression)); }
     break;
 
   case 251:
 
 /* Line 1806 of yacc.c  */
-#line 872 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 874 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { observers.IncrementAnonymousFunctionCount(); }
     break;
 
   case 252:
 
 /* Line 1806 of yacc.c  */
-#line 873 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 875 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (10)].parametersList), (yyvsp[(6) - (10)].statementList), (yyvsp[(9) - (10)].statementList), (yyvsp[(7) - (10)].semanticValue), (yyvsp[(10) - (10)].semanticValue));  
 																	  
 																	  // end after we create the closure so that closure gets the correct scope
@@ -5386,21 +5388,21 @@ yyreduce:
   case 254:
 
 /* Line 1806 of yacc.c  */
-#line 886 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 888 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 255:
 
 /* Line 1806 of yacc.c  */
-#line 887 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 889 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 256:
 
 /* Line 1806 of yacc.c  */
-#line 891 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 893 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), 
 														       observers.VariableStart((yyvsp[(3) - (3)].semanticValue))
 		                                                   ); 
@@ -5410,7 +5412,7 @@ yyreduce:
   case 257:
 
 /* Line 1806 of yacc.c  */
-#line 895 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 897 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), 
 	                                                         observers.VariableStart((yyvsp[(4) - (4)].semanticValue))
 		                                                   ); 
@@ -5420,700 +5422,700 @@ yyreduce:
   case 258:
 
 /* Line 1806 of yacc.c  */
-#line 899 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 901 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(1) - (1)].semanticValue))); }
     break;
 
   case 259:
 
 /* Line 1806 of yacc.c  */
-#line 900 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 902 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(2) - (2)].semanticValue))); }
     break;
 
   case 260:
 
 /* Line 1806 of yacc.c  */
-#line 905 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 907 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCall((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(3) - (4)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 261:
 
 /* Line 1806 of yacc.c  */
-#line 908 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 910 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromDeclaredNamespace((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(5) - (6)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 262:
 
 /* Line 1806 of yacc.c  */
-#line 910 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 912 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromAbsoluteNamespace((yyvsp[(2) - (5)].qualifiedName), (yyvsp[(4) - (5)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 263:
 
 /* Line 1806 of yacc.c  */
-#line 912 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 914 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeStaticMethodCall((yyvsp[(1) - (6)].qualifiedName), (yyvsp[(3) - (6)].semanticValue), (yyvsp[(5) - (6)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 264:
 
 /* Line 1806 of yacc.c  */
-#line 914 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 916 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 265:
 
 /* Line 1806 of yacc.c  */
-#line 916 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 918 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 266:
 
 /* Line 1806 of yacc.c  */
-#line 918 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 920 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 267:
 
 /* Line 1806 of yacc.c  */
-#line 920 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 922 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 268:
 
 /* Line 1806 of yacc.c  */
-#line 924 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 926 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 269:
 
 /* Line 1806 of yacc.c  */
-#line 925 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 927 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 270:
 
 /* Line 1806 of yacc.c  */
-#line 926 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 928 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 271:
 
 /* Line 1806 of yacc.c  */
-#line 927 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 929 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); }
     break;
 
   case 272:
 
 /* Line 1806 of yacc.c  */
-#line 931 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 933 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 273:
 
 /* Line 1806 of yacc.c  */
-#line 932 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 934 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 274:
 
 /* Line 1806 of yacc.c  */
-#line 933 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 935 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); }
     break;
 
   case 275:
 
 /* Line 1806 of yacc.c  */
-#line 937 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 939 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 276:
 
 /* Line 1806 of yacc.c  */
-#line 938 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 940 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 277:
 
 /* Line 1806 of yacc.c  */
-#line 943 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 945 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 278:
 
 /* Line 1806 of yacc.c  */
-#line 944 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 946 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 279:
 
 /* Line 1806 of yacc.c  */
-#line 948 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 950 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = (yyvsp[(1) - (2)].semanticValue); }
     break;
 
   case 280:
 
 /* Line 1806 of yacc.c  */
-#line 949 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 951 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 282:
 
 /* Line 1806 of yacc.c  */
-#line 957 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 959 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 283:
 
 /* Line 1806 of yacc.c  */
-#line 958 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 960 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 284:
 
 /* Line 1806 of yacc.c  */
-#line 959 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 961 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (3)].expression); }
     break;
 
   case 285:
 
 /* Line 1806 of yacc.c  */
-#line 963 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 965 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 286:
 
 /* Line 1806 of yacc.c  */
-#line 964 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 966 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 287:
 
 /* Line 1806 of yacc.c  */
-#line 965 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 967 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 288:
 
 /* Line 1806 of yacc.c  */
-#line 969 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 971 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 289:
 
 /* Line 1806 of yacc.c  */
-#line 970 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 972 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 290:
 
 /* Line 1806 of yacc.c  */
-#line 974 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 976 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 291:
 
 /* Line 1806 of yacc.c  */
-#line 975 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 977 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 292:
 
 /* Line 1806 of yacc.c  */
-#line 976 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 978 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 293:
 
 /* Line 1806 of yacc.c  */
-#line 977 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 979 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 294:
 
 /* Line 1806 of yacc.c  */
-#line 978 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 980 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 295:
 
 /* Line 1806 of yacc.c  */
-#line 979 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 981 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 296:
 
 /* Line 1806 of yacc.c  */
-#line 980 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 982 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 297:
 
 /* Line 1806 of yacc.c  */
-#line 981 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 983 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 298:
 
 /* Line 1806 of yacc.c  */
-#line 982 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 984 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 299:
 
 /* Line 1806 of yacc.c  */
-#line 983 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 985 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 300:
 
 /* Line 1806 of yacc.c  */
-#line 984 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 986 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].semanticValue)); }
     break;
 
   case 301:
 
 /* Line 1806 of yacc.c  */
-#line 985 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 987 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (2)].semanticValue)); }
     break;
 
   case 302:
 
 /* Line 1806 of yacc.c  */
-#line 989 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 991 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 303:
 
 /* Line 1806 of yacc.c  */
-#line 990 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 992 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 304:
 
 /* Line 1806 of yacc.c  */
-#line 991 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 993 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 305:
 
 /* Line 1806 of yacc.c  */
-#line 992 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 994 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 306:
 
 /* Line 1806 of yacc.c  */
-#line 993 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 995 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 307:
 
 /* Line 1806 of yacc.c  */
-#line 994 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 996 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 308:
 
 /* Line 1806 of yacc.c  */
-#line 995 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 997 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(3) - (4)].semanticValue)); }
     break;
 
   case 310:
 
 /* Line 1806 of yacc.c  */
-#line 1000 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1002 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 311:
 
 /* Line 1806 of yacc.c  */
-#line 1004 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1006 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 312:
 
 /* Line 1806 of yacc.c  */
-#line 1005 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1007 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 313:
 
 /* Line 1806 of yacc.c  */
-#line 1006 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1008 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant((yyvsp[(1) - (1)].qualifiedName)); }
     break;
 
   case 314:
 
 /* Line 1806 of yacc.c  */
-#line 1007 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1009 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName))); }
     break;
 
   case 315:
 
 /* Line 1806 of yacc.c  */
-#line 1008 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1010 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName))); }
     break;
 
   case 317:
 
 /* Line 1806 of yacc.c  */
-#line 1010 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1012 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].expression)); }
     break;
 
   case 318:
 
 /* Line 1806 of yacc.c  */
-#line 1011 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1013 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (3)].semanticValue)); }
     break;
 
   case 319:
 
 /* Line 1806 of yacc.c  */
-#line 1015 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1017 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 321:
 
 /* Line 1806 of yacc.c  */
-#line 1020 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1022 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.isComma) = false; }
     break;
 
   case 322:
 
 /* Line 1806 of yacc.c  */
-#line 1021 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1023 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.isComma) = true; }
     break;
 
   case 323:
 
 /* Line 1806 of yacc.c  */
-#line 1025 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1027 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 324:
 
 /* Line 1806 of yacc.c  */
-#line 1026 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1028 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 325:
 
 /* Line 1806 of yacc.c  */
-#line 1027 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1029 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 326:
 
 /* Line 1806 of yacc.c  */
-#line 1028 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1030 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 327:
 
 /* Line 1806 of yacc.c  */
-#line 1032 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1034 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 332:
 
 /* Line 1806 of yacc.c  */
-#line 1052 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1054 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (5)].variable), (yyvsp[(3) - (5)].variable), (yyvsp[(4) - (5)].variable), (yyvsp[(5) - (5)].variable)); }
     break;
 
   case 333:
 
 /* Line 1806 of yacc.c  */
-#line 1053 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1055 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (1)].variable), NULL, NULL, NULL); }
     break;
 
   case 334:
 
 /* Line 1806 of yacc.c  */
-#line 1057 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1059 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(1) - (2)].variable), (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 335:
 
 /* Line 1806 of yacc.c  */
-#line 1058 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1060 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 336:
 
 /* Line 1806 of yacc.c  */
-#line 1063 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1065 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(2) - (3)].variable), (yyvsp[(3) - (3)].variable), (yyvsp[(1) - (3)].semanticValue));  }
     break;
 
   case 337:
 
 /* Line 1806 of yacc.c  */
-#line 1067 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1069 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableMakeAndAppendFunctionCall((yyvsp[(2) - (3)].statementList), true); }
     break;
 
   case 338:
 
 /* Line 1806 of yacc.c  */
-#line 1068 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1070 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 340:
 
 /* Line 1806 of yacc.c  */
-#line 1073 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1075 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(2) - (2)].variable); }
     break;
 
   case 341:
 
 /* Line 1806 of yacc.c  */
-#line 1077 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1079 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableStartStaticMember((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].variable)); }
     break;
 
   case 342:
 
 /* Line 1806 of yacc.c  */
-#line 1078 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1080 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 343:
 
 /* Line 1806 of yacc.c  */
-#line 1082 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1084 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 345:
 
 /* Line 1806 of yacc.c  */
-#line 1087 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1089 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 347:
 
 /* Line 1806 of yacc.c  */
-#line 1092 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1094 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(2) - (2)].variable); }
     break;
 
   case 349:
 
 /* Line 1806 of yacc.c  */
-#line 1097 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1099 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 350:
 
 /* Line 1806 of yacc.c  */
-#line 1098 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1100 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 352:
 
 /* Line 1806 of yacc.c  */
-#line 1103 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1105 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 353:
 
 /* Line 1806 of yacc.c  */
-#line 1104 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1106 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 354:
 
 /* Line 1806 of yacc.c  */
-#line 1108 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1110 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 355:
 
 /* Line 1806 of yacc.c  */
-#line 1109 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1111 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 356:
 
 /* Line 1806 of yacc.c  */
-#line 1113 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1115 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 357:
 
 /* Line 1806 of yacc.c  */
-#line 1114 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1116 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 358:
 
 /* Line 1806 of yacc.c  */
-#line 1118 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1120 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 359:
 
 /* Line 1806 of yacc.c  */
-#line 1119 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1121 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 360:
 
 /* Line 1806 of yacc.c  */
-#line 1120 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1122 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 361:
 
 /* Line 1806 of yacc.c  */
-#line 1124 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1126 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     {  (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 362:
 
 /* Line 1806 of yacc.c  */
-#line 1125 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1127 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 365:
 
 /* Line 1806 of yacc.c  */
-#line 1134 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1136 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].statementList)); }
     break;
 
   case 366:
 
 /* Line 1806 of yacc.c  */
-#line 1135 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1137 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 367:
 
 /* Line 1806 of yacc.c  */
-#line 1139 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1141 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 368:
 
 /* Line 1806 of yacc.c  */
-#line 1140 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1142 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 369:
 
 /* Line 1806 of yacc.c  */
-#line 1141 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1143 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 370:
 
 /* Line 1806 of yacc.c  */
-#line 1145 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1147 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 371:
 
 /* Line 1806 of yacc.c  */
-#line 1146 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1148 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 372:
 
 /* Line 1806 of yacc.c  */
-#line 1150 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1152 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (5)].expression), (yyvsp[(5) - (5)].expression))
                                                                                        ); 
@@ -6123,7 +6125,7 @@ yyreduce:
   case 373:
 
 /* Line 1806 of yacc.c  */
-#line 1154 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1156 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(3) - (3)].expression))
                                                                                        ); 
@@ -6133,21 +6135,21 @@ yyreduce:
   case 374:
 
 /* Line 1806 of yacc.c  */
-#line 1158 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1160 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 375:
 
 /* Line 1806 of yacc.c  */
-#line 1159 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1161 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(1) - (1)].expression)); }
     break;
 
   case 376:
 
 /* Line 1806 of yacc.c  */
-#line 1160 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1162 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (6)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (6)].expression), (yyvsp[(6) - (6)].variable))
                                                                                        ); 
@@ -6157,7 +6159,7 @@ yyreduce:
   case 377:
 
 /* Line 1806 of yacc.c  */
-#line 1164 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1166 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (4)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(4) - (4)].variable))
                                                                                        ); 
@@ -6167,189 +6169,189 @@ yyreduce:
   case 378:
 
 /* Line 1806 of yacc.c  */
-#line 1168 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1170 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (4)].expression), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 379:
 
 /* Line 1806 of yacc.c  */
-#line 1169 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1171 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 380:
 
 /* Line 1806 of yacc.c  */
-#line 1173 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1175 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); }
     break;
 
   case 381:
 
 /* Line 1806 of yacc.c  */
-#line 1174 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1176 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); }
     break;
 
   case 382:
 
 /* Line 1806 of yacc.c  */
-#line 1175 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1177 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 383:
 
 /* Line 1806 of yacc.c  */
-#line 1176 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1178 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 384:
 
 /* Line 1806 of yacc.c  */
-#line 1180 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1182 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 385:
 
 /* Line 1806 of yacc.c  */
-#line 1181 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1183 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 386:
 
 /* Line 1806 of yacc.c  */
-#line 1182 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1184 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 387:
 
 /* Line 1806 of yacc.c  */
-#line 1183 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1185 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 388:
 
 /* Line 1806 of yacc.c  */
-#line 1184 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1186 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 389:
 
 /* Line 1806 of yacc.c  */
-#line 1185 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1187 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 390:
 
 /* Line 1806 of yacc.c  */
-#line 1189 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1191 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 391:
 
 /* Line 1806 of yacc.c  */
-#line 1190 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1192 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 392:
 
 /* Line 1806 of yacc.c  */
-#line 1191 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1193 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 393:
 
 /* Line 1806 of yacc.c  */
-#line 1195 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1197 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = (yyvsp[(3) - (4)].expression); }
     break;
 
   case 394:
 
 /* Line 1806 of yacc.c  */
-#line 1196 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1198 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 395:
 
 /* Line 1806 of yacc.c  */
-#line 1197 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1199 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 396:
 
 /* Line 1806 of yacc.c  */
-#line 1198 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1200 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 397:
 
 /* Line 1806 of yacc.c  */
-#line 1199 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1201 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionEval((yyvsp[(3) - (4)].expression)); }
     break;
 
   case 398:
 
 /* Line 1806 of yacc.c  */
-#line 1200 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1202 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 399:
 
 /* Line 1806 of yacc.c  */
-#line 1201 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1203 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 400:
 
 /* Line 1806 of yacc.c  */
-#line 1205 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1207 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionIsset((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 401:
 
 /* Line 1806 of yacc.c  */
-#line 1206 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1208 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionIssetMerge((pelet::IssetExpressionClass*)(yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].variable)); }
     break;
 
   case 402:
 
 /* Line 1806 of yacc.c  */
-#line 1210 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1212 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 403:
 
 /* Line 1806 of yacc.c  */
-#line 1211 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1213 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 6353 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.cpp"
+#line 6355 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -6580,6 +6582,6 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1214 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
+#line 1216 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
 
 
