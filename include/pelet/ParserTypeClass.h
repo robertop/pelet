@@ -51,6 +51,7 @@ class BinaryOperationClass;
 class UnaryOperationClass;
 class UnaryVariableOperationClass;
 class TernaryOperationClass;
+class InstanceOfOperationClass;
 class ScalarExpressionClass;
 class NewInstanceExpressionClass;
 class GlobalVariableStatementClass;
@@ -458,6 +459,16 @@ public:
 	 * @see pelet::TernaryOperationClass
 	 */
 	virtual void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression) { }
+	
+	/**
+	 * Override this method to get the pseudo-parse tree for a instanceof operation expression ($x instanceof MyClass).
+	 * This method only gets called when the top-level statement is an instanceof operation. See
+	 * the ExpressionObserverClass class comment for more info.
+	 * 
+	 * @param expression the instanceof expression that was parsed.
+	 * @see pelet::InstanceOfOperationClass
+	 */
+	virtual void ExpressionInstanceOfOperationFound(pelet::InstanceOfOperationClass* expression) { }
 
 	/**
 	 * Override this method to get the pseudo-parse tree for a scalar expression (NAME).
@@ -628,6 +639,7 @@ class PELET_API AnyExpressionObserverClass : public ExpressionObserverClass {
 	void ExpressionUnaryOperationFound(pelet::UnaryOperationClass* expression);
 	void ExpressionUnaryVariableOperationFound(pelet::UnaryVariableOperationClass* expression);
 	void ExpressionTernaryOperationFound(pelet::TernaryOperationClass* expression);
+	void ExpressionInstanceOfOperationFound(pelet::InstanceOfOperationClass* expression);
 	void ExpressionScalarFound(pelet::ScalarExpressionClass* expression);
 	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression);
 	void StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables);
@@ -1015,13 +1027,14 @@ public:
 		UNARY_OPERATION,
 		UNARY_VARIABLE_OPERATION,
 		TERNARY_OPERATION,
-		ARRAY_PAIR,
-		INCLUDE,  // (10) for now, include, include_once, require, require_once are all the same
+		INSTANCEOF_OPERATION,
+		ARRAY_PAIR,                 // (10) 
+		INCLUDE,                    // for now, include, include_once, require, require_once are all the same
 		CLOSURE,
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
-		ISSET, 
-		EVAL,   // (15)
+		ISSET,                      // (15)
+		EVAL,   
 		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
 	};
 
@@ -1141,7 +1154,10 @@ public:
 class PELET_API NewInstanceExpressionClass : public ExpressionClass {
 
 public:
-
+	
+	/**
+	 * this is always a fully qualified class name
+	 */
 	UnicodeString ClassName;
 
 	/**
@@ -1826,6 +1842,41 @@ class PELET_API TernaryOperationClass : public ExpressionClass {
 
 	void Copy(const pelet::TernaryOperationClass& src);
 
+};
+
+/**
+ * Holds both sides of an instanceof operation in the form
+ * 
+ * expr instanceof class
+ * 
+ * expr is stored in Expression1
+ * and class is stored in ClassName
+ * 
+ */
+class InstanceOfOperationClass : public ExpressionClass {
+
+public:
+
+	/**
+	 * The left hand side of the expression
+	 * This pointer is NOT owned by this class.
+	 */
+	ExpressionClass* Expression1;
+
+	
+	/**
+	 * The right hand side of the operation
+	 * This is always a fully qualified class naem
+	 */
+	UnicodeString ClassName;
+	
+	InstanceOfOperationClass(const pelet::ScopeClass& scope);
+	
+	InstanceOfOperationClass(const pelet::InstanceOfOperationClass& src);
+	
+	pelet::InstanceOfOperationClass& operator=(const pelet::InstanceOfOperationClass& src);
+	
+	void Copy(const pelet::InstanceOfOperationClass& src);
 };
 
 class ClosureExpressionClass : public ExpressionClass {

@@ -332,6 +332,11 @@ void pelet::AnyExpressionObserverClass::ExpressionTernaryOperationFound(pelet::T
 	OnAnyExpression(expression);
 }
 
+void pelet::AnyExpressionObserverClass::ExpressionInstanceOfOperationFound(pelet::InstanceOfOperationClass* expression) {
+	CheckExpression(expression->Expression1);
+	OnAnyExpression(expression);
+}
+
 void pelet::AnyExpressionObserverClass::ExpressionScalarFound(pelet::ScalarExpressionClass* expression) {
 	OnAnyExpression(expression);
 }
@@ -454,6 +459,9 @@ void pelet::AnyExpressionObserverClass::CheckExpression(pelet::ExpressionClass* 
 		break;
 	case pelet::ExpressionClass::TERNARY_OPERATION:
 		ExpressionTernaryOperationFound((pelet::TernaryOperationClass*)expr);
+		break;
+	case pelet::ExpressionClass::INSTANCEOF_OPERATION:
+		ExpressionInstanceOfOperationFound((pelet::InstanceOfOperationClass*)expr);
 		break;
 	case pelet::ExpressionClass::UNARY_OPERATION:
 		ExpressionUnaryOperationFound((pelet::UnaryOperationClass*)expr);
@@ -1884,6 +1892,34 @@ void pelet::TernaryOperationClass::Copy(const pelet::TernaryOperationClass& src)
 	Expression1 = src.Expression1;
 	Expression2 = src.Expression2;
 	Expression3 = src.Expression3;
+}
+
+pelet::InstanceOfOperationClass::InstanceOfOperationClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, Expression1(NULL)
+, ClassName() {
+	Type = pelet::ExpressionClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::INSTANCEOF_OPERATION;
+}
+
+pelet::InstanceOfOperationClass::InstanceOfOperationClass(const pelet::InstanceOfOperationClass& src)
+: ExpressionClass(src.Scope)
+, Expression1(NULL)
+, ClassName() {
+	Type = pelet::ExpressionClass::EXPRESSION;
+	ExpressionType = pelet::ExpressionClass::INSTANCEOF_OPERATION;
+	Copy(src);
+}
+
+pelet::InstanceOfOperationClass& pelet::InstanceOfOperationClass::operator=(const pelet::InstanceOfOperationClass& src) {
+	Copy(src);
+	return *this;
+}
+
+void pelet::InstanceOfOperationClass::Copy(const pelet::InstanceOfOperationClass& src) {
+	pelet::ExpressionClass::Copy(src);
+	Expression1 = src.Expression1;
+	ClassName = src.ClassName;
 }
 
 pelet::GlobalVariableStatementClass::GlobalVariableStatementClass()

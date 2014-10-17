@@ -290,6 +290,7 @@ public:
 	pelet::ExpressionClass* ExpressionUnaryOperation(int operatorToken, pelet::ExpressionClass* operand);
 	pelet::ExpressionClass* ExpressionUnaryVariableOperation(int operatorToken, pelet::VariableClass* operand);
 	pelet::ExpressionClass* ExpressionTernaryOperation(pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* middleOperand, pelet::ExpressionClass* rightOperand);
+	pelet::ExpressionClass* ExpressionInstanceOfOperation(pelet::ExpressionClass* leftExpression, pelet::QualifiedNameClass* className);
 	pelet::StatementListClass* ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value);
 	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts, 
 		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);

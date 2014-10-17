@@ -5242,7 +5242,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 849 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.expression) = observers.ExpressionNil(); }
+    { (yyval.expression) = observers.ExpressionInstanceOfOperation((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 234:

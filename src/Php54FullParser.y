@@ -925,7 +925,7 @@ expr_without_variable:
 	|	expr T_IS_SMALLER_OR_EQUAL expr								{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
 	|	expr '>' expr 												{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
 	|	expr T_IS_GREATER_OR_EQUAL expr								{ $$ = observers.ExpressionBinaryOperation($2->Token, $1, $3); }
-	|	expr T_INSTANCEOF class_name_reference						{ $$ = observers.ExpressionNil(); }
+	|	expr T_INSTANCEOF class_name_reference						{ $$ = observers.ExpressionInstanceOfOperation($1, $3); }
 	|	'(' expr ')'  												{ $$ = $2; }
 	|	new_expr													{ $$ = $1; }
 	|	'(' new_expr ')' instance_call								{ $$ = observers.NewInstanceAppendToChain($2, $4); }

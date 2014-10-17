@@ -624,6 +624,16 @@ pelet::NewInstanceExpressionClass* pelet::FullParserObserverClass::ExpressionMak
 	return newExpr;
 }
 
+pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionInstanceOfOperation(pelet::ExpressionClass* leftExpression, 
+	pelet::QualifiedNameClass* className) {
+	pelet::InstanceOfOperationClass* newExpr = new pelet::InstanceOfOperationClass(Scope);
+	newExpr->LineNumber = leftExpression->LineNumber;
+	newExpr->Expression1 = leftExpression;
+	newExpr->ClassName = Scope.FullyQualify(*className, DeclaredNamespace);
+	AllAstItems.push_back(newExpr);
+	return newExpr;
+}
+
 pelet::ExpressionClass* pelet::FullParserObserverClass::NewInstanceAppendToChain(pelet::ExpressionClass* newInstanceExpr, pelet::VariableClass* var) {
 	if (newInstanceExpr->ExpressionType == pelet::ExpressionClass::NEW_CALL) {
 		pelet::NewInstanceExpressionClass* newCall = (pelet::NewInstanceExpressionClass*) newInstanceExpr;
@@ -977,6 +987,9 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 					break;
 				case pelet::ExpressionClass::TERNARY_OPERATION:
 					ExpressionObserver->ExpressionTernaryOperationFound((pelet::TernaryOperationClass*)expr);
+					break;
+				case pelet::ExpressionClass::INSTANCEOF_OPERATION:
+					ExpressionObserver->ExpressionInstanceOfOperationFound((pelet::InstanceOfOperationClass*)expr);
 					break;
 				case pelet::ExpressionClass::VARIABLE:
 					ExpressionObserver->ExpressionVariableFound((pelet::VariableClass*)expr);
