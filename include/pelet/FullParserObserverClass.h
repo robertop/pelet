@@ -309,7 +309,7 @@ public:
 	// php 5.4 supports Class::{$method}() function calls
 	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, pelet::VariableClass* methodName, pelet::StatementListClass* callArguments, int lineNumber);
-	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue);
+	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue, bool isReference = false);
 	pelet::VariableClass* VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variable, pelet::VariableClass* callArguments, pelet::SemanticValueClass* operatorValue);

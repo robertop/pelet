@@ -5414,7 +5414,7 @@ yyreduce:
 /* Line 1806 of yacc.c  */
 #line 897 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), 
-	                                                         observers.VariableStart((yyvsp[(4) - (4)].semanticValue))
+	                                                         observers.VariableStart((yyvsp[(4) - (4)].semanticValue), true)
 		                                                   ); 
 		                                            }
     break;
@@ -5430,7 +5430,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 902 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(2) - (2)].semanticValue))); }
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(2) - (2)].semanticValue), true)); }
     break;
 
   case 260:

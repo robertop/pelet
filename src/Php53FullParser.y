@@ -895,11 +895,11 @@ lexical_var_list:
 		                                                   ); 
 		                                            }
 	|	lexical_var_list ',' '&' T_VARIABLE			{ $$ = observers.StatementListAppend($1, 
-	                                                         observers.VariableStart($4)
+	                                                         observers.VariableStart($4, true)
 		                                                   ); 
 		                                            }
 	|	T_VARIABLE									{ $$ = observers.StatementListMakeAndAppend(observers.VariableStart($1)); }
-	|	'&' T_VARIABLE								{ $$ = observers.StatementListMakeAndAppend(observers.VariableStart($2)); }
+	|	'&' T_VARIABLE								{ $$ = observers.StatementListMakeAndAppend(observers.VariableStart($2, true)); }
 ;
 
 function_call:

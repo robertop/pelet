@@ -829,14 +829,25 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
 		closure->StartingPosition = startingPositionTokenValue->Pos;
 		closure->EndingPosition = endingPositionTokenValue->Pos;
 		for (size_t i = 0; i < parameters->GetCount(); ++i) {
+			
+			// the parameter may contain a & if its a reference 
+			// lets parse it out and set the IsReference flag on 
+			// the variable if appropriate
 			UnicodeString param, type;
+			bool isReference = false;
 			parameters->Param(i, param, type);
+			
+			if (param.indexOf('&') == 0) {
+				param.remove(0, 1);
+				isReference = true;
+			}
 			
 			pelet::VariableClass* var = new pelet::VariableClass(Scope);
 			AllAstItems.push_back(var);
 
 			// TODO: fill in line number, pos
 			var->AppendToChain(param);
+			var->IsReference = isReference;
 			var->PhpDocType = type;
 			closure->Parameters.push_back(var);
 			
@@ -1613,13 +1624,14 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableNil() {
 	return newVar;
 }
 
-pelet::VariableClass* pelet::FullParserObserverClass::VariableStart(pelet::SemanticValueClass* variableValue) {
+pelet::VariableClass* pelet::FullParserObserverClass::VariableStart(pelet::SemanticValueClass* variableValue, bool isReference) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 	if (variableValue) {
 		newVar->AppendToChain(variableValue->Lexeme);
 		newVar->Comment = variableValue->Comment;
 		newVar->LineNumber = variableValue->LineNumber;
 		newVar->Pos = variableValue->Pos;
+		newVar->IsReference = isReference;
 	}
 	AllAstItems.push_back(newVar);
 	return newVar;

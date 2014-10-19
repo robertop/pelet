@@ -1605,7 +1605,8 @@ pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
 , Comment()
 , PhpDocType()
-, ChainList() {
+, ChainList()
+, IsReference(false) {
 	Type = pelet::StatementClass::EXPRESSION;
 	ExpressionType = pelet::ExpressionClass::VARIABLE;
 }
@@ -1614,7 +1615,8 @@ pelet::VariableClass::VariableClass(const pelet::VariableClass& src)
 : ExpressionClass(src.Scope)
 , Comment()
 , PhpDocType()
-, ChainList() {
+, ChainList() 
+, IsReference(false) {
 	Type = pelet::StatementClass::EXPRESSION;
 	ExpressionType = pelet::ExpressionClass::VARIABLE;
 	Copy(src);
@@ -1631,6 +1633,7 @@ void pelet::VariableClass::Copy(const pelet::VariableClass& src) {
 	PhpDocType = src.PhpDocType;
 	ChainList = src.ChainList;
 	Type = src.Type;
+	IsReference = src.IsReference;
 }
 
 void pelet::VariableClass::AppendToComment(pelet::SemanticValueClass* value) {
@@ -1645,6 +1648,7 @@ void pelet::VariableClass::Clear() {
 	ChainList.clear();
 	Scope.Clear();
 	LineNumber = 0;
+	IsReference = false;
 }
 
 void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue) {

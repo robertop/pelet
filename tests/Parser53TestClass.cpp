@@ -1398,9 +1398,12 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithStaticDeclaration) {
 }
 
 TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithClosure) { 
+	
+	// note that the code uses reference variables
+	// we want to test that the AST has the reference flag set
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(
-		"$func = function($a, $b) use ($c) {  \n"
+		"$func = function($a, &$b) use ($c, &$d) {  \n"
 		"  return $a - $b - $c; \n"
 		"};\n"
 	);
@@ -1415,11 +1418,16 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithClosure) {
 	pelet::ClosureExpressionClass* closure = (pelet::ClosureExpressionClass*)Observer.AssignmentExpressions[0]->Expression;
 	CHECK_VECTOR_SIZE(2, closure->Parameters);
 	CHECK_VARIABLE("$a", closure->Parameters[0]);
+	CHECK_EQUAL(false, closure->Parameters[0]->IsReference);
 	CHECK_VARIABLE("$b", closure->Parameters[1]);
-	CHECK_VECTOR_SIZE(1, closure->LexicalVars);
+	CHECK(closure->Parameters[1]->IsReference);
+	CHECK_VECTOR_SIZE(2, closure->LexicalVars);
 	CHECK_VARIABLE("$c", closure->LexicalVars[0]);
-	CHECK_EQUAL(34, closure->StartingPosition);
-	CHECK_EQUAL(62, closure->EndingPosition);
+	CHECK_EQUAL(false, closure->LexicalVars[0]->IsReference);
+	CHECK_VARIABLE("$d", closure->LexicalVars[1]);
+	CHECK(closure->LexicalVars[1]->IsReference);
+	CHECK_EQUAL(40, closure->StartingPosition);
+	CHECK_EQUAL(68, closure->EndingPosition);
 	CHECK_EQUAL((size_t)1, closure->Statements.Size());
 
 	CHECK_EQUAL(pelet::StatementClass::EXPRESSION, closure->Statements.TypeAt(0));

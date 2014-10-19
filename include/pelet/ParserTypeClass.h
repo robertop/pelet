@@ -1248,6 +1248,13 @@ public:
 	 */
 	std::vector<pelet::VariablePropertyClass> ChainList;
 	
+	/**
+	 * TRUE if this variable has been passed by reference, this is only set
+	 * when the variable has been passed by reference into a closure via a 
+	 * closure parameter or a USE (lexical) variable
+	 */
+	bool IsReference;
+	
 	VariableClass(const pelet::ScopeClass& scope);
 
 	VariableClass(const pelet::VariableClass& src);
