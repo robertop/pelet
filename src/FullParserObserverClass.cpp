@@ -545,6 +545,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCall(p
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
 
 	newVar->LineNumber = lineNumber;
+	newVar->Pos = functionName->Pos;
 	if (functionName) {
 		newVar->Comment = functionName->Comment;
 	}
@@ -554,7 +555,6 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCall(p
 		if (pelet::StatementClass::EXPRESSION == type) {
 			pelet::ExpressionClass* singleExpr = (pelet::ExpressionClass*) callArguments->At(i);
 			varCallArguments.push_back(singleExpr);
-			newVar->Pos = singleExpr->Pos;
 		}
 	}
 	
@@ -616,8 +616,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeGlobalVari
 pelet::NewInstanceExpressionClass* pelet::FullParserObserverClass::ExpressionMakeNewInstanceCall(pelet::QualifiedNameClass* className, 
 																								 pelet::StatementListClass* callArguments) {
 	pelet::NewInstanceExpressionClass* newExpr = new pelet::NewInstanceExpressionClass(Scope);
-	
-	// TODO: set the correct line/pos 
+	newExpr->LineNumber = className->LineNumber;
+	newExpr->Pos = className->Pos;
 	newExpr->ClassName = Scope.FullyQualify(*className, DeclaredNamespace);
 	newExpr->AddStatementsAsArguments(callArguments);
 	AllAstItems.push_back(newExpr);
@@ -628,6 +628,7 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionInstanceOfOper
 	pelet::QualifiedNameClass* className) {
 	pelet::InstanceOfOperationClass* newExpr = new pelet::InstanceOfOperationClass(Scope);
 	newExpr->LineNumber = leftExpression->LineNumber;
+	newExpr->Pos = leftExpression->Pos;
 	newExpr->Expression1 = leftExpression;
 	newExpr->ClassName = Scope.FullyQualify(*className, DeclaredNamespace);
 	AllAstItems.push_back(newExpr);
@@ -674,8 +675,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalar(pel
 
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFromConstant(pelet::QualifiedNameClass* constantName) {
 	pelet::ScalarExpressionClass* newExpr = new pelet::ScalarExpressionClass(Scope);
-
-	// TODO: set line/pos
+	newExpr->LineNumber = constantName->LineNumber;
+	newExpr->Pos = constantName->Pos;
 	newExpr->Value = constantName->ToSignature();
 	AllAstItems.push_back(newExpr);
 	return newExpr;
@@ -685,9 +686,8 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeScalarFrom
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
 		pelet::SemanticValueClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-
-	// TODO: fill in pos
 	newVar->LineNumber = lineNumber;
+	newVar->Pos = className->Pos;
 	std::vector<pelet::ExpressionClass*> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
@@ -708,9 +708,8 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCa
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeStaticMethodCall(pelet::QualifiedNameClass* className, 
 		pelet::VariableClass* methodName, pelet::StatementListClass* callArguments, int lineNumber) {
 	pelet::VariableClass* newVar = new pelet::VariableClass(Scope);
-
-	// TODO: fill in pos
 	newVar->LineNumber = lineNumber;
+	newVar->Pos = className->Pos;
 	std::vector<pelet::ExpressionClass*> varCallArguments;
 	for (size_t i = 0; i < callArguments->Size(); ++i) {
 		pelet::StatementClass::Types type =  callArguments->TypeAt(i);
@@ -845,7 +844,9 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
 			pelet::VariableClass* var = new pelet::VariableClass(Scope);
 			AllAstItems.push_back(var);
 
-			// TODO: fill in line number, pos
+			// fill in line number, pos of params as the closure start for now
+			var->LineNumber = startingPositionTokenValue->LineNumber;
+			var->Pos = startingPositionTokenValue->Pos;
 			var->AppendToChain(param);
 			var->IsReference = isReference;
 			var->PhpDocType = type;

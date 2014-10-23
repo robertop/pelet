@@ -1674,7 +1674,7 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithClosure) {
 	);
 	CHECK(Parser.ScanString(code, LintResults));
 	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
-	
+		
 	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
 	CHECK_VARIABLE("$func", (&Observer.AssignmentExpressions[0]->Destination));
 

@@ -879,11 +879,23 @@ public:
 	 * If TRUE then this is a fully Qualified namespace name
 	 */
 	bool IsAbsolute;
+	
+	/**
+	 * The line in the source where the expression was located. 
+	 * @see LexicalAnalyzerClass::GetLineNumber
+	 */
+	int LineNumber;
+
+	/**
+	 * The character position in the source where the expression was located. 
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	int Pos;
 
 	QualifiedNameClass();
 	void Clear();
 	void Init(SemanticValueClass* value);
-	void Init(const UnicodeString& name);
+	void Init(const UnicodeString& name, int lineNumber, int pos);
 	pelet::QualifiedNameClass* AppendName(SemanticValueClass* value);
 	pelet::QualifiedNameClass* MakeAbsolute();
 	
@@ -1429,7 +1441,7 @@ public:
 	UnicodeString Alias;
 
 	/**
-	 *  Character position where the namespace use statement starts. This number is 
+	 *  Character position within the file where the namespace use statement starts. This number is 
 	 *  0-based. It is the position where the "use" token starts. For example,
 	 *  in the statement "use \First\Child" then StartingPosition is the position of "use"
 	 *  Even in the case of where a use statement has commas, then StartingPosition is the 

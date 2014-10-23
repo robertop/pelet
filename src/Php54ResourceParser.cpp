@@ -4823,14 +4823,14 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 718 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array")); }
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array"), 0, 0); }
     break;
 
   case 136:
 
 /* Line 1806 of yacc.c  */
 #line 719 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("callable")); }
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("callable"), 0, 0); }
     break;
 
   case 137:

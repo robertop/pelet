@@ -697,7 +697,7 @@ non_empty_parameter_list:
 optional_class_type:
 		/* empty */						{ $$ = 0; }
 	|	fully_qualified_class_name		{ $$ = $1; }
-	|	T_ARRAY							{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array")); }
+	|	T_ARRAY							{ AST_INIT_ARGS($$, pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array"), 0, 0); }
 ;
 
 function_call_parameter_list:

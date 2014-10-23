@@ -180,7 +180,11 @@ static UChar* ParametersFromSignature(const pelet::ScopeClass& scope, const pele
 		}
 		else {
 			UnicodeString parameterTypeString(paramsNext);
-			parameterType.Init(parameterTypeString);
+			
+			// TODO fill in line number and position if needed
+			int zeroLine = 0;
+			int zeroPos = 0;
+			parameterType.Init(parameterTypeString, zeroLine, zeroPos);
 		}
 		paramsNext = u_strtok_r(NULL, commaDelims, &commaSaveState);
 	}
@@ -1265,20 +1269,28 @@ UnicodeString pelet::ClassMemberSymbolClass::GetReturnType() const {
 pelet::QualifiedNameClass::QualifiedNameClass()
 	: Comment()
 	, IsAbsolute(false)
+	, LineNumber(0)
+	, Pos(0)
 	, Namespaces() {
 
 }
 
 void pelet::QualifiedNameClass::Init(SemanticValueClass* value) {
+	LineNumber = 0;
+	Pos = 0;
 	if (value) {
 		Comment.setTo(value->Comment);
 		AppendName(value);
+		LineNumber = value->LineNumber;
+		Pos = value->Pos;
 	}
 }
 
 void pelet::QualifiedNameClass::Clear() {
 	Namespaces.clear();
 	IsAbsolute = false;
+	LineNumber = 0;
+	Pos = 0;
 }
 
 pelet::QualifiedNameClass* pelet::QualifiedNameClass::AppendName(SemanticValueClass* value) {
@@ -1324,8 +1336,10 @@ UnicodeString pelet::QualifiedNameClass::ToSignature() const {
 	return ret;
 }
 
-void pelet::QualifiedNameClass::Init(const UnicodeString& name) {
+void pelet::QualifiedNameClass::Init(const UnicodeString& name, int lineNumber, int pos) {
 	Namespaces.push_back(name);
+	LineNumber = lineNumber;
+	Pos = pos;
 }
 
 pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromDeclaredNamespace(const pelet::QualifiedNameClass* currentNamespace) {

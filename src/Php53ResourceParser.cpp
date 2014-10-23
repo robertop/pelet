@@ -4679,7 +4679,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 700 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53ResourceParser.y"
-    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array")); }
+    { AST_INIT_ARGS((yyval.qualifiedName), pelet::QualifiedNameClass, UNICODE_STRING_SIMPLE("array"), 0, 0); }
     break;
 
   case 135:
