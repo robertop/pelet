@@ -316,6 +316,7 @@ public:
 	pelet::VariableClass* VariableMakeAndAppendFunctionCall(pelet::StatementListClass* callArguments, bool isMethod);
 	pelet::VariableClass* VariableAppendArrayOffset(pelet::VariableClass* variable, pelet::ExpressionClass* offsetExpr);
 	pelet::VariableClass* VariableNil();
+	pelet::VariableClass* VariableMakeIndirect(pelet::VariableClass* variable);
 
 	pelet::ExpressionClass* NewInstanceAppendToChain(pelet::ExpressionClass* newInstanceExpr, pelet::VariableClass* variable);
 	

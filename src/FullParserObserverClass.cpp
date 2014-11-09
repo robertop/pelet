@@ -1655,6 +1655,11 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableStartStaticMember(
 	return newVar;
 }
 
+pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeIndirect(pelet::VariableClass* variable) {
+	variable->IsIndirect = true;
+	return variable;
+}
+
 pelet::ScopeClass pelet::FullParserObserverClass::CurrentScope() {
 	return Scope;
 }

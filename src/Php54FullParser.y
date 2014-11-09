@@ -1175,7 +1175,7 @@ method_or_not:
 
 variable_without_objects:
 		reference_variable								
-	|	simple_indirect_reference reference_variable		{ $$ = $2; }
+	|	simple_indirect_reference reference_variable		{ $$ = observers.VariableMakeIndirect($2); }
 ;
 
 static_member:
@@ -1200,7 +1200,7 @@ base_variable_with_function_calls:
 
 base_variable:
 		reference_variable
-	|	simple_indirect_reference reference_variable	{ $$ = $2; }
+	|	simple_indirect_reference reference_variable { $$ = observers.VariableMakeIndirect($2); }
 	|	static_member
 ;
 

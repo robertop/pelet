@@ -381,7 +381,7 @@ public:
 	virtual ~ExpressionObserverClass();
 
 	/**
-	 * Override this method to get the pseudo-parse tree for a single varaible expression.($x, $x->func())
+	 * Override this method to get the pseudo-parse tree for a single variable expression.($x, $x->func())
 	 * This method only gets called when the top-level statement is a variable. See
 	 * the ExpressionObserverClass class comment for more info.
 	 * 
@@ -1046,8 +1046,8 @@ public:
 		ASSIGNMENT,
 		ASSIGNMENT_LIST,
 		ISSET,                      // (15)
-		EVAL,   
-		UNKNOWN // stuff that we just cannot figure out at parse time; dynamic variables; array accesses
+		EVAL,
+		UNKNOWN // stuff that we dont want to track
 	};
 
 	/**
@@ -1222,6 +1222,7 @@ public:
  * - an array access  ($person['name'])
  * - a long property chain ($this->myFunct()->name->first)
  * - a static member (MyClass::$instance)
+ * - an indirect, or "variable" variable ($clazz)
  *
  */
 class PELET_API VariableClass : public ExpressionClass {
@@ -1266,6 +1267,21 @@ public:
 	 * closure parameter or a USE (lexical) variable
 	 */
 	bool IsReference;
+	
+	/**
+	 * An indirect variable is a variable whose name is in another variable, for example
+	 * 
+	 * $$clazzName
+	 * 
+	 * Currently, there is no way to know how many levels of indirection there are
+	 * for example
+	 * 
+	 * $$clazz
+	 * 
+	 * Will also be captured as an indirect variable, with "clazz" as the 
+	 * variable
+	 */
+	bool IsIndirect;
 	
 	VariableClass(const pelet::ScopeClass& scope);
 

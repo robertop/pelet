@@ -5934,7 +5934,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 1075 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.variable) = (yyvsp[(2) - (2)].variable); }
+    { (yyval.variable) = observers.VariableMakeIndirect((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 341:
@@ -5969,7 +5969,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 1094 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.variable) = (yyvsp[(2) - (2)].variable); }
+    { (yyval.variable) = observers.VariableMakeIndirect((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 349:
