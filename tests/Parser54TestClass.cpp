@@ -1662,6 +1662,23 @@ TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithStaticDeclaration) {
 	CHECK_VARIABLE("$db", Observer.VariableExpressions[1]);
 }
 
+TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithIndirectVariable) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"$$a = 1;  \n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* assignment = Observer.AssignmentExpressions[0];
+	pelet::VariableClass variable = assignment->Destination;
+	
+	CHECK_VECTOR_SIZE(1, variable.ChainList);
+	CHECK_UNISTR_EQUALS("$a", variable.ChainList[0].Name);
+	CHECK(variable.IsIndirect);
+}
+
 TEST_FIXTURE(Parser54TestClass, ExpressionObserverWithClosure) {
 	
 	// note that the code uses reference variables
