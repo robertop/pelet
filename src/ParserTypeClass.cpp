@@ -2153,6 +2153,15 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 		pelet::QualifiedNameClass fullName;
 		fullName.PrependNamespace(name);
 		fullName.PrependNamespace(namespaceName);
+		if (namespaceName.ToSignature().isEmpty() && name.ToSignature().indexOf('\\') > 0) {
+			
+			// when a relative namespace is seen in a piece of code that does not
+			// declare a namespace, then the relative namespace is really an absolute 
+			// namespace
+			// example : "Util\MyClass" in non-namespaced code is really "\Util\MyClass"
+			// 
+			fullName.MakeAbsolute();
+		}
 		fullyQualified = fullName.ToSignature();
 	}
 	return fullyQualified;
