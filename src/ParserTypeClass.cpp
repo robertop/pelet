@@ -1166,6 +1166,7 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 			SetAsPrivate();
 		}
 	}
+	MethodStatements.PushAll(&methodBody->MethodStatements);
 	StartingLineNumber = nameValue->LineNumber;
 	StartingPosition = methodBody->StartingPosition;
 	EndingPosition = methodBody->EndingPosition;

@@ -254,6 +254,7 @@ public:
 	pelet::ClassMemberSymbolClass* ClassMemberSymbolSetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
 	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::StatementListClass* functionStatements,
 		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue);
 	pelet::ClassMemberSymbolClass* ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
 		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);
@@ -398,6 +399,13 @@ private:
 	 * @param phpDocComment the entire comment
 	 */
 	void NotifyLocalVariableFromPhpDoc(const UnicodeString& phpDocComment);
+	
+	/**
+	 * iterate through each statement in the given list of statements and calls
+	 * the appropriate observer callbacks.
+	 * This method will recurse down function / method statements.
+	 */
+	void RecurseAst(pelet::StatementListClass* statements);
 	
 	/**
 	 * the class, method, and namespace that are currently being parsed.

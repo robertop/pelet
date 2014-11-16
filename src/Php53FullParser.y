@@ -526,8 +526,7 @@ is_reference:
 unticked_function_declaration_statement:
 		function is_reference T_STRING
 		'(' parameter_list ')'				{ observers.SetCurrentMemberName($3); }
-		'{' inner_statement_list '}'		{ $$ = observers.ClassMemberSymbolMakeFunction($3, $2, $1, $5, $8, $10);
-											  observers.StatementListMerge($$, $9); 
+		'{' inner_statement_list '}'		{ $$ = observers.ClassMemberSymbolMakeFunction($3, $2, $1, $5, $9, $8, $10);
 											  observers.SetCurrentMemberName(NULL);
 											}
 ;

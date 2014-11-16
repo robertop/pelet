@@ -1367,6 +1367,34 @@ TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithFunctionArgument) {
 	CHECK_UNISTR_EQUALS("Db", Observer.VariableExpressions[1]->PhpDocType);
 }
 
+TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithFunctionDeclaration) { 
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"function myFunc() { \n"
+		"  $result = $x + $y; \n"
+		"}"
+	);
+
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.AssignmentExpressions);
+	
+	pelet::AssignmentExpressionClass* expr = Observer.AssignmentExpressions[0];
+	CHECK_EQUAL(pelet::ExpressionClass::ASSIGNMENT, expr->ExpressionType);
+
+	CHECK_VECTOR_SIZE(1, expr->Destination.ChainList);
+	CHECK_UNISTR_EQUALS("$result", expr->Destination.ChainList[0].Name);
+
+	CHECK_EQUAL(pelet::ExpressionClass::BINARY_OPERATION, expr->Expression->ExpressionType);
+
+	pelet::BinaryOperationClass* binary = PCEB(expr->Expression);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, binary->LeftOperand->ExpressionType);
+	pelet::VariableClass* leftOperand = PCEV(binary->LeftOperand);
+	CHECK_VARIABLE("$x", leftOperand);
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, binary->RightOperand->ExpressionType);
+	pelet::VariableClass* rightOperand = PCEV(binary->RightOperand);
+	CHECK_VARIABLE("$y", rightOperand);
+}
+
 TEST_FIXTURE(Parser53TestClass, ExpressionObserverWithGlobalDeclaration) { 
 	Parser.SetExpressionObserver(&Observer);
 	UnicodeString code = _U(

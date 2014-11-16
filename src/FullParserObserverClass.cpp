@@ -306,7 +306,8 @@ pelet::ClassMemberSymbolClass* pelet::FullParserObserverClass::ClassMemberSymbol
 }
 
 pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, bool isReference,
-        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
+        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::StatementListClass* functionStatements,
 		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	pelet::TokenPositionClass startingPos;
@@ -318,6 +319,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	endingPos.Pos = endingBodyTokenValue->Pos;
 	endingPos.Token = endingBodyTokenValue->Token;
 	newMember->MakeFunction(nameValue, isReference, functionValue, parameters, startingPos, endingPos, Scope, DeclaredNamespace);
+	newMember->MethodStatements.PushAll(functionStatements);
 	AllAstItems.push_back(newMember);
 	return StatementListMakeAndAppend(newMember);
 }
@@ -329,7 +331,6 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace);
 	AllAstItems.push_back(newMember);
 	pelet::StatementListClass* list = StatementListMakeAndAppend(newMember);
-	list = StatementListMerge(list, &methodBody->MethodStatements);
 	return list;
 }
 
@@ -931,9 +932,25 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::Expr
 }
 
 void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
+	RecurseAst(statements);
+	if (ExpressionObserver) {
+		
+		// we give ownership to the expression observer if it exists
+		// otherwise we still own these pointers
+		// doing this AFTER the callbacks because the NotifyVariablesFromParameterList
+		// method can add items to the AllAstItems list
+		ExpressionObserver->StatementOwnership(AllAstItems);
+		AllAstItems.clear();	
+	}
+}
 
+void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* statements) {
+	
 	// go through the list of statements and send the correct notifications
 	pelet::AssignmentExpressionClass* assignmentExpr;
+	pelet::ClassMemberSymbolClass* functionSymbol = NULL;
+	pelet::ClassMemberSymbolClass* memberSymbol = NULL;
+	
 	for (size_t i = 0; i < statements->Size(); ++i) {
 		pelet::StatementClass::Types type = statements->TypeAt(i);
 		pelet::StatementClass* stmt = statements->At(i);
@@ -1065,33 +1082,39 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		case pelet::StatementClass::FUNCTION_DECLARATION:
-			if (Function || Variable || ExpressionObserver) {
-				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
+			functionSymbol = (pelet::ClassMemberSymbolClass*) stmt;
+			if (Function || Variable || ExpressionObserver) {				
 
 				// remove the 'public' we are re-using the ClassMember symbol which always assumes a
 				// method signature
 				// didnt feel like writing a whole other class for just for functions when functions and
 				// methods are almost identical
-				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
+				UnicodeString signature = functionSymbol->ToMethodSignature(functionSymbol->ParametersList.ToSignature());
 				int32_t index = signature.indexOf(UNICODE_STRING_SIMPLE("function"));
 				signature.setTo(signature, index);
-				UnicodeString comment = memberSymbol->GetComment();
+				UnicodeString comment = functionSymbol->GetComment();
 				if (Function) {
-					Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
-					                        memberSymbol->GetReturnType(), comment, memberSymbol->StartingLineNumber);
+					Function->FunctionFound(functionSymbol->NamespaceName, functionSymbol->MemberName, signature,
+					                        functionSymbol->GetReturnType(), comment, functionSymbol->StartingLineNumber);
 				}
 				if (Variable || ExpressionObserver) {
-					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
+					NotifyVariablesFromParameterList(functionSymbol->ParametersList, functionSymbol->NamespaceName, 
+						functionSymbol->ClassName, functionSymbol->MemberName);
 				}
 				if (Function) {
-					Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
-						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
+					Function->FunctionScope(functionSymbol->NamespaceName, functionSymbol->MemberName,
+						functionSymbol->StartingPosition, functionSymbol->EndingPosition);
 				}
+			}
+			
+			// recurse down the method's body of statements
+			if (functionSymbol->MethodStatements.Size()) {
+				RecurseAst(&functionSymbol->MethodStatements);
 			}
 			break;
 		case pelet::StatementClass::METHOD_DECLARATION:
+			memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 			if (Member || Variable || ExpressionObserver) {
-				pelet::ClassMemberSymbolClass* memberSymbol = (pelet::ClassMemberSymbolClass*) stmt;
 				UnicodeString signature = memberSymbol->ToMethodSignature(memberSymbol->ParametersList.ToSignature());
 				pelet::TokenClass::TokenIds visibility = pelet::TokenClass::PUBLIC;
 				if (memberSymbol->IsProtectedMember) {
@@ -1102,16 +1125,24 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 				UnicodeString className = memberSymbol->ClassName;
 				bool isStatic = memberSymbol->IsStaticMember;
 				if (Member) {
-					Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
-					                    memberSymbol->GetReturnType(), memberSymbol->GetComment(), visibility, isStatic, memberSymbol->StartingLineNumber);
+					Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
+										signature,
+					                    memberSymbol->GetReturnType(), memberSymbol->GetComment(), visibility, isStatic, 
+										memberSymbol->StartingLineNumber);
 				}
 				if (Variable || ExpressionObserver) {
-					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName);
+					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName,
+						memberSymbol->ClassName, memberSymbol->MemberName);
 				}
 				if (Member) {
 					Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 				}
+			}
+			
+			// recurse down the method's body of statements
+			if (memberSymbol->MethodStatements.Size()) {
+				RecurseAst(&memberSymbol->MethodStatements);
 			}
 			break;
 		case pelet::StatementClass::NAMESPACE_DECLARATION:
@@ -1204,16 +1235,6 @@ void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statemen
 			}
 			break;
 		}
-	}
-
-	if (ExpressionObserver) {
-		
-		// we give ownership to the expression observer if it exists
-		// otherwise we still own these pointers
-		// doing this AFTER the callbacks because the NotifyVariablesFromParameterList
-		// method can add items to the AllAstItems list
-		ExpressionObserver->StatementOwnership(AllAstItems);
-		AllAstItems.clear();	
 	}
 }
 
@@ -1669,12 +1690,28 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 		return;
 	}
 	std::vector<UnicodeString> assignedProperties;
+	pelet::StatementListClass allClassStmts;
+	allClassStmts.PushAll(classStatements);
 	
 	// gather all of the declared properties
 	for (size_t i = 0; i < classStatements->Size(); ++i) {
 		if (pelet::StatementClass::PROPERTY_DECLARATION == classStatements->TypeAt(i)) {
 			pelet::ClassMemberSymbolClass* member = (pelet::ClassMemberSymbolClass*)classStatements->At(i);
 			assignedProperties.push_back(member->MemberName);
+		}
+		if (pelet::StatementClass::METHOD_DECLARATION == classStatements->TypeAt(i)) {
+			
+			// for methods, the assignment expressions are inside the method body statements,
+			// recurse down the method body
+			pelet::ClassMemberSymbolClass* methodDeclaration = (pelet::ClassMemberSymbolClass*)classStatements->At(i);
+			allClassStmts.PushAll(&methodDeclaration->MethodStatements);
+			for (size_t j = 0; j < methodDeclaration->MethodStatements.Size(); ++j) {
+				if (pelet::StatementClass::PROPERTY_DECLARATION == methodDeclaration->MethodStatements.TypeAt(j)) {
+					pelet::ClassMemberSymbolClass* member = 
+						(pelet::ClassMemberSymbolClass*)methodDeclaration->MethodStatements.At(j);
+					assignedProperties.push_back(member->MemberName);
+				}	
+			}
 		}
 	}
 	
@@ -1684,11 +1721,11 @@ void pelet::FullParserObserverClass::DeclareAssignedPropertiesFromAssignments(pe
 	
 	// go through all assignments and make a property declaration for each assigned variable
 	// that is not already declared
-	for (size_t i = 0; i < classStatements->Size(); ++i) {
+	for (size_t i = 0; i < allClassStmts.Size(); ++i) {
 		bool isThisAssignment = false;
 		pelet::AssignmentExpressionClass* expr = NULL;
-		if (pelet::StatementClass::EXPRESSION == classStatements->TypeAt(i)) {
-			pelet::ExpressionClass* baseExpr = (pelet::ExpressionClass*)classStatements->At(i);
+		if (pelet::StatementClass::EXPRESSION == allClassStmts.TypeAt(i)) {
+			pelet::ExpressionClass* baseExpr = (pelet::ExpressionClass*)allClassStmts.At(i);
 			if (pelet::ExpressionClass::ASSIGNMENT == baseExpr->ExpressionType) {
 				expr = (pelet::AssignmentExpressionClass*)baseExpr;
 				
