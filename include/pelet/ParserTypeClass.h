@@ -87,15 +87,21 @@ public:
 	 * 
 	 * @param const UnicodeString& namespace the fully qualified "declared" namespace of the class that was found
 	 * @param const UnicodeString& className the name of the class that was found
-	 * @param const UnicodeString& signature the list of classes that the class inherits / implements in code format
-	 *        for example "extends UserClass implements Runnable".
-	 *        Note that the extends and implements class names are FULLY QUALIFIED in the proper manner using the current
+	 * @param const UnicodeString& baseClassName the name of the base class 
+	 *        Note that the extends class name is FULLY QUALIFIED in the proper manner using the current
 	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
-	 *        In other words, this is the "unparsed" signature and NOT what was actually in the input source code.
+	 *        In other words, this is the "unparsed" class name and NOT what was actually in the input source code.
+	 * @param const UnicodeString& implmentedInterfaceNames comma-separated list of interfaces that
+	 *        the class implements. 
+	 *        Note that the implements class names are FULLY QUALIFIED in the proper manner using the current
+	 *        defined namespace and any aliases (or will be left alone if they are already fully qualified).
+	 *        In other words, this is the "unparsed" implements list and NOT what was actually in the input source code.
 	 * @param const UnicodeString& comment PHPDoc attached to the class, interface, or trait
 	 * @param lineNumber the line number (1-based) that the class was found in
 	 */
-	virtual void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
+	virtual void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& signature,
+		const UnicodeString& baseClassName, const UnicodeString& implementInterfaceNames, 
 		const UnicodeString& comment, const int lineNumber) { }
 		
 	/**
@@ -2175,6 +2181,12 @@ class PELET_API ClassSymbolClass : public StatementClass {
 		bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
 	
 	UnicodeString ToSignature() const;
+	
+	/**
+	 * @return comma separated string of all interfaces that are implemented 
+	 *         by this class. All interfaces are fully qualified.
+	 */
+	UnicodeString ImplementsString() const;
 	
 };
 

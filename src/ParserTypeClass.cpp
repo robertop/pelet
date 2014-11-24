@@ -880,6 +880,17 @@ UnicodeString pelet::ClassSymbolClass::ToSignature() const {
 	return sig;
 }
 
+UnicodeString pelet::ClassSymbolClass::ImplementsString() const {
+	UnicodeString sig;
+	for (size_t i = 0; i < ImplementsList.size(); ++i) {
+		sig.append(ImplementsList[i]);
+		if (i < (ImplementsList.size() - 1)) {
+			sig.append(UNICODE_STRING_SIMPLE(", "));
+		}
+	}
+	return sig;
+}
+
 pelet::ClassSymbolClass* pelet::ClassSymbolClass::AddToImplements(pelet::QualifiedNameClass* implementsClassName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	ImplementsList.push_back(scope.FullyQualify(*implementsClassName, currentNamespace));
 	return this;

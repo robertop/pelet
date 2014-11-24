@@ -231,8 +231,12 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		case pelet::StatementClass::CLASS_DECLARATION:
 			if (Class) {
 				classSymbol = (pelet::ClassSymbolClass*) stmt;
-				Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
-								  classSymbol->Comment, classSymbol->StartingLineNumber);
+				Class->ClassFound(classSymbol->NamespaceName, 
+					classSymbol->ClassName, 
+					classSymbol->ToSignature(),
+					classSymbol->ExtendsFrom,
+					classSymbol->ImplementsString(),
+					classSymbol->Comment, classSymbol->StartingLineNumber);
 			}
 			if (Class) {
 				classSymbol = (pelet::ClassSymbolClass*) stmt;

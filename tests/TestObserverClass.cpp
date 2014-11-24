@@ -27,7 +27,10 @@
 TestObserverClass::~TestObserverClass() {
 }
 
-void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
+void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& signature, 
+		const UnicodeString& baseClassName,
+		const UnicodeString& implementsList,
 		const UnicodeString& comment, const int lineNumber) {
 	ClassNamespace.push_back(namespaceName);
 	ClassName.push_back(className);

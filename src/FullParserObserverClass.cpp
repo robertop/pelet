@@ -959,8 +959,12 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 			if (Class || Member) {
 				pelet::ClassSymbolClass* classSymbol = (pelet::ClassSymbolClass*) stmt;
 				if (Class) {
-					Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->ToSignature(),
-					                  classSymbol->Comment, classSymbol->StartingLineNumber);
+					Class->ClassFound(classSymbol->NamespaceName, classSymbol->ClassName, 
+						classSymbol->ToSignature(),
+						classSymbol->ExtendsFrom,
+						classSymbol->ImplementsString(),
+						classSymbol->Comment,
+						classSymbol->StartingLineNumber);
 				}
 				if (Class) {
 					Class->ClassEnd(classSymbol->NamespaceName, classSymbol->ClassName, classSymbol->EndingLineNumber);

@@ -78,8 +78,11 @@ public:
 	std::vector<pelet::IssetExpressionClass*> IssetExpressions;
 	std::vector<pelet::AssignmentListExpressionClass*> AssignmentListExpressions;
 
-	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& signature, 
-			const UnicodeString& comment, const int lineNumber);
+	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, 
+		const UnicodeString& signature, 
+		const UnicodeString& baseClassName,
+		const UnicodeString& implementList,
+		const UnicodeString& comment, const int lineNumber);
 			
 	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos);
 	
