@@ -57,7 +57,7 @@ public:
 	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
 	std::vector<pelet::ExpressionClass::ExpressionTypes> VariableExpressionTypes;
-	std::vector<int> NamespaceUseStartingPos, 
+	std::vector<int> NamespaceUseLineNumber, NamespaceUseStartingPos, 
 					MethodStartingPos, MethodEndingPos,
 					FunctionStartingPos, FunctionEndingPos;
 	std::vector<int> ClassLineNumber, MethodLineNumber, PropertyLineNumber, FunctionLineNumber, IncludeLineNumber;
@@ -84,7 +84,7 @@ public:
 		const UnicodeString& implementList,
 		const UnicodeString& comment, const int lineNumber);
 			
-	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos);
+	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int lineNumber, int startingPos);
 	
 	void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos);
 	

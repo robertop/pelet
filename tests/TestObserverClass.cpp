@@ -39,9 +39,10 @@ void TestObserverClass::ClassFound(const UnicodeString& namespaceName, const Uni
 	ClassLineNumber.push_back(lineNumber);
 }
 
-void TestObserverClass::NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos) {
+void TestObserverClass::NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int lineNumber, int startingPos) {
 	NamespaceUseName.push_back(namespaceName);
 	NamespaceAlias.push_back(alias);
+	NamespaceUseLineNumber.push_back(lineNumber);
 	NamespaceUseStartingPos.push_back(startingPos);
 }
 

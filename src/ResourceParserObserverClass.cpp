@@ -302,7 +302,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		case pelet::StatementClass::NAMESPACE_USE:
 			if (Class) {
 				namespaceUse = (pelet::NamespaceUseClass*) stmt;
-				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->StartingPos);
+				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->LineNumber, 
+					namespaceUse->StartingPos);
 			}
 			break;
 		case pelet::StatementClass::NIL:

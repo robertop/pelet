@@ -1158,7 +1158,7 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 		case pelet::StatementClass::NAMESPACE_USE:
 			if (Class) {
 				pelet::NamespaceUseClass* namespaceUse = (pelet::NamespaceUseClass*) stmt;
-				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->StartingPos);
+				Class->NamespaceUseFound(namespaceUse->NamespaceName, namespaceUse->Alias, namespaceUse->LineNumber, namespaceUse->StartingPos);
 			}
 			break;
 		case pelet::StatementClass::NIL:
@@ -1334,6 +1334,7 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseSetStarti
 		if (pelet::StatementClass::NAMESPACE_USE == type) {
 			pelet::NamespaceUseClass* useStmt = (pelet::NamespaceUseClass*) namespaceStatements->At(i);
 			useStmt->StartingPos = useToken->Pos;
+			useStmt->LineNumber = useToken->LineNumber;
 		}
 	}
 	return namespaceStatements;

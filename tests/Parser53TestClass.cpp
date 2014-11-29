@@ -932,7 +932,7 @@ TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
 		"function work() {}\n"
 		"namespace Second {\n"
 		"class MyClass {}\n"
-		"function work() {}"
+		"function work() {}\n"
 		"}\n"
 		"namespace First\\Child {\n"
 		"class MyClass {} \n"
@@ -968,6 +968,11 @@ TEST_FIXTURE(Parser53TestClass, NamespaceAlias) {
 	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use First\\MyClass")), Observer.NamespaceUseStartingPos[0]);
 	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use Second\\MyClass")), Observer.NamespaceUseStartingPos[1]);
 	CHECK_EQUAL((int)code.indexOf(UNICODE_STRING_SIMPLE("use \\First\\Child")), Observer.NamespaceUseStartingPos[2]);
+	
+	CHECK_VECTOR_SIZE(3, Observer.NamespaceUseLineNumber);
+	CHECK_EQUAL(15, Observer.NamespaceUseLineNumber[0]);
+	CHECK_EQUAL(16, Observer.NamespaceUseLineNumber[1]);
+	CHECK_EQUAL(17, Observer.NamespaceUseLineNumber[2]);
 	
 	CHECK_VECTOR_SIZE(4, Observer.ClassNamespace);
 	CHECK_UNISTR_EQUALS("\\First", Observer.ClassNamespace[0]);

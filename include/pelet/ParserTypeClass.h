@@ -152,6 +152,7 @@ public:
 	 * @param alias any alias to the namespaceName. alias will never be empty. If the code does not
 	 *        specify an alias, the alias will be the last part of the namespace.
 	 *        For example the statement "use First\Class;" will result in the  alias being "Class"
+	 * @param lineNumber the line number (1-based) that the namespace statement was found in
 	 * @param startingPos
 	 *        Character position where the namespace use statement starts. This number is 
 	 *        0-based. It is the position where the "use" token starts. For example,
@@ -162,7 +163,7 @@ public:
 	 *        the namespace \Sec\Child is the position of "use"
 	 * @see LexicalAnalyzerClass::GetCharacterPosition()
 	 */
-	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int startingPos) { }
+	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int lineNumber, int startingPos) { }
 
 };
 
@@ -1461,6 +1462,11 @@ public:
 	UnicodeString NamespaceName;
 	
 	UnicodeString Alias;
+	
+	/**
+	 * 1-based line number where the "use" token starts
+	 */
+	int LineNumber;
 
 	/**
 	 *  Character position within the file where the namespace use statement starts. This number is 

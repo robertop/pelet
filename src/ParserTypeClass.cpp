@@ -666,6 +666,7 @@ pelet::NamespaceUseClass::NamespaceUseClass()
 	: StatementClass(pelet::StatementClass::NAMESPACE_USE)
 	, NamespaceName()
 	, Alias()
+	, LineNumber(0)
 	, StartingPos(0) {
 
 }
@@ -677,6 +678,7 @@ void pelet::NamespaceUseClass::Init(pelet::QualifiedNameClass* qualifiedName, pe
 		alias = aliasValue->Lexeme;
 	}
 	Set(qualifiedName, alias);
+	LineNumber = qualifiedName->LineNumber;
 }
 
 UnicodeString pelet::NamespaceUseClass::Set(pelet::QualifiedNameClass* qualifiedName, UnicodeString alias) {
