@@ -534,10 +534,10 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClassConst
 	UnicodeString constantNameString;
 	if (constantName) {
 		constantNameString = constantName->Lexeme;
-		newExpr->LineNumber = constantName->LineNumber;
-		newExpr->Pos = constantName->Pos;
 	}
 	newExpr->ToStaticFunctionCall(fullClassName, constantNameString, false);
+	newExpr->LineNumber = className->LineNumber;
+	newExpr->Pos = className->Pos;
 	AllAstItems.push_back(newExpr);
 	return newExpr;
 }
