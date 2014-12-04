@@ -70,6 +70,13 @@ public:
 	 * reasons.
 	 */
 	bool DoCaptureProperties;
+	
+	/**
+	 * If TRUE, then a function/method body has called the func_get_arg or
+	 * func_get_args PHP functions; this is a good indicator that the 
+	 * container function has variable arguments
+	 */
+	bool HasCallToFuncGetArg;
 
 	/**
 	 * This object will NOT own the observer pointers.

@@ -540,11 +540,15 @@ is_reference:
 
 unticked_function_declaration_statement:
 		function is_reference T_STRING
-		'(' parameter_list ')'				{ observers.SetCurrentClassName(NULL); observers.SetCurrentMemberName($3); }
+		'(' parameter_list ')'				{ observers.SetCurrentClassName(NULL); 
+											  observers.SetCurrentMemberName($3); 
+											  observers.HasCallToFuncGetArg = false;  
+											}
 		'{' inner_statement_list '}'		{ pelet::ClassMemberSymbolClass* member;
 											  AST_INIT(member, pelet::ClassMemberSymbolClass);
 											  member->MakeFunction($3, $2, $1, $5, $8, $10,
-												observers.GetScope(), observers.GetDeclaredNamespace());
+												observers.GetScope(), observers.GetDeclaredNamespace(),
+												observers.HasCallToFuncGetArg);
 											  $$ = $9;
 											  $$->PushFront(member);
 											  observers.SetCurrentMemberName(NULL);
@@ -779,11 +783,14 @@ class_statement:
 	|	class_constant_declaration ';'						{ $$ = $1; }
 	|	trait_use_statement									{ $$ = $1; }
 	|	method_modifiers function is_reference T_STRING
-		'('	parameter_list  ')'								{ observers.SetCurrentMemberName($4); }
+		'('	parameter_list  ')'								{ observers.SetCurrentMemberName($4); 
+															  observers.HasCallToFuncGetArg = false;
+															}
 		method_body											{ pelet::ClassMemberSymbolClass* memberSymbol;
 															  AST_INIT(memberSymbol, pelet::ClassMemberSymbolClass);
 															  memberSymbol->MakeMethod($4, $1, $3, $2, $6, $9,
-															    observers.GetScope(), observers.GetDeclaredNamespace()); 
+															    observers.GetScope(), observers.GetDeclaredNamespace(),
+																observers.HasCallToFuncGetArg); 
 															  AST_INIT($$, pelet::StatementListClass);
 															  $$->PushFront(memberSymbol);
 															  $$->PushAll(&($9->MethodStatements));
@@ -1095,6 +1102,12 @@ function_call:
 																							observers.DoCaptureScalars = true;
 																							observers.DoCaptureCallArguments = true; 
 																						  }
+																						  if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("func_get_arg"), 0) == 0) {
+																							observers.HasCallToFuncGetArg = true;
+																						  }
+																						  if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("func_get_args"), 0) == 0) {
+																							observers.HasCallToFuncGetArg = true;
+																						  }
 																						}
 		function_call_parameter_list	')'												{ /* this parser is only interested in calls to the define function */
 																						  if ($1->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) {
@@ -1114,6 +1127,12 @@ function_call:
 	|	T_NS_SEPARATOR namespace_name '(' 												{ if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("define"), 0) == 0) { 
 																							observers.DoCaptureScalars = true; 
 																							observers.DoCaptureCallArguments = true; 
+																						  }
+																						  if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("func_get_arg"), 0) == 0) {
+																							observers.HasCallToFuncGetArg = true;
+																						  }
+																						  if ($2->ToSignature().caseCompare(UNICODE_STRING_SIMPLE("func_get_args"), 0) == 0) {
+																							observers.HasCallToFuncGetArg = true;
 																						  }
 																						}	
 				function_call_parameter_list ')'										{ /* this parser is only interested in calls to the define function */

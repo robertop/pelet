@@ -657,7 +657,14 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 		"	protected $protectedVar; \n"
 		"	final private $constFinal = 44;\n"
 		"	var $publicVar;\n"
-		"	static public function myPublicStatic() {}\n"
+		
+		// test variable argument detection
+		"	static public function myPublicStatic() {\n"
+		"      $args = func_get_args(); \n"
+		"      foreach ($args as $arg) {\n"
+		"        var_dump($arg);\n"
+		"      }\n"
+		"   }\n"
 		"} \n"
 	);
 	CHECK(Parser.ScanString(code, LintResults));
@@ -696,6 +703,93 @@ TEST_FIXTURE(Parser54TestClass, ScanStringWithAllPossibleClassMemberTypes) {
 	CHECK(Observer.PropertyConsts[0]);
 	CHECK_VECTOR_SIZE(6, Observer.PropertyIsStatic);
 	CHECK(Observer.PropertyConsts[0]);
+	
+	// there are only 4 methods in the code
+	CHECK_VECTOR_SIZE(4, Observer.MethodHasVariableArguments);
+	CHECK_EQUAL(false, Observer.MethodHasVariableArguments[0]);
+	CHECK_EQUAL(false, Observer.MethodHasVariableArguments[1]);
+	CHECK_EQUAL(false, Observer.MethodHasVariableArguments[2]);
+	CHECK(Observer.MethodHasVariableArguments[3]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringWithFunctions) {
+	Parser.SetFunctionObserver(&Observer);
+	UnicodeString code = _U(
+		// test the reference return
+		"function & myPrivate() {}\n"
+		
+		// test variable argument detection
+		"function myPublicStatic() {\n"
+		"   $args = func_get_args(); \n"
+		"   foreach ($args as $arg) {\n"
+		"     var_dump($arg);\n"
+		"   }\n"
+		"}\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(2, Observer.FunctionSignature);
+	CHECK_UNISTR_EQUALS("function& myPrivate()", Observer.FunctionSignature[0]);
+	CHECK_UNISTR_EQUALS("function myPublicStatic()", Observer.FunctionSignature[1]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.FunctionHasVariableArguments);
+	CHECK_EQUAL(false, Observer.FunctionHasVariableArguments[0]);
+	CHECK(Observer.FunctionHasVariableArguments[1]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringFunctionVariableArgsWithExpressionObserver) {
+	
+	// when adding the expression observer an entirely different parser
+	// is used
+	Parser.SetFunctionObserver(&Observer);
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		
+		// test variable argument detection
+		"function myPublicStatic() {\n"
+		"   $args = func_get_args(); \n"
+		"   foreach ($args as $arg) {\n"
+		"     var_dump($arg);\n"
+		"   }\n"
+		"}\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.FunctionSignature);
+	CHECK_UNISTR_EQUALS("function myPublicStatic()", Observer.FunctionSignature[0]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.FunctionHasVariableArguments);
+	CHECK(Observer.FunctionHasVariableArguments[0]);
+}
+
+TEST_FIXTURE(Parser54TestClass, ScanStringMethodVariableArgsWithExpressionObserver) {
+	
+	// when adding the expression observer an entirely different parser
+	// is used
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"class MyClass {\n"
+		
+		// test variable argument detection
+		"  static public function myPublicStatic() {\n"
+		"     $args = func_get_args(); \n"
+		"     foreach ($args as $arg) {\n"
+		"       var_dump($arg);\n"
+		"     }\n"
+		"  }\n"
+		"}\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.MethodSignature);
+	CHECK_UNISTR_EQUALS("public static function myPublicStatic()", Observer.MethodSignature[0]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.MethodHasVariableArguments);
+	CHECK(Observer.MethodHasVariableArguments[0]);
 }
 
 TEST_FIXTURE(Parser54TestClass, ScanStringWithReturnAnnotationsNamespaces) {

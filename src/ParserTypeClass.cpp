@@ -226,7 +226,7 @@ static UChar* MethodFromPhpDoc(const pelet::ScopeClass& scope, const pelet::Qual
 	
 	next = ParametersFromSignature(scope, declaredNamespace, delimsBuffer, saveState, parameters);
 	bool isReference = false;
-	memberMethod->MakeMethod(&nameValue, &modifiers, isReference, &commentValue, &parameters, &methodBody, scope, declaredNamespace);
+	memberMethod->MakeMethod(&nameValue, &modifiers, isReference, &commentValue, &parameters, &methodBody, scope, declaredNamespace, false);
 	return next;
 }
 
@@ -524,6 +524,45 @@ void pelet::AnyExpressionObserverClass::CheckVariable(pelet::VariableClass* vari
 		}
 	}
 	OnAnyExpression(variable);
+}
+
+
+pelet::FunctionCallCountObserverClass::FunctionCallCountObserverClass()
+: AnyExpressionObserverClass() 
+, FunctionName()
+, Counter(0) {
+	
+}
+
+int pelet::FunctionCallCountObserverClass::CountCalls(pelet::StatementListClass* stmts) {
+	Counter = 0;
+	for (size_t i = 0; i < stmts->Size(); ++i) {
+		if (stmts->TypeAt(i) == pelet::StatementClass::EXPRESSION) {
+			pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmts->At(i);
+			CheckExpression(expr);
+		}
+		
+	}
+	return Counter;
+}
+		
+void pelet::FunctionCallCountObserverClass::OnAnyExpression(pelet::ExpressionClass* expression) {
+	if (expression->ExpressionType != pelet::ExpressionClass::VARIABLE) {
+		return;
+	}
+	pelet::VariableClass* var = (pelet::VariableClass*)expression;
+	if (var->ChainList.empty()) {
+		return;
+	}
+	if (!var->ChainList[0].IsFunction) {
+		return;
+	}
+	if (var->ChainList[0].Name.caseCompare(FunctionName, 0) == 0) {
+		Counter++;
+	}
+	
+	// note that the base class will recurse down this expression CallArguments and 
+	// call this method, so we don't need to check CallArguments here
 }
 
 pelet::StatementClass::StatementClass(pelet::StatementClass::Types type)
@@ -966,7 +1005,8 @@ pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 	, IsConstMember(false)
 	, IsAbstractMember(false)
 	, IsFinalMember(false)
-	, IsReturnReference(false) {
+	, IsReturnReference(false) 
+	, HasVariableArguments(false) {
 
 }
 
@@ -1044,6 +1084,7 @@ void pelet::ClassMemberSymbolClass::Clear() {
 	IsAbstractMember = false;
 	IsFinalMember = false;
 	IsReturnReference = false;
+	HasVariableArguments = false;
 }
 
 UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString variablesSignature) const {
@@ -1125,7 +1166,7 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeAsPublicVariab
 pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeFunction(pelet::SemanticValueClass* nameValue, bool isReference,
         pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
 		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue,
-		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace, bool hasVariableArguments) {
 	Type = pelet::StatementClass::FUNCTION_DECLARATION;
 	SetNameAndReturnReference(nameValue, isReference, functionValue, scope, currentNamespace);
 	NamespaceName = currentNamespace.ToSignature();
@@ -1138,13 +1179,14 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeFunction(pelet
 	}
 	StartingPosition = startingBodyTokenValue.Pos;
 	EndingPosition = endingBodyTokenValue.Pos;
+	HasVariableArguments = hasVariableArguments;
 	return this;
 }
 
 pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::SemanticValueClass* nameValue, pelet::ClassMemberSymbolClass* modifiers,
         bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		pelet::ClassMemberSymbolClass* methodBody,
-		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace, bool hasVariableArguments) {
 	Type = pelet::StatementClass::METHOD_DECLARATION;
 	SetNameAndReturnReference(nameValue, isReference, functionValue, scope, currentNamespace);
 	NamespaceName = currentNamespace.ToSignature();
@@ -1183,6 +1225,7 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 	StartingLineNumber = nameValue->LineNumber;
 	StartingPosition = methodBody->StartingPosition;
 	EndingPosition = methodBody->EndingPosition;
+	HasVariableArguments = hasVariableArguments;
 	return this;
 }
 

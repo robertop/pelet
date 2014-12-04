@@ -318,7 +318,19 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	endingPos.LineNumber = nameValue->LineNumber;
 	endingPos.Pos = endingBodyTokenValue->Pos;
 	endingPos.Token = endingBodyTokenValue->Token;
-	newMember->MakeFunction(nameValue, isReference, functionValue, parameters, startingPos, endingPos, Scope, DeclaredNamespace);
+	
+	// check all the function body for calls to func_get_arg or func_get_args
+	// note that this is not a simple foreach loop, we must recurse
+	// down all expressions and check those too, for example the 
+	// binary expression $cnt = func_get_args();
+	bool hasVariableArguments = false;
+	pelet::FunctionCallCountObserverClass callCount;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
+	hasVariableArguments |= callCount.CountCalls(functionStatements);
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
+	hasVariableArguments |= callCount.CountCalls(functionStatements);
+	
+	newMember->MakeFunction(nameValue, isReference, functionValue, parameters, startingPos, endingPos, Scope, DeclaredNamespace, hasVariableArguments);
 	newMember->MethodStatements.PushAll(functionStatements);
 	AllAstItems.push_back(newMember);
 	return StatementListMakeAndAppend(newMember);
@@ -328,7 +340,19 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
         bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		pelet::ClassMemberSymbolClass* methodBody) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
-	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace);
+	
+	// check all the function body for calls to func_get_arg or func_get_args
+	// note that this is not a simple foreach loop, we must recurse
+	// down all expressions and check those too, for example the 
+	// binary expression $cnt = func_get_args();
+	bool hasVariableArguments = false;
+	pelet::FunctionCallCountObserverClass callCount;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements);
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements);
+	
+	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace, hasVariableArguments);
 	AllAstItems.push_back(newMember);
 	pelet::StatementListClass* list = StatementListMakeAndAppend(newMember);
 	return list;
@@ -1099,7 +1123,8 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 				UnicodeString comment = functionSymbol->GetComment();
 				if (Function) {
 					Function->FunctionFound(functionSymbol->NamespaceName, functionSymbol->MemberName, signature,
-					                        functionSymbol->GetReturnType(), comment, functionSymbol->StartingLineNumber);
+					                        functionSymbol->GetReturnType(), comment, functionSymbol->StartingLineNumber,
+												functionSymbol->HasVariableArguments);
 				}
 				if (Variable || ExpressionObserver) {
 					NotifyVariablesFromParameterList(functionSymbol->ParametersList, functionSymbol->NamespaceName, 
@@ -1132,7 +1157,8 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 					Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
 										signature,
 					                    memberSymbol->GetReturnType(), memberSymbol->GetComment(), visibility, isStatic, 
-										memberSymbol->StartingLineNumber);
+										memberSymbol->StartingLineNumber,
+										memberSymbol->HasVariableArguments);
 				}
 				if (Variable || ExpressionObserver) {
 					NotifyVariablesFromParameterList(memberSymbol->ParametersList, memberSymbol->NamespaceName,

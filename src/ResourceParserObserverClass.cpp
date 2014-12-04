@@ -110,6 +110,7 @@ pelet::ResourceParserObserverClass::ResourceParserObserverClass(pelet::ClassObse
 	: DoCaptureScalars(false)
 	, DoCaptureCallArguments(false)
 	, DoCaptureProperties(false)
+	, HasCallToFuncGetArg(false)
 	, AllStatements() 
 	, Scope()
 	, DeclaredNamespace()
@@ -271,7 +272,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 
 
 				Function->FunctionFound(memberSymbol->NamespaceName, memberSymbol->MemberName, signature,
-										memberSymbol->GetReturnType(), memberSymbol->GetComment(), memberSymbol->StartingLineNumber);
+										memberSymbol->GetReturnType(), memberSymbol->GetComment(), memberSymbol->StartingLineNumber,
+										memberSymbol->HasVariableArguments);
 				Function->FunctionScope(memberSymbol->NamespaceName, memberSymbol->MemberName,
 						memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}
@@ -288,7 +290,8 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 					visibility = pelet::TokenClass::PRIVATE;
 				}
 				Member->MethodFound(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, signature,
-									memberSymbol->GetReturnType(), comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber);
+									memberSymbol->GetReturnType(), comment, visibility, memberSymbol->IsStaticMember, memberSymbol->StartingLineNumber,
+									memberSymbol->HasVariableArguments);
 				Member->MethodScope(memberSymbol->NamespaceName, memberSymbol->ClassName, memberSymbol->MemberName, 
 					memberSymbol->StartingPosition, memberSymbol->EndingPosition);
 			}

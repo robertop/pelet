@@ -54,7 +54,7 @@ public:
 						MethodEndClassNamespace, MethodEndClassName, MethodEndMethodName,
 						IncludeFile,
 						TraitNamespace, TraitClassName, TraitUsed, TraitMethodName, TraitAlias, TraitInsteadOf;
-	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic;
+	std::vector<bool> PropertyConsts, MethodIsStatic, PropertyIsStatic, MethodHasVariableArguments, FunctionHasVariableArguments;
 	std::vector<pelet::TokenClass::TokenIds> MethodVisibility, PropertyVisibility, TraitAliasVisibility;
 	std::vector<pelet::ExpressionClass::ExpressionTypes> VariableExpressionTypes;
 	std::vector<int> NamespaceUseLineNumber, NamespaceUseStartingPos, 
@@ -90,7 +90,7 @@ public:
 	
 	void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
-			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber);
+			pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber, bool hasVariableArguments);
 
 	void MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		int startingPos, int endingPos);
@@ -100,7 +100,8 @@ public:
 			pelet::TokenClass::TokenIds visibility, bool isConst, bool isStatic, const int lineNumber);
 	
 	void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber);
+			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber,
+			bool hasVariableArguments);
 
 	void FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos);
 	

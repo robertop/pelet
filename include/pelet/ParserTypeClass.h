@@ -191,10 +191,13 @@ public:
 	 * @param visibility the visibility token attached to the method: PUBLIC, PROTECTED, or PRIVATE
 	 * @param isStatic true if the method is static
 	 * @param lineNumber the line number (1-based) that the method was found in
+	 * @param hasVariableArguments TRUE if the function takes in variable arguments; this is determined
+	 *                             by the function/method body calling funct_get_arg() OR func_get_args() 
 	 */
 	virtual void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, 
-		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) { }
+		TokenClass::TokenIds visibility, bool isStatic, const int lineNumber,
+		bool hasVariableArguments) { }
 	
 	/**
 	 * Override this method to perform any custom logic when a class property is found.
@@ -293,9 +296,12 @@ public:
 	 * @param const UnicodeString& returnType the function's return type, as dictated by the PHPDoc comment
 	 * @param const UnicodeString& comment PHPDoc attached to the class
 	 * @param lineNumber the line number (1-based) that the function was found in
+	 * @param hasVariableArguments TRUE if the function takes in variable arguments; this is determined
+	 *                             by the function/method body calling funct_get_arg() OR func_get_args() 
 	 */
 	virtual void FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) { }
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber,
+		bool hasVariableArguments) { }
 
 	/**
 	 * Override this method to perform any logic when the function body has ended (a closing brace '}' was encountered).
@@ -659,6 +665,39 @@ class PELET_API AnyExpressionObserverClass : public ExpressionObserverClass {
 	
 	void CheckExpression(pelet::ExpressionClass* expression);
 	void CheckVariable(pelet::VariableClass* variable);
+};
+
+/**
+ * a class that will iterate through an entire AST and will count the
+ * number of times a specific function was called.  Note that this 
+ * class iterates down function calls themselves; ie it will find 
+ * code like this:
+ * 
+ *   $this->myFun(otherFunc(1, 3), anotherFunc(3));
+ */
+class FunctionCallCountObserverClass : public pelet::AnyExpressionObserverClass {
+
+public:
+
+	/**
+	 *  the function name to look for; whenever a function call with
+	 *  this name is called, a counter is incremented
+	 *  Note that this is NOT a fully qualified function name
+	 */
+	UnicodeString FunctionName;
+	
+	FunctionCallCountObserverClass();
+	
+	/**
+	 * @return number of this FunctionName was called
+	 */
+	int CountCalls(pelet::StatementListClass* stmts);
+		
+	void OnAnyExpression(pelet::ExpressionClass* expression);
+
+private:
+
+	int Counter;
 };
 
 /**
@@ -2321,6 +2360,12 @@ public:
 	bool IsFinalMember;
 
 	bool IsReturnReference;
+	
+	/**
+	 * TRUE if the function takes in variable arguments; this is determined
+	 * by the function/method body calling funct_get_arg() OR func_get_args() 
+	 */
+	bool HasVariableArguments;
 
 	ClassMemberSymbolClass();
 	void SetNameAndReturnReference(SemanticValueClass* nameValue, bool isReturnReference, SemanticValueClass* functionValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
@@ -2345,13 +2390,13 @@ public:
 	pelet::ClassMemberSymbolClass* MakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		const pelet::TokenPositionClass& startingBodyTokenValue, const pelet::TokenPositionClass& endingBodyTokenValue,
-		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace, bool hasVariableArguments);
 
 	pelet::ClassMemberSymbolClass* MakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
 		pelet::ClassMemberSymbolClass* methodBody,
-		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace, bool hasVariableArguments);
 	
 	pelet::ClassMemberSymbolClass* MakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, 
 		bool isConstant, const int endingPosition, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);

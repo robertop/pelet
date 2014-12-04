@@ -52,7 +52,7 @@ void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespace
 
 void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
-		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber) {
+		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber, bool hasVariableArguments) {
 	MethodClassNamespace.push_back(namespaceName);
 	MethodClassName.push_back(className);
 	MethodName.push_back(methodName);
@@ -62,6 +62,7 @@ void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const Un
 	MethodVisibility.push_back(visibility);
 	MethodIsStatic.push_back(isStatic);
 	MethodLineNumber.push_back(lineNumber);
+	MethodHasVariableArguments.push_back(hasVariableArguments);
 }
 
 void TestObserverClass::MethodScope(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
@@ -85,13 +86,15 @@ void TestObserverClass::PropertyFound(const UnicodeString& namespaceName, const 
 }
 
 void TestObserverClass::FunctionFound(const UnicodeString& namespaceName, const UnicodeString& functionName, 
-		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber) {
+		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment, const int lineNumber, 
+		bool hasVariableArguments) {
 	FunctionNamespace.push_back(namespaceName);
 	FunctionName.push_back(functionName);
 	FunctionSignature.push_back(signature);
 	FunctionReturnType.push_back(returnType);
 	FunctionComment.push_back(comment);
 	FunctionLineNumber.push_back(lineNumber);
+	FunctionHasVariableArguments.push_back(hasVariableArguments);
 }
 
 void TestObserverClass::FunctionScope(const UnicodeString& namespaceName, const UnicodeString& functionName, int startingPos, int endingPos) {
