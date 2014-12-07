@@ -677,14 +677,14 @@ parameter_list:
 
 
 non_empty_parameter_list:
-		optional_class_type T_VARIABLE														{ $$ = observers.ParametersListCreate($1, $2, false); }
-	|	optional_class_type '&' T_VARIABLE													{ $$ = observers.ParametersListCreate($1, $3, true); }
-	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ $$ = observers.ParametersListCreate($1, $3, true);}
-	|	optional_class_type T_VARIABLE '=' static_scalar									{ $$ = observers.ParametersListCreate($1, $2, false); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = observers.ParametersListAppend($1, $3, $4, false); } 
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = observers.ParametersListAppend($1, $3, $5, true); }
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = observers.ParametersListAppend($1, $3, $5, true); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = observers.ParametersListAppend($1, $3, $4, false); }
+		optional_class_type T_VARIABLE														{ $$ = observers.ParametersListCreate($1, $2, false, false); }
+	|	optional_class_type '&' T_VARIABLE													{ $$ = observers.ParametersListCreate($1, $3, true, false); }
+	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ $$ = observers.ParametersListCreate($1, $3, true, true);}
+	|	optional_class_type T_VARIABLE '=' static_scalar									{ $$ = observers.ParametersListCreate($1, $2, false, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = observers.ParametersListAppend($1, $3, $4, false, false); } 
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = observers.ParametersListAppend($1, $3, $5, true, false); }
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = observers.ParametersListAppend($1, $3, $5, true, true); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = observers.ParametersListAppend($1, $3, $4, false, true); }
 ;
 
 optional_class_type:

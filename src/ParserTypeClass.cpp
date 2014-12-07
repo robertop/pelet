@@ -174,7 +174,7 @@ static UChar* ParametersFromSignature(const pelet::ScopeClass& scope, const pele
 				parameterName.Lexeme.remove(parameterName.Lexeme.length() - 1, 1);
 			}
 			bool isReference = false;
-			parameters.Append(&parameterType, &parameterName, isReference, scope, declaredNamespace);
+			parameters.Append(&parameterType, &parameterName, isReference, false, scope, declaredNamespace);
 			parameterName.Lexeme.remove();
 			parameterType.Clear();
 		}
@@ -1409,13 +1409,15 @@ pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromDeclaredNamespace(
 
 pelet::ParametersListClass::ParametersListClass()
 	: Params()
-	, OptionalTypes() {
+	, OptionalTypes() 
+	, Defaults() {
 
 }
 
 void pelet::ParametersListClass::Create() {
 	Params.push_back(UNICODE_STRING_SIMPLE(""));
 	OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
+	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClass* typeValue) {
@@ -1425,6 +1427,7 @@ void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClas
 	} else {
 		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	}
+	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
@@ -1434,18 +1437,23 @@ void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& cla
 	} else {
 		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	}
+	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 }
 
 void pelet::ParametersListClass::Clear() {
 	Params.clear();
 	OptionalTypes.clear();
+	Defaults.clear();
 }
 
-void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isReference) {
+void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isReference, bool hasDefault) {
 	if (value) {
 		Params.back().setTo(value->Lexeme);
 		if (isReference) {
 			Params.back().insert(0, UNICODE_STRING_SIMPLE("&"));
+		}
+		if (hasDefault) {
+			Defaults.back() =  UNICODE_STRING_SIMPLE("...");
 		}
 	}
 }
@@ -1459,9 +1467,15 @@ UnicodeString pelet::ParametersListClass::ToSignature() const {
 			signature.append(UNICODE_STRING_SIMPLE(" "));
 		}
 		signature.append(Params[i]);
+		if (!Defaults[i].isEmpty()) {
+			signature.append(UNICODE_STRING_SIMPLE("="));
+			signature.append(Defaults[i]);
+		}
+		
 		if (i < (Params.size() - 1)) {
 			signature.append(UNICODE_STRING_SIMPLE(", "));
 		}
+		
 	}
 	signature.append(UNICODE_STRING_SIMPLE(")"));
 	return signature;
@@ -1480,7 +1494,8 @@ void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, Unico
 	}
 }
 
-pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
+															   bool isReference, bool hasDefault,
 															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	UnicodeString typeString;
 	if (type) {
@@ -1501,12 +1516,13 @@ pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedN
 		}
 	}
 	CreateWithOptionalType(typeString);
-	SetName(parameterName, isReference);
+	SetName(parameterName, isReference, hasDefault);
 	return this;
 }
 
-void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
-															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
+								      bool isReference, bool hasDefault,
+									  const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
 	UnicodeString typeString;
 	if (type) {
 		typeString = type->ToSignature();
@@ -1526,7 +1542,7 @@ void pelet::ParametersListClass::Init(pelet::QualifiedNameClass* type, pelet::Se
 		}
 	}
 	CreateWithOptionalType(typeString);
-	SetName(parameterName, isReference);
+	SetName(parameterName, isReference, hasDefault);
 }
 
 pelet::ExpressionClass::ExpressionClass(const pelet::ScopeClass& scope)

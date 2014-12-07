@@ -688,14 +688,14 @@ parameter_list:
 ;
 
 non_empty_parameter_list:
-		optional_class_type T_VARIABLE														{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	optional_class_type '&' T_VARIABLE													{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	optional_class_type T_VARIABLE '=' static_scalar									{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = $1->Append($3, $4, false, observers.GetScope(), observers.GetDeclaredNamespace()); } 
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = $1->Append($3, $5, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = $1->Append($3, $5, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
-	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = $1->Append($3, $4, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+		optional_class_type T_VARIABLE														{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	optional_class_type '&' T_VARIABLE													{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	optional_class_type '&' T_VARIABLE '=' static_scalar								{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $3, true, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	optional_class_type T_VARIABLE '=' static_scalar									{ AST_INIT_ARGS($$, pelet::ParametersListClass, $1, $2, false, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE							{ $$ = $1->Append($3, $4, false, false, observers.GetScope(), observers.GetDeclaredNamespace()); } 
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE						{ $$ = $1->Append($3, $5, true, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type '&' T_VARIABLE	'=' static_scalar	{ $$ = $1->Append($3, $5, true, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+	|	non_empty_parameter_list ',' optional_class_type T_VARIABLE '=' static_scalar		{ $$ = $1->Append($3, $4, false, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
 ;
 
 optional_class_type:

@@ -1366,14 +1366,16 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseSetStarti
 	return namespaceStatements;
 }
 
-pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference) {
-	parametersList->Append(type, parameterName, isReference, Scope, DeclaredNamespace);
+pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListAppend(pelet::ParametersListClass* parametersList, 
+		pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault) {
+	parametersList->Append(type, parameterName, isReference, hasDefault, Scope, DeclaredNamespace);
 	return parametersList;
 }
 
-pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference) {
+pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
+		bool isReference, bool hasDefault) {
 	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
-	parametersList->Append(type, parameterName, isReference, Scope, DeclaredNamespace);
+	parametersList->Append(type, parameterName, isReference, hasDefault, Scope, DeclaredNamespace);
 	AllAstItems.push_back(parametersList);
 	return parametersList;
 }

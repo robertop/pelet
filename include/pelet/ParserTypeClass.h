@@ -2255,21 +2255,23 @@ public:
 	/**
 	 * Append another parameter
 	 */
-	pelet::ParametersListClass* Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+	pelet::ParametersListClass* Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
+		bool isReference, bool hasDefault,
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
 	/**
 	 * Create the first parameter
 	 */
-	void Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference,
+	void Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
+		bool isReference, bool hasDefaults,
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace); 
 
 	void Clear();	
-	void SetName(SemanticValueClass* value, bool isReference);
+	void SetName(SemanticValueClass* value, bool isReference, bool hasDefaults);
 
 	/**
 	 * Recreate the source code by 'unparsing' the parameter list
-	 * @return concatenated paramter names; delimited with a comma. Also,
+	 * @return concatenated parameter names; delimited with a comma. Also,
 	 * the returned string will have parenthesis already present.
 	 * For example "($name, $places)"
 	 */
@@ -2290,6 +2292,7 @@ public:
 private:
 	std::vector<UnicodeString> Params;
 	std::vector<UnicodeString> OptionalTypes;
+	std::vector<UnicodeString> Defaults;
 };
 
 /**

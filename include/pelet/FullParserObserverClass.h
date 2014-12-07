@@ -240,8 +240,9 @@ public:
 	pelet::ClassSymbolClass* ClassSymbolStart(pelet::SemanticValueClass* commentValue, bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
 	
 	pelet::ParametersListClass* ParametersListNil();
-	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference);
-	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference); 
+	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, 
+		pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault);
+	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault); 
 
 	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,

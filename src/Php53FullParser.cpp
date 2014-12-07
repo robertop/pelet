@@ -4520,56 +4520,56 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 680 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].semanticValue), false); }
+    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].semanticValue), false, false); }
     break;
 
   case 125:
 
 /* Line 1806 of yacc.c  */
 #line 681 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue), true); }
+    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue), true, false); }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
 #line 682 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].semanticValue), true);}
+    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].semanticValue), true, true);}
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
 #line 683 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].semanticValue), false); }
+    { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].semanticValue), false, true); }
     break;
 
   case 128:
 
 /* Line 1806 of yacc.c  */
 #line 684 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (4)].parametersList), (yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].semanticValue), false); }
+    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (4)].parametersList), (yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].semanticValue), false, false); }
     break;
 
   case 129:
 
 /* Line 1806 of yacc.c  */
 #line 685 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (5)].parametersList), (yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].semanticValue), true); }
+    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (5)].parametersList), (yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].semanticValue), true, false); }
     break;
 
   case 130:
 
 /* Line 1806 of yacc.c  */
 #line 686 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (7)].parametersList), (yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].semanticValue), true); }
+    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (7)].parametersList), (yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].semanticValue), true, true); }
     break;
 
   case 131:
 
 /* Line 1806 of yacc.c  */
 #line 687 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php53FullParser.y"
-    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (6)].parametersList), (yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].semanticValue), false); }
+    { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (6)].parametersList), (yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].semanticValue), false, true); }
     break;
 
   case 132:

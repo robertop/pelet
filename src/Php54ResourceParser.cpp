@@ -4757,56 +4757,56 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 709 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].lexeme), false, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
 #line 710 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].lexeme), true, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
 #line 711 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].lexeme), true, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 128:
 
 /* Line 1806 of yacc.c  */
 #line 712 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { AST_INIT_ARGS((yyval.parametersList), pelet::ParametersListClass, (yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].lexeme), false, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 129:
 
 /* Line 1806 of yacc.c  */
 #line 713 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (4)].parametersList)->Append((yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { (yyval.parametersList) = (yyvsp[(1) - (4)].parametersList)->Append((yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].lexeme), false, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 130:
 
 /* Line 1806 of yacc.c  */
 #line 714 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (5)].parametersList)->Append((yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { (yyval.parametersList) = (yyvsp[(1) - (5)].parametersList)->Append((yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].lexeme), true, false, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 131:
 
 /* Line 1806 of yacc.c  */
 #line 715 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (7)].parametersList)->Append((yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].lexeme), true, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { (yyval.parametersList) = (yyvsp[(1) - (7)].parametersList)->Append((yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].lexeme), true, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 132:
 
 /* Line 1806 of yacc.c  */
 #line 716 "/home/roberto/workspace/triumph4php/lib/pelet/src/Php54ResourceParser.y"
-    { (yyval.parametersList) = (yyvsp[(1) - (6)].parametersList)->Append((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].lexeme), false, observers.GetScope(), observers.GetDeclaredNamespace()); }
+    { (yyval.parametersList) = (yyvsp[(1) - (6)].parametersList)->Append((yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].lexeme), false, true, observers.GetScope(), observers.GetDeclaredNamespace()); }
     break;
 
   case 133:
