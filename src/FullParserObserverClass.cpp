@@ -326,9 +326,9 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	bool hasVariableArguments = false;
 	pelet::FunctionCallCountObserverClass callCount;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
-	hasVariableArguments |= callCount.CountCalls(functionStatements);
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
-	hasVariableArguments |= callCount.CountCalls(functionStatements);
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
 	
 	newMember->MakeFunction(nameValue, isReference, functionValue, parameters, startingPos, endingPos, Scope, DeclaredNamespace, hasVariableArguments);
 	newMember->MethodStatements.PushAll(functionStatements);
@@ -348,9 +348,9 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	bool hasVariableArguments = false;
 	pelet::FunctionCallCountObserverClass callCount;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
-	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements);
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
-	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements);
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
 	
 	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace, hasVariableArguments);
 	AllAstItems.push_back(newMember);
