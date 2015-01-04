@@ -335,8 +335,7 @@ int pelet::UCharBufferedFileClass::GetCharacterPosition() const {
 
 pelet::UCharBufferClass::UCharBufferClass() 
 	: BufferClass()
-	, Buffer(NULL) 
-	, BufferCapacity(0) {
+	, Buffer(NULL) {
 		
 }
 

@@ -345,11 +345,6 @@ private:
 	 * the GetLexeme() method.
 	 */
 	const UChar* Buffer;
-	
-	/**
-	 * This variable stores the total memory allocated to the buffer.
-	 */
-	int BufferCapacity;
 };
 
 }
