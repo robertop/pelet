@@ -124,6 +124,7 @@ solution "pelet"
 		files { "sample/sample.cpp" }
 		includedirs { "include" }
 		links { "pelet", "tests" }
+		defines { "PELET_USE_DLL" }
 		
 		configuration "Release"
 			pickywarnings(_ACTION)
@@ -162,6 +163,7 @@ solution "pelet"
 		}
 		includedirs { "include/", "lib/UnitTest++/src/", "tests/" }
 		links { "pelet", "unit_test++" }
+		defines { "PELET_USE_DLL" }
 		
 		-- dont bother with warnings  with using 'unsafe' fopen
 		configuration { "vs2008" }

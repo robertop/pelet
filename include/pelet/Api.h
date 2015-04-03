@@ -27,8 +27,10 @@
 #if defined(__WIN32__) || defined(_WIN32)
 	#ifdef PELET_MAKING_DLL
 		#define PELET_API __declspec(dllexport)
-	#else
+	#elif defined(PELET_USE_DLL)
 		#define PELET_API __declspec(dllimport)
+	#else
+		#define PELET_API 
 	#endif
 
 	// disable warning C4251: class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of '<class>'
