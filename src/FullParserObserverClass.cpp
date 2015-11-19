@@ -382,12 +382,8 @@ pelet::ClassMemberSymbolClass* pelet::FullParserObserverClass::ClassMemberMakeBo
 
 pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue,
         bool isConstant, const int startingLineNumber) {
-	int endingPosition = 0;
-	if (nameValue) {
-		endingPosition = nameValue->Pos + nameValue->Lexeme.length();
-	}
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
-	newMember->MakeVariable(nameValue, commentValue, isConstant, endingPosition, Scope, DeclaredNamespace);
+	newMember->MakeVariable(nameValue, commentValue, isConstant, startingLineNumber, Scope, DeclaredNamespace);
 	AllAstItems.push_back(newMember);
 	return StatementListMakeAndAppend(newMember);
 }

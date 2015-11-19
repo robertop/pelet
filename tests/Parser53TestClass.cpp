@@ -980,6 +980,24 @@ TEST_FIXTURE(Parser53TestClass, PropertyLineNumber) {
 	CHECK_EQUAL(2, Observer.PropertyLineNumber[0]);
 }
 
+TEST_FIXTURE(Parser53TestClass, PropertyLineNumberWithVariableObserver) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+	
+	UnicodeString code = _U(
+		"class MyClass {\n"
+		"	var $name;\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.PropertyLineNumber);
+
+	// for now property line number is the line after the entire property declaration
+	// has been read
+	CHECK_EQUAL(2, Observer.PropertyLineNumber[0]);
+}
+
 TEST_FIXTURE(Parser53TestClass, IncludeLineNumber) {
 	Parser.SetClassObserver(&Observer);
 	UnicodeString code = _U(
