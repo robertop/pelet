@@ -92,6 +92,23 @@ same directory as the sample program (the Debug/ and Release/ directories). You 
 BEFORE compiling pelet, as the compilation has a post-build action to run a test suite (and the test 
 suite requires the ICU library).
 
+Using Make (On  Mac OS X)
+------------------------
+	(build the ICU library as normal,can also use homebrew to install it)
+	git clone git@github.com:robertop/pelet.git /home/user/pelet
+	cd /home/user/pelet
+	./premake4-macosx --icu-config="/path/to/icu-config" gmake
+	cd build/gmake
+	make config=release
+
+"./premake4 gmake" can be substituted for an IDE solution; ie 
+"./premake4 --icu-config="/path/to/icu-config codelite". After these steps
+the resulting shared library will be created in Release/pelet.so. The library can then be imported
+into any C++ project by adding the include directory (-Iinclude) to the include path and adding the 
+library file as a library (-lpelet). You will probably need to change the install name and / or
+the install path. Use the otool tool.
+
+
 Sample Usage
 -------------
 pelet is a simple library to use; you create a class that conforms to one or more

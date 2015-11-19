@@ -149,11 +149,28 @@ solution "pelet"
 		includedirs { "include" }
 		defines { "PELET_MAKING_DLL" }
 		pickywarnings(_ACTION)
-		configuration "Release"			
+
+		-- for mac osx, change the shared library ID so that
+		-- it is the full path, that way we can run the executable
+		-- from any location and the lib will always be found
+		-- it becomes painful when running from the command line
+		-- vs. finder vs. the debugger vs. the codelite terminal,
+		-- they all have different working directories and this
+		-- makes relative install names not easy to work with
+		-- when passing arguments to the linker, must replace
+		-- spaces with commas
+		if os.is "macosx" then
+			configuration { "Debug" }
+				linkoptions { "-Wl,-install_name," .. normalizepath("Debug/libpelet.dylib")  }
+			configuration { "Release" }
+				linkoptions { "-Wl,-install_name," .. normalizepath("Release/libpelet.dylib")  }
+		end
+
+		configuration "Release"
 			icuconfiguration("Release", _ACTION)
 		configuration { "Debug" }
 			icuconfiguration("Debug", _ACTION)
-								
+
 	project "tests"
 		language "C++"
 		kind "ConsoleApp"
@@ -168,11 +185,20 @@ solution "pelet"
 		-- dont bother with warnings  with using 'unsafe' fopen
 		configuration { "vs2008" }
 			defines { "_CRT_SECURE_NO_WARNINGS" }
-		
-		configuration { "gmake or codelite" }
-			
-			-- make it so that the test executable can find the pelet shared lib
-			linkoptions { "-Wl,-rpath=./" }
+
+		if os.is "linux" then
+			configuration { "gmake or codelite" }
+
+				-- make it so that the test executable can find the pelet shared lib
+				linkoptions { "-Wl,-rpath=./" }
+		elseif os.is "macosx" then
+
+			-- this is a workaround for a premake issue where it will use
+			-- bad compiler flags "-Wl,x" for a workaround that is longer
+			-- needed in GCC, but it just prevents clang from compiling
+			-- see http://industriousone.com/topic/how-remove-flags-ldflags
+			flags { "Symbols" }
+		end
 
 		configuration "Debug"
 			pickywarnings(_ACTION)
