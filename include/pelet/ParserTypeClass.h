@@ -340,6 +340,11 @@ public:
 	 * The variable itself may contain an array key in it; like so: $person['name'] = $this->getName()->toString();
 	 * In this case, Variable ChainList will contain 1 item: "$name" and the Variable Array Key will contain "name"
 	 * 
+	 * A special case here is that pelet will report type hinted variables here in the VariableFound callback. When
+	 * pelet sees a comment in the form "@var $user AdminUser" it will parse the variable name and class name
+	 * and call the VariableFound callback.  In this case, expression contains no information since there
+	 * is no right hand side of an assignment. variable.IsPhpDocVariable will be set to TRUE and the 
+	 * parsed class name is available from variable.PhpDocType.
 	 * 
 	 * @param const UnicodeString& namespace the fully qualified namespace of the containing class / function.
 	 * @param const UnicodeString& className class where the variable was found. may be empty is variable is scoped 
@@ -1328,6 +1333,12 @@ public:
 	 * variable
 	 */
 	bool IsIndirect;
+	
+	/**
+	 * TRUE if this variable is a "pseudo" variable that was declared in 
+	 * a PHP comment and not in the source code.
+	 */
+	bool IsPhpDocVariable;
 	
 	VariableClass(const pelet::ScopeClass& scope);
 

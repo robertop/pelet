@@ -404,7 +404,12 @@ public:
 			scope = className + UNICODE_STRING_SIMPLE("::") + methodName;
 		}
 		UnicodeString type;
-		if (pelet::ExpressionClass::ARRAY == expression->ExpressionType) {
+		
+		if (variable.IsPhpDocVariable && !variable.PhpDocType.isEmpty()) {
+			type += UNICODE_STRING_SIMPLE("Variable is decorated with a PHPDoc comment: ");
+			type += variable.PhpDocType;
+		}
+		else if (pelet::ExpressionClass::ARRAY == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is an array");
 		}
 		else if (pelet::ExpressionClass::SCALAR == expression->ExpressionType) {
@@ -434,10 +439,7 @@ public:
 		else if (pelet::ExpressionClass::UNKNOWN == expression->ExpressionType) {
 			type = UNICODE_STRING_SIMPLE("Variable is of unknown type.");
 		}
-		if (!variable.PhpDocType.isEmpty()) {
-			type += UNICODE_STRING_SIMPLE("Variable is decorated with a PHPDoc comment: ");
-			type += variable.PhpDocType;
-		}
+		
 		u_fprintf(ufout, "Variable Found: %.*S in scope %S. %S\n", 
 				variable.ChainList[0].Name.length(), variable.ChainList[0].Name.getBuffer(),
 				scope.getTerminatedBuffer(),

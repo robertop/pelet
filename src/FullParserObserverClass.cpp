@@ -175,6 +175,7 @@ void pelet::FullParserObserverClass::NotifyLocalVariableFromPhpDoc(const Unicode
 
 					// handle namespaces in the phpDoc
 					variable.PhpDocType = pelet::PhpDocTypeToAbsoluteClassname(variable.PhpDocType, Scope, DeclaredNamespace);
+					variable.IsPhpDocVariable = true;
 					variable.AppendToChain(variableName);
 					Variable->VariableFound(DeclaredNamespace.ToSignature(), Scope.ClassName, Scope.MethodName, variable, &expression, phpDocComment);
 					next = u_strtok_r(NULL, delimsBuffer, &saveState);
