@@ -219,8 +219,9 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 	if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
 
 		// advance past all comments (there can be more than one consecutive)
-		// keep /** and /* comments separate; we only want /* comments to
-		// get type hints for local varibles
+		// keep /** and /* comments separate; parse all comments for local
+		// variables but only return /** (doc comments) as those are 
+		// the important ones
 		while (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
 			if (pelet::T_DOC_COMMENT == ret) {
 				analyzer.GetLexeme(value->semanticValue->Comment);
@@ -233,6 +234,10 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 	if (!commentValue.Comment.isEmpty()) {
 		observers.NotifyLocalVariableTypeHint(commentValue.Comment);
 	}
+	if (value->semanticValue && !value->semanticValue->Comment.isEmpty()) {
+		observers.NotifyLocalVariableTypeHint(value->semanticValue->Comment);
+	}
+	
 	if (pelet::T_CLOSE_TAG == ret) {
 		ret = ';';
 	}
