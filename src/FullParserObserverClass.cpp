@@ -217,6 +217,7 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 	// optimization: SemanticValueInit() method knows when we need to examine
 	// comments and will allocate memory only when needed
 	pelet::SemanticValueClass commentValue;
+	UnicodeString allComments;
 	if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
 
 		// advance past all comments (there can be more than one consecutive)
@@ -224,10 +225,13 @@ int pelet::FullLex(pelet::ParserType* value, pelet::LexicalAnalyzerClass &analyz
 		// variables but only return /** (doc comments) as those are 
 		// the important ones
 		while (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
+			UnicodeString singleComment;
 			if (pelet::T_DOC_COMMENT == ret) {
-				analyzer.GetLexeme(value->semanticValue->Comment);
+				analyzer.GetLexeme(singleComment);
+				value->semanticValue->Comment.append(singleComment);
 			} else if (pelet::T_COMMENT == ret) {
-				analyzer.GetLexeme(commentValue.Comment);
+				analyzer.GetLexeme(singleComment);
+				commentValue.Comment.append(singleComment);
 			}
 			ret = analyzer.NextToken();
 		}

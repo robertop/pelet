@@ -1106,6 +1106,63 @@ TEST_FIXTURE(Parser54TestClass, ShouldUsePhpDocAnnotations) {
 	//CHECK_UNISTR_EQUALS("Integer", Observer.VariablePhpDocType[5]);
 }
 
+TEST_FIXTURE(Parser54TestClass, MultipleDocBlocksInFunction) {
+	Parser.SetFunctionObserver(&Observer);
+	UnicodeString code = _U(
+		"/** first comment */\n"
+		"/** second comment */\n"
+		"/** third comment */\n"
+		"function myPublicStatic() {\n"
+		"   $args = func_get_args(); \n"
+		"   foreach ($args as $arg) {\n"
+		"     var_dump($arg);\n"
+		"   }\n"
+		"}\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.FunctionComment);
+
+	UnicodeString expected = _U(
+		"/** first comment */"
+		"/** second comment */"
+		"/** third comment */"
+	);
+	CHECK_EQUAL(expected, Observer.FunctionComment[0]);
+}
+
+TEST_FIXTURE(Parser54TestClass, MultipleDocBlocksInGlobalScope) {
+	Parser.SetVariableObserver(&Observer);
+	UnicodeString code = _U(
+		"/* @var $this \\yii\\web\\View */\n"
+		"/* @var $name string */\n"
+		"/* @var $message string */\n"
+		"function myPublicStatic() {\n"
+		"   $args = func_get_args(); \n"
+		"   foreach ($args as $arg) {\n"
+		"     var_dump($arg);\n"
+		"   }\n"
+		"}\n"
+	);
+	
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.FunctionComment);
+
+	UnicodeString expected = _U(
+		"/* @var $this \\yii\\web\\View */"
+		"/* @var $name string */"
+		"/* @var $message string */"
+	);
+	CHECK_EQUAL(expected, Observer.FunctionComment[0]);
+	CHECK_VECTOR_SIZE(3, Observer.VariableName);
+
+	CHECK_UNISTR_EQUALS("$this", Observer.VariableName[0]);
+	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[1]);
+	CHECK_UNISTR_EQUALS("$message", Observer.VariableName[2]);
+}
+
 TEST_FIXTURE(Parser54TestClass, MethodScope) {
 	Parser.SetClassObserver(&Observer);
 	Parser.SetClassMemberObserver(&Observer);

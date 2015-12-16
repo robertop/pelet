@@ -67,8 +67,10 @@ int pelet::ResourceLex(pelet::ResourceParserTypeClass* value, pelet::LexicalAnal
 		// advance past all comments (there can be more than one consecutive)
 		if (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
 			while (pelet::T_DOC_COMMENT == ret || pelet::T_COMMENT == ret) {
+				UnicodeString singleComment;
 				if (pelet::T_DOC_COMMENT == ret) {
-					analyzer.GetLexeme(value->lexeme->Comment);
+					analyzer.GetLexeme(singleComment);
+					value->lexeme->Comment.append(singleComment);
 				}
 				ret = analyzer.NextToken();
 			}
