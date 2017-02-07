@@ -907,19 +907,17 @@ TEST_FIXTURE(Parser53TestClass, MultipleDocBlocksInGlobalScope) {
 	);
 	
 	CHECK(Parser.ScanString(code, LintResults));
-	
-	CHECK_VECTOR_SIZE(1, Observer.FunctionComment);
 
-	UnicodeString expected = _U(
-		"/* @var $this \\yii\\web\\View */"
-		"/* @var $name string */"
-		"/* @var $message string */"
-	);
-	CHECK_EQUAL(expected, Observer.FunctionComment[0]);
+	// note that we won't get notified of the comments since
+	// the comments are not Doc comments.
+
+	CHECK_VECTOR_SIZE(5, Observer.VariableName);
 
 	CHECK_UNISTR_EQUALS("$this", Observer.VariableName[0]);
 	CHECK_UNISTR_EQUALS("$name", Observer.VariableName[1]);
 	CHECK_UNISTR_EQUALS("$message", Observer.VariableName[2]);
+	CHECK_UNISTR_EQUALS("$args", Observer.VariableName[3]);
+	CHECK_UNISTR_EQUALS("$arg", Observer.VariableName[4]);
 }
 
 TEST_FIXTURE(Parser53TestClass, MethodScope) {
