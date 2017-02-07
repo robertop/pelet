@@ -46,6 +46,13 @@ newaction {
 			print("re2c command failed for file src/Php54LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
 		end
 		cmd = "re2c -c -i --no-generation-date " ..
+			"-o " .. normalizepath("src/Php55LexicalAnalyzer.cpp") .. " " ..
+			normalizepath("src/Php55LexicalAnalyzer.re");
+		code = os.execute(cmd) 
+		if code ~= 0 then
+			print("re2c command failed for file src/Php55LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
+		end
+		cmd = "re2c -c -i --no-generation-date " ..
 			"-o " .. normalizepath("src/LanguageDiscoveryClass.cpp") .. " " ..
 			normalizepath("src/LanguageDiscoveryClass.re");
 		code = os.execute(cmd) 

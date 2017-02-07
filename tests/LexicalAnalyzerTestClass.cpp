@@ -38,20 +38,23 @@ public:
 	LexicalAnalyzerTestClass() 
 		: FileTestFixtureClass() 
 		, Lexer53()
-		, Lexer54() {
+		, Lexer54()
+		, Lexer55() {
 		Lexer54.SetVersion(pelet::PHP_54);
+		Lexer55.SetVersion(pelet::PHP_55);
 	}
 	
 	pelet::LexicalAnalyzerClass Lexer53;
 	pelet::LexicalAnalyzerClass Lexer54;
+	pelet::LexicalAnalyzerClass Lexer55;
 	UnicodeString ActualLexeme;
 	
 	bool LexerOpen(std::string file) {
-		return Lexer53.OpenFile(file) && Lexer54.OpenFile(file);
+		return Lexer53.OpenFile(file) && Lexer54.OpenFile(file) && Lexer55.OpenFile(file);
 	}
 	
 	bool LexerOpenString(UnicodeString code) {
-		return Lexer53.OpenString(code) && Lexer54.OpenString(code);
+		return Lexer53.OpenString(code) && Lexer54.OpenString(code) && Lexer55.OpenString(code);
 	}
 };
 
@@ -79,19 +82,29 @@ public:
 		CHECK_EQUAL(token, Lexer54.NextToken());\
 		ActualLexeme.remove(); \
 		Lexer54.GetLexeme(ActualLexeme);\
+		CHECK_EQUAL(expectedLexeme, ActualLexeme); \
+		CHECK_EQUAL(token, Lexer55.NextToken());\
+		ActualLexeme.remove(); \
+		Lexer55.GetLexeme(ActualLexeme);\
 		CHECK_EQUAL(expectedLexeme, ActualLexeme);
 
 #define CHECK_TOKEN(token) \
 	CHECK_EQUAL(token, Lexer53.NextToken());\
-	CHECK_EQUAL(token, Lexer54.NextToken());
-		
+	CHECK_EQUAL(token, Lexer54.NextToken());\
+	CHECK_EQUAL(token, Lexer55.NextToken());
+
+#define CHECK_V55_TOKEN(token) \
+	CHECK_EQUAL(token, Lexer55.NextToken());
+
 #define CHECK_TOKEN_POSITION(position) \
 		CHECK_EQUAL(position, Lexer53.GetCharacterPosition());\
-		CHECK_EQUAL(position, Lexer54.GetCharacterPosition());
+		CHECK_EQUAL(position, Lexer54.GetCharacterPosition());\
+		CHECK_EQUAL(position, Lexer55.GetCharacterPosition());
 
 #define CHECK_TOKEN_LINE(lineNumber) \
 		CHECK_EQUAL(lineNumber, Lexer53.GetLineNumber());\
-		CHECK_EQUAL(lineNumber, Lexer54.GetLineNumber());
+		CHECK_EQUAL(lineNumber, Lexer54.GetLineNumber());\
+		CHECK_EQUAL(lineNumber, Lexer55.GetLineNumber());
 
 
 SUITE(LexicalAnalyzerTestClass) {
@@ -693,6 +706,37 @@ TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleInlineHtml) {
 	CHECK_TOKEN_LEXEME('}', UNICODE_STRING_SIMPLE("}"));
 	CHECK_TOKEN_LEXEME(pelet::T_CLOSE_TAG, UNICODE_STRING_SIMPLE("?>"));
 	CHECK_TOKEN(pelet::T_END);
+}
+
+TEST_FIXTURE(LexicalAnalyzerTestClass, NextTokenShouldHandleVersion5_5Keywords) {
+	// use keywords available only after PHP 5.5 (yield, and finally)
+	CreateFixtureFile("test.php",
+		"<?php\n"
+		"try {\n"
+		"  yield; \n"
+		"} catch ($e) {\n"
+		"}\n"
+		"finally {\n"
+		"}"
+	);
+	std::string file = TestProjectDir;
+	file += "test.php";
+	CHECK(LexerOpen(file));
+	CHECK_V55_TOKEN(pelet::T_OPEN_TAG);
+	CHECK_V55_TOKEN(pelet::T_TRY);
+	CHECK_V55_TOKEN('{');
+	CHECK_V55_TOKEN(pelet::T_YIELD);
+	CHECK_V55_TOKEN(';');
+	CHECK_V55_TOKEN('}');
+	CHECK_V55_TOKEN(pelet::T_CATCH);
+	CHECK_V55_TOKEN('(');
+	CHECK_V55_TOKEN(pelet::T_VARIABLE);
+	CHECK_V55_TOKEN(')');
+	CHECK_V55_TOKEN('{');
+	CHECK_V55_TOKEN('}');
+	CHECK_V55_TOKEN(pelet::T_FINALLY);
+	CHECK_V55_TOKEN('{');
+	CHECK_V55_TOKEN('}');
 }
 
 TEST_FIXTURE(LexicalAnalyzerExpressionTestClass, LastExpressionFirstFunction) {
