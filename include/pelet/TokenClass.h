@@ -188,7 +188,11 @@ enum Tokens {
 	T_VARIABLE = 625,
 	T_WHILE = 626,
 	T_WHITESPACE = 627,
-	T_XOR_EQUAL = 628
+	T_XOR_EQUAL = 628,
+
+	// new tokens for php 5.5
+	T_FINALLY = 629,
+	T_YIELD = 630
 };
 
 /**
@@ -238,7 +242,8 @@ enum YYCONDTYPE {
  */
 enum PELET_API Versions {
 	PHP_53,
-	PHP_54
+	PHP_54,
+	PHP_55
 };
 
 /**
