@@ -26,6 +26,7 @@
 #include <pelet/Php53LexicalAnalyzer.h>
 #include <pelet/Php54LexicalAnalyzer.h>
 #include <pelet/Php55LexicalAnalyzer.h>
+#include <pelet/Php56LexicalAnalyzer.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
@@ -100,9 +101,14 @@ int pelet::LexicalAnalyzerClass::NextToken() {
 	else if (PHP_54 == Version) {
 		return Buffer ? pelet::Next54Token(Buffer, Condition) : T_END;
 	}
-	else {
+	else if (PHP_55 == Version) {
 		return Buffer ? pelet::Next55Token(Buffer, Condition) : T_END;
 	}
+	else if (PHP_56 == Version) {
+		return Buffer ? pelet::Next56Token(Buffer, Condition) : T_END;
+	}
+
+	return Buffer ? pelet::Next53Token(Buffer, Condition) : T_END;
 }
 
 bool pelet::LexicalAnalyzerClass::GetLexeme(UnicodeString& lexeme) {
