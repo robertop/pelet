@@ -1132,12 +1132,19 @@ public:
  * This class will represent a single PHP scalar. An scalar is either
  * a string, an integer, a double. 
  * Examples: ("name", 123, 123.43)
+ *
+ * Strings can be further "de-referenced" with the offset operator, for example
+ * 'one two three'[4]. In this case, there will be 1 item
+ * in the Offsets vector.
+
  */
 class PELET_API ScalarExpressionClass : public ExpressionClass {
 
 public:
 
 	UnicodeString Value;
+
+	std::vector<pelet::ExpressionClass*> Offsets;
 
 	ScalarExpressionClass();
 
@@ -1192,12 +1199,18 @@ public:
  * Note that if the source code does not define keys then this key will be NULL
  * as well; for example array(1, 2) will not produce any array keys (ArrayPairs will
  * still have 2 items, but the keys will be empty).
+ *
+ * An array can be further "de-referenced" with the offset operator, for example
+ * array('one' => 1, 'two' => 2)['two']. In this case, there will be 1 item
+ * in the Offsets vector.
  */
 class PELET_API ArrayExpressionClass : public ExpressionClass {
 
 public:
 
 	std::vector<pelet::ArrayPairExpressionClass*> ArrayPairs;
+
+	std::vector<pelet::ExpressionClass*> Offsets;
 
 	ArrayExpressionClass(const ScopeClass& scope);
 

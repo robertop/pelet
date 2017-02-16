@@ -1564,19 +1564,22 @@ void pelet::ExpressionClass::Copy(const pelet::ExpressionClass& src) {
 
 pelet::ScalarExpressionClass::ScalarExpressionClass()
 : ExpressionClass(ScopeClass())
-, Value() {
+, Value()
+, Offsets() {
 	ExpressionType = pelet::ExpressionClass::SCALAR;
 }
 
 pelet::ScalarExpressionClass::ScalarExpressionClass(const ScopeClass& scope)
 : ExpressionClass(scope)
-, Value() {
+, Value()
+, Offsets() {
 	ExpressionType = pelet::ExpressionClass::SCALAR;
 }
 
 pelet::ScalarExpressionClass::ScalarExpressionClass(const pelet::ScalarExpressionClass& src)
 : ExpressionClass(src.Scope) 
-, Value() {
+, Value()
+, Offsets() {
 	ExpressionType = pelet::ExpressionClass::SCALAR;
 	Copy(src);
 }
@@ -1589,6 +1592,7 @@ pelet::ScalarExpressionClass& pelet::ScalarExpressionClass::operator=(const pele
 void pelet::ScalarExpressionClass::Copy(const pelet::ScalarExpressionClass& src) {
 	pelet::ExpressionClass::Copy(src);
 	Value = src.Value;
+	Offsets = src.Offsets;
 }
 
 void pelet::ScalarExpressionClass::Init(pelet::SemanticValueClass* value) {
@@ -1667,13 +1671,15 @@ void pelet::ArrayPairExpressionClass::Copy(const pelet::ArrayPairExpressionClass
 
 pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
-, ArrayPairs() {
+, ArrayPairs()
+, Offsets() {
 	ExpressionType = pelet::ExpressionClass::ARRAY;
 }
 
 pelet::ArrayExpressionClass::ArrayExpressionClass(const pelet::ArrayExpressionClass& src)
 : ExpressionClass(src.Scope)
-, ArrayPairs() {
+, ArrayPairs()
+, Offsets() {
 	ExpressionType = pelet::ExpressionClass::ARRAY;
 	Copy(src);
 }
@@ -1686,6 +1692,7 @@ pelet::ArrayExpressionClass& pelet::ArrayExpressionClass::operator=(const pelet:
 void pelet::ArrayExpressionClass::Copy(const pelet::ArrayExpressionClass& src) {
 	pelet::ExpressionClass::Copy(src);
 	ArrayPairs = src.ArrayPairs;
+	Offsets = src.Offsets;
 }
 
 pelet::VariableClass::VariableClass(const pelet::ScopeClass& scope)

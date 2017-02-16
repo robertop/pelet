@@ -54,8 +54,10 @@ public:
 		, AllObservers() {
 		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers[0]->SetVersion(pelet::PHP_53);
 		AllParsers[1]->SetVersion(pelet::PHP_54);
+		AllParsers[2]->SetVersion(pelet::PHP_55);
 
 		for (size_t i = 0; i < AllParsers.size(); i++) {
 			AllLintResults.push_back(new pelet::LintResultsClass());
@@ -145,8 +147,10 @@ public:
 		, AllObservers() {
 		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers[0]->SetVersion(pelet::PHP_53);
 		AllParsers[1]->SetVersion(pelet::PHP_54);
+		AllParsers[2]->SetVersion(pelet::PHP_55);
 
 		for (size_t i = 0; i < AllParsers.size(); i++) {
 			AllLintResults.push_back(new pelet::LintResultsClass());
@@ -180,8 +184,10 @@ public:
 		, AllParsedVars() {
 		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
 		AllParsers[0]->SetVersion(pelet::PHP_53);
 		AllParsers[1]->SetVersion(pelet::PHP_54);
+		AllParsers[2]->SetVersion(pelet::PHP_55);
 		for (size_t i = 0; i < AllParsers.size(); i++) {
 			AllScopes.push_back(new pelet::ScopeClass());
 			pelet::ScopeClass scope;
