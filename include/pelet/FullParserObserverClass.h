@@ -300,6 +300,7 @@ public:
 	pelet::ExpressionClass* ExpressionIssetMerge(pelet::IssetExpressionClass* isset, pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionEval(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionNil();
+	pelet::ExpressionClass* ExpressionAddOffset(pelet::ExpressionClass* expr, pelet::ExpressionClass* offset);
 	
 	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);
 	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
@@ -407,6 +408,11 @@ private:
 	 * This method will recurse down function / method statements.
 	 */
 	void RecurseAst(pelet::StatementListClass* statements);
+
+	/**
+	 * Iterate through each expression and calls the appropriate observer callbacks.
+	 */
+	void RecurseExpression(pelet::ExpressionClass* expr);
 	
 	/**
 	 * the class, method, and namespace that are currently being parsed.
@@ -478,5 +484,6 @@ void FullGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserOb
  */
 int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
+int php55parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 #endif
