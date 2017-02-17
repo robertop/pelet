@@ -36,6 +36,7 @@
 extern int php53_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php55_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
+extern int php56_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 
 extern int php53_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
 extern int php54_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
@@ -193,6 +194,9 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 		else if (pelet::PHP_55 == Version) {
 			ret = php55_lint_parse(Lexer) == 0;
 		}
+		else if (pelet::PHP_56 == Version) {
+			ret = php56_lint_parse(Lexer) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -215,6 +219,9 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 		else if (pelet::PHP_55 == Version) {
 			ret = php55_lint_parse(Lexer) == 0;
 		}
+		else if (pelet::PHP_56 == Version) {
+			ret = php56_lint_parse(Lexer) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
 		///results.Scope = observers.CurrentScope();
@@ -236,6 +243,9 @@ bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass&
 		}
 		else if (pelet::PHP_55 == Version) {
 			ret = php55_lint_parse(Lexer) == 0;
+		}
+		else if (pelet::PHP_56 == Version) {
+			ret = php56_lint_parse(Lexer) == 0;
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
