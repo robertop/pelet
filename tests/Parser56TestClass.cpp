@@ -128,8 +128,75 @@ TEST_FIXTURE(Parser56FeaturesTestClass, UseFunctions) {
 	CHECK(Parser.LintString(code, LintResults));
 }
 
+TEST_FIXTURE(Parser56FeaturesTestClass, VariadicExpressions) {
+	Parser.SetFunctionObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"function f($req, $opt = null, ...$params) {\n"
+		"    // $params is an array containing the remaining arguments.\n"
+		"    printf('$req: %d; $opt: %d; number of params: %d',\n"
+		"           $req, $opt, count($params));\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.FunctionName);
+	CHECK_UNISTR_EQUALS("f", Observer.FunctionName[0]);
+	CHECK(Observer.FunctionHasVariableArguments[0]);
+	CHECK_VECTOR_SIZE(3, Observer.VariableName);
+	CHECK_UNISTR_EQUALS("$req", Observer.VariableName[0]);
+	CHECK_UNISTR_EQUALS("$opt", Observer.VariableName[1]);
+	CHECK_UNISTR_EQUALS("$params", Observer.VariableName[2]);
+}
 
 
+TEST_FIXTURE(Parser56FeaturesTestClass, UseFunctionsExpressions) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"namespace Name\\Space {\n"
+		"    const FOO = 42;\n"
+		"    function f() { echo __FUNCTION__ ; }\n"
+		"}\n"
+		"namespace {\n"
+		"    use const Name\\Space\\FOO;\n"
+		"    use function Name\\Space\\f;\n"
+		"    use function Name\\Space\\f AS dup;\n"
+		"    echo 'hello ' . FOO;\n"
+		"    f();\n"
+		"    dup();\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(2, Observer.FunctionImportName);
+	CHECK_UNISTR_EQUALS("\\Name\\Space\\f", Observer.FunctionImportName[0]);
+	CHECK_UNISTR_EQUALS("\\Name\\Space\\f", Observer.FunctionImportName[1]);
+	
+	CHECK_VECTOR_SIZE(2, Observer.FunctionImportAlias);
+	CHECK_UNISTR_EQUALS("f", Observer.FunctionImportAlias[0]);
+	CHECK_UNISTR_EQUALS("dup", Observer.FunctionImportAlias[1]);
+	
+	CHECK_VECTOR_SIZE(1, Observer.ConstantImportName);
+	CHECK_VECTOR_SIZE(1, Observer.ConstantImportAlias);
+	CHECK_UNISTR_EQUALS("\\Name\\Space\\FOO", Observer.ConstantImportName[0]);
+	CHECK_UNISTR_EQUALS("FOO", Observer.ConstantImportAlias[0]);
+
+	CHECK_VECTOR_SIZE(1, Observer.BinaryOperations);
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, Observer.BinaryOperations[0]->LeftOperand->ExpressionType);
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, Observer.BinaryOperations[0]->RightOperand->ExpressionType);
+	
+	CHECK_VECTOR_SIZE(2, Observer.VariableExpressions);
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions[0]->ChainList);
+	CHECK_EQUAL(pelet::StatementClass::EXPRESSION, Observer.VariableExpressions[0]->Type);
+	CHECK_UNISTR_EQUALS("\\Name\\Space\\f", Observer.VariableExpressions[0]->ChainList[0].Name);
+
+	CHECK_EQUAL(pelet::StatementClass::EXPRESSION, Observer.VariableExpressions[1]->Type);
+	CHECK_UNISTR_EQUALS("\\Name\\Space\\f", Observer.VariableExpressions[1]->ChainList[0].Name);
+}
 
 
 }

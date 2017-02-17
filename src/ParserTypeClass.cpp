@@ -1172,7 +1172,7 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeFunction(pelet
 	NamespaceName = currentNamespace.ToSignature();
 	ClassName = scope.ClassName;
 	if (parameters) {
-		ParametersList = *parameters;
+		ParametersList.Copy(*parameters);
 	}
 	if (nameValue) {
 		StartingLineNumber = nameValue->LineNumber;
@@ -1195,7 +1195,7 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeMethod(pelet::
 	}
 	ClassName = scope.ClassName;
 	if (parameters) {
-		ParametersList = *parameters;
+		ParametersList.Copy(*parameters);
 	}
 	if (modifiers) {
 		IsAbstractMember = modifiers->IsAbstractMember;
@@ -1407,10 +1407,70 @@ pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromDeclaredNamespace(
 	return this;
 }
 
+pelet::FunctionImportClass::FunctionImportClass()
+: StatementClass(pelet::StatementClass::FUNCTION_IMPORT)
+, FunctionName()
+, Alias()
+, LineNumber(1)
+, StartingPos(0) {
+}
+
+void pelet::FunctionImportClass::Init(const UnicodeString& functionName, pelet::SemanticValueClass* alias, int lineNumber,
+	int startingPos) {
+	FunctionName = functionName;
+	Alias.remove();
+	if (alias) {
+		Alias = alias->Lexeme;
+	}
+	else {
+		// the alias is the last part of the fully qualified name
+		int32_t index = functionName.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
+		if (index >= 0) {
+			Alias.setTo(functionName, index + 1);
+		}
+		else {
+			Alias = functionName;
+		}
+
+	}
+	LineNumber = lineNumber;
+	StartingPos = startingPos;
+}
+
+pelet::ConstantImportClass::ConstantImportClass()
+: StatementClass(pelet::StatementClass::CONSTANT_IMPORT)
+, ConstantName()
+, Alias()
+, LineNumber(1)
+, StartingPos(0) {
+}
+
+void pelet::ConstantImportClass::Init(const UnicodeString& constantName, pelet::SemanticValueClass* alias, int lineNumber,
+	int startingPos) {
+	ConstantName = constantName;
+	Alias.remove();
+	if (alias) {
+		Alias = alias->Lexeme;
+	}
+	else {
+		// the alias is the last part of the fully qualified name
+		int32_t index = constantName.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
+		if (index >= 0) {
+			Alias.setTo(constantName, index + 1);
+		}
+		else {
+			Alias = constantName;
+		}
+	}
+	LineNumber = lineNumber;
+	StartingPos = startingPos;
+}
+
 pelet::ParametersListClass::ParametersListClass()
 	: Params()
 	, OptionalTypes() 
-	, Defaults() {
+	, Defaults()
+	, IsVariadics() {
 
 }
 
@@ -1418,6 +1478,7 @@ void pelet::ParametersListClass::Create() {
 	Params.push_back(UNICODE_STRING_SIMPLE(""));
 	OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
+	IsVariadics.push_back(false);
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClass* typeValue) {
@@ -1428,6 +1489,7 @@ void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClas
 		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	}
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
+	IsVariadics.push_back(false);
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
@@ -1438,12 +1500,21 @@ void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& cla
 		OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	}
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
+	IsVariadics.push_back(false);
 }
 
 void pelet::ParametersListClass::Clear() {
 	Params.clear();
 	OptionalTypes.clear();
 	Defaults.clear();
+	IsVariadics.clear();
+}
+
+void pelet::ParametersListClass::Copy(const pelet::ParametersListClass& src) {
+	Params = src.Params;
+	OptionalTypes = src.OptionalTypes;
+	Defaults = src.Defaults;
+	IsVariadics = src.IsVariadics;
 }
 
 void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isReference, bool hasDefault) {
@@ -1458,6 +1529,10 @@ void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isRefer
 	}
 }
 
+void pelet::ParametersListClass::SetVariadic(bool isVariadic) {
+	IsVariadics.back() = isVariadic;
+}
+
 UnicodeString pelet::ParametersListClass::ToSignature() const {
 	UnicodeString signature = UNICODE_STRING_SIMPLE("(");
 	size_t i = 0;
@@ -1465,6 +1540,9 @@ UnicodeString pelet::ParametersListClass::ToSignature() const {
 		if (!OptionalTypes[i].isEmpty()) {
 			signature.append(OptionalTypes[i]);
 			signature.append(UNICODE_STRING_SIMPLE(" "));
+		}
+		if (IsVariadics[i]) {
+			signature.append(UNICODE_STRING_SIMPLE("..."));
 		}
 		signature.append(Params[i]);
 		if (!Defaults[i].isEmpty()) {
@@ -1494,6 +1572,14 @@ void pelet::ParametersListClass::Param(size_t index, UnicodeString& param, Unico
 	}
 }
 
+bool pelet::ParametersListClass::IsVariadicAt(size_t index) const {
+	bool isVariadic = false;
+	if (index < IsVariadics.size()) {
+		isVariadic = IsVariadics[index];
+	}
+	return isVariadic;
+}
+
 pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
 															   bool isReference, bool hasDefault,
 															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
@@ -1517,6 +1603,23 @@ pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedN
 	}
 	CreateWithOptionalType(typeString);
 	SetName(parameterName, isReference, hasDefault);
+	return this;
+}
+
+pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::ParametersListClass* src) {
+	for (size_t i = 0; i < src->Params.size(); i++) {
+		Params.push_back(src->Params[i]);
+	}
+	for (size_t i = 0; i < src->OptionalTypes.size(); i++) {
+		OptionalTypes.push_back(src->OptionalTypes[i]);
+	}
+	for (size_t i = 0; i < src->Defaults.size(); i++) {
+		Defaults.push_back(src->Defaults[i]);
+	}
+	for (size_t i = 0; i < src->IsVariadics.size(); i++) {
+		IsVariadics.push_back(src->IsVariadics[i]);
+	}
+
 	return this;
 }
 
@@ -2080,6 +2183,8 @@ pelet::ScopeClass::ScopeClass()
 	, ClassName()
 	, MethodName()
 	, NamespaceAliases(NULL)
+	, FunctionAliases(NULL)
+	, ConstantAliases(NULL)
 	, AnonymousFunctionCount(-1)
 {
 }
@@ -2087,6 +2192,12 @@ pelet::ScopeClass::ScopeClass()
 pelet::ScopeClass::~ScopeClass() {
 	if (NamespaceAliases) {
 		delete NamespaceAliases;
+	}
+	if (FunctionAliases) {
+		delete FunctionAliases;
+	}
+	if (ConstantAliases) {
+		delete ConstantAliases;
 	}
 }
 
@@ -2096,6 +2207,8 @@ pelet::ScopeClass::ScopeClass(const pelet::ScopeClass& src)
 	, ClassName()
 	, MethodName()
 	, NamespaceAliases(NULL)
+	, FunctionAliases(NULL)
+	, ConstantAliases(NULL)
 	, AnonymousFunctionCount(-1)
 {
 	Copy(src);
@@ -2108,12 +2221,24 @@ void pelet::ScopeClass::Clear() {
 	if (NamespaceAliases) {
 		NamespaceAliases->clear();
 	}
+	if (FunctionAliases) {
+		FunctionAliases->clear();
+	}
+	if (ConstantAliases) {
+		ConstantAliases->clear();
+	}
 	AnonymousFunctionCount = -1;
 }
 
 void pelet::ScopeClass::ClearAliases() {
 	if (NamespaceAliases) {
 		NamespaceAliases->clear();
+	}
+	if (FunctionAliases) {
+		FunctionAliases->clear();
+	}
+	if (ConstantAliases) {
+		ConstantAliases->clear();
 	}
 }
 
@@ -2130,6 +2255,27 @@ void pelet::ScopeClass::Copy(const pelet::ScopeClass& src) {
 	else if (NamespaceAliases && src.NamespaceAliases) {
 		*NamespaceAliases = *src.NamespaceAliases;
 	}
+
+	if (!FunctionAliases && src.FunctionAliases) {
+		FunctionAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>(*src.FunctionAliases);
+	}
+	else if (FunctionAliases && !src.FunctionAliases) {
+		FunctionAliases->clear();
+	}
+	else if (FunctionAliases && src.FunctionAliases) {
+		*FunctionAliases = *src.FunctionAliases;
+	}
+
+	if (!ConstantAliases && src.ConstantAliases) {
+		ConstantAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>(*src.ConstantAliases);
+	}
+	else if (ConstantAliases && !src.ConstantAliases) {
+		ConstantAliases->clear();
+	}
+	else if (ConstantAliases && src.ConstantAliases) {
+		*ConstantAliases = *src.ConstantAliases;
+	}
+
 	AnonymousFunctionCount = src.AnonymousFunctionCount;
 }
 
@@ -2164,11 +2310,63 @@ void pelet::ScopeClass::AddNamespaceAlias(const UnicodeString& namespaceName, co
 	(*NamespaceAliases)[namespaceAlias] = fullyQualified;
 }
 
+void pelet::ScopeClass::AddFunctionAlias(const UnicodeString& namespaceName, const UnicodeString& functionAlias) {
+	if (!FunctionAliases) {
+		FunctionAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>();
+	}
+	
+	// a namespace alias is always fully qualified
+	// add the beginning slash if not there
+	UnicodeString fullyQualified;
+	if (namespaceName.indexOf(UNICODE_STRING_SIMPLE("\\")) != 0) {
+		fullyQualified.append(UNICODE_STRING_SIMPLE("\\"));
+	}
+	fullyQualified.append(namespaceName);
+	(*FunctionAliases)[functionAlias] = fullyQualified;
+}
+
+void pelet::ScopeClass::AddConstantAlias(const UnicodeString& namespaceName, const UnicodeString& constantAlias) {
+	if (!ConstantAliases) {
+		ConstantAliases = new std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>();
+	}
+	
+	// a namespace alias is always fully qualified
+	// add the beginning slash if not there
+	UnicodeString fullyQualified;
+	if (namespaceName.indexOf(UNICODE_STRING_SIMPLE("\\")) != 0) {
+		fullyQualified.append(UNICODE_STRING_SIMPLE("\\"));
+	}
+	fullyQualified.append(namespaceName);
+	(*ConstantAliases)[constantAlias] = fullyQualified;
+}
+
 UnicodeString pelet::ScopeClass::ResolveAlias(const UnicodeString& alias) const {
 	UnicodeString fullName;
 	if (NamespaceAliases) {
 		std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = NamespaceAliases->find(alias);
 		if (it != NamespaceAliases->end()) {
+			fullName = it->second;
+		}
+	}
+	return fullName;
+}
+
+UnicodeString pelet::ScopeClass::ResolveFunctionAlias(const UnicodeString& alias) const {
+	UnicodeString fullName;
+	if (FunctionAliases) {
+		std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = FunctionAliases->find(alias);
+		if (it != FunctionAliases->end()) {
+			fullName = it->second;
+		}
+	}
+	return fullName;
+}
+
+UnicodeString pelet::ScopeClass::ResolveConstantAlias(const UnicodeString& alias) const {
+	UnicodeString fullName;
+	if (ConstantAliases) {
+		std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>::const_iterator it = ConstantAliases->find(alias);
+		if (it != ConstantAliases->end()) {
 			fullName = it->second;
 		}
 	}
@@ -2249,6 +2447,34 @@ UnicodeString pelet::ScopeClass::FullyQualify(const pelet::QualifiedNameClass& n
 		fullyQualified = fullName.ToSignature();
 	}
 	return fullyQualified;
+}
+
+UnicodeString pelet::ScopeClass::FullyQualifyFunction(const pelet::QualifiedNameClass& functionName,
+											const pelet::QualifiedNameClass& namespaceName) const {
+	UnicodeString fullyQualified;
+	if (functionName.ToSignature().isEmpty()) {
+		return fullyQualified;
+	}
+	// is the function name an alias?
+	UnicodeString aliased = ResolveFunctionAlias(functionName.ToSignature());
+	if (!aliased.isEmpty()) {
+		return aliased;
+	}
+	return FullyQualify(functionName, namespaceName);
+}
+
+UnicodeString pelet::ScopeClass::FullyQualifyConstant(const pelet::QualifiedNameClass& constantName,
+											const pelet::QualifiedNameClass& namespaceName) const {
+	UnicodeString fullyQualified;
+	if (constantName.ToSignature().isEmpty()) {
+		return fullyQualified;
+	}
+	// is the constant name an alias?
+	UnicodeString aliased = ResolveConstantAlias(constantName.ToSignature());
+	if (!aliased.isEmpty()) {
+		return aliased;
+	}
+	return FullyQualify(constantName, namespaceName);				
 }
 
 void pelet::ScopeClass::SetIsAnonymous(bool isAnonymousFunction, int anonymousFunctionCount) {

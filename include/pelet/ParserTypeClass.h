@@ -165,6 +165,47 @@ public:
 	 */
 	virtual void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int lineNumber, int startingPos) { }
 
+	/**
+	 * Override this method to perform any custom logic when a function is imported ("use function" keyword).
+	 * 
+	 * @param UnicodeString functionName the fully qualified function name that is being imported. It will 
+	 *        always begin with a leading slash, even if the original source did not include it
+	 * @param alias any alias to the function. alias will never be empty. If the code does not
+	 *        specify an alias, the alias will be the last part of the namespace.
+	 *        For example the statement "use First\Capitalize;" will result in the  alias being "Capitalize"
+	 * @param lineNumber the line number (1-based) that the use function statement was found in
+	 * @param startingPos
+	 *        Character position where the use function statement starts. This number is 
+	 *        0-based. It is the position where the "use" token starts. For example,
+	 *        in the statement "use \First\Capitalize" then StartingPosition is the position of "use"
+	 *        Even in the case of where a use statement has commas, then StartingPosition is the 
+	 *        position of the namespace token. For example, in the statement
+	 *        "use \First\Capitalize, \Sec\Titleize" then StartingPosition for 
+	 *        the namespace \Sec\Titleize is the position of "use"
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	virtual void UseFunctionFound(const UnicodeString& functionName, const UnicodeString& alias, int lineNumber, int startingPos) { }
+
+	/**
+	 * Override this method to perform any custom logic when a constant is imported ("use constant" keyword).
+	 * 
+	 * @param UnicodeString constatntName the fully qualified constant that is being imported. It will 
+	 *        always begin with a leading slash, even if the original source did not include it
+	 * @param alias any alias to the constant. alias will never be empty. If the code does not
+	 *        specify an alias, the alias will be the last part of the namespace.
+	 *        For example the statement "use First\MAX_PEOPLE;" will result in the  alias being "MAX_PEOPLE"
+	 * @param lineNumber the line number (1-based) that the use statement was found in
+	 * @param startingPos
+	 *        Character position where the constant use statement starts. This number is 
+	 *        0-based. It is the position where the "use" token starts. For example,
+	 *        in the statement "use \First\MAX_PEOPLE" then StartingPosition is the position of "use"
+	 *        Even in the case of where a use statement has commas, then StartingPosition is the 
+	 *        position of the namespace token. For example, in the statement
+	 *        "use \First\MAX_PEOPLE, \Sec\MIN_DISTANCE" then StartingPosition for 
+	 *        the namespace \Sec\MIN_DISTANCE is the position of "use"
+	 * @see LexicalAnalyzerClass::GetCharacterPosition()
+	 */
+	virtual void UseConstantFound(const UnicodeString& constantName, const UnicodeString& alias, int lineNumber, int startingPos) { }
 };
 
 /**
@@ -785,6 +826,32 @@ public:
 	void AddNamespaceAlias(const UnicodeString& namespaceName, const UnicodeString& namespaceAlias);
 
 	/**
+	 * add a function alias. this is the result of a "use" statement
+	 * For example, for the code
+	 * 
+	 *    use function My\Full\Classname as Another;
+	 * 
+	 * namespaceName is "My\Full\Classname" and function alias is "Another"
+	 * 
+	 * @param namespaceName the namespace being used. by PHP rules, this is always absolute
+	 * @param functionAlias the name the function is referred as  
+	 */
+	void AddFunctionAlias(const UnicodeString& namespaceName, const UnicodeString& functionAlias);
+	
+	/**
+	 * add a constant alias. this is the result of a "use" statement
+	 * For example, for the code
+	 * 
+	 *    use constant My\Full\Classname as Another;
+	 * 
+	 * namespaceName is "My\Full\Classname" and constant alias is "Another"
+	 * 
+	 * @param namespaceName the namespace being used. by PHP rules, this is always absolute
+	 * @param constatntAlias the name the constant is referred as  
+	 */
+	void AddConstantAlias(const UnicodeString& namespaceName, const UnicodeString& constantAlias);
+
+	/**
 	 * Resolve an alias
 	 * For example, for the code
 	 * 
@@ -797,6 +864,17 @@ public:
 	 * @return the namespace that the alias refers to. by PHP rules, this is always absolute
 	 */
 	UnicodeString ResolveAlias(const UnicodeString& alias) const;
+
+	/**
+	 * Like ResolveAlias, but using function aliases only: "use function ... AS ..."
+	 */
+	UnicodeString ResolveFunctionAlias(const UnicodeString& alias) const;
+
+
+	/**
+	 * Like ResolveAlias, but using constant aliases only: "use constant... AS ..."
+	 */	
+	UnicodeString ResolveConstantAlias(const UnicodeString& alias) const;
 
 	/**
 	 * Calculate the fully qualified name from a namespace name, taking aliases
@@ -823,7 +901,20 @@ public:
 	 */
 	UnicodeString FullyQualify(const pelet::QualifiedNameClass& name, 
 		const pelet::QualifiedNameClass& declaredNamespace) const;
-	
+
+	/**
+	 * Fully qualifying a function checks for function aliases first, if that fails
+	 * then we use FullyQualify()
+	 */
+	UnicodeString FullyQualifyFunction(const pelet::QualifiedNameClass& functionName, 
+		const pelet::QualifiedNameClass& declaredNamespace) const;
+			
+	/**
+	 * Fully qualifying a constant checks for constant aliases first, if that fails
+	 * then we use FullyQualify()
+	 */
+	UnicodeString FullyQualifyConstant(const pelet::QualifiedNameClass& constantName, 
+		const pelet::QualifiedNameClass& declaredNamespace) const;
 	/**
 	 *
 	 * @param isAnonymous TRUE if this scope represents a closure,
@@ -847,6 +938,8 @@ private:
 	 * gets copied when an instance of this object is copied.
 	 */
 	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* NamespaceAliases;
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* FunctionAliases;
+	std::map<UnicodeString, UnicodeString, UnicodeStringComparatorClass>* ConstantAliases;
 	
 	/**
 	 * -1 scope is not anonymous
@@ -895,7 +988,9 @@ public:
 		FUNCTION_DECLARATION,         // 10
 		GLOBAL_VARIABLE_DECLARATION,
 		STATIC_VARIABLE_DECLARATION,
-		EXPRESSION
+		EXPRESSION,
+		FUNCTION_IMPORT,
+		CONSTANT_IMPORT               // 15
 	};
 	
 	Types Type;
@@ -1555,6 +1650,74 @@ public:
 	UnicodeString Set(QualifiedNameClass* qualifiedName, UnicodeString alias);
 
 	static pelet::StatementListClass* SetStartingPos(pelet::StatementListClass* namespaceStatements, const pelet::TokenPositionClass& useToken);
+};
+
+class PELET_API FunctionImportClass : public StatementClass {
+public:
+	/**
+	 * The fully qualifide name of the function being imported.
+	 */
+	UnicodeString FunctionName;
+	
+	/**
+	 * Alias of the function. This is optional.
+	 */
+	UnicodeString Alias;
+
+	/**
+	 * 1-based line number where the "use" token starts
+	 */
+	int LineNumber;
+
+	/**
+	 *  Character position within the file where the namespace use statement starts. This number is 
+	 *  0-based. It is the position where the "use" token starts. For example,
+	 *  in the statement "use \First\Child" then StartingPosition is the position of "use"
+	 *  Even in the case of where a use statement has commas, then StartingPosition is the 
+	 *  position of the namespace token. For example, in the statement
+	 *  "use \First\Child, \Sec\Child" then StartingPosition for 
+	 *  the namespace \Sec\Child is the position of "use"
+	 */
+	int StartingPos;
+	
+	FunctionImportClass();
+	
+	void Init(const UnicodeString& functionName, pelet::SemanticValueClass* alias,
+		int lineNumber, int startingPos);
+};
+
+class PELET_API ConstantImportClass : public StatementClass {
+public:
+	/**
+	 *  The full qualified name of the constant being imported.
+	 */
+	UnicodeString ConstantName;
+	
+	/**
+	 * Alias of the constant. This is optional.
+	 */
+	UnicodeString Alias;
+
+	/**
+	 * 1-based line number where the "use" token starts
+	 */
+	int LineNumber;
+
+	/**
+	 *  Character position within the file where the namespace use statement starts. This number is 
+	 *  0-based. It is the position where the "use" token starts. For example,
+	 *  in the statement "use \First\Child" then StartingPosition is the position of "use"
+	 *  Even in the case of where a use statement has commas, then StartingPosition is the 
+	 *  position of the namespace token. For example, in the statement
+	 *  "use \First\Child, \Sec\Child" then StartingPosition for 
+	 *  the namespace \Sec\Child is the position of "use"
+	 */
+	int StartingPos;
+	
+	ConstantImportClass();
+	
+	void Init(const UnicodeString& constantName, pelet::SemanticValueClass* alias,
+		int lineNumber, int startingPos);
 };
 
 class PELET_API TraitUseClass : public StatementClass {
@@ -2284,14 +2447,31 @@ public:
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
 	/**
+	 * Append another list of parameters to this list.
+	 * returns this.
+	 */
+	pelet::ParametersListClass* Append(pelet::ParametersListClass* src);
+	
+	/**
 	 * Create the first parameter
 	 */
 	void Init(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
 		bool isReference, bool hasDefaults,
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace); 
 
-	void Clear();	
+	void Clear();
+	
+	void Copy(const pelet::ParametersListClass& src);
+
+	/**
+	 * Set the last parameter's name, reference value, and default value
+	 */
 	void SetName(SemanticValueClass* value, bool isReference, bool hasDefaults);
+
+	/**
+	 * Set the last parameter's is variadic flag.
+	 */
+	void SetVariadic(bool isVariadic);
 
 	/**
 	 * Recreate the source code by 'unparsing' the parameter list
@@ -2313,10 +2493,17 @@ public:
 	 */
 	void Param(size_t index, UnicodeString& param, UnicodeString& optionalType) const;
 
+	/**
+	 * Returns true if the parameter at index was defined as a variadic parameter (the
+	 * ellipsis operator).
+	 */
+	bool IsVariadicAt(size_t index) const;
+
 private:
 	std::vector<UnicodeString> Params;
 	std::vector<UnicodeString> OptionalTypes;
 	std::vector<UnicodeString> Defaults;
+	std::vector<bool> IsVariadics;
 };
 
 /**
@@ -2507,8 +2694,11 @@ typedef union ParserType {
 	pelet::TraitUseClass *traitUse;
 	pelet::TraitAliasClass *traitAlias;
 	pelet::TraitInsteadOfClass *traitInsteadOf;
+	pelet::FunctionImportClass* functionImport;
+	pelet::ConstantImportClass* constantImport;
 	pelet::SemanticValueClass *semanticValue;
 	bool isMethod;
+	bool isVariadic;
 	bool isComma;
 } ParserTypeClass;
 
