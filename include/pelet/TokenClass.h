@@ -188,7 +188,16 @@ enum Tokens {
 	T_VARIABLE = 625,
 	T_WHILE = 626,
 	T_WHITESPACE = 627,
-	T_XOR_EQUAL = 628
+	T_XOR_EQUAL = 628,
+
+	// new tokens for php 5.5
+	T_FINALLY = 629,
+	T_YIELD = 630,
+
+	// new tokens for php 56
+	T_ELLIPSIS = 631,
+	T_POW = 632,
+	T_POW_EQUAL = 633
 };
 
 /**
@@ -235,10 +244,14 @@ enum YYCONDTYPE {
  * 
  * PHP_53: handle PHP 5.3 source code (namespaces)
  * PHP_54: handle PHP 5.4 source code (traits, callables, array dereferencing, array short syntax)
+ * PHP_55: handle PHP 5.5 source code (yield, finally keywords)
+ * PHP_56: handle PHP 5.6 source code (exponential operator, splat "...", constant expressions)
  */
 enum PELET_API Versions {
 	PHP_53,
-	PHP_54
+	PHP_54,
+	PHP_55,
+	PHP_56
 };
 
 /**

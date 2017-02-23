@@ -44,6 +44,8 @@ public:
 	std::vector<UnicodeString> ClassNamespace, ClassName, ClassSignature, ClassComment,
 						NamespaceName,
 						NamespaceUseName, NamespaceAlias,
+						FunctionImportName, FunctionImportAlias,
+						ConstantImportName, ConstantImportAlias,
 						MethodClassNamespace, MethodClassName, MethodName, MethodSignature, MethodReturnType, MethodComment,
 						PropertyClassNamespace, PropertyClassName, PropertyName, PropertyType, PropertyComment,
 						FunctionNamespace, FunctionName, FunctionSignature, FunctionReturnType, FunctionComment,
@@ -87,6 +89,10 @@ public:
 	void NamespaceUseFound(const UnicodeString& namespaceName, const UnicodeString& alias, int lineNumber, int startingPos);
 	
 	void NamespaceDeclarationFound(const UnicodeString& namespaceName, int startingPos);
+
+	void UseFunctionFound(const UnicodeString& functionName, const UnicodeString& alias, int lineNumber, int startingPos);
+
+	void UseConstantFound(const UnicodeString& constantName, const UnicodeString& alias, int lineNumber, int startingPos);
 	
 	void MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 			const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
