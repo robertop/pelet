@@ -151,6 +151,26 @@ TEST_FIXTURE(Parser56FeaturesTestClass, VariadicExpressions) {
 	CHECK_UNISTR_EQUALS("$params", Observer.VariableName[2]);
 }
 
+TEST_FIXTURE(Parser56FeaturesTestClass, ArgumentUnpacking) {
+	Parser.SetFunctionObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+	Parser.SetExpressionObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"$req = 'hello';\n"
+        "$params = [1, 2, 3];\n"
+        "callMe($req, ...$params);\n"
+		"\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	
+	CHECK_VECTOR_SIZE(1, Observer.VariableExpressions);
+    CHECK_UNISTR_EQUALS("callMe", Observer.VariableExpressions[0]->ChainList[0].Name);
+    CHECK_VECTOR_SIZE(2, Observer.VariableExpressions[0]->ChainList[0].CallArguments);
+    CHECK_EQUAL(false, Observer.VariableExpressions[0]->ChainList[0].CallArguments[0]->IsUnpack);
+    CHECK(Observer.VariableExpressions[0]->ChainList[0].CallArguments[1]->IsUnpack);
+}
+
 
 TEST_FIXTURE(Parser56FeaturesTestClass, UseFunctionsExpressions) {
 	Parser.SetClassObserver(&Observer);
