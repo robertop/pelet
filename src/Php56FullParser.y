@@ -813,7 +813,7 @@ function_call_parameter:
 		expr_without_variable	                         { $$ = observers.StatementListMakeAndAppend($1); }
 	|	variable				                         { $$ = observers.StatementListMakeAndAppend($1); }
 	|	'&' w_variable 			                         { $$ = observers.StatementListMakeAndAppend($2); }
-	|	T_ELLIPSIS expr			                         { $$ = observers.StatementListMakeAndAppend($2); }
+	|	T_ELLIPSIS expr			                         { $2->IsUnpack = true; $$ = observers.StatementListMakeAndAppend($2); }
 ;
 
 global_var_list:

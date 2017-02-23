@@ -1218,6 +1218,11 @@ public:
 	 */
 	int Pos;
 
+    /**
+     * TRUE if this expression uses the unpack (splat) operator, ex. "callMe(...$items)"
+     */    
+    bool IsUnpack;
+
 	ExpressionClass(const pelet::ScopeClass& scope);
 
 	void Copy(const ExpressionClass& src);

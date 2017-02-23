@@ -5106,7 +5106,7 @@ yyreduce:
   case 163:
 /* Line 1802 of yacc.c  */
 #line 816 "/Users/roberto/Projects/pelet/src/Php56FullParser.y"
-    { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].expression)); }
+    { (yyvsp[(2) - (2)].expression)->IsUnpack = true; (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].expression)); }
     break;
 
   case 164:
