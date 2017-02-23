@@ -30,6 +30,9 @@ These are the cases that pelet supports
 - Can read type hints from a function / method signature
 - Reads namespaces and aliases, can handle qualified, fully qualified, and not qualified namespaces
 - Full PHP 5.4 support; traits, trait aliasing, array dereferencing, and short array syntax.
+- Full PHP 5.5 support; yield and finally keywords, string and array dereferencing.
+- Full PHP 5.6 support; constant expressions, variadic parameters, argument unpacking, exponent operator, function
+  and constant importing and aliasing.
 - Fully tested (see tests/ subdirectory in the distribution)
 
 Requirements
