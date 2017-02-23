@@ -50,6 +50,16 @@ void TestObserverClass::NamespaceDeclarationFound(const UnicodeString& namespace
 	NamespaceName.push_back(namespaceName);
 }
 
+void TestObserverClass::UseFunctionFound(const UnicodeString& functionName, const UnicodeString& alias, int lineNumber, int startingPos) {
+	FunctionImportName.push_back(functionName);
+	FunctionImportAlias.push_back(alias);
+}
+
+void TestObserverClass::UseConstantFound(const UnicodeString& constantName, const UnicodeString& alias, int lineNumber, int startingPos) {
+	ConstantImportName.push_back(constantName);
+	ConstantImportAlias.push_back(alias);
+}
+
 void TestObserverClass::MethodFound(const UnicodeString& namespaceName, const UnicodeString& className, const UnicodeString& methodName, 
 		const UnicodeString& signature, const UnicodeString& returnType, const UnicodeString& comment,
 		pelet::TokenClass::TokenIds visibility, bool isStatic, const int lineNumber, bool hasVariableArguments) {

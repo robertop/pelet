@@ -356,6 +356,11 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 		
 			// when parsing resources, we skip over any and all variables
 			break;
+		case pelet::StatementClass::FUNCTION_IMPORT:
+		case pelet::StatementClass::CONSTANT_IMPORT:
+
+			// only for php > 5.6 parsers, and they don't define resource parsers only full parsers.
+			break;
 		}
 	}
 }

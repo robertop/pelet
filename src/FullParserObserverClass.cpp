@@ -340,6 +340,14 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
 	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+
+	// variable arguments are also made with the ellipsis operator
+	for (size_t i = 0; i < parameters->GetCount(); i++) {
+		hasVariableArguments = parameters->IsVariadicAt(i);
+		if (hasVariableArguments) {
+			break;
+		}
+	}
 	
 	newMember->MakeFunction(nameValue, isReference, functionValue, parameters, startingPos, endingPos, Scope, DeclaredNamespace, hasVariableArguments);
 	newMember->MethodStatements.PushAll(functionStatements);
@@ -362,7 +370,15 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
 	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
-	
+
+	// variable arguments are also made with the ellipsis operator
+	for (size_t i = 0; i < parameters->GetCount(); i++) {
+		hasVariableArguments = parameters->IsVariadicAt(i);
+		if (hasVariableArguments) {
+			break;
+		}
+	}
+
 	newMember->MakeMethod(nameValue, modifiers, isReference, functionValue, parameters, methodBody, Scope, DeclaredNamespace, hasVariableArguments);
 	AllAstItems.push_back(newMember);
 	pelet::StatementListClass* list = StatementListMakeAndAppend(newMember);
@@ -593,8 +609,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCall(p
 		}
 	}
 	
-	// not sure how to resolve the namespace here; since a functions fallback to the root namespace
-	UnicodeString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
+	UnicodeString fullFunctionName = Scope.FullyQualifyFunction(*functionName, DeclaredNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -631,7 +646,7 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeFunctionCallFr
 			newVar->Pos = singleExpr->Pos;
 		}
 	}
-	UnicodeString fullFunctionName = Scope.FullyQualify(*functionName, DeclaredNamespace);
+	UnicodeString fullFunctionName = Scope.FullyQualifyFunction(*functionName, DeclaredNamespace);
 	newVar->AppendToChain(fullFunctionName, varCallArguments, true, false);
 	AllAstItems.push_back(newVar);
 	return newVar;
@@ -1178,6 +1193,20 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 				ExpressionObserver->StatementStaticVariablesFound((pelet::StaticVariableStatementClass*)stmt);
 			}
 			break;
+		
+		case pelet::StatementClass::FUNCTION_IMPORT:
+			if (Class) {
+				pelet::FunctionImportClass* functionImport = (pelet::FunctionImportClass*)stmt;
+				Class->UseFunctionFound(functionImport->FunctionName, functionImport->Alias, functionImport->LineNumber, functionImport->StartingPos);
+			}
+			break;
+		
+		case pelet::StatementClass::CONSTANT_IMPORT:
+			if (Class) {
+				pelet::ConstantImportClass* constantImport = (pelet::ConstantImportClass*)stmt;
+				Class->UseConstantFound(constantImport->ConstantName, constantImport->Alias, constantImport->LineNumber, constantImport->StartingPos);
+			}
+			break;
 		}
 	}
 }
@@ -1481,8 +1510,73 @@ pelet::StatementListClass* pelet::FullParserObserverClass::NamespaceUseSetStarti
 			useStmt->StartingPos = useToken->Pos;
 			useStmt->LineNumber = useToken->LineNumber;
 		}
+		else if (pelet::StatementClass::FUNCTION_IMPORT == type) {
+			pelet::FunctionImportClass* functionImport = (pelet::FunctionImportClass*) namespaceStatements->At(i);
+			functionImport->StartingPos = useToken->Pos;
+			functionImport->LineNumber = useToken->LineNumber;
+		}
+		else if (pelet::StatementClass::CONSTANT_IMPORT == type) {
+			pelet::ConstantImportClass* constantImport = (pelet::ConstantImportClass*) namespaceStatements->At(i);
+			constantImport->StartingPos = useToken->Pos;
+			constantImport->LineNumber = useToken->LineNumber;
+		}
 	}
 	return namespaceStatements;
+}
+
+pelet::FunctionImportClass* pelet::FullParserObserverClass::FunctionImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias) {
+	pelet::FunctionImportClass* functionImport = new pelet::FunctionImportClass;
+	AllAstItems.push_back(functionImport);
+	functionImport->Init(Scope.FullyQualify(*namespaceName, DeclaredNamespace), 
+		alias, namespaceName->LineNumber, namespaceName->Pos);
+
+	// don't worry about duplicate aliases, since its incorrect PHP
+	Scope.AddFunctionAlias(functionImport->FunctionName, functionImport->Alias);
+		
+	return functionImport;
+}
+
+pelet::FunctionImportClass* pelet::FullParserObserverClass::FunctionImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias) {
+	pelet::FunctionImportClass* functionImport = new pelet::FunctionImportClass;
+	AllAstItems.push_back(functionImport);
+	pelet::QualifiedNameClass absoluteName(*namespaceName);
+	absoluteName.MakeAbsolute();
+	functionImport->Init(absoluteName.ToSignature(), 
+		alias, namespaceName->LineNumber, namespaceName->Pos);
+
+	// don't worry about duplicate aliases, since its incorrect PHP
+	Scope.AddFunctionAlias(functionImport->FunctionName, functionImport->Alias);
+
+	return functionImport;
+}
+
+pelet::ConstantImportClass* pelet::FullParserObserverClass::ConstantImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias) {
+	pelet::ConstantImportClass* constantImport = new pelet::ConstantImportClass;
+	AllAstItems.push_back(constantImport);
+	constantImport->Init(
+		Scope.FullyQualify(*namespaceName, DeclaredNamespace),
+		alias, namespaceName->LineNumber, namespaceName->Pos
+	);
+
+	// don't worry about duplicate aliases, since its incorrect PHP
+	Scope.AddConstantAlias(constantImport->ConstantName, constantImport->Alias);
+
+	return constantImport;
+}
+
+pelet::ConstantImportClass* pelet::FullParserObserverClass::ConstantImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias) {
+	pelet::ConstantImportClass* constantImport = new pelet::ConstantImportClass;
+	AllAstItems.push_back(constantImport);
+	pelet::QualifiedNameClass absoluteName(*namespaceName);
+	absoluteName.MakeAbsolute();
+	constantImport->Init(absoluteName.ToSignature(),
+		alias, namespaceName->LineNumber, namespaceName->Pos
+	);
+
+	// don't worry about duplicate aliases, since its incorrect PHP
+	Scope.AddConstantAlias(constantImport->ConstantName, constantImport->Alias);
+
+	return constantImport;
 }
 
 pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListAppend(pelet::ParametersListClass* parametersList, 
@@ -1492,9 +1586,10 @@ pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListAppend
 }
 
 pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, 
-		bool isReference, bool hasDefault) {
+		bool isReference, bool hasDefault, bool isVariadic) {
 	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
 	parametersList->Append(type, parameterName, isReference, hasDefault, Scope, DeclaredNamespace);
+	parametersList->SetVariadic(isVariadic);
 	AllAstItems.push_back(parametersList);
 	return parametersList;
 }
@@ -1503,6 +1598,12 @@ pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListNil() 
 	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
 
 	AllAstItems.push_back(parametersList);
+	return parametersList;
+}
+
+pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListAppend(pelet::ParametersListClass* parametersList,
+	pelet::ParametersListClass* src) {
+	parametersList->Append(src);
 	return parametersList;
 }
 

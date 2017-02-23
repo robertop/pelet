@@ -232,6 +232,10 @@ public:
 	pelet::StatementListClass* NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::StatementListClass* NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::StatementListClass* NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, pelet::SemanticValueClass* useToken);
+	pelet::FunctionImportClass* FunctionImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::FunctionImportClass* FunctionImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::ConstantImportClass* ConstantImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::ConstantImportClass* ConstantImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::QualifiedNameClass* implementsClassName);
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName);
@@ -242,8 +246,9 @@ public:
 	pelet::ParametersListClass* ParametersListNil();
 	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, 
 		pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault);
-	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault); 
-
+	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault, bool isVariadic = false); 
+    pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::ParametersListClass* src);
+	
 	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
@@ -485,5 +490,6 @@ void FullGrammarError(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserOb
 int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php55parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
+int php56parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 #endif
