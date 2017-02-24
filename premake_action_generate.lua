@@ -28,45 +28,27 @@ newaction {
 	description = "Generate the source code for the PHP parser and PHP lexer. This needs to be done " ..
 					"whenever any bison or re2c files are modified.",
 	execute = function()
-	
-		-- regenerate the parser and lexer implementation files
-		-- re2c does not escape windows paths and leads to compile errors, turn off debug info
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/Php53LexicalAnalyzer.cpp") .. " " ..
-			normalizepath("src/Php53LexicalAnalyzer.re");
-		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/Php53LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
+		local lexers = {
+			"src/Php53LexicalAnalyzer.re",
+			"src/Php54LexicalAnalyzer.re",
+			"src/Php55LexicalAnalyzer.re",
+			"src/Php56LexicalAnalyzer.re",
+			"src/LanguageDiscoveryClass.re"
+		};
+		for index, lexerInput in ipairs(lexers) do
+			local lexerOutput = string.gsub(lexerInput, '.re', '.cpp')
+			-- regenerate the parser and lexer implementation files
+			-- re2c does not escape windows paths and leads to compile errors, turn off debug info
+			local cmd = "re2c -c -i --no-generation-date " ..
+				"-o " .. normalizepath(lexerOutput) .. " " ..
+				normalizepath(lexerInput);
+			local code = os.execute(cmd) 
+			if code ~= 0 then
+				print("re2c command failed for file " .. lexerInput .. ". Is re2c installed? Is it in the PATH?");
+			end
+			print(cmd)
 		end
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/Php54LexicalAnalyzer.cpp") .. " " ..
-			normalizepath("src/Php54LexicalAnalyzer.re");
-		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/Php54LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
-		end
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/Php55LexicalAnalyzer.cpp") .. " " ..
-			normalizepath("src/Php55LexicalAnalyzer.re");
-		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/Php55LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
-		end
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/Php56LexicalAnalyzer.cpp") .. " " ..
-			normalizepath("src/Php56LexicalAnalyzer.re");
-		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/Php56LexicalAnalyzer.re. Is re2c installed? Is it in the PATH?");	
-		end
-		cmd = "re2c -c -i --no-generation-date " ..
-			"-o " .. normalizepath("src/LanguageDiscoveryClass.cpp") .. " " ..
-			normalizepath("src/LanguageDiscoveryClass.re");
-		code = os.execute(cmd) 
-		if code ~= 0 then
-			print("re2c command failed for file src/LanguageDiscoveryClass.re. Is re2c installed? Is it in the PATH?");	
-		end
-		
+
 		local parsers = {
 			"src/Php53LintParser.y",
 			"src/Php53ResourceParser.y",
@@ -85,6 +67,7 @@ newaction {
 
 		for index, parserInput in ipairs(parsers) do
 			local parserOutput = string.gsub(parserInput, '.y', '.cpp')
+			local cmd = ""
 			if os.is("windows") then
 				-- in windows line macros dont work correctly
 				cmd = "bison --warnings=error " ..
@@ -95,7 +78,7 @@ newaction {
 					" -o " .. normalizepath(parserOutput) .. " " ..
 					normalizepath(parserInput)
 			end
-			code = os.execute(cmd) 
+			local code = os.execute(cmd) 
 			if code ~= 0 then
 				print("Bison command failed for " .. parserInput .. ". Is bison installed? Is it in the PATH?");
 			end
