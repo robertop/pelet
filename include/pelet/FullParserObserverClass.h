@@ -227,21 +227,41 @@ public:
 	pelet::StatementListClass* NamespaceGlobalDeclarationFound(pelet::SemanticValueClass* namespaceTokenValue);
 	pelet::QualifiedNameClass* NamespaceNameAppend(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* nameValue);
 	pelet::QualifiedNameClass* NamespaceNameMake(pelet::SemanticValueClass* nameValue);
+	pelet::QualifiedNameListClass* NamespaceNameQualify(pelet::QualifiedNameClass* namespaceName, pelet::UnprefixedNameListClass* unprefixedNames);
+	pelet::QualifiedNameListClass* NamespaceNameListMake(pelet::QualifiedNameClass* namespaceName);
+	pelet::QualifiedNameListClass* NamespaceNameListAppend(pelet::QualifiedNameListClass* namespaceList, pelet::QualifiedNameClass* namespaceName);
+
+	pelet::UnprefixedNameClass* UnprefixedNameMake(pelet::QualifiedNameClass* namespaceName);
+	pelet::UnprefixedNameClass* UnprefixedNameMakeAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::UnprefixedNameListClass* UnprefixedNameListMake(pelet::UnprefixedNameClass* namespaceName);
+	pelet::UnprefixedNameListClass* UnprefixedNameListAppend(pelet::UnprefixedNameListClass* namespaceNameList, pelet::UnprefixedNameClass* namespaceName);
+	
 	pelet::StatementListClass* NamespaceUse(pelet::QualifiedNameClass* namespaceName);
 	pelet::StatementListClass* NamespaceUseAbsolute(pelet::QualifiedNameClass* namespaceName);
 	pelet::StatementListClass* NamespaceUseAbsoluteAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::StatementListClass* NamespaceUseAlias(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::StatementListClass* NamespaceUseMake(pelet::UnprefixedNameClass* namespaceName);
+	pelet::StatementListClass* NamespaceUseMake(pelet::QualifiedNameClass* namespaceName, pelet::UnprefixedNameListClass* unprefixedNameList);
+	pelet::StatementListClass* NamespaceUseMakeAbsolute(pelet::UnprefixedNameClass* namespaceName);
 	pelet::StatementListClass* NamespaceUseSetStartingPos(pelet::StatementListClass* namespaceStatements, pelet::SemanticValueClass* useToken);
+	pelet::StatementListClass* NamespaceUseQualify(pelet::QualifiedNameClass* namespaceName, pelet::StatementListClass* namespaceStatements);
+
 	pelet::FunctionImportClass* FunctionImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::FunctionImportClass* FunctionImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+	pelet::StatementListClass* FunctionOrConstantImportMake(pelet::SemanticValueClass* value, pelet::UnprefixedNameClass* namespaceName);
+    pelet::StatementListClass* FunctionOrConstantImportSetStartingPos(pelet::QualifiedNameListClass* nameList, pelet::SemanticValueClass* useTypeToken, pelet::SemanticValueClass* useToken);
+	pelet::StatementListClass* FunctionOrConstantImportSetStartingPos(pelet::StatementListClass* useStatements, pelet::SemanticValueClass* useTypeToken, pelet::SemanticValueClass* useToken);
+	
 	pelet::ConstantImportClass* ConstantImportMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	pelet::ConstantImportClass* ConstantImportAbsoluteMake(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
 	
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::QualifiedNameClass* implementsClassName);
 	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName);
+	pelet::ClassSymbolClass* ClassSymbolAddToImplements(pelet::QualifiedNameListClass* implementsList);
 	pelet::ClassSymbolClass* ClassSymbolExtends(pelet::QualifiedNameClass* extendsClassName);
 	pelet::StatementListClass* ClassSymbolMake(pelet::SemanticValueClass* nameValue, pelet::ClassSymbolClass* classTypeSymbol, pelet::ClassSymbolClass* extendsSymbol, pelet::ClassSymbolClass* implementsSymbol, pelet::SemanticValueClass* endToken);
 	pelet::ClassSymbolClass* ClassSymbolStart(pelet::SemanticValueClass* commentValue, bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
+	pelet::ClassSymbolClass* ClassSymbolMergeModifiers(pelet::ClassSymbolClass* a, pelet::ClassSymbolClass* b);
 	
 	pelet::ParametersListClass* ParametersListNil();
 	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, 
@@ -252,7 +272,8 @@ public:
 	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
-		pelet::ClassMemberSymbolClass* methodBody);
+		pelet::ClassMemberSymbolClass* methodBody,
+		pelet::QualifiedNameClass* returnType = NULL);
 	pelet::StatementListClass* ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
 	pelet::ClassMemberSymbolClass* ClassMemberSymbolMake(pelet::SemanticValueClass* varValue);
 	pelet::StatementListClass* ClassMemberSymbolMakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
@@ -261,16 +282,23 @@ public:
 	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		pelet::StatementListClass* functionStatements,
-		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue);
+		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue,
+		pelet::QualifiedNameClass* returnType = NULL);
 	pelet::ClassMemberSymbolClass* ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
 		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);
+	pelet::StatementListClass* ClassMemberSymbolAppendToComment(pelet::StatementListClass* variableStatements, pelet::SemanticValueClass* comment); 
+
 		
 	pelet::StatementListClass* TraitUseMake(pelet::TraitUseClass* traitsUsed, pelet::StatementListClass* traitAdaptations);
+	pelet::StatementListClass* TraitUseMake(pelet::QualifiedNameListClass* traitsUsed, pelet::StatementListClass* traitAdaptations);
 	pelet::TraitUseClass* TraitUseStart(pelet::QualifiedNameClass* qualifiedName);
 	pelet::TraitUseClass* TraitUseAppend(pelet::TraitUseClass* traitUse, pelet::QualifiedNameClass* qualifiedName);
 	pelet::TraitInsteadOfClass* TraitInsteadOfMake(pelet::TraitAliasClass* traitMethodReference, pelet::TraitInsteadOfClass* traitInsteadOfList);
+	
 	pelet::TraitInsteadOfClass* TraitInsteadOfMakeReferenceList(pelet::QualifiedNameClass* qualifiedName);
 	pelet::TraitInsteadOfClass* TraitInsteadOfAppendReferenceList(pelet::TraitInsteadOfClass* traitInsteadOf, pelet::QualifiedNameClass* qualifiedName);
+	pelet::TraitInsteadOfClass* TraitInsteadOfMakeReferenceList(pelet::QualifiedNameListClass* qualifiedNameList);
+
 	pelet::TraitAliasClass* TraitAliasMakeMethodReferenceList(pelet::SemanticValueClass* methodName);
 	pelet::TraitAliasClass* TraitAliasMakeMethodReferenceList(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* methodName);
 	pelet::TraitAliasClass* TraitAliasMake(pelet::TraitAliasClass* traitMethodReference, pelet::ClassMemberSymbolClass* traitModifiers, pelet::SemanticValueClass* aliasValue);
@@ -300,14 +328,17 @@ public:
 	pelet::ExpressionClass* ExpressionInstanceOfOperation(pelet::ExpressionClass* leftExpression, pelet::QualifiedNameClass* className);
 	pelet::StatementListClass* ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value);
 	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts, 
-		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);
+		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue, pelet::QualifiedNameClass* returnType = NULL);
 	pelet::ExpressionClass* ExpressionIsset(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionIssetMerge(pelet::IssetExpressionClass* isset, pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionEval(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionNil();
 	pelet::ExpressionClass* ExpressionAddOffset(pelet::ExpressionClass* expr, pelet::ExpressionClass* offset);
+	pelet::ExpressionClass* ExpressionMakeAnonymousClass(pelet::StatementListClass* constructorArguments, pelet::ClassSymbolClass* extends,
+		pelet::ClassSymbolClass* implementsList, pelet::StatementListClass* body);
 	
 	pelet::VariableClass* VariableMake(pelet::VariableClass* baseName, pelet::VariableClass* firstProperty, pelet::VariableClass* firstPropertyCallArguments, pelet::VariableClass* restProperties);
+	pelet::VariableClass* VariableMakeFromExpression(pelet::ExpressionClass* expr);
 	pelet::VariableClass* VariableMakeFunctionCall(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromDeclaredNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
 	pelet::VariableClass* VariableMakeFunctionCallFromAbsoluteNamespace(pelet::QualifiedNameClass* functionName, pelet::StatementListClass* callArguments, int lineNumber);
@@ -320,11 +351,15 @@ public:
 	pelet::VariableClass* VariableStart(pelet::SemanticValueClass* variableValue, bool isReference = false);
 	pelet::VariableClass* VariableStartStaticMember(pelet::QualifiedNameClass* className, pelet::VariableClass* memberName);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);
+	pelet::VariableClass* VariableAppendToChainStaticMember(pelet::VariableClass* variableProperties, pelet::VariableClass* newVariableProperty);
 	pelet::VariableClass* VariableAppendToChain(pelet::VariableClass* variable, pelet::VariableClass* callArguments, pelet::SemanticValueClass* operatorValue);
 	pelet::VariableClass* VariableMakeAndAppendFunctionCall(pelet::StatementListClass* callArguments, bool isMethod);
 	pelet::VariableClass* VariableAppendArrayOffset(pelet::VariableClass* variable, pelet::ExpressionClass* offsetExpr);
 	pelet::VariableClass* VariableNil();
 	pelet::VariableClass* VariableMakeIndirect(pelet::VariableClass* variable);
+
+	// php 7 uniform variable suport
+	pelet::VariableClass* VariableStartIndirectFunctionCall(pelet::ExpressionClass* functionExpression, pelet::StatementListClass* callArguments);
 
 	pelet::ExpressionClass* NewInstanceAppendToChain(pelet::ExpressionClass* newInstanceExpr, pelet::VariableClass* variable);
 	
@@ -491,5 +526,6 @@ int php53parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverC
 int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php55parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php56parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
+int php70parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 #endif

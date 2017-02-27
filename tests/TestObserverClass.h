@@ -79,6 +79,8 @@ public:
 	std::vector<pelet::IncludeExpressionClass*> IncludeExpressions;
 	std::vector<pelet::IssetExpressionClass*> IssetExpressions;
 	std::vector<pelet::AssignmentListExpressionClass*> AssignmentListExpressions;
+	std::vector<pelet::AnonymousClassExpressionClass*> AnonymousClassExpressions;
+	
 
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, 
 		const UnicodeString& signature, 
@@ -155,6 +157,8 @@ public:
 	void ExpressionNewInstanceFound(pelet::NewInstanceExpressionClass* expression);
 	
 	void ExpressionIssetFound(pelet::IssetExpressionClass* expression);
+
+	void ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression);
 };
 
 #endif

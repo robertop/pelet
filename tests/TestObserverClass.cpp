@@ -275,3 +275,7 @@ void TestObserverClass::ExpressionNewInstanceFound(pelet::NewInstanceExpressionC
 void TestObserverClass::ExpressionIssetFound(pelet::IssetExpressionClass* expression) {
 	IssetExpressions.push_back(expression);
 }
+
+void TestObserverClass::ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression) {
+	AnonymousClassExpressions.push_back(expression);
+}
