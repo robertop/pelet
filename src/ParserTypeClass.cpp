@@ -361,7 +361,19 @@ void pelet::AnyExpressionObserverClass::ExpressionNewInstanceFound(pelet::NewIns
 	}
 	
 	OnAnyExpression(expression);
-} 
+}
+
+void pelet::AnyExpressionObserverClass::ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression) {
+	for (size_t i = 0;i < expression->ConstructorArguments.size(); i++) {
+		CheckExpression(expression->ConstructorArguments[i]);
+	}
+	for (size_t i = 0; i < expression->Body.Size(); i++) {
+		if (pelet::StatementClass::EXPRESSION == expression->Body.TypeAt(i)) {
+			CheckExpression((pelet::ExpressionClass*)expression->Body.At(i));
+		}
+	}
+	OnAnyExpression(expression);
+}
 
 void pelet::AnyExpressionObserverClass::StatementGlobalVariablesFound(pelet::GlobalVariableStatementClass* variables) {
 	for (size_t i = 0; i < variables->Variables.size(); ++i) {
@@ -492,6 +504,9 @@ void pelet::AnyExpressionObserverClass::CheckExpression(pelet::ExpressionClass* 
 	
 		// we dont get array pairs by themselves, they come in 
 		// with the array
+		break;
+	case pelet::ExpressionClass::ANONYMOUS_CLASS:
+		ExpressionAnonymousClassFound((pelet::AnonymousClassExpressionClass*)expr);
 		break;
 	case pelet::ExpressionClass::UNKNOWN:
 	
@@ -985,6 +1000,22 @@ pelet::ClassSymbolClass* pelet::ClassSymbolClass::SetFlags(pelet::SemanticValueC
 	return this;
 }
 
+pelet::ClassSymbolClass* pelet::ClassSymbolClass::MergeModifiers(pelet::ClassSymbolClass* other) {
+	if (other->IsAbstract) {
+		IsAbstract = other->IsAbstract;
+	}
+	if (other->IsFinal) {
+		IsFinal = other->IsFinal;
+	}
+	if (other->IsInterface) {
+		IsInterface = other->IsInterface;
+	}
+	if (other->IsTrait) {
+		IsTrait = other->IsTrait;
+	}
+	return this;
+}
+
 pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 	: StatementClass(pelet::StatementClass::METHOD_DECLARATION)
 	, MemberName()
@@ -1044,6 +1075,12 @@ void pelet::ClassMemberSymbolClass::AppendToComment(SemanticValueClass* value, c
 	}
 	if (ReturnType.isEmpty()) {
 		ReturnType = ReturnTypeFromPhpDocComment(Comment, true, scope, declaredNamespace);
+	}
+}
+
+void pelet::ClassMemberSymbolClass::SetReturnType(QualifiedNameClass* qualifiedName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
+	if (!qualifiedName->IsEmpty()) {
+		ReturnType = PhpDocTypeToAbsoluteClassname(qualifiedName->ToSignature(), scope, declaredNamespace);
 	}
 }
 
@@ -1157,6 +1194,11 @@ pelet::ClassMemberSymbolClass* pelet::ClassMemberSymbolClass::MakeAsPublicVariab
 	Type = pelet::StatementClass::PROPERTY_DECLARATION;
 	SetNameAndReturnReference(varValue, false, varValue, scope, declaredNamespace);
 	SetAsPublic();
+	NamespaceName = declaredNamespace.ToSignature();
+	if (NamespaceName.isEmpty()) {
+		NamespaceName = UNICODE_STRING_SIMPLE("\\");
+	}
+	ClassName = scope.ClassName;
 	if (varValue) {
 		StartingLineNumber = varValue->LineNumber;
 	}
@@ -1328,13 +1370,15 @@ pelet::QualifiedNameClass::QualifiedNameClass()
 	, IsAbsolute(false)
 	, LineNumber(0)
 	, Pos(0)
-	, Namespaces() {
+	, Namespaces()
+	, Alias() {
 
 }
 
 void pelet::QualifiedNameClass::Init(SemanticValueClass* value) {
 	LineNumber = 0;
 	Pos = 0;
+	Alias.remove();
 	if (value) {
 		Comment.setTo(value->Comment);
 		AppendName(value);
@@ -1345,6 +1389,7 @@ void pelet::QualifiedNameClass::Init(SemanticValueClass* value) {
 
 void pelet::QualifiedNameClass::Clear() {
 	Namespaces.clear();
+	Alias.remove();
 	IsAbsolute = false;
 	LineNumber = 0;
 	Pos = 0;
@@ -1405,6 +1450,63 @@ pelet::QualifiedNameClass* pelet::QualifiedNameClass::MakeFromDeclaredNamespace(
 		Namespaces = currentNamespace->Namespaces;
 	}
 	return this;
+}
+
+pelet::QualifiedNameClass* pelet::QualifiedNameClass::SetAlias(pelet::SemanticValueClass* alias) {
+	Alias = alias->Lexeme;
+	return this;
+}
+
+void pelet::QualifiedNameClass::SetAlias(const UnicodeString& alias) {
+	Alias = alias;
+}
+
+UnicodeString pelet::QualifiedNameClass::GetAlias() const {
+	return Alias;
+}
+
+bool pelet::QualifiedNameClass::IsEmpty() const {
+	return Namespaces.empty();
+}
+
+pelet::QualifiedNameListClass::QualifiedNameListClass()
+: Names() {
+}
+
+void pelet::QualifiedNameListClass::Push(pelet::QualifiedNameClass* qualifiedName) {
+	Names.push_back(qualifiedName);
+}
+
+pelet::UnprefixedNameClass::UnprefixedNameClass()
+: AstItemClass()
+, NamespaceName()
+, Alias() {
+}
+
+void pelet::UnprefixedNameClass::Set(pelet::QualifiedNameClass* qualifiedName) {
+	NamespaceName = qualifiedName->ToSignature();
+	int32_t index = NamespaceName.lastIndexOf(UNICODE_STRING_SIMPLE("\\"));
+
+	//by default alias is the last part of the namespace name
+	if (index >= 0) {
+		Alias.setTo(NamespaceName, index + 1);
+	}
+	else {
+		Alias = NamespaceName;
+	}
+}
+
+void pelet::UnprefixedNameClass::Set(pelet::QualifiedNameClass* qualifiedName, pelet::SemanticValueClass* alias) {
+		Set(qualifiedName);
+		Alias = alias->Lexeme;
+}
+
+pelet::UnprefixedNameListClass::UnprefixedNameListClass()
+: Names() {
+}
+
+void pelet::UnprefixedNameListClass::Push(pelet::UnprefixedNameClass* name) {
+	Names.push_back(name);
 }
 
 pelet::FunctionImportClass::FunctionImportClass()
@@ -1875,6 +1977,22 @@ void pelet::VariableClass::AppendToChain(const UnicodeString& propertyValue,
 	ChainList.push_back(prop);	
 }
 
+void pelet::VariableClass::AppendToChain(pelet::ExpressionClass* callableExpr) {
+	pelet::VariablePropertyClass prop;
+	prop.CallableExpression = callableExpr;
+	prop.IsCallableExpression = true;
+	ChainList.push_back(prop);
+}
+
+void pelet::VariableClass::AppendToChain(pelet::ExpressionClass* callableExpr, std::vector<pelet::ExpressionClass*> arguments) {
+	pelet::VariablePropertyClass prop;
+	prop.CallableExpression = callableExpr;
+	prop.CallArguments = arguments;
+	prop.IsCallableExpression = true;
+	prop.IsFunction = true;
+	ChainList.push_back(prop);
+}
+
 void pelet::VariableClass::ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& propertyName, bool isMethod) {
 	Clear();
 	if (!className.isEmpty()) {
@@ -2148,7 +2266,8 @@ pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ScopeClass& s
 : ExpressionClass(scope) 
 , Parameters() 
 , LexicalVars() 
-, Statements() 
+, Statements()
+, ReturnType()
 , StartingPosition(0)
 , EndingPosition(0) {
 	ExpressionType = pelet::ExpressionClass::CLOSURE;
@@ -2158,7 +2277,8 @@ pelet::ClosureExpressionClass::ClosureExpressionClass(const pelet::ClosureExpres
 : ExpressionClass(src.Scope) 
 , Parameters() 
 , LexicalVars() 
-, Statements() 
+, Statements()
+, ReturnType() 
 , StartingPosition(0)
 , EndingPosition(0) {
 	ExpressionType = pelet::ExpressionClass::CLOSURE;
@@ -2176,8 +2296,15 @@ void pelet::ClosureExpressionClass::Copy(const pelet::ClosureExpressionClass& sr
 	LexicalVars = src.LexicalVars;
 	Statements.Clear();
 	Statements.PushAll(&src.Statements);
+	ReturnType = src.ReturnType;
 	StartingPosition = src.StartingPosition;
 	EndingPosition = src.EndingPosition;
+}
+
+void pelet::ClosureExpressionClass::SetReturnType(QualifiedNameClass* qualifiedName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
+	if (!qualifiedName->IsEmpty()) {
+		ReturnType = PhpDocTypeToAbsoluteClassname(qualifiedName->ToSignature(), scope, declaredNamespace);
+	}
 }
 
 pelet::ScopeClass::ScopeClass()
@@ -2496,18 +2623,22 @@ pelet::VariablePropertyClass::VariablePropertyClass()
 : Name()
 , CallArguments()
 , ArrayAccess(NULL)
+, CallableExpression(NULL)
 , IsFunction(false)
 , IsStatic(false) 
-, IsArrayAccess(false) {
+, IsArrayAccess(false)
+, IsCallableExpression(false) {
 }
 
 pelet::VariablePropertyClass::VariablePropertyClass(const pelet::VariablePropertyClass& src) 
 : Name()
 , CallArguments()
 , ArrayAccess(NULL)
+, CallableExpression(NULL)
 , IsFunction(false)
 , IsStatic(false) 
-, IsArrayAccess(false) {
+, IsArrayAccess(false)
+, IsCallableExpression(false) {
 	Copy(src);
 }
 
@@ -2520,9 +2651,11 @@ void pelet::VariablePropertyClass::Copy(const pelet::VariablePropertyClass& src)
 	Name = src.Name;
 	CallArguments = src.CallArguments;
 	ArrayAccess = src.ArrayAccess;
+	CallableExpression = src.CallableExpression;
 	IsFunction = src.IsFunction;
 	IsStatic = src.IsStatic;
 	IsArrayAccess = src.IsArrayAccess;
+	IsCallableExpression = src.IsCallableExpression;
 }
 
 pelet::IncludeExpressionClass::IncludeExpressionClass(const pelet::ScopeClass& scope) 
@@ -2615,4 +2748,12 @@ pelet::EvalExpressionClass& pelet::EvalExpressionClass::operator=(const pelet::E
 void pelet::EvalExpressionClass::Copy(const pelet::EvalExpressionClass& src) {
 	pelet::ExpressionClass::Copy(src);
 	Expression = src.Expression;
+}
+
+pelet::AnonymousClassExpressionClass::AnonymousClassExpressionClass(const pelet::ScopeClass& scope)
+: ExpressionClass(scope)
+, ConstructorArguments()
+, ExtendsFrom()
+, ImplementsList() {
+	ExpressionType = pelet::ExpressionClass::ANONYMOUS_CLASS;
 }

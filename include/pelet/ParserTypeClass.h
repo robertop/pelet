@@ -62,6 +62,7 @@ class IncludeExpressionClass;
 class ClosureExpressionClass;
 class IssetExpressionClass;
 class EvalExpressionClass;
+class AnonymousClassExpressionClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -560,6 +561,15 @@ public:
 	virtual void ExpressionFunctionArgumentFound(pelet::VariableClass* variable) {}
 
 	/**
+	 * Override this method to get the pseudo-parse tree for an anonymous class,
+	 * including all methods defined in that anonymous class.
+	 * 
+	 * @param expr the AST for the anonymous class that was parsed.
+	 * @see pelet::AnonymousClassExpressionClass
+	 */
+	virtual void ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expr) {}
+	
+	/**
 	 * Override this method to get the pseudo-parse tree for a global variable declaration
 	 * 
 	 * @param variables the global variables that were parsed
@@ -708,6 +718,7 @@ class PELET_API AnyExpressionObserverClass : public ExpressionObserverClass {
 	void ExpressionIssetFound(pelet::IssetExpressionClass* expr);
 	void ExpressionArrayFound(pelet::ArrayExpressionClass* expression);
 	void ExpressionEvalFound(pelet::EvalExpressionClass* expression);
+	void ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression);
 	
 	void CheckExpression(pelet::ExpressionClass* expression);
 	void CheckVariable(pelet::VariableClass* variable);
@@ -1044,7 +1055,14 @@ public:
 	void Init(const UnicodeString& name, int lineNumber, int pos);
 	pelet::QualifiedNameClass* AppendName(SemanticValueClass* value);
 	pelet::QualifiedNameClass* MakeAbsolute();
-	
+
+	// only used for PHP >= 7.0
+	pelet::QualifiedNameClass* SetAlias(SemanticValueClass* alias);
+	void SetAlias(const UnicodeString& alias);
+	UnicodeString GetAlias() const;
+
+	bool IsEmpty() const;
+
 	/**
 	 * @param name the namespace to prepend to this namespace. This is the current namespace
 	 *        that the code belongs to.
@@ -1087,7 +1105,56 @@ public:
 private:
 
 	std::vector<UnicodeString> Namespaces;
+	UnicodeString Alias;
 		
+};
+
+/**
+ * A list of 0 or more qualified names. These names are fully qualified.
+ */
+class PELET_API QualifiedNameListClass : public AstItemClass {
+public:
+	/**
+	 * This class will not own these pointers.
+	 */
+	std::vector<pelet::QualifiedNameClass*> Names;
+	
+	QualifiedNameListClass();
+	
+	void Push(pelet::QualifiedNameClass* qualifiedName);
+};
+
+/**
+ * An unqualified name is a name used in a grouped import statement. It is a namespace name
+ * that is not fully qualified. This is only used for PHP >= 7.0.
+ */
+class PELET_API UnprefixedNameClass : public AstItemClass {
+public:
+	UnicodeString NamespaceName;
+	UnicodeString Alias;
+
+	UnprefixedNameClass();
+	
+	void Set(pelet::QualifiedNameClass* namespaceName);
+
+	void Set(pelet::QualifiedNameClass* namespaceName, pelet::SemanticValueClass* alias);
+};
+
+/**
+ * A list of 0 or more namespace names used in a grouped import statement.
+ * This is only used for PHP >= 7.0.
+ */
+class PELET_API UnprefixedNameListClass : public AstItemClass {
+public:
+	/**
+	 * This class will not own these pointers.
+	 */
+	std::vector<pelet::UnprefixedNameClass*> Names;
+
+	UnprefixedNameListClass();
+	
+	void Push(pelet::UnprefixedNameClass* name);
+
 };
 
 /**
@@ -1128,6 +1195,17 @@ class PELET_API VariablePropertyClass {
 	pelet::ExpressionClass* ArrayAccess;
 
 	/**
+	 * When this property is the result of an expression grouped
+	 * in parenthesis, then this
+	 * will be the expression inside the parenthesis.
+	 * for example:  the variable ($users[$name])
+	 * will have Expression = $users[$name]
+	 *
+	 * This class will NOT own this pointer.
+	 */
+	pelet::ExpressionClass* CallableExpression;
+
+	/**
 	 * If TRUE then this property is  a function call.
 	 */
 	bool IsFunction;
@@ -1147,6 +1225,26 @@ class PELET_API VariablePropertyClass {
 	 */
 	bool IsArrayAccess;
 	
+	/**
+	 * If TRUE, this variable or function to access is the result of the callable
+	 * expression.  For example, "$foo($bar)" is stored like this:
+	 * 
+	 *  Name = <empty>
+	 *  IsFunction = true
+	 *  IsCallable = true
+	 *  CallableExpression = Expression($foo)
+	 *  CallArguments = [ Variable($bar) ]
+	 *
+	 * Example 2 - expression wrapped in parenthesis: ($users[$name])
+	 *  Name = <empty>
+	 *  IsFunction = false
+	 *  IsCallable = true
+	 *  CallableExpression = Variable($users)
+	 *  ArrayAccess = Variable($name)
+	 *  CallArguments = [ ]
+	 */
+	bool IsCallableExpression;
+
 	VariablePropertyClass();
 
 	VariablePropertyClass(const pelet::VariablePropertyClass& src);
@@ -1193,6 +1291,7 @@ public:
 		ASSIGNMENT_LIST,
 		ISSET,                      // (15)
 		EVAL,
+		ANONYMOUS_CLASS,
 		UNKNOWN // stuff that we dont want to track
 	};
 
@@ -1485,6 +1584,30 @@ public:
 	void AppendToChain(const UnicodeString& propertyValue, 
 		std::vector<pelet::ExpressionClass*> callArguments, bool isMethod, bool isStatic);
 
+	/**
+	 * Add a property that is the result of evaluating the given expression.
+	 * For example, in the variable
+	 *
+	 * (new DateTime())->getTimestamp()
+	 *
+	 * There are 2 item in the chain list:
+	 *  - new DateTime() (expression)
+	 *  - getTimestamp() (function call)
+	 */
+	void AppendToChain(pelet::ExpressionClass* callableExpr);
+
+	/**
+	 * Add a property that is the result of evaluating the given function.
+	 * For example, in the variable
+	 *
+	 * $factory($arg1, $arg2)->getTimestamp()
+	 *
+	 * There are 2 item in the chain list:
+	 *  - $factory (callable expression, with 2 arguments $arg1, $arg2)
+	 *  - getTimestamp() (function call)
+	 */
+	void AppendToChain(pelet::ExpressionClass* callableExpr, std::vector<pelet::ExpressionClass*> arguments);
+	
 	void ToStaticFunctionCall(const UnicodeString& className, const UnicodeString& functionName, bool isMethod);
 };
 
@@ -2178,6 +2301,13 @@ public:
 	 * own any of the statement pointers.
 	 */
 	pelet::StatementListClass Statements;
+
+	/**
+	 * The return type of this closure, as determined by the return type
+	 * declaration. This is only available in PHP >= 7.0
+	 * This is a fully qualified name. 
+	 */
+	UnicodeString ReturnType;
 	
 	/** 
 	 * character position of closure body, 0 based 
@@ -2198,6 +2328,8 @@ public:
 	pelet::ClosureExpressionClass& operator=(const pelet::ClosureExpressionClass& src);
 
 	void Copy(const pelet::ClosureExpressionClass& src);
+	
+	void SetReturnType(pelet::QualifiedNameClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 };
 
 /**
@@ -2416,6 +2548,8 @@ class PELET_API ClassSymbolClass : public StatementClass {
 
 	ClassSymbolClass* SetFlags(pelet::SemanticValueClass* commentValue, 
 		bool isAbstract, bool isFinal, bool isInterface, bool isTrait);
+
+	ClassSymbolClass* MergeModifiers(pelet::ClassSymbolClass* other);
 	
 	UnicodeString ToSignature() const;
 	
@@ -2539,8 +2673,9 @@ private:
 	/**
 	 *  for methods / functions this is the type that is returned by the  method / function
 	 * for properties, this is the type of the property
-	 * note that this is always parsed out of the PHPDoc comment, as PHP syntax does not 
+	 * For PHP < 7.0, this parsed out of the PHPDoc comment, as PHP syntax does not 
 	 * allow for type declarations
+	 * For PHP 7.0, this is either the type declared or the PHP Doc comment.
 	 */
 	UnicodeString ReturnType;
 	
@@ -2591,6 +2726,7 @@ public:
 	void SetAsConst(SemanticValueClass* nameValue, SemanticValueClass* commentValue, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
 	void AppendToComment(SemanticValueClass* value, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
+	void SetReturnType(QualifiedNameClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	
 	void SetAsPublic();
 	void SetAsProtected();
@@ -2664,6 +2800,38 @@ private:
 };
 
 /**
+ * An inline class declaration without a specified name.
+ *
+ * This is only for PHP >= 7.0
+ */
+class PELET_API AnonymousClassExpressionClass : public ExpressionClass {
+
+public: 
+
+	std::vector<ExpressionClass*> ConstructorArguments;
+	
+	/** 
+	 * This is always fully qualified name
+	 */
+	UnicodeString ExtendsFrom;
+	
+	/** 
+	 * These are always fully qualified names
+	 */
+	std::vector<UnicodeString> ImplementsList; 
+
+	/**
+	 * The anonymous class's method declararations.
+	 * This class will NOT own the statement pointers in the list
+	 */
+	StatementListClass Body;
+
+	AnonymousClassExpressionClass(const pelet::ScopeClass& scope);
+
+private:
+};
+
+/**
  * useful macros to alleviate tedious type casting 
  * expression pointers into their type.  Note that the macros
  * also assert that the expression type macthes
@@ -2682,6 +2850,7 @@ private:
 #define PCER(var) (pelet::ArrayExpressionClass*)var
 #define PCES(var) (pelet::ScalarExpressionClass*)var
 #define PCEN(var) (pelet::NewInstanceExpressionClass*)var
+#define PCEC(var) (pelet::ClosureExpressionClass*)var
 
 /**
  * This is the parser type that the bison parser uses. A grammar rules outputs
@@ -2690,6 +2859,7 @@ private:
 typedef union ParserType {
 	pelet::StatementListClass *statementList;
 	pelet::QualifiedNameClass *qualifiedName;
+	pelet::QualifiedNameListClass *qualifiedNameList;
 	pelet::ConstantStatementClass *constant;
 	pelet::ClassSymbolClass *classSymbol;
 	pelet::ClassMemberSymbolClass *classMemberSymbol;
@@ -2701,6 +2871,8 @@ typedef union ParserType {
 	pelet::TraitInsteadOfClass *traitInsteadOf;
 	pelet::FunctionImportClass* functionImport;
 	pelet::ConstantImportClass* constantImport;
+	pelet::UnprefixedNameClass* unprefixedName;
+	pelet::UnprefixedNameListClass* unprefixedNameList;
 	pelet::SemanticValueClass *semanticValue;
 	bool isMethod;
 	bool isVariadic;
