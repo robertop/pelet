@@ -375,6 +375,8 @@ public:
 	
 	pelet::StatementListClass* GlobalVariablesStatementMake(pelet::StatementListClass* variables);
 	pelet::StatementListClass* StaticVariablesStatementMake(pelet::StatementListClass* variables);
+	
+	pelet::DeclareDirectiveStatementClass* DeclareDirectiveMake(pelet::StatementListClass* declares, pelet::StatementListClass* body);
 
 	/**
 	 * clear any namespace aliases. This should be called when multiple namespaces

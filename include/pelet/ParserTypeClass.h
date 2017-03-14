@@ -63,6 +63,7 @@ class ClosureExpressionClass;
 class IssetExpressionClass;
 class EvalExpressionClass;
 class AnonymousClassExpressionClass;
+class ConstantStatementClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -642,6 +643,15 @@ public:
 	virtual void ExpressionEvalFound(pelet::EvalExpressionClass* expression) { }
 
 	/**
+	 * Override this method to get the pseudo-parse tree for a declare directive
+	 * declare(ticks=1)
+	 * 
+	 * @param expression the constante statement that was parsed.
+	 * @see pelet::ConstantStatementClass
+	 */
+	virtual void ExpressionDeclareDirectiveFound(pelet::ConstantStatementClass* stmt) { }
+
+	/**
 	 * this method will take ownership of the given statement pointers. after a call
 	 * to this method, this object will now own all of the pointers
 	 * and will delete the statements sometime later. This will usually be called by the
@@ -1001,7 +1011,8 @@ public:
 		STATIC_VARIABLE_DECLARATION,
 		EXPRESSION,
 		FUNCTION_IMPORT,
-		CONSTANT_IMPORT               // 15
+		CONSTANT_IMPORT,              // 15
+		DECLARE_DIRECTIVE_STATEMENT
 	};
 	
 	Types Type;
@@ -2829,6 +2840,22 @@ public:
 	AnonymousClassExpressionClass(const pelet::ScopeClass& scope);
 
 private:
+};
+
+class DeclareDirectiveStatementClass : public StatementClass {
+	public:
+	
+	/**
+	 * The directives inside the declare statement
+	 */
+	std::vector<pelet::ConstantStatementClass*> Directives;
+	
+	/**
+	 * The statements inside the 'declare' scope.
+	 */
+	pelet::StatementListClass Body;
+	
+	DeclareDirectiveStatementClass();
 };
 
 /**

@@ -80,6 +80,7 @@ public:
 	std::vector<pelet::IssetExpressionClass*> IssetExpressions;
 	std::vector<pelet::AssignmentListExpressionClass*> AssignmentListExpressions;
 	std::vector<pelet::AnonymousClassExpressionClass*> AnonymousClassExpressions;
+	std::vector<pelet::ConstantStatementClass*> DeclareDirectives;
 	
 
 	void ClassFound(const UnicodeString& namespaceName, const UnicodeString& className, 
@@ -159,6 +160,8 @@ public:
 	void ExpressionIssetFound(pelet::IssetExpressionClass* expression);
 
 	void ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression);
+	
+	void ExpressionDeclareDirectiveFound(pelet::ConstantStatementClass* stmt);
 };
 
 #endif

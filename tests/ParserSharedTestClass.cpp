@@ -1989,6 +1989,20 @@ TEST_FIXTURE(ParserStringSharedTestClass, ExpressionObserverWithForeach) {
 	}
 }
 
+TEST_FIXTURE(ParserStringSharedTestClass, ExpressionObserverWithDeclareStatements) {
+	EACH_PARSER() {
+		Parser->SetExpressionObserver(Observer);
+		UnicodeString code = _U(
+			"<?php \n"
+			"declare(ticks=1);"
+			"echo 'hello world'; \n"
+		);
+		CHECK(Parser->ScanString(code, *LintResults));
+		CHECK_VECTOR_SIZE(1, Observer->DeclareDirectives);
+		CHECK_UNISTR_EQUALS("ticks", Observer->DeclareDirectives[0]->Name);
+	}
+}
+
 TEST_FIXTURE(ParserStringSharedTestClass, LintFileShouldReturnTrueOnValidFile) {
 	EACH_PARSER() {
 		CreateFixtureFile("test.php",

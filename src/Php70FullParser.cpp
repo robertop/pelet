@@ -4226,7 +4226,7 @@ yyreduce:
   case 148:
 /* Line 1802 of yacc.c  */
 #line 528 "/Users/roberto/Projects/pelet/src/Php70FullParser.y"
-    { (yyval.statementList) = (yyvsp[(5) - (5)].statementList); }
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.DeclareDirectiveMake((yyvsp[(3) - (5)].statementList), (yyvsp[(5) - (5)].statementList))); }
     break;
 
   case 149:

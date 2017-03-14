@@ -279,3 +279,6 @@ void TestObserverClass::ExpressionIssetFound(pelet::IssetExpressionClass* expres
 void TestObserverClass::ExpressionAnonymousClassFound(pelet::AnonymousClassExpressionClass* expression) {
 	AnonymousClassExpressions.push_back(expression);
 }
+void TestObserverClass::ExpressionDeclareDirectiveFound(pelet::ConstantStatementClass* stmt) {
+	DeclareDirectives.push_back(stmt);
+}

@@ -4542,7 +4542,7 @@ yyreduce:
   case 71:
 /* Line 1802 of yacc.c  */
 #line 537 "/Users/roberto/Projects/pelet/src/Php56FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.DeclareDirectiveMake((yyvsp[(3) - (5)].statementList), (yyvsp[(5) - (5)].statementList))); }
     break;
 
   case 72:
@@ -4873,13 +4873,13 @@ yyreduce:
   case 124:
 /* Line 1802 of yacc.c  */
 #line 707 "/Users/roberto/Projects/pelet/src/Php56FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+    { (yyval.statementList) = observers.ConstantMake((yyvsp[(1) - (3)].semanticValue), analyzer.GetLineNumber()); }
     break;
 
   case 125:
 /* Line 1802 of yacc.c  */
 #line 708 "/Users/roberto/Projects/pelet/src/Php56FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+    { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ConstantMake((yyvsp[(3) - (5)].semanticValue), analyzer.GetLineNumber())); }
     break;
 
   case 126:
