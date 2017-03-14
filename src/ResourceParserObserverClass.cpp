@@ -361,6 +361,10 @@ void pelet::ResourceParserObserverClass::MakeAst(pelet::StatementListClass* stat
 
 			// only for php > 5.6 parsers, and they don't define resource parsers only full parsers.
 			break;
+		case pelet::StatementClass::DECLARE_DIRECTIVE_STATEMENT:
+
+			// we notify observers of declare statements in "full" parsers only
+			break;
 		}
 	}
 }
