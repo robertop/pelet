@@ -1060,6 +1060,25 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::IncludeFound(pelet::Expr
 	return newExpr;
 }
 
+pelet::DeclareDirectiveStatementClass* pelet::FullParserObserverClass::DeclareDirectiveMake(pelet::StatementListClass* declares, pelet::StatementListClass* body) {
+	pelet::DeclareDirectiveStatementClass* declare = new pelet::DeclareDirectiveStatementClass;
+	AllAstItems.push_back(declare);
+	
+	std::vector<pelet::ConstantStatementClass*> directives;
+	for (size_t i = 0; i < declares->Size(); i++) {
+		if (pelet::StatementClass::DEFINE_DECLARATION == declares->TypeAt(i)) {
+			directives.push_back((pelet::ConstantStatementClass*)declares->At(i));
+		}
+	}
+	if (body) {
+		declare->Body.PushAll(body);
+	}
+	
+	declare->Directives = directives;
+	
+	return declare;
+}
+
 void pelet::FullParserObserverClass::MakeAst(pelet::StatementListClass* statements) {
 	RecurseAst(statements);
 	if (ExpressionObserver) {
@@ -1078,6 +1097,7 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 	// go through the list of statements and send the correct notifications
 	pelet::ClassMemberSymbolClass* functionSymbol = NULL;
 	pelet::ClassMemberSymbolClass* memberSymbol = NULL;
+	pelet::DeclareDirectiveStatementClass* declareStmt = NULL;
 	
 	for (size_t i = 0; i < statements->Size(); ++i) {
 		pelet::StatementClass::Types type = statements->TypeAt(i);
@@ -1276,6 +1296,16 @@ void pelet::FullParserObserverClass::RecurseAst(pelet::StatementListClass* state
 				pelet::ConstantImportClass* constantImport = (pelet::ConstantImportClass*)stmt;
 				Class->UseConstantFound(constantImport->ConstantName, constantImport->Alias, constantImport->LineNumber, constantImport->StartingPos);
 			}
+			break;
+		
+		case pelet::StatementClass::DECLARE_DIRECTIVE_STATEMENT:
+			declareStmt = (pelet::DeclareDirectiveStatementClass*)stmt;
+			if (ExpressionObserver) {
+				for (size_t i = 0; i < declareStmt->Directives.size(); i++) {
+					ExpressionObserver->ExpressionDeclareDirectiveFound(declareStmt->Directives[i]);
+				}
+			}
+			RecurseAst(&declareStmt->Body);
 			break;
 		}
 	}

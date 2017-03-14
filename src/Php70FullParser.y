@@ -525,7 +525,7 @@ statement:
 																						 $$ = observers.StatementListMerge($$, $9);
 	                                                                                 }
 	|	T_DECLARE '(' const_list ')'                                                      
-		declare_statement                                                            { $$ = $5; }
+		declare_statement                                                            { $$ = observers.StatementListMakeAndAppend(observers.DeclareDirectiveMake($3, $5)); }
 	|	';'	/* empty statement */                                                    { $$ = observers.StatementListNil(); }
 	|	T_TRY '{' inner_statement_list '}' catch_list finally_statement              { $$ = observers.StatementListMerge($3, $5);
 																					     $$ = observers.StatementListMerge($$, $6);

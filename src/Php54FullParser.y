@@ -452,7 +452,7 @@ unticked_statement:
 																									  $$ = observers.StatementListAppend($$, observers.ExpressionMakeAsAssignmentExpression($5));
 																									  $$ = observers.StatementListAppend($$, $6);
 																									  $$ = observers.StatementListMerge($$, $8); }
-	|	T_DECLARE '(' declare_list ')' declare_statement											{ $$ = observers.StatementListNil(); }
+	|	T_DECLARE '(' declare_list ')' declare_statement											{ $$ = observers.StatementListMakeAndAppend(observers.DeclareDirectiveMake($3, $5)); }
 	|	';'		/* empty statement */																{ $$ = observers.StatementListNil(); }
 	|	T_TRY '{' inner_statement_list '}'															
 		T_CATCH '(' fully_qualified_class_name T_VARIABLE ')'										
@@ -603,8 +603,8 @@ declare_statement:
 ;
 
 declare_list:
-		T_STRING '=' static_scalar						{ $$ = observers.StatementListNil(); }
-	|	declare_list ',' T_STRING '=' static_scalar		{ $$ = observers.StatementListNil(); }
+		T_STRING '=' static_scalar						    { $$ = observers.ConstantMake($1, analyzer.GetLineNumber()); }
+	|	declare_list ',' T_STRING '=' static_scalar		{ $$ = observers.StatementListMerge($1, observers.ConstantMake($3, analyzer.GetLineNumber())); }
 ;
 
 switch_case_list:

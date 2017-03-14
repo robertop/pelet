@@ -857,44 +857,44 @@ static const yytype_uint16 yyrline[] =
      538,   548,   549,   553,   557,   561,   565,   566,   572,   571,
      580,   579,   592,   591,   601,   602,   603,   604,   608,   609,
      613,   617,   618,   622,   623,   627,   628,   632,   633,   637,
-     638,   639,   643,   644,   649,   650,   655,   656,   661,   662,
-     667,   668,   669,   670,   675,   676,   680,   687,   688,   693,
-     694,   700,   701,   709,   710,   718,   719,   724,   725,   730,
-     731,   736,   737,   738,   739,   740,   741,   742,   743,   748,
-     749,   750,   751,   756,   757,   758,   763,   764,   765,   766,
-     767,   768,   772,   773,   778,   779,   780,   785,   786,   787,
-     788,   794,   795,   800,   801,   802,   804,   803,   811,   815,
-     816,   820,   821,   825,   826,   830,   831,   835,   836,   840,
-     844,   845,   849,   850,   854,   858,   859,   863,   864,   868,
-     869,   873,   874,   878,   879,   883,   884,   888,   889,   890,
-     891,   892,   893,   897,   898,   899,   900,   904,   905,   909,
-     910,   915,   916,   920,   921,   925,   926,   930,   931,   935,
-     936,   937,   941,   942,   946,   950,   951,   952,   953,   954,
-     955,   956,   957,   958,   959,   960,   961,   962,   963,   964,
-     965,   966,   967,   968,   969,   970,   971,   972,   973,   974,
-     975,   976,   977,   978,   979,   980,   981,   982,   983,   984,
-     985,   986,   987,   988,   989,   990,   991,   992,   993,   994,
-     995,   996,   997,   998,   999,  1000,  1001,  1002,  1005,  1007,
-    1008,  1009,  1010,  1011,  1012,  1013,  1014,  1015,  1016,  1017,
-    1018,  1019,  1020,  1021,  1022,  1024,  1023,  1031,  1030,  1040,
-    1041,  1042,  1043,  1047,  1048,  1049,  1052,  1053,  1056,  1060,
-    1061,  1065,  1069,  1073,  1074,  1078,  1080,  1082,  1084,  1086,
-    1088,  1090,  1092,  1097,  1098,  1099,  1100,  1104,  1105,  1106,
-    1110,  1111,  1115,  1118,  1123,  1124,  1129,  1133,  1134,  1135,
-    1139,  1140,  1141,  1146,  1147,  1152,  1153,  1154,  1155,  1156,
-    1157,  1158,  1159,  1160,  1161,  1162,  1163,  1168,  1169,  1170,
-    1171,  1172,  1173,  1174,  1175,  1176,  1177,  1178,  1182,  1186,
-    1187,  1188,  1189,  1190,  1191,  1192,  1193,  1194,  1195,  1200,
-    1201,  1205,  1206,  1210,  1211,  1212,  1213,  1217,  1218,  1222,
-    1223,  1227,  1231,  1235,  1239,  1242,  1246,  1247,  1251,  1255,
-    1256,  1260,  1264,  1265,  1266,  1270,  1271,  1275,  1276,  1281,
-    1285,  1286,  1290,  1291,  1292,  1297,  1298,  1299,  1303,  1304,
-    1305,  1310,  1311,  1315,  1316,  1320,  1321,  1325,  1326,  1327,
-    1331,  1332,  1336,  1337,  1341,  1342,  1346,  1347,  1348,  1353,
-    1354,  1358,  1362,  1366,  1367,  1368,  1372,  1376,  1377,  1381,
-    1382,  1383,  1384,  1388,  1389,  1390,  1391,  1392,  1393,  1397,
-    1398,  1399,  1403,  1404,  1405,  1406,  1407,  1408,  1409,  1410,
-    1414,  1415,  1419,  1420,  1424,  1425,  1429,  1433
+     638,   639,   643,   644,   649,   650,   655,   656,   660,   661,
+     666,   667,   668,   669,   674,   675,   679,   686,   687,   692,
+     693,   699,   700,   708,   709,   717,   718,   723,   724,   729,
+     730,   735,   736,   737,   738,   739,   740,   741,   742,   747,
+     748,   749,   750,   755,   756,   757,   762,   763,   764,   765,
+     766,   767,   771,   772,   777,   778,   779,   784,   785,   786,
+     787,   793,   794,   799,   800,   801,   803,   802,   810,   814,
+     815,   819,   820,   824,   825,   829,   830,   834,   835,   839,
+     843,   844,   848,   849,   853,   857,   858,   862,   863,   867,
+     868,   872,   873,   877,   878,   882,   883,   887,   888,   889,
+     890,   891,   892,   896,   897,   898,   899,   903,   904,   908,
+     909,   914,   915,   919,   920,   924,   925,   929,   930,   934,
+     935,   936,   940,   941,   945,   949,   950,   951,   952,   953,
+     954,   955,   956,   957,   958,   959,   960,   961,   962,   963,
+     964,   965,   966,   967,   968,   969,   970,   971,   972,   973,
+     974,   975,   976,   977,   978,   979,   980,   981,   982,   983,
+     984,   985,   986,   987,   988,   989,   990,   991,   992,   993,
+     994,   995,   996,   997,   998,   999,  1000,  1001,  1004,  1006,
+    1007,  1008,  1009,  1010,  1011,  1012,  1013,  1014,  1015,  1016,
+    1017,  1018,  1019,  1020,  1021,  1023,  1022,  1030,  1029,  1039,
+    1040,  1041,  1042,  1046,  1047,  1048,  1051,  1052,  1055,  1059,
+    1060,  1064,  1068,  1072,  1073,  1077,  1079,  1081,  1083,  1085,
+    1087,  1089,  1091,  1096,  1097,  1098,  1099,  1103,  1104,  1105,
+    1109,  1110,  1114,  1117,  1122,  1123,  1128,  1132,  1133,  1134,
+    1138,  1139,  1140,  1145,  1146,  1151,  1152,  1153,  1154,  1155,
+    1156,  1157,  1158,  1159,  1160,  1161,  1162,  1167,  1168,  1169,
+    1170,  1171,  1172,  1173,  1174,  1175,  1176,  1177,  1181,  1185,
+    1186,  1187,  1188,  1189,  1190,  1191,  1192,  1193,  1194,  1199,
+    1200,  1204,  1205,  1209,  1210,  1211,  1212,  1216,  1217,  1221,
+    1222,  1226,  1230,  1234,  1238,  1241,  1245,  1246,  1250,  1254,
+    1255,  1259,  1263,  1264,  1265,  1269,  1270,  1274,  1275,  1280,
+    1284,  1285,  1289,  1290,  1291,  1296,  1297,  1298,  1302,  1303,
+    1304,  1309,  1310,  1314,  1315,  1319,  1320,  1324,  1325,  1326,
+    1330,  1331,  1335,  1336,  1340,  1341,  1345,  1346,  1347,  1352,
+    1353,  1357,  1361,  1365,  1366,  1367,  1371,  1375,  1376,  1380,
+    1381,  1382,  1383,  1387,  1388,  1389,  1390,  1391,  1392,  1396,
+    1397,  1398,  1402,  1403,  1404,  1405,  1406,  1407,  1408,  1409,
+    1413,  1414,  1418,  1419,  1423,  1424,  1428,  1432
 };
 #endif
 
@@ -4205,7 +4205,7 @@ yyreduce:
   case 57:
 /* Line 1802 of yacc.c  */
 #line 494 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+    { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.DeclareDirectiveMake((yyvsp[(3) - (5)].statementList), (yyvsp[(5) - (5)].statementList))); }
     break;
 
   case 58:
@@ -4523,49 +4523,49 @@ yyreduce:
 
   case 108:
 /* Line 1802 of yacc.c  */
-#line 661 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+#line 660 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+    { (yyval.statementList) = observers.ConstantMake((yyvsp[(1) - (3)].semanticValue), analyzer.GetLineNumber()); }
     break;
 
   case 109:
 /* Line 1802 of yacc.c  */
-#line 662 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
-    { (yyval.statementList) = observers.StatementListNil(); }
+#line 661 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+    { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ConstantMake((yyvsp[(3) - (5)].semanticValue), analyzer.GetLineNumber())); }
     break;
 
   case 110:
 /* Line 1802 of yacc.c  */
-#line 667 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 666 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 111:
 /* Line 1802 of yacc.c  */
-#line 668 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 667 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 112:
 /* Line 1802 of yacc.c  */
-#line 669 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 668 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 113:
 /* Line 1802 of yacc.c  */
-#line 670 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 669 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (5)].statementList); }
     break;
 
   case 114:
 /* Line 1802 of yacc.c  */
-#line 675 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 674 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 115:
 /* Line 1802 of yacc.c  */
-#line 676 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 675 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (5)].statementList);
 																				            observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (5)].expression));
 																			                observers.StatementListMerge((yyval.statementList), (yyvsp[(5) - (5)].statementList)); 
@@ -4574,7 +4574,7 @@ yyreduce:
 
   case 116:
 /* Line 1802 of yacc.c  */
-#line 680 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 679 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (4)].statementList); 
 																				            observers.StatementListMerge((yyval.statementList), (yyvsp[(4) - (4)].statementList));
 																				          }
@@ -4582,25 +4582,25 @@ yyreduce:
 
   case 119:
 /* Line 1802 of yacc.c  */
-#line 693 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 692 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 120:
 /* Line 1802 of yacc.c  */
-#line 694 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 693 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (4)].statementList); }
     break;
 
   case 121:
 /* Line 1802 of yacc.c  */
-#line 700 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 699 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 122:
 /* Line 1802 of yacc.c  */
-#line 701 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 700 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); 
 																		   observers.StatementListMerge((yyval.statementList), (yyvsp[(1) - (4)].statementList));
 																		   observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (4)].expression));
@@ -4609,13 +4609,13 @@ yyreduce:
 
   case 123:
 /* Line 1802 of yacc.c  */
-#line 709 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 708 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 124:
 /* Line 1802 of yacc.c  */
-#line 710 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 709 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); 
 																				          observers.StatementListMerge((yyval.statementList), (yyvsp[(1) - (5)].statementList));
 																			  	          observers.StatementListAppend((yyval.statementList), (yyvsp[(3) - (5)].expression)); 
@@ -4624,259 +4624,259 @@ yyreduce:
 
   case 125:
 /* Line 1802 of yacc.c  */
-#line 718 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 717 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 126:
 /* Line 1802 of yacc.c  */
-#line 719 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 718 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (2)].statementList); }
     break;
 
   case 127:
 /* Line 1802 of yacc.c  */
-#line 724 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 723 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 128:
 /* Line 1802 of yacc.c  */
-#line 725 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 724 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (3)].statementList); }
     break;
 
   case 129:
 /* Line 1802 of yacc.c  */
-#line 730 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 729 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = (yyvsp[(1) - (1)].parametersList); }
     break;
 
   case 130:
 /* Line 1802 of yacc.c  */
-#line 731 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 730 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListNil(); }
     break;
 
   case 131:
 /* Line 1802 of yacc.c  */
-#line 736 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 735 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].semanticValue), false, false); }
     break;
 
   case 132:
 /* Line 1802 of yacc.c  */
-#line 737 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 736 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue), true, false); }
     break;
 
   case 133:
 /* Line 1802 of yacc.c  */
-#line 738 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 737 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (5)].qualifiedName), (yyvsp[(3) - (5)].semanticValue), true, true);}
     break;
 
   case 134:
 /* Line 1802 of yacc.c  */
-#line 739 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 738 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListCreate((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(2) - (4)].semanticValue), false, true); }
     break;
 
   case 135:
 /* Line 1802 of yacc.c  */
-#line 740 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 739 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (4)].parametersList), (yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].semanticValue), false, false); }
     break;
 
   case 136:
 /* Line 1802 of yacc.c  */
-#line 741 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 740 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (5)].parametersList), (yyvsp[(3) - (5)].qualifiedName), (yyvsp[(5) - (5)].semanticValue), true, false); }
     break;
 
   case 137:
 /* Line 1802 of yacc.c  */
-#line 742 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 741 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (7)].parametersList), (yyvsp[(3) - (7)].qualifiedName), (yyvsp[(5) - (7)].semanticValue), true, true); }
     break;
 
   case 138:
 /* Line 1802 of yacc.c  */
-#line 743 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 742 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.parametersList) = observers.ParametersListAppend((yyvsp[(1) - (6)].parametersList), (yyvsp[(3) - (6)].qualifiedName), (yyvsp[(4) - (6)].semanticValue), false, true); }
     break;
 
   case 139:
 /* Line 1802 of yacc.c  */
-#line 748 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 747 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 140:
 /* Line 1802 of yacc.c  */
-#line 749 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 748 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameCreate((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 141:
 /* Line 1802 of yacc.c  */
-#line 750 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 749 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameCreate((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 142:
 /* Line 1802 of yacc.c  */
-#line 751 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 750 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 143:
 /* Line 1802 of yacc.c  */
-#line 756 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 755 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) =  observers.StatementListNil(); }
     break;
 
   case 144:
 /* Line 1802 of yacc.c  */
-#line 757 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 756 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 145:
 /* Line 1802 of yacc.c  */
-#line 758 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 757 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (3)].expression)); }
     break;
 
   case 146:
 /* Line 1802 of yacc.c  */
-#line 763 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 762 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 147:
 /* Line 1802 of yacc.c  */
-#line 764 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 763 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 148:
 /* Line 1802 of yacc.c  */
-#line 765 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 764 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 149:
 /* Line 1802 of yacc.c  */
-#line 766 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 765 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 150:
 /* Line 1802 of yacc.c  */
-#line 767 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 766 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].variable)); }
     break;
 
   case 151:
 /* Line 1802 of yacc.c  */
-#line 768 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 767 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 152:
 /* Line 1802 of yacc.c  */
-#line 772 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 771 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 153:
 /* Line 1802 of yacc.c  */
-#line 773 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 772 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 154:
 /* Line 1802 of yacc.c  */
-#line 778 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 777 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeGlobalVariable((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 155:
 /* Line 1802 of yacc.c  */
-#line 779 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 778 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 156:
 /* Line 1802 of yacc.c  */
-#line 780 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 779 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 157:
 /* Line 1802 of yacc.c  */
-#line 785 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 784 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), observers.ExpressionMakeStaticVariable((yyvsp[(3) - (3)].semanticValue))); }
     break;
 
   case 158:
 /* Line 1802 of yacc.c  */
-#line 786 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 785 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (5)].statementList), observers.ExpressionMakeStaticVariable((yyvsp[(3) - (5)].semanticValue))); }
     break;
 
   case 159:
 /* Line 1802 of yacc.c  */
-#line 787 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 786 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.ExpressionMakeStaticVariable((yyvsp[(1) - (1)].semanticValue))); }
     break;
 
   case 160:
 /* Line 1802 of yacc.c  */
-#line 788 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 787 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.ExpressionMakeStaticVariable((yyvsp[(1) - (3)].semanticValue))); }
     break;
 
   case 161:
 /* Line 1802 of yacc.c  */
-#line 794 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 793 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 162:
 /* Line 1802 of yacc.c  */
-#line 795 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 794 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 163:
 /* Line 1802 of yacc.c  */
-#line 800 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 799 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariables((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].classMemberSymbol)); }
     break;
 
   case 164:
 /* Line 1802 of yacc.c  */
-#line 801 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 800 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 165:
 /* Line 1802 of yacc.c  */
-#line 802 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 801 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 166:
 /* Line 1802 of yacc.c  */
-#line 804 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 803 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { observers.SetCurrentMemberName((yyvsp[(4) - (7)].semanticValue)); }
     break;
 
   case 167:
 /* Line 1802 of yacc.c  */
-#line 805 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 804 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeMethod((yyvsp[(4) - (9)].semanticValue), (yyvsp[(1) - (9)].classMemberSymbol), (yyvsp[(3) - (9)].isMethod), (yyvsp[(2) - (9)].semanticValue), (yyvsp[(6) - (9)].parametersList), (yyvsp[(9) - (9)].classMemberSymbol));
 																	  observers.SetCurrentMemberName(NULL);
 																	 }
@@ -4884,739 +4884,739 @@ yyreduce:
 
   case 168:
 /* Line 1802 of yacc.c  */
-#line 811 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 810 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.TraitUseMake((yyvsp[(2) - (3)].traitUse), (yyvsp[(3) - (3)].statementList)); }
     break;
 
   case 169:
 /* Line 1802 of yacc.c  */
-#line 815 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 814 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitUse) = observers.TraitUseStart((yyvsp[(1) - (1)].qualifiedName)); }
     break;
 
   case 170:
 /* Line 1802 of yacc.c  */
-#line 816 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 815 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitUse) = observers.TraitUseAppend((yyvsp[(1) - (3)].traitUse), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 171:
 /* Line 1802 of yacc.c  */
-#line 820 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 819 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 172:
 /* Line 1802 of yacc.c  */
-#line 821 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 820 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(2) - (3)].statementList); }
     break;
 
   case 173:
 /* Line 1802 of yacc.c  */
-#line 825 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 824 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 174:
 /* Line 1802 of yacc.c  */
-#line 826 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 825 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 175:
 /* Line 1802 of yacc.c  */
-#line 830 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 829 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 176:
 /* Line 1802 of yacc.c  */
-#line 831 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 830 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (2)].statementList), (yyvsp[(2) - (2)].statementList)); }
     break;
 
   case 177:
 /* Line 1802 of yacc.c  */
-#line 835 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 834 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (2)].traitInsteadOf)); }
     break;
 
   case 178:
 /* Line 1802 of yacc.c  */
-#line 836 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 835 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (2)].traitAlias)); }
     break;
 
   case 179:
 /* Line 1802 of yacc.c  */
-#line 840 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 839 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitInsteadOf) =  observers.TraitInsteadOfMake((yyvsp[(1) - (3)].traitAlias), (yyvsp[(3) - (3)].traitInsteadOf)); }
     break;
 
   case 180:
 /* Line 1802 of yacc.c  */
-#line 844 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 843 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitInsteadOf) = observers.TraitInsteadOfMakeReferenceList((yyvsp[(1) - (1)].qualifiedName)); }
     break;
 
   case 181:
 /* Line 1802 of yacc.c  */
-#line 845 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 844 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitInsteadOf) = observers.TraitInsteadOfAppendReferenceList((yyvsp[(1) - (3)].traitInsteadOf), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 182:
 /* Line 1802 of yacc.c  */
-#line 849 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 848 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitAlias) = observers.TraitAliasMakeMethodReferenceList((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 183:
 /* Line 1802 of yacc.c  */
-#line 850 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 849 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitAlias) = (yyvsp[(1) - (1)].traitAlias); }
     break;
 
   case 184:
 /* Line 1802 of yacc.c  */
-#line 854 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 853 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitAlias) = observers.TraitAliasMakeMethodReferenceList((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 185:
 /* Line 1802 of yacc.c  */
-#line 858 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 857 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitAlias) = observers.TraitAliasMake((yyvsp[(1) - (4)].traitAlias), (yyvsp[(3) - (4)].classMemberSymbol), (yyvsp[(4) - (4)].semanticValue)); }
     break;
 
   case 186:
 /* Line 1802 of yacc.c  */
-#line 859 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 858 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.traitAlias) = observers.TraitAliasMake((yyvsp[(1) - (3)].traitAlias), observers.ClassMemberSymbolMake((yyvsp[(3) - (3)].semanticValue))); }
     break;
 
   case 187:
 /* Line 1802 of yacc.c  */
-#line 863 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 862 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake(NULL); }
     break;
 
   case 188:
 /* Line 1802 of yacc.c  */
-#line 864 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 863 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 189:
 /* Line 1802 of yacc.c  */
-#line 868 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 867 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberMakeBody(observers.StatementListNil(), (yyvsp[(1) - (1)].semanticValue), (yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 190:
 /* Line 1802 of yacc.c  */
-#line 869 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 868 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberMakeBody((yyvsp[(2) - (3)].statementList), (yyvsp[(1) - (3)].semanticValue), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 191:
 /* Line 1802 of yacc.c  */
-#line 873 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 872 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 192:
 /* Line 1802 of yacc.c  */
-#line 874 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 873 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMakeAsPublicVariable((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 193:
 /* Line 1802 of yacc.c  */
-#line 878 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 877 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake(NULL); }
     break;
 
   case 194:
 /* Line 1802 of yacc.c  */
-#line 879 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 878 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = (yyvsp[(1) - (1)].classMemberSymbol); }
     break;
 
   case 195:
 /* Line 1802 of yacc.c  */
-#line 883 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 882 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolMake((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 196:
 /* Line 1802 of yacc.c  */
-#line 884 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 883 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.classMemberSymbol) = observers.ClassMemberSymbolSetModifier((yyvsp[(1) - (2)].classMemberSymbol), (yyvsp[(2) - (2)].semanticValue)); }
     break;
 
   case 203:
 /* Line 1802 of yacc.c  */
-#line 897 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 896 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (3)].semanticValue), (yyvsp[(3) - (3)].semanticValue), false, analyzer.GetLineNumber())); }
     break;
 
   case 204:
 /* Line 1802 of yacc.c  */
-#line 898 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 897 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (5)].semanticValue), (yyvsp[(3) - (5)].semanticValue), false, analyzer.GetLineNumber()));  }
     break;
 
   case 205:
 /* Line 1802 of yacc.c  */
-#line 899 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 898 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(1) - (1)].semanticValue), (yyvsp[(1) - (1)].semanticValue), false, analyzer.GetLineNumber()); }
     break;
 
   case 206:
 /* Line 1802 of yacc.c  */
-#line 900 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 899 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(1) - (3)].semanticValue), (yyvsp[(1) - (3)].semanticValue), false, analyzer.GetLineNumber()); }
     break;
 
   case 207:
 /* Line 1802 of yacc.c  */
-#line 904 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 903 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), observers.ClassMemberSymbolMakeVariable((yyvsp[(3) - (5)].semanticValue), (yyvsp[(3) - (5)].semanticValue), true, analyzer.GetLineNumber())); }
     break;
 
   case 208:
 /* Line 1802 of yacc.c  */
-#line 905 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 904 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ClassMemberSymbolMakeVariable((yyvsp[(2) - (4)].semanticValue), (yyvsp[(1) - (4)].semanticValue), true, analyzer.GetLineNumber()); }
     break;
 
   case 209:
 /* Line 1802 of yacc.c  */
-#line 909 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 908 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 210:
 /* Line 1802 of yacc.c  */
-#line 910 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 909 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 211:
 /* Line 1802 of yacc.c  */
-#line 915 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 914 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 212:
 /* Line 1802 of yacc.c  */
-#line 916 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 915 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 213:
 /* Line 1802 of yacc.c  */
-#line 920 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 919 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) =  observers.StatementListAppend((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 214:
 /* Line 1802 of yacc.c  */
-#line 921 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 920 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 215:
 /* Line 1802 of yacc.c  */
-#line 925 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 924 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(1) - (2)].variable), (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 216:
 /* Line 1802 of yacc.c  */
-#line 926 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 925 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 217:
 /* Line 1802 of yacc.c  */
-#line 930 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 929 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (4)].variable); }
     break;
 
   case 218:
 /* Line 1802 of yacc.c  */
-#line 931 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 930 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 219:
 /* Line 1802 of yacc.c  */
-#line 935 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 934 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(1) - (2)].variable), (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 220:
 /* Line 1802 of yacc.c  */
-#line 936 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 935 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 221:
 /* Line 1802 of yacc.c  */
-#line 937 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 936 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 222:
 /* Line 1802 of yacc.c  */
-#line 941 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 940 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 223:
 /* Line 1802 of yacc.c  */
-#line 942 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 941 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 224:
 /* Line 1802 of yacc.c  */
-#line 946 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 945 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeNewInstanceCall((yyvsp[(2) - (3)].qualifiedName), (yyvsp[(3) - (3)].statementList));  }
     break;
 
   case 225:
 /* Line 1802 of yacc.c  */
-#line 950 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 949 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (6)].statementList), (yyvsp[(6) - (6)].expression)); }
     break;
 
   case 226:
 /* Line 1802 of yacc.c  */
-#line 951 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 950 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromExpressionFound((yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 227:
 /* Line 1802 of yacc.c  */
-#line 952 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 951 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromVariableFound((yyvsp[(1) - (4)].variable), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 228:
 /* Line 1802 of yacc.c  */
-#line 953 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 952 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.AssignmentExpressionFromNewFound((yyvsp[(1) - (6)].variable), (yyvsp[(5) - (6)].qualifiedName), (yyvsp[(6) - (6)].statementList)); }
     break;
 
   case 229:
 /* Line 1802 of yacc.c  */
-#line 954 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 953 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 230:
 /* Line 1802 of yacc.c  */
-#line 955 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 954 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 231:
 /* Line 1802 of yacc.c  */
-#line 956 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 955 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 232:
 /* Line 1802 of yacc.c  */
-#line 957 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 956 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 233:
 /* Line 1802 of yacc.c  */
-#line 958 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 957 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 234:
 /* Line 1802 of yacc.c  */
-#line 959 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 958 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 235:
 /* Line 1802 of yacc.c  */
-#line 960 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 959 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 236:
 /* Line 1802 of yacc.c  */
-#line 961 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 960 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 237:
 /* Line 1802 of yacc.c  */
-#line 962 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 961 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 238:
 /* Line 1802 of yacc.c  */
-#line 963 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 962 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 239:
 /* Line 1802 of yacc.c  */
-#line 964 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 963 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 240:
 /* Line 1802 of yacc.c  */
-#line 965 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 964 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAssignmentCompoundOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].variable), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 241:
 /* Line 1802 of yacc.c  */
-#line 966 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 965 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(2) - (2)].semanticValue)->Token, (yyvsp[(1) - (2)].variable)); }
     break;
 
   case 242:
 /* Line 1802 of yacc.c  */
-#line 967 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 966 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 243:
 /* Line 1802 of yacc.c  */
-#line 968 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 967 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(2) - (2)].semanticValue)->Token, (yyvsp[(1) - (2)].variable)); }
     break;
 
   case 244:
 /* Line 1802 of yacc.c  */
-#line 969 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 968 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryVariableOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 245:
 /* Line 1802 of yacc.c  */
-#line 970 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 969 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 246:
 /* Line 1802 of yacc.c  */
-#line 971 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 970 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 247:
 /* Line 1802 of yacc.c  */
-#line 972 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 971 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 248:
 /* Line 1802 of yacc.c  */
-#line 973 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 972 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 249:
 /* Line 1802 of yacc.c  */
-#line 974 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 973 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 250:
 /* Line 1802 of yacc.c  */
-#line 975 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 974 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 251:
 /* Line 1802 of yacc.c  */
-#line 976 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 975 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 252:
 /* Line 1802 of yacc.c  */
-#line 977 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 976 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 253:
 /* Line 1802 of yacc.c  */
-#line 978 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 977 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 254:
 /* Line 1802 of yacc.c  */
-#line 979 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 978 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 255:
 /* Line 1802 of yacc.c  */
-#line 980 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 979 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 256:
 /* Line 1802 of yacc.c  */
-#line 981 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 980 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 257:
 /* Line 1802 of yacc.c  */
-#line 982 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 981 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 258:
 /* Line 1802 of yacc.c  */
-#line 983 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 982 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 259:
 /* Line 1802 of yacc.c  */
-#line 984 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 983 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 260:
 /* Line 1802 of yacc.c  */
-#line 985 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 984 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 261:
 /* Line 1802 of yacc.c  */
-#line 986 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 985 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 262:
 /* Line 1802 of yacc.c  */
-#line 987 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 986 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 263:
 /* Line 1802 of yacc.c  */
-#line 988 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 987 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 264:
 /* Line 1802 of yacc.c  */
-#line 989 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 988 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 265:
 /* Line 1802 of yacc.c  */
-#line 990 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 989 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 266:
 /* Line 1802 of yacc.c  */
-#line 991 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 990 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 267:
 /* Line 1802 of yacc.c  */
-#line 992 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 991 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 268:
 /* Line 1802 of yacc.c  */
-#line 993 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 992 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 269:
 /* Line 1802 of yacc.c  */
-#line 994 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 993 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 270:
 /* Line 1802 of yacc.c  */
-#line 995 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 994 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 271:
 /* Line 1802 of yacc.c  */
-#line 996 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 995 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 272:
 /* Line 1802 of yacc.c  */
-#line 997 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 996 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionBinaryOperation((yyvsp[(2) - (3)].semanticValue)->Token, (yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 273:
 /* Line 1802 of yacc.c  */
-#line 998 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 997 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionInstanceOfOperation((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 274:
 /* Line 1802 of yacc.c  */
-#line 999 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 998 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 275:
 /* Line 1802 of yacc.c  */
-#line 1000 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 999 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 276:
 /* Line 1802 of yacc.c  */
-#line 1001 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1000 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.NewInstanceAppendToChain((yyvsp[(2) - (4)].expression), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 277:
 /* Line 1802 of yacc.c  */
-#line 1004 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1003 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionTernaryOperation((yyvsp[(1) - (5)].expression), (yyvsp[(3) - (5)].expression), (yyvsp[(5) - (5)].expression)); }
     break;
 
   case 278:
 /* Line 1802 of yacc.c  */
-#line 1006 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1005 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionTernaryOperation((yyvsp[(1) - (4)].expression), (yyvsp[(4) - (4)].expression), NULL); }
     break;
 
   case 279:
 /* Line 1802 of yacc.c  */
-#line 1007 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1006 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 280:
 /* Line 1802 of yacc.c  */
-#line 1008 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1007 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 281:
 /* Line 1802 of yacc.c  */
-#line 1009 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1008 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 282:
 /* Line 1802 of yacc.c  */
-#line 1010 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1009 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 283:
 /* Line 1802 of yacc.c  */
-#line 1011 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1010 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeArray(observers.StatementListMakeAndAppend((yyvsp[(2) - (2)].expression))); }
     break;
 
   case 284:
 /* Line 1802 of yacc.c  */
-#line 1012 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1011 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 285:
 /* Line 1802 of yacc.c  */
-#line 1013 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1012 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 286:
 /* Line 1802 of yacc.c  */
-#line 1014 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1013 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 287:
 /* Line 1802 of yacc.c  */
-#line 1015 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1014 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 288:
 /* Line 1802 of yacc.c  */
-#line 1016 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1015 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionUnaryOperation((yyvsp[(1) - (2)].semanticValue)->Token, (yyvsp[(2) - (2)].expression)); }
     break;
 
   case 289:
 /* Line 1802 of yacc.c  */
-#line 1017 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1016 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 290:
 /* Line 1802 of yacc.c  */
-#line 1018 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1017 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 291:
 /* Line 1802 of yacc.c  */
-#line 1019 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1018 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 292:
 /* Line 1802 of yacc.c  */
-#line 1020 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1019 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].expression)); /* results of backtick operator is a string */ }
     break;
 
   case 293:
 /* Line 1802 of yacc.c  */
-#line 1021 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1020 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (2)].expression)); }
     break;
 
   case 294:
 /* Line 1802 of yacc.c  */
-#line 1022 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1021 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 295:
 /* Line 1802 of yacc.c  */
-#line 1024 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1023 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { observers.IncrementAnonymousFunctionCount(); }
     break;
 
   case 296:
 /* Line 1802 of yacc.c  */
-#line 1025 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1024 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(4) - (10)].parametersList), (yyvsp[(6) - (10)].statementList), (yyvsp[(9) - (10)].statementList), (yyvsp[(7) - (10)].semanticValue), (yyvsp[(10) - (10)].semanticValue)); 
 																	           // end after we create the closure so that closure gets the correct scope
 																	           // anonymous function count
@@ -5626,13 +5626,13 @@ yyreduce:
 
   case 297:
 /* Line 1802 of yacc.c  */
-#line 1031 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1030 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { observers.IncrementAnonymousFunctionCount(); }
     break;
 
   case 298:
 /* Line 1802 of yacc.c  */
-#line 1032 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1031 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClosure((yyvsp[(5) - (11)].parametersList), (yyvsp[(7) - (11)].statementList), (yyvsp[(10) - (11)].statementList), (yyvsp[(8) - (11)].semanticValue), (yyvsp[(11) - (11)].semanticValue));  
 																	        // end after we create the closure so that closure gets the correct scope
 																	        // anonymous function count
@@ -5642,73 +5642,73 @@ yyreduce:
 
   case 299:
 /* Line 1802 of yacc.c  */
-#line 1040 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1039 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 300:
 /* Line 1802 of yacc.c  */
-#line 1041 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1040 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].variable); }
     break;
 
   case 301:
 /* Line 1802 of yacc.c  */
-#line 1042 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1041 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (4)].expression); }
     break;
 
   case 302:
 /* Line 1802 of yacc.c  */
-#line 1043 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1042 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (4)].expression); }
     break;
 
   case 303:
 /* Line 1802 of yacc.c  */
-#line 1047 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1046 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAddOffset((yyvsp[(1) - (4)].expression), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 304:
 /* Line 1802 of yacc.c  */
-#line 1048 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1047 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAddOffset((yyvsp[(1) - (4)].expression), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 305:
 /* Line 1802 of yacc.c  */
-#line 1049 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1048 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionAddOffset(observers.ExpressionMakeScalar((yyvsp[(1) - (4)].semanticValue)), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 306:
 /* Line 1802 of yacc.c  */
-#line 1052 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1051 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeArray((yyvsp[(3) - (4)].statementList)); }
     break;
 
   case 307:
 /* Line 1802 of yacc.c  */
-#line 1053 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1052 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeArray((yyvsp[(2) - (3)].statementList)); }
     break;
 
   case 309:
 /* Line 1802 of yacc.c  */
-#line 1060 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1059 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 310:
 /* Line 1802 of yacc.c  */
-#line 1061 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1060 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 311:
 /* Line 1802 of yacc.c  */
-#line 1065 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1064 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (3)].statementList), 
 												            	       observers.VariableStart((yyvsp[(3) - (3)].semanticValue))
 		                                                              ); 
@@ -5717,7 +5717,7 @@ yyreduce:
 
   case 312:
 /* Line 1802 of yacc.c  */
-#line 1069 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1068 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListAppend((yyvsp[(1) - (4)].statementList), 
 	                                                              observers.VariableStart((yyvsp[(4) - (4)].semanticValue), true)
 		                                                        ); 
@@ -5726,691 +5726,691 @@ yyreduce:
 
   case 313:
 /* Line 1802 of yacc.c  */
-#line 1073 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1072 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(1) - (1)].semanticValue))); }
     break;
 
   case 314:
 /* Line 1802 of yacc.c  */
-#line 1074 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1073 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend(observers.VariableStart((yyvsp[(2) - (2)].semanticValue), true)); }
     break;
 
   case 315:
 /* Line 1802 of yacc.c  */
-#line 1079 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1078 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCall((yyvsp[(1) - (2)].qualifiedName), (yyvsp[(2) - (2)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 316:
 /* Line 1802 of yacc.c  */
-#line 1081 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1080 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromDeclaredNamespace((yyvsp[(3) - (4)].qualifiedName), (yyvsp[(4) - (4)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 317:
 /* Line 1802 of yacc.c  */
-#line 1083 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1082 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeFunctionCallFromAbsoluteNamespace((yyvsp[(2) - (3)].qualifiedName), (yyvsp[(3) - (3)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 318:
 /* Line 1802 of yacc.c  */
-#line 1085 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1084 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeStaticMethodCall((yyvsp[(1) - (4)].qualifiedName), (yyvsp[(3) - (4)].variable), (yyvsp[(4) - (4)].statementList), analyzer.GetLineNumber()); }
     break;
 
   case 319:
 /* Line 1802 of yacc.c  */
-#line 1087 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1086 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 320:
 /* Line 1802 of yacc.c  */
-#line 1089 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1088 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 321:
 /* Line 1802 of yacc.c  */
-#line 1091 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1090 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 322:
 /* Line 1802 of yacc.c  */
-#line 1093 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1092 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 323:
 /* Line 1802 of yacc.c  */
-#line 1097 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1096 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 324:
 /* Line 1802 of yacc.c  */
-#line 1098 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1097 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 325:
 /* Line 1802 of yacc.c  */
-#line 1099 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1098 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 326:
 /* Line 1802 of yacc.c  */
-#line 1100 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1099 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); }
     break;
 
   case 327:
 /* Line 1802 of yacc.c  */
-#line 1104 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1103 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 328:
 /* Line 1802 of yacc.c  */
-#line 1105 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1104 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName)); }
     break;
 
   case 329:
 /* Line 1802 of yacc.c  */
-#line 1106 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1105 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName)); }
     break;
 
   case 330:
 /* Line 1802 of yacc.c  */
-#line 1110 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1109 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 331:
 /* Line 1802 of yacc.c  */
-#line 1111 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1110 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = (yyvsp[(1) - (1)].qualifiedName); }
     break;
 
   case 332:
 /* Line 1802 of yacc.c  */
-#line 1116 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1115 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 333:
 /* Line 1802 of yacc.c  */
-#line 1118 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1117 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.qualifiedName) = observers.QualifiedNameNil(); }
     break;
 
   case 334:
 /* Line 1802 of yacc.c  */
-#line 1123 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1122 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = (yyvsp[(1) - (2)].semanticValue); }
     break;
 
   case 335:
 /* Line 1802 of yacc.c  */
-#line 1124 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1123 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 337:
 /* Line 1802 of yacc.c  */
-#line 1133 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1132 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 338:
 /* Line 1802 of yacc.c  */
-#line 1134 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1133 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 339:
 /* Line 1802 of yacc.c  */
-#line 1135 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1134 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 340:
 /* Line 1802 of yacc.c  */
-#line 1139 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1138 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 341:
 /* Line 1802 of yacc.c  */
-#line 1140 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1139 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 342:
 /* Line 1802 of yacc.c  */
-#line 1141 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1140 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 343:
 /* Line 1802 of yacc.c  */
-#line 1146 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1145 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListNil(); }
     break;
 
   case 344:
 /* Line 1802 of yacc.c  */
-#line 1147 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1146 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 345:
 /* Line 1802 of yacc.c  */
-#line 1152 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1151 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 346:
 /* Line 1802 of yacc.c  */
-#line 1153 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1152 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 347:
 /* Line 1802 of yacc.c  */
-#line 1154 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1153 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 348:
 /* Line 1802 of yacc.c  */
-#line 1155 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1154 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 349:
 /* Line 1802 of yacc.c  */
-#line 1156 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1155 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 350:
 /* Line 1802 of yacc.c  */
-#line 1157 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1156 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 351:
 /* Line 1802 of yacc.c  */
-#line 1158 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1157 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 352:
 /* Line 1802 of yacc.c  */
-#line 1159 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1158 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 353:
 /* Line 1802 of yacc.c  */
-#line 1160 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1159 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 354:
 /* Line 1802 of yacc.c  */
-#line 1161 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1160 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 355:
 /* Line 1802 of yacc.c  */
-#line 1162 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1161 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].semanticValue)); }
     break;
 
   case 356:
 /* Line 1802 of yacc.c  */
-#line 1163 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1162 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (2)].semanticValue)); }
     break;
 
   case 357:
 /* Line 1802 of yacc.c  */
-#line 1168 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1167 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 358:
 /* Line 1802 of yacc.c  */
-#line 1169 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1168 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 359:
 /* Line 1802 of yacc.c  */
-#line 1170 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1169 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 360:
 /* Line 1802 of yacc.c  */
-#line 1171 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1170 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 361:
 /* Line 1802 of yacc.c  */
-#line 1172 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1171 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 362:
 /* Line 1802 of yacc.c  */
-#line 1173 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1172 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 363:
 /* Line 1802 of yacc.c  */
-#line 1174 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1173 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 364:
 /* Line 1802 of yacc.c  */
-#line 1175 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1174 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(3) - (4)].semanticValue)); }
     break;
 
   case 365:
 /* Line 1802 of yacc.c  */
-#line 1176 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1175 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].semanticValue)); }
     break;
 
   case 366:
 /* Line 1802 of yacc.c  */
-#line 1177 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1176 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 367:
 /* Line 1802 of yacc.c  */
-#line 1178 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1177 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 368:
 /* Line 1802 of yacc.c  */
-#line 1182 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1181 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 369:
 /* Line 1802 of yacc.c  */
-#line 1186 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1185 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 370:
 /* Line 1802 of yacc.c  */
-#line 1187 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1186 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 371:
 /* Line 1802 of yacc.c  */
-#line 1188 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1187 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 372:
 /* Line 1802 of yacc.c  */
-#line 1189 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1188 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant((yyvsp[(1) - (1)].qualifiedName)); }
     break;
 
   case 373:
 /* Line 1802 of yacc.c  */
-#line 1190 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1189 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeFromDeclaredNamespace((yyvsp[(3) - (3)].qualifiedName))); }
     break;
 
   case 374:
 /* Line 1802 of yacc.c  */
-#line 1191 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1190 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant(observers.QualifiedNameMakeAbsolute((yyvsp[(2) - (2)].qualifiedName))); }
     break;
 
   case 376:
 /* Line 1802 of yacc.c  */
-#line 1193 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1192 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(2) - (3)].expression)); }
     break;
 
   case 377:
 /* Line 1802 of yacc.c  */
-#line 1194 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1193 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (3)].semanticValue)); }
     break;
 
   case 378:
 /* Line 1802 of yacc.c  */
-#line 1195 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1194 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalar((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 379:
 /* Line 1802 of yacc.c  */
-#line 1200 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1199 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 381:
 /* Line 1802 of yacc.c  */
-#line 1205 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1204 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.isComma) = false; }
     break;
 
   case 382:
 /* Line 1802 of yacc.c  */
-#line 1206 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1205 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.isComma) = true; }
     break;
 
   case 383:
 /* Line 1802 of yacc.c  */
-#line 1210 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1209 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 384:
 /* Line 1802 of yacc.c  */
-#line 1211 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1210 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 385:
 /* Line 1802 of yacc.c  */
-#line 1212 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1211 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 386:
 /* Line 1802 of yacc.c  */
-#line 1213 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1212 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 387:
 /* Line 1802 of yacc.c  */
-#line 1217 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1216 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 389:
 /* Line 1802 of yacc.c  */
-#line 1222 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1221 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (3)].expression); }
     break;
 
   case 390:
 /* Line 1802 of yacc.c  */
-#line 1223 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1222 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (3)].expression); }
     break;
 
   case 394:
 /* Line 1802 of yacc.c  */
-#line 1241 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1240 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (5)].variable), (yyvsp[(3) - (5)].variable), (yyvsp[(4) - (5)].variable), (yyvsp[(5) - (5)].variable)); }
     break;
 
   case 395:
 /* Line 1802 of yacc.c  */
-#line 1242 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1241 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMake((yyvsp[(1) - (1)].variable), NULL, NULL, NULL); }
     break;
 
   case 396:
 /* Line 1802 of yacc.c  */
-#line 1246 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1245 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(1) - (2)].variable), (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 397:
 /* Line 1802 of yacc.c  */
-#line 1247 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1246 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 398:
 /* Line 1802 of yacc.c  */
-#line 1251 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1250 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendToChain((yyvsp[(2) - (3)].variable), (yyvsp[(3) - (3)].variable), (yyvsp[(1) - (3)].semanticValue));  }
     break;
 
   case 399:
 /* Line 1802 of yacc.c  */
-#line 1255 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1254 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression));}
     break;
 
   case 400:
 /* Line 1802 of yacc.c  */
-#line 1256 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1255 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 401:
 /* Line 1802 of yacc.c  */
-#line 1260 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1259 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeAndAppendFunctionCall((yyvsp[(1) - (1)].statementList), true); }
     break;
 
   case 402:
 /* Line 1802 of yacc.c  */
-#line 1264 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1263 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 403:
 /* Line 1802 of yacc.c  */
-#line 1265 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1264 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 404:
 /* Line 1802 of yacc.c  */
-#line 1266 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1265 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 406:
 /* Line 1802 of yacc.c  */
-#line 1271 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1270 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeIndirect((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 407:
 /* Line 1802 of yacc.c  */
-#line 1275 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1274 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableStartStaticMember((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].variable)); }
     break;
 
   case 408:
 /* Line 1802 of yacc.c  */
-#line 1276 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1275 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 409:
 /* Line 1802 of yacc.c  */
-#line 1281 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1280 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.semanticValue) = observers.SemanticValueNil(); }
     break;
 
   case 410:
 /* Line 1802 of yacc.c  */
-#line 1285 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1284 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 411:
 /* Line 1802 of yacc.c  */
-#line 1286 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1285 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 413:
 /* Line 1802 of yacc.c  */
-#line 1291 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1290 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 414:
 /* Line 1802 of yacc.c  */
-#line 1292 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1291 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 416:
 /* Line 1802 of yacc.c  */
-#line 1298 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1297 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableMakeIndirect((yyvsp[(2) - (2)].variable)); }
     break;
 
   case 418:
 /* Line 1802 of yacc.c  */
-#line 1303 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1302 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 419:
 /* Line 1802 of yacc.c  */
-#line 1304 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1303 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 421:
 /* Line 1802 of yacc.c  */
-#line 1310 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1309 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 422:
 /* Line 1802 of yacc.c  */
-#line 1311 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1310 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 423:
 /* Line 1802 of yacc.c  */
-#line 1315 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1314 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 424:
 /* Line 1802 of yacc.c  */
-#line 1316 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1315 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 425:
 /* Line 1802 of yacc.c  */
-#line 1320 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1319 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 426:
 /* Line 1802 of yacc.c  */
-#line 1321 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1320 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 427:
 /* Line 1802 of yacc.c  */
-#line 1325 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1324 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableAppendArrayOffset((yyvsp[(1) - (4)].variable), (yyvsp[(3) - (4)].expression)); }
     break;
 
   case 428:
 /* Line 1802 of yacc.c  */
-#line 1326 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1325 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 429:
 /* Line 1802 of yacc.c  */
-#line 1327 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1326 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 430:
 /* Line 1802 of yacc.c  */
-#line 1331 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1330 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     {  (yyval.variable) = observers.VariableStart((yyvsp[(1) - (1)].semanticValue)); }
     break;
 
   case 431:
 /* Line 1802 of yacc.c  */
-#line 1332 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1331 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.variable) = observers.VariableNil(); }
     break;
 
   case 434:
 /* Line 1802 of yacc.c  */
-#line 1341 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1340 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), (yyvsp[(3) - (3)].statementList)); }
     break;
 
   case 435:
 /* Line 1802 of yacc.c  */
-#line 1342 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1341 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (1)].statementList); }
     break;
 
   case 436:
 /* Line 1802 of yacc.c  */
-#line 1346 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1345 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMakeAndAppend((yyvsp[(1) - (1)].variable)); }
     break;
 
   case 437:
 /* Line 1802 of yacc.c  */
-#line 1347 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1346 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(3) - (4)].statementList); }
     break;
 
   case 438:
 /* Line 1802 of yacc.c  */
-#line 1348 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1347 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 439:
 /* Line 1802 of yacc.c  */
-#line 1353 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1352 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMake(); }
     break;
 
   case 440:
 /* Line 1802 of yacc.c  */
-#line 1354 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1353 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = (yyvsp[(1) - (2)].statementList); }
     break;
 
   case 441:
 /* Line 1802 of yacc.c  */
-#line 1358 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1357 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (5)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (5)].expression), (yyvsp[(5) - (5)].expression))
                                                                                        ); 
@@ -6419,7 +6419,7 @@ yyreduce:
 
   case 442:
 /* Line 1802 of yacc.c  */
-#line 1362 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1361 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (3)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(3) - (3)].expression))
                                                                                        ); 
@@ -6428,19 +6428,19 @@ yyreduce:
 
   case 443:
 /* Line 1802 of yacc.c  */
-#line 1366 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1365 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 444:
 /* Line 1802 of yacc.c  */
-#line 1367 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1366 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(1) - (1)].expression)); }
     break;
 
   case 445:
 /* Line 1802 of yacc.c  */
-#line 1368 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1367 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (6)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair((yyvsp[(3) - (6)].expression), (yyvsp[(6) - (6)].variable))
                                                                                        ); 
@@ -6449,7 +6449,7 @@ yyreduce:
 
   case 446:
 /* Line 1802 of yacc.c  */
-#line 1372 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1371 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.StatementListMerge((yyvsp[(1) - (4)].statementList), 
                                                                                          observers.ExpressionMakeArrayPair(NULL, (yyvsp[(4) - (4)].variable))
                                                                                        ); 
@@ -6458,187 +6458,187 @@ yyreduce:
 
   case 447:
 /* Line 1802 of yacc.c  */
-#line 1376 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1375 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair((yyvsp[(1) - (4)].expression), (yyvsp[(4) - (4)].variable)); }
     break;
 
   case 448:
 /* Line 1802 of yacc.c  */
-#line 1377 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1376 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.statementList) = observers.ExpressionMakeArrayPair(NULL, (yyvsp[(2) - (2)].variable)); }
     break;
 
   case 449:
 /* Line 1802 of yacc.c  */
-#line 1381 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1380 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); }
     break;
 
   case 450:
 /* Line 1802 of yacc.c  */
-#line 1382 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1381 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (2)].expression); }
     break;
 
   case 451:
 /* Line 1802 of yacc.c  */
-#line 1383 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1382 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 452:
 /* Line 1802 of yacc.c  */
-#line 1384 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1383 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(2) - (2)].expression); }
     break;
 
   case 453:
 /* Line 1802 of yacc.c  */
-#line 1388 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1387 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 454:
 /* Line 1802 of yacc.c  */
-#line 1389 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1388 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 455:
 /* Line 1802 of yacc.c  */
-#line 1390 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1389 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 456:
 /* Line 1802 of yacc.c  */
-#line 1391 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1390 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 457:
 /* Line 1802 of yacc.c  */
-#line 1392 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1391 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 458:
 /* Line 1802 of yacc.c  */
-#line 1393 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1392 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 459:
 /* Line 1802 of yacc.c  */
-#line 1397 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1396 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 460:
 /* Line 1802 of yacc.c  */
-#line 1398 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1397 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 461:
 /* Line 1802 of yacc.c  */
-#line 1399 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1398 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 462:
 /* Line 1802 of yacc.c  */
-#line 1403 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1402 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(3) - (4)].expression); }
     break;
 
   case 463:
 /* Line 1802 of yacc.c  */
-#line 1404 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1403 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 464:
 /* Line 1802 of yacc.c  */
-#line 1405 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1404 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 465:
 /* Line 1802 of yacc.c  */
-#line 1406 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1405 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 466:
 /* Line 1802 of yacc.c  */
-#line 1407 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1406 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 467:
 /* Line 1802 of yacc.c  */
-#line 1408 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1407 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionEval((yyvsp[(3) - (4)].expression)); }
     break;
 
   case 468:
 /* Line 1802 of yacc.c  */
-#line 1409 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1408 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 469:
 /* Line 1802 of yacc.c  */
-#line 1410 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1409 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.IncludeFound((yyvsp[(2) - (2)].expression), analyzer.GetLineNumber()); }
     break;
 
   case 470:
 /* Line 1802 of yacc.c  */
-#line 1414 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1413 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionIsset((yyvsp[(1) - (1)].expression)); }
     break;
 
   case 471:
 /* Line 1802 of yacc.c  */
-#line 1415 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1414 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionIssetMerge((pelet::IssetExpressionClass*)(yyvsp[(1) - (3)].expression), (yyvsp[(3) - (3)].expression)); }
     break;
 
   case 472:
 /* Line 1802 of yacc.c  */
-#line 1419 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1418 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].variable); }
     break;
 
   case 473:
 /* Line 1802 of yacc.c  */
-#line 1420 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1419 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = (yyvsp[(1) - (1)].expression); }
     break;
 
   case 474:
 /* Line 1802 of yacc.c  */
-#line 1424 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1423 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeClassConstant((yyvsp[(1) - (3)].qualifiedName), (yyvsp[(3) - (3)].semanticValue)); }
     break;
 
   case 475:
 /* Line 1802 of yacc.c  */
-#line 1425 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1424 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionNil(); }
     break;
 
   case 476:
 /* Line 1802 of yacc.c  */
-#line 1429 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1428 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant((yyvsp[(1) - (3)].qualifiedName)); }
     break;
 
   case 477:
 /* Line 1802 of yacc.c  */
-#line 1433 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1432 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
     { (yyval.expression) = observers.ExpressionMakeScalarFromConstant((yyvsp[(1) - (3)].qualifiedName)); }
     break;
 
@@ -6876,5 +6876,5 @@ yyreturn:
 
 
 /* Line 2050 of yacc.c  */
-#line 1436 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
+#line 1435 "/Users/roberto/Projects/pelet/src/Php55FullParser.y"
 

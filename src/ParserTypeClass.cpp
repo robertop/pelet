@@ -2757,3 +2757,10 @@ pelet::AnonymousClassExpressionClass::AnonymousClassExpressionClass(const pelet:
 , ImplementsList() {
 	ExpressionType = pelet::ExpressionClass::ANONYMOUS_CLASS;
 }
+
+pelet::DeclareDirectiveStatementClass::DeclareDirectiveStatementClass()
+: StatementClass(pelet::StatementClass::DECLARE_DIRECTIVE_STATEMENT)
+, Directives()
+, Body() {
+}
+
