@@ -33,6 +33,7 @@ newaction {
 			"src/Php54LexicalAnalyzer.re",
 			"src/Php55LexicalAnalyzer.re",
 			"src/Php56LexicalAnalyzer.re",
+			"src/Php70LexicalAnalyzer.re",
 			"src/LanguageDiscoveryClass.re"
 		};
 		for index, lexerInput in ipairs(lexers) do
@@ -63,6 +64,9 @@ newaction {
 
 			"src/Php56LintParser.y",
 			"src/Php56FullParser.y",
+
+			"src/Php70LintParser.y",
+			"src/Php70FullParser.y"
 		}
 
 		for index, parserInput in ipairs(parsers) do

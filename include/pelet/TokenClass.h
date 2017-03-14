@@ -197,7 +197,12 @@ enum Tokens {
 	// new tokens for php 56
 	T_ELLIPSIS = 631,
 	T_POW = 632,
-	T_POW_EQUAL = 633
+	T_POW_EQUAL = 633,
+
+	// new tokens for php 7.0
+	T_SPACESHIP = 634,
+	T_COALESCE = 635,
+	T_YIELD_FROM = 636
 };
 
 /**
@@ -246,12 +251,15 @@ enum YYCONDTYPE {
  * PHP_54: handle PHP 5.4 source code (traits, callables, array dereferencing, array short syntax)
  * PHP_55: handle PHP 5.5 source code (yield, finally keywords)
  * PHP_56: handle PHP 5.6 source code (exponential operator, splat "...", constant expressions)
+ * PHP_70: handle PHP 7.0 source code (parameter/return type declarations, null coalesce, spaceship, 
+ *         anonymous classes)
  */
 enum PELET_API Versions {
 	PHP_53,
 	PHP_54,
 	PHP_55,
-	PHP_56
+	PHP_56,
+	PHP_70
 };
 
 /**
