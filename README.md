@@ -9,7 +9,8 @@ file. pelet was born out of the [Triumph 4 PHP](http://triumph4php.com)
 project.
 
 The pelet project aims to conform to the PHP syntax to its fullest.  Currently, pelet
-can parse source code written for PHP version 5.4 (closures, namespaces, traits, simple arrays).
+can parse source code written for PHP version 7.0 (closures, namespaces, traits, simple arrays,
+scalar type hints, anonymous classes).
 
 License
 -------
@@ -33,6 +34,8 @@ These are the cases that pelet supports
 - Full PHP 5.5 support; yield and finally keywords, string and array dereferencing.
 - Full PHP 5.6 support; constant expressions, variadic parameters, argument unpacking, exponent operator, function
   and constant importing and aliasing.
+- Full PHP 7.0 support; grouped imports, return type declarations, null coalesce and spaceship operators, uniform
+  variable syntax).
 - Fully tested (see tests/ subdirectory in the distribution)
 
 Requirements
