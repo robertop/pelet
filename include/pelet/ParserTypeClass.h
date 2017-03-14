@@ -2254,7 +2254,7 @@ class PELET_API TernaryOperationClass : public ExpressionClass {
  * and class is stored in ClassName
  * 
  */
-class InstanceOfOperationClass : public ExpressionClass {
+class PELET_API InstanceOfOperationClass : public ExpressionClass {
 
 public:
 
@@ -2280,7 +2280,7 @@ public:
 	void Copy(const pelet::InstanceOfOperationClass& src);
 };
 
-class ClosureExpressionClass : public ExpressionClass {
+class PELET_API ClosureExpressionClass : public ExpressionClass {
 
 public:
 
