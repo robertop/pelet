@@ -519,4 +519,24 @@ TEST_FIXTURE(Parser70FeaturesTestClass, ParseUniformVariableSyntaxImmediateClosu
 	CHECK_UNISTR_EQUALS("two", scalar->Value);
 }
 
+TEST_FIXTURE(Parser70FeaturesTestClass, AnyExpression) {
+	TestAnyExpressionObserverClass anyObserver;
+	Parser.SetExpressionObserver(&anyObserver);
+	UnicodeString code = _U(
+		"(new class {\n"
+		"  function work() {\n"
+		"    strlen('hello world');\n"
+		"  }\n"
+		"});\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(3, anyObserver.Expressions);
+	// the parameter
+	CHECK_EQUAL(pelet::ExpressionClass::SCALAR, anyObserver.Expressions[0]->ExpressionType);
+	// the function call
+	CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, anyObserver.Expressions[1]->ExpressionType);
+	// the anonymous class expression
+	CHECK_EQUAL(pelet::ExpressionClass::ANONYMOUS_CLASS, anyObserver.Expressions[2]->ExpressionType);
+}
+
 }

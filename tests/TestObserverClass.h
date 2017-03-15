@@ -164,4 +164,13 @@ public:
 	void ExpressionDeclareDirectiveFound(pelet::ConstantStatementClass* stmt);
 };
 
+class TestAnyExpressionObserverClass : public pelet::AnyExpressionObserverClass {
+public:
+    std::vector<pelet::ExpressionClass*> Expressions;
+    
+    TestAnyExpressionObserverClass();
+    
+    void OnAnyExpression(pelet::ExpressionClass* expression);
+};
+
 #endif

@@ -732,6 +732,11 @@ class PELET_API AnyExpressionObserverClass : public ExpressionObserverClass {
 	
 	void CheckExpression(pelet::ExpressionClass* expression);
 	void CheckVariable(pelet::VariableClass* variable);
+	/**
+	 * Recurse through the statement list and check each expression. Recurses
+	 * into method and function bodies.
+	 */
+	void CheckStatementList(pelet::StatementListClass& stmts);
 };
 
 /**
