@@ -367,11 +367,7 @@ void pelet::AnyExpressionObserverClass::ExpressionAnonymousClassFound(pelet::Ano
 	for (size_t i = 0;i < expression->ConstructorArguments.size(); i++) {
 		CheckExpression(expression->ConstructorArguments[i]);
 	}
-	for (size_t i = 0; i < expression->Body.Size(); i++) {
-		if (pelet::StatementClass::EXPRESSION == expression->Body.TypeAt(i)) {
-			CheckExpression((pelet::ExpressionClass*)expression->Body.At(i));
-		}
-	}
+	CheckStatementList(expression->Body);
 	OnAnyExpression(expression);
 }
 
@@ -539,6 +535,23 @@ void pelet::AnyExpressionObserverClass::CheckVariable(pelet::VariableClass* vari
 		}
 	}
 	OnAnyExpression(variable);
+}
+
+void pelet::AnyExpressionObserverClass::CheckStatementList(pelet::StatementListClass& stmts) {
+	for (size_t i = 0; i < stmts.Size(); ++i) {
+		pelet::StatementClass::Types stmtType = stmts.TypeAt(i);
+		if (pelet::StatementClass::EXPRESSION == stmtType) {
+			CheckExpression((pelet::ExpressionClass*)stmts.At(i));
+		} else if (pelet::StatementClass::STATIC_VARIABLE_DECLARATION == stmtType) {
+			StatementStaticVariablesFound((pelet::StaticVariableStatementClass*)stmts.At(i));
+		} else if (pelet::StatementClass::GLOBAL_VARIABLE_DECLARATION == stmtType) {
+			StatementGlobalVariablesFound((pelet::GlobalVariableStatementClass*)stmts.At(i));
+		} else if (pelet::StatementClass::METHOD_DECLARATION == stmtType) {
+			CheckStatementList(((pelet::ClassMemberSymbolClass*)stmts.At(i))->MethodStatements);
+		} else if (pelet::StatementClass::FUNCTION_DECLARATION == stmtType) {
+			CheckStatementList(((pelet::ClassMemberSymbolClass*)stmts.At(i))->MethodStatements);
+		}
+	}
 }
 
 

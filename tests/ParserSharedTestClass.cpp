@@ -220,6 +220,45 @@ public:
 	}
 };
 
+class AnyExpressionObserverSharedTestClass {
+
+public:
+	std::vector<pelet::ParserClass*> AllParsers;
+	std::vector<pelet::LintResultsClass*> AllLintResults;
+	std::vector<TestAnyExpressionObserverClass*> AllObservers;
+
+	AnyExpressionObserverSharedTestClass() 
+		: AllParsers()
+		, AllObservers() {
+		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers.push_back(new pelet::ParserClass());
+		AllParsers[0]->SetVersion(pelet::PHP_53);
+		AllParsers[1]->SetVersion(pelet::PHP_54);
+		AllParsers[2]->SetVersion(pelet::PHP_55);
+		AllParsers[3]->SetVersion(pelet::PHP_56);
+		AllParsers[4]->SetVersion(pelet::PHP_56);
+		for (size_t i = 0; i < AllParsers.size(); i++) {
+			AllLintResults.push_back(new pelet::LintResultsClass());
+			AllObservers.push_back(new TestAnyExpressionObserverClass());
+		}
+	}
+
+	~AnyExpressionObserverSharedTestClass() {
+		for (size_t i = 0; i < AllParsers.size(); i++) {
+			delete AllParsers[i];
+		}
+		for (size_t i = 0; i < AllLintResults.size(); i++) {
+			delete AllLintResults[i];
+		}
+		for (size_t i = 0; i < AllObservers.size(); i++) {
+			delete AllObservers[i];
+		}
+	}
+};
+
 #define EACH_PARSER()\
 	pelet::ParserClass* Parser = AllParsers[0];\
 	pelet::LintResultsClass* LintResults = AllLintResults[0];\
@@ -242,6 +281,16 @@ public:
 			Scope = AllScopes[i],\
 			ParsedVar = AllParsedVars[i])
 
+#define EACH_PARSER_ANY_EXPR()\
+	pelet::ParserClass* Parser = AllParsers[0];\
+	pelet::LintResultsClass* LintResults = AllLintResults[0];\
+	TestAnyExpressionObserverClass* Observer = AllObservers[0];\
+	for (size_t i = 0;\
+		i < AllParsers.size();\
+		i++,\
+			Parser = AllParsers[i],\
+			LintResults = AllLintResults[i],\
+			Observer = AllObservers[i])
 
 SUITE(ParserSharedTestSuiteClass) {
 
@@ -2000,6 +2049,23 @@ TEST_FIXTURE(ParserStringSharedTestClass, ExpressionObserverWithDeclareStatement
 		CHECK(Parser->ScanString(code, *LintResults));
 		CHECK_VECTOR_SIZE(1, Observer->DeclareDirectives);
 		CHECK_UNISTR_EQUALS("ticks", Observer->DeclareDirectives[0]->Name);
+	}
+}
+
+TEST_FIXTURE(AnyExpressionObserverSharedTestClass, AnyExpression) {
+	EACH_PARSER_ANY_EXPR() {
+		Parser->SetExpressionObserver(Observer);
+		UnicodeString code = _U(
+			"function work() {\n"
+			"strlen('hello world');\n"
+			"}\n"
+		);
+		CHECK(Parser->ScanString(code, *LintResults));
+		CHECK_VECTOR_SIZE(2, Observer->Expressions);
+		// the parameter
+		CHECK_EQUAL(pelet::ExpressionClass::SCALAR, Observer->Expressions[0]->ExpressionType);
+		// the function call
+		CHECK_EQUAL(pelet::ExpressionClass::VARIABLE, Observer->Expressions[1]->ExpressionType);
 	}
 }
 
