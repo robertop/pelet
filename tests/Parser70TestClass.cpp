@@ -95,7 +95,7 @@ TEST_FIXTURE(Parser70FeaturesTestClass, LintReturnTypeDeclarations) {
 	CHECK(Parser.ScanString(code, LintResults));
 	CHECK_VECTOR_SIZE(1, Observer.FunctionName);
 	CHECK_UNISTR_EQUALS("sumOfInts", Observer.FunctionName[0]);
-	CHECK_UNISTR_EQUALS("function sumOfInts(int $a, int $b)", Observer.FunctionSignature[0]);
+	CHECK_UNISTR_EQUALS("function sumOfInts(int $a, int $b): int", Observer.FunctionSignature[0]);
 	CHECK_UNISTR_EQUALS("int", Observer.FunctionReturnType[0]);
 }
 

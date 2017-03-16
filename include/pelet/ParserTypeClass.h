@@ -64,6 +64,7 @@ class IssetExpressionClass;
 class EvalExpressionClass;
 class AnonymousClassExpressionClass;
 class ConstantStatementClass;
+class TypeHintClass;
 
 /**
  * Case-sensitive string comparator for use as STL Predicate
@@ -1174,6 +1175,20 @@ public:
 };
 
 /**
+ * An optional type use in function / method arguments and return declarations. It is a namespace name
+ * that is fully qualified. This is only used for PHP >= 7.1.
+ */
+class PELET_API TypeHintClass : public AstItemClass {
+public:
+	UnicodeString NamespaceName;
+	bool IsNullable;
+
+	TypeHintClass();
+
+	void Set(pelet::QualifiedNameClass* namespaceName, bool isNullable);
+};
+
+/**
  * The VariablePropertyClass represents a single object property of a variable.
  * For example, the variable $this->myFunct()->name->first will have 
  * 4 VariableProperty objects: 
@@ -1394,6 +1409,13 @@ public:
 	* own the expression pointer
 	*/
 	pelet::ExpressionClass* Value;
+	
+	/**
+	 * A value can also be a list of array pairs. 
+	 * This is used for array destructuring in PHP >= 7.1
+	 * This object will not own the pair pointers.
+	 */
+	std::vector<pelet::ArrayPairExpressionClass*> Pairs;
 
 	ArrayPairExpressionClass(const pelet::ScopeClass& scope);
 
@@ -2346,6 +2368,8 @@ public:
 	void Copy(const pelet::ClosureExpressionClass& src);
 	
 	void SetReturnType(pelet::QualifiedNameClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
+	
+	void SetReturnType(pelet::TypeHintClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 };
 
 /**
@@ -2602,6 +2626,13 @@ public:
 		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
 	
 	/**
+	 * Append another parameter
+	 */
+	pelet::ParametersListClass* Append(pelet::TypeHintClass* type, pelet::SemanticValueClass* parameterName, 
+		bool isReference, bool hasDefault,
+		const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace);
+
+	/**
 	 * Append another list of parameters to this list.
 	 * returns this.
 	 */
@@ -2659,6 +2690,7 @@ private:
 	std::vector<UnicodeString> OptionalTypes;
 	std::vector<UnicodeString> Defaults;
 	std::vector<bool> IsVariadics;
+	std::vector<bool> IsNullables;
 };
 
 /**
@@ -2694,8 +2726,18 @@ private:
 	 * For PHP 7.0, this is either the type declared or the PHP Doc comment.
 	 */
 	UnicodeString ReturnType;
-	
 public:
+	
+	/**
+	 * TRUE if the return type was marked as nullable. Only PHP >= 7.1
+	 */
+	bool IsReturnNullable;
+	
+	/**
+	 * TRUE if the return type was declared in the function definition. Only PHP >= 7.1
+	 */
+	bool IsReturnTypeDeclared;
+	
 	
 	/** line number, 1-based
 	 */
@@ -2743,6 +2785,7 @@ public:
 	UnicodeString ToMethodSignature(UnicodeString variablesSignature) const;
 	void AppendToComment(SemanticValueClass* value, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	void SetReturnType(QualifiedNameClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
+	void SetReturnType(pelet::TypeHintClass* name, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace);
 	
 	void SetAsPublic();
 	void SetAsProtected();
@@ -2905,6 +2948,7 @@ typedef union ParserType {
 	pelet::ConstantImportClass* constantImport;
 	pelet::UnprefixedNameClass* unprefixedName;
 	pelet::UnprefixedNameListClass* unprefixedNameList;
+	pelet::TypeHintClass* typeHint;
 	pelet::SemanticValueClass *semanticValue;
 	bool isMethod;
 	bool isVariadic;

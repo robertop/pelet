@@ -267,23 +267,36 @@ public:
 	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, 
 		pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault);
 	pelet::ParametersListClass* ParametersListCreate(pelet::QualifiedNameClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault, bool isVariadic = false); 
-    pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::ParametersListClass* src);
+    pelet::ParametersListClass* ParametersListCreate(pelet::TypeHintClass* type, pelet::SemanticValueClass* parameterName, bool isReference, bool hasDefault, bool isVariadic = false); 
+	pelet::ParametersListClass* ParametersListAppend(pelet::ParametersListClass* parametersList, pelet::ParametersListClass* src);
 	
 	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
 		pelet::ClassMemberSymbolClass* modifiers,
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
 		pelet::ClassMemberSymbolClass* methodBody,
 		pelet::QualifiedNameClass* returnType = NULL);
+	pelet::StatementListClass* ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, 
+		pelet::ClassMemberSymbolClass* modifiers,
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters, 
+		pelet::ClassMemberSymbolClass* methodBody,
+		pelet::TypeHintClass* returnType);
 	pelet::StatementListClass* ClassMemberSymbolMakeVariable(pelet::SemanticValueClass* nameValue, pelet::SemanticValueClass* commentValue, bool isConstant, const int endingPosition);
 	pelet::ClassMemberSymbolClass* ClassMemberSymbolMake(pelet::SemanticValueClass* varValue);
 	pelet::StatementListClass* ClassMemberSymbolMakeVariables(pelet::StatementListClass* variableStatements, pelet::ClassMemberSymbolClass* modifiers);
 	pelet::ClassMemberSymbolClass* ClassMemberSymbolMakeAsPublicVariable(pelet::SemanticValueClass* varValue);
 	pelet::ClassMemberSymbolClass* ClassMemberSymbolSetModifier(pelet::ClassMemberSymbolClass* memberSymbol, pelet::SemanticValueClass* modifierValue);
+	pelet::StatementListClass* ClassMemberSymbolSetModifiers(pelet::StatementListClass* classConstants, pelet::ClassMemberSymbolClass* modifiers);
+
 	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
 		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		pelet::StatementListClass* functionStatements,
 		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue,
 		pelet::QualifiedNameClass* returnType = NULL);
+	pelet::StatementListClass* ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, 
+		bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::StatementListClass* functionStatements,
+		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue,
+		pelet::TypeHintClass* returnType);
 	pelet::ClassMemberSymbolClass* ClassMemberMakeBody(pelet::StatementListClass* bodyStatements, 
 		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue);
 	pelet::StatementListClass* ClassMemberSymbolAppendToComment(pelet::StatementListClass* variableStatements, pelet::SemanticValueClass* comment); 
@@ -327,8 +340,11 @@ public:
 	pelet::ExpressionClass* ExpressionTernaryOperation(pelet::ExpressionClass* leftOperand, pelet::ExpressionClass* middleOperand, pelet::ExpressionClass* rightOperand);
 	pelet::ExpressionClass* ExpressionInstanceOfOperation(pelet::ExpressionClass* leftExpression, pelet::QualifiedNameClass* className);
 	pelet::StatementListClass* ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::ExpressionClass* value);
+	pelet::StatementListClass* ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::StatementListClass* stmts);
 	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts, 
 		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue, pelet::QualifiedNameClass* returnType = NULL);
+	pelet::ExpressionClass* ExpressionMakeClosure(pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts, 
+		pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue, pelet::TypeHintClass* returnType);
 	pelet::ExpressionClass* ExpressionIsset(pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionIssetMerge(pelet::IssetExpressionClass* isset, pelet::ExpressionClass* expr);
 	pelet::ExpressionClass* ExpressionEval(pelet::ExpressionClass* expr);
@@ -363,6 +379,8 @@ public:
 
 	pelet::ExpressionClass* NewInstanceAppendToChain(pelet::ExpressionClass* newInstanceExpr, pelet::VariableClass* variable);
 	
+	pelet::StatementListClass* VariableMakeCatchedException(pelet::QualifiedNameListClass* caughtExceptions, pelet::SemanticValueClass* variable);
+	
 	void MakeAst(pelet::StatementListClass* statements);
 	
 	pelet::StatementListClass* ConstantMake(pelet::SemanticValueClass* value, int lineNumber);
@@ -378,6 +396,9 @@ public:
 	
 	pelet::DeclareDirectiveStatementClass* DeclareDirectiveMake(pelet::StatementListClass* declares, pelet::StatementListClass* body);
 
+	pelet::TypeHintClass* TypeHintMakeNil();
+	pelet::TypeHintClass* TypeHintMake(pelet::QualifiedNameClass* namespaceName, bool isNullable);
+	
 	/**
 	 * clear any namespace aliases. This should be called when multiple namespaces
 	 * are declared in a single file
@@ -529,5 +550,6 @@ int php54parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverC
 int php55parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php56parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 int php70parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
+int php71parse(pelet::LexicalAnalyzerClass &analyzer, pelet::FullParserObserverClass& observers);
 
 #endif

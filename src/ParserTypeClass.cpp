@@ -1038,6 +1038,8 @@ pelet::ClassMemberSymbolClass::ClassMemberSymbolClass()
 	, MethodStatements()
 	, Comment()
 	, ReturnType()
+	, IsReturnNullable(false)
+	, IsReturnTypeDeclared(false)
 	, StartingLineNumber(0)
 	, EndingPosition(0)
 
@@ -1095,6 +1097,16 @@ void pelet::ClassMemberSymbolClass::SetReturnType(QualifiedNameClass* qualifiedN
 	if (!qualifiedName->IsEmpty()) {
 		ReturnType = PhpDocTypeToAbsoluteClassname(qualifiedName->ToSignature(), scope, declaredNamespace);
 	}
+	IsReturnNullable = false;
+	IsReturnTypeDeclared = false;
+}
+
+void pelet::ClassMemberSymbolClass::SetReturnType(pelet::TypeHintClass* hint, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
+	if (!hint->NamespaceName.isEmpty()) {
+		ReturnType = PhpDocTypeToAbsoluteClassname(hint->NamespaceName, scope, declaredNamespace);
+		IsReturnNullable = hint->IsNullable;
+		IsReturnTypeDeclared = true;
+	}
 }
 
 void pelet::ClassMemberSymbolClass::SetAsPublic() {
@@ -1122,6 +1134,8 @@ void pelet::ClassMemberSymbolClass::Clear() {
 	ParametersList.Clear();
 	MethodStatements.Clear();
 	ReturnType.remove();
+	IsReturnNullable = false;
+	IsReturnTypeDeclared = false;
 	StartingLineNumber = 0;
 	EndingPosition = 0;
 
@@ -1166,6 +1180,13 @@ UnicodeString pelet::ClassMemberSymbolClass::ToMethodSignature(UnicodeString var
 	}
 	sig.append(MemberName);
 	sig.append(variablesSignature);
+	if (IsReturnTypeDeclared && !ReturnType.isEmpty()) {
+		sig.append(UNICODE_STRING_SIMPLE(": "));
+		if (IsReturnNullable) {
+			sig.append(UNICODE_STRING_SIMPLE("?"));
+		}
+		sig.append(ReturnType);
+	}
 	return sig;
 }
 
@@ -1585,7 +1606,8 @@ pelet::ParametersListClass::ParametersListClass()
 	: Params()
 	, OptionalTypes() 
 	, Defaults()
-	, IsVariadics() {
+	, IsVariadics()
+	, IsNullables() {
 
 }
 
@@ -1594,6 +1616,7 @@ void pelet::ParametersListClass::Create() {
 	OptionalTypes.push_back(UNICODE_STRING_SIMPLE(""));
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 	IsVariadics.push_back(false);
+	IsNullables.push_back(false);
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClass* typeValue) {
@@ -1605,6 +1628,7 @@ void pelet::ParametersListClass::CreateWithOptionalType(pelet::SemanticValueClas
 	}
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 	IsVariadics.push_back(false);
+	IsNullables.push_back(false);
 }
 
 void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& className) {
@@ -1616,6 +1640,7 @@ void pelet::ParametersListClass::CreateWithOptionalType(const UnicodeString& cla
 	}
 	Defaults.push_back(UNICODE_STRING_SIMPLE(""));
 	IsVariadics.push_back(false);
+	IsNullables.push_back(false);
 }
 
 void pelet::ParametersListClass::Clear() {
@@ -1623,6 +1648,7 @@ void pelet::ParametersListClass::Clear() {
 	OptionalTypes.clear();
 	Defaults.clear();
 	IsVariadics.clear();
+	IsNullables.clear();
 }
 
 void pelet::ParametersListClass::Copy(const pelet::ParametersListClass& src) {
@@ -1630,6 +1656,7 @@ void pelet::ParametersListClass::Copy(const pelet::ParametersListClass& src) {
 	OptionalTypes = src.OptionalTypes;
 	Defaults = src.Defaults;
 	IsVariadics = src.IsVariadics;
+	IsNullables = src.IsNullables;
 }
 
 void pelet::ParametersListClass::SetName(SemanticValueClass* value, bool isReference, bool hasDefault) {
@@ -1653,6 +1680,9 @@ UnicodeString pelet::ParametersListClass::ToSignature() const {
 	size_t i = 0;
 	for (; i < Params.size(); ++i) {
 		if (!OptionalTypes[i].isEmpty()) {
+			if (IsNullables[i]) {
+				signature.append(UNICODE_STRING_SIMPLE("?"));
+			}
 			signature.append(OptionalTypes[i]);
 			signature.append(UNICODE_STRING_SIMPLE(" "));
 		}
@@ -1721,6 +1751,32 @@ pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::QualifiedN
 	return this;
 }
 
+pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::TypeHintClass* type, pelet::SemanticValueClass* parameterName, 
+															   bool isReference, bool hasDefault,
+															   const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& currentNamespace) {
+	UnicodeString typeString;
+	if (type) {
+		typeString = type->NamespaceName;
+		
+		// array, callable type hints are keywords, do not qualify them
+		if (typeString == UNICODE_STRING_SIMPLE("\\")) {
+			typeString = UNICODE_STRING_SIMPLE("");
+		}
+		else if (typeString == UNICODE_STRING_SIMPLE("array")) {
+			typeString = UNICODE_STRING_SIMPLE("array");
+		}
+		else if (typeString == UNICODE_STRING_SIMPLE("callable")) {
+			typeString = UNICODE_STRING_SIMPLE("callable");
+		}
+	}
+	CreateWithOptionalType(typeString);
+	SetName(parameterName, isReference, hasDefault);
+	if (type) {
+		IsNullables.back() = type->IsNullable;
+	}
+	return this;
+}
+
 pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::ParametersListClass* src) {
 	for (size_t i = 0; i < src->Params.size(); i++) {
 		Params.push_back(src->Params[i]);
@@ -1733,6 +1789,9 @@ pelet::ParametersListClass* pelet::ParametersListClass::Append(pelet::Parameters
 	}
 	for (size_t i = 0; i < src->IsVariadics.size(); i++) {
 		IsVariadics.push_back(src->IsVariadics[i]);
+	}
+	for (size_t i = 0; i < src->IsNullables.size(); i++) {
+		IsNullables.push_back(src->IsNullables[i]);
 	}
 
 	return this;
@@ -1865,14 +1924,16 @@ void pelet::NewInstanceExpressionClass::AddToChain(pelet::VariableClass* var) {
 pelet::ArrayPairExpressionClass::ArrayPairExpressionClass(const pelet::ScopeClass& scope)
 : ExpressionClass(scope)
 , Key(NULL)
-, Value(NULL) {
+, Value(NULL)
+, Pairs() {
 	ExpressionType = pelet::ExpressionClass::ARRAY_PAIR;
 }
 
 pelet::ArrayPairExpressionClass::ArrayPairExpressionClass(const pelet::ArrayPairExpressionClass& src)
 : ExpressionClass(src.Scope)
 , Key(NULL)
-, Value(NULL) {
+, Value(NULL)
+, Pairs() {
 	ExpressionType = pelet::ExpressionClass::ARRAY_PAIR;
 	Copy(src);
 }
@@ -1886,6 +1947,7 @@ void pelet::ArrayPairExpressionClass::Copy(const pelet::ArrayPairExpressionClass
 	pelet::ExpressionClass::Copy(src);
 	Key = src.Key;
 	Value = src.Value;
+	Pairs = src.Pairs;
 }
 
 
@@ -2317,6 +2379,12 @@ void pelet::ClosureExpressionClass::Copy(const pelet::ClosureExpressionClass& sr
 void pelet::ClosureExpressionClass::SetReturnType(QualifiedNameClass* qualifiedName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
 	if (!qualifiedName->IsEmpty()) {
 		ReturnType = PhpDocTypeToAbsoluteClassname(qualifiedName->ToSignature(), scope, declaredNamespace);
+	}
+}
+
+void pelet::ClosureExpressionClass::SetReturnType(pelet::TypeHintClass* qualifiedName, const pelet::ScopeClass& scope, const pelet::QualifiedNameClass& declaredNamespace) {
+	if (!qualifiedName->NamespaceName.isEmpty()) {
+		ReturnType = PhpDocTypeToAbsoluteClassname(qualifiedName->NamespaceName, scope, declaredNamespace);
 	}
 }
 
@@ -2777,3 +2845,13 @@ pelet::DeclareDirectiveStatementClass::DeclareDirectiveStatementClass()
 , Body() {
 }
 
+pelet::TypeHintClass::TypeHintClass()
+: AstItemClass()
+, NamespaceName()
+, IsNullable(false) {
+}
+
+void pelet::TypeHintClass::Set(pelet::QualifiedNameClass* namespaceName, bool isNullable) {
+	NamespaceName = namespaceName->ToSignature();
+	IsNullable = isNullable;
+}

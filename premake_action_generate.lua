@@ -69,7 +69,8 @@ newaction {
 			"src/Php70LintParser.y",
 			"src/Php70FullParser.y",
 			
-			"src/Php71LintParser.y"
+			"src/Php71LintParser.y",
+			"src/Php71FullParser.y"
 		}
 
 		for index, parserInput in ipairs(parsers) do

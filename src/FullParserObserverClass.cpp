@@ -321,6 +321,23 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 		pelet::StatementListClass* functionStatements,
 		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue,
 		pelet::QualifiedNameClass* returnType) {
+	pelet::TypeHintClass* typeHint = new pelet::TypeHintClass;
+	AllAstItems.push_back(typeHint);
+	if (returnType) {
+		typeHint->Set(returnType, false);
+	}
+	return ClassMemberSymbolMakeFunction(nameValue, isReference,
+		functionValue, parameters,
+		functionStatements,
+		startingBodyTokenValue, endingBodyTokenValue,
+		typeHint);
+}
+
+pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMakeFunction(pelet::SemanticValueClass* nameValue, bool isReference,
+        pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::StatementListClass* functionStatements,
+		pelet::SemanticValueClass* startingBodyTokenValue, pelet::SemanticValueClass* endingBodyTokenValue,
+		pelet::TypeHintClass* returnType) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	pelet::TokenPositionClass startingPos;
 	startingPos.LineNumber = nameValue->LineNumber;
@@ -362,6 +379,19 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, pelet::ClassMemberSymbolClass* modifiers,
         bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
 		pelet::ClassMemberSymbolClass* methodBody, pelet::QualifiedNameClass* returnType) {
+	pelet::TypeHintClass* typeHint = new pelet::TypeHintClass;
+	AllAstItems.push_back(typeHint);
+	if (returnType) {
+		typeHint->Set(returnType, false);
+	}
+	return ClassMemberSymbolMakeMethod(nameValue, modifiers,
+		isReference, functionValue, parameters,
+		methodBody, typeHint);
+}
+	
+pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMakeMethod(pelet::SemanticValueClass* nameValue, pelet::ClassMemberSymbolClass* modifiers,
+        bool isReference, pelet::SemanticValueClass* functionValue, pelet::ParametersListClass* parameters,
+		pelet::ClassMemberSymbolClass* methodBody, pelet::TypeHintClass* returnType) {
 	pelet::ClassMemberSymbolClass* newMember = new pelet::ClassMemberSymbolClass();
 	
 	// check all the function body for calls to func_get_arg or func_get_args
@@ -457,6 +487,25 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolAppe
 	}
 	return variableStatements;
 }
+
+pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolSetModifiers(pelet::StatementListClass* classConstants, pelet::ClassMemberSymbolClass* modifiers) {
+	for (size_t i = 0; i < classConstants->Size(); i++) {
+		if (pelet::StatementClass::PROPERTY_DECLARATION == classConstants->TypeAt(i)) {
+			pelet::ClassMemberSymbolClass* constSymbol = (pelet::ClassMemberSymbolClass*)classConstants->At(i);
+			if (modifiers->IsPublicMember) {
+				constSymbol->SetAsPublic();
+			} 
+			else if (modifiers->IsProtectedMember) {
+				constSymbol->SetAsProtected();
+			} 
+			else if (modifiers->IsPrivateMember) {
+				constSymbol->SetAsPrivate();
+			}
+		}
+	}
+	return classConstants;
+}
+
 
 pelet::ClassSymbolClass* pelet::FullParserObserverClass::ClassSymbolAddToImplements(pelet::ClassSymbolClass* classSymbol, pelet::QualifiedNameClass* implementsClassName) {
 	classSymbol->AddToImplements(implementsClassName, Scope, DeclaredNamespace);
@@ -575,6 +624,30 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ExpressionMakeArrayPa
 	return stmtList;
 }
 
+pelet::StatementListClass* pelet::FullParserObserverClass::ExpressionMakeArrayPair(pelet::ExpressionClass* key, pelet::StatementListClass* stmts) {
+	pelet::StatementListClass* stmtList = StatementListMake();
+	pelet::ArrayPairExpressionClass* pair = new pelet::ArrayPairExpressionClass(Scope);
+	if (key) {
+		pair->LineNumber = key->LineNumber;
+		pair->Pos = key->Pos;
+		pair->Key = key;
+	}
+	
+	for (size_t i = 0; i < stmts->Size(); i++) {
+		if (pelet::StatementClass::EXPRESSION == stmts->TypeAt(i)) {
+			pelet::ExpressionClass* expr = (pelet::ExpressionClass*)stmts->At(i);
+			if (pelet::ExpressionClass::ARRAY_PAIR == expr->ExpressionType) {
+				pelet::ArrayPairExpressionClass* pairValueExpr = (pelet::ArrayPairExpressionClass*)expr;
+				pair->Pairs.push_back(pairValueExpr);
+			}
+		}
+	}
+
+	stmtList->Push(pair);
+	AllAstItems.push_back(pair);
+	return stmtList;	
+}
+
 pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeArray(pelet::StatementListClass* pairStatements) {
 	pelet::ArrayExpressionClass* newExpr = new pelet::ArrayExpressionClass(Scope);
 
@@ -612,6 +685,22 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeAssignment
 				pelet::VariableClass* singleVariable = (pelet::VariableClass*) expr;
 				if (singleVariable->ChainList.size() <= 1) {
 					newExpr->Destinations.push_back(*singleVariable);
+				}
+			}
+			if (expr->ExpressionType == pelet::ExpressionClass::ARRAY_PAIR) {
+				// PHP 7.1+, array destructuring
+				pelet::ArrayPairExpressionClass* arrayPair = (pelet::ArrayPairExpressionClass*) expr;
+				if (arrayPair->Key && arrayPair->Key->ExpressionType == pelet::ExpressionClass::VARIABLE) {
+					pelet::VariableClass* singleVariable = (pelet::VariableClass*) arrayPair->Key;
+					if (singleVariable->ChainList.size() <= 1) {
+						newExpr->Destinations.push_back(*singleVariable);
+					}	
+				}
+				if (arrayPair->Value && arrayPair->Value->ExpressionType == pelet::ExpressionClass::VARIABLE) {
+					pelet::VariableClass* singleVariable = (pelet::VariableClass*) arrayPair->Value;
+					if (singleVariable->ChainList.size() <= 1) {
+						newExpr->Destinations.push_back(*singleVariable);
+					}	
 				}
 			}
 		}
@@ -954,6 +1043,20 @@ pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
 	pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts,
 	pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue,
 	pelet::QualifiedNameClass* returnType) {
+	pelet::TypeHintClass* typeHint = new pelet::TypeHintClass();
+	if (returnType) {
+		typeHint->Set(returnType, false);
+	}
+	AllAstItems.push_back(typeHint);
+	return ExpressionMakeClosure(parameters, lexicalVars, stmts, 
+		startingPositionTokenValue, endingPositionTokenValue,
+		typeHint);
+}
+
+pelet::ExpressionClass* pelet::FullParserObserverClass::ExpressionMakeClosure(
+	pelet::ParametersListClass* parameters, pelet::StatementListClass* lexicalVars, pelet::StatementListClass* stmts,
+	pelet::SemanticValueClass* startingPositionTokenValue, pelet::SemanticValueClass* endingPositionTokenValue,
+	pelet::TypeHintClass* returnType) {
 		pelet::ClosureExpressionClass* closure = new pelet::ClosureExpressionClass(Scope);
 		closure->StartingPosition = startingPositionTokenValue->Pos;
 		closure->EndingPosition = endingPositionTokenValue->Pos;
@@ -1881,6 +1984,15 @@ pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListCreate
 	return parametersList;
 }
 
+pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListCreate(pelet::TypeHintClass* type, pelet::SemanticValueClass* parameterName, 
+		bool isReference, bool hasDefault, bool isVariadic) {
+	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
+	parametersList->Append(type, parameterName, isReference, hasDefault, Scope, DeclaredNamespace);
+	parametersList->SetVariadic(isVariadic);
+	AllAstItems.push_back(parametersList);
+	return parametersList;
+}
+
 pelet::ParametersListClass* pelet::FullParserObserverClass::ParametersListNil() {
 	pelet::ParametersListClass* parametersList = new pelet::ParametersListClass;
 
@@ -2272,6 +2384,28 @@ pelet::VariableClass* pelet::FullParserObserverClass::VariableStartStaticMember(
 pelet::VariableClass* pelet::FullParserObserverClass::VariableMakeIndirect(pelet::VariableClass* variable) {
 	variable->IsIndirect = true;
 	return variable;
+}
+
+pelet::StatementListClass* pelet::FullParserObserverClass::VariableMakeCatchedException(pelet::QualifiedNameListClass* caughtExceptions, pelet::SemanticValueClass* variable) {
+	pelet::StatementListClass* stmts = StatementListNil();
+	for (size_t i = 0; i < caughtExceptions->Names.size(); i++) {
+		pelet::ExpressionClass* newExpr = AssignmentExpressionFromNewFound(VariableStart(variable), caughtExceptions->Names[i], NULL);
+		stmts->Push(newExpr);
+	}
+	return stmts;
+}
+
+pelet::TypeHintClass* pelet::FullParserObserverClass::TypeHintMake(pelet::QualifiedNameClass* namespaceName, bool isNullable) {
+	pelet::TypeHintClass* hint = new pelet::TypeHintClass();
+	AllAstItems.push_back(hint);
+	hint->Set(namespaceName, isNullable);
+	return hint;
+}
+
+pelet::TypeHintClass* pelet::FullParserObserverClass::TypeHintMakeNil() {
+	pelet::TypeHintClass* hint = new pelet::TypeHintClass();
+	AllAstItems.push_back(hint);
+	return hint;
 }
 
 pelet::ScopeClass pelet::FullParserObserverClass::CurrentScope() {
