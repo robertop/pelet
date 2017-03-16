@@ -41,12 +41,14 @@ public:
 		, Lexer54()
 		, Lexer55()
 		, Lexer56()
-		, Lexer70() {
+		, Lexer70()
+		, Lexer71() {
 		Lexer53.SetVersion(pelet::PHP_53);
 		Lexer54.SetVersion(pelet::PHP_54);
 		Lexer55.SetVersion(pelet::PHP_55);
 		Lexer56.SetVersion(pelet::PHP_56);
 		Lexer70.SetVersion(pelet::PHP_70);
+		Lexer71.SetVersion(pelet::PHP_71);
 	}
 	
 	pelet::LexicalAnalyzerClass Lexer53;
@@ -54,18 +56,19 @@ public:
 	pelet::LexicalAnalyzerClass Lexer55;
 	pelet::LexicalAnalyzerClass Lexer56;
 	pelet::LexicalAnalyzerClass Lexer70;
+	pelet::LexicalAnalyzerClass Lexer71;
 	UnicodeString ActualLexeme;
 	
 	bool LexerOpen(std::string file) {
 		return Lexer53.OpenFile(file) && Lexer54.OpenFile(file) &&
 			Lexer55.OpenFile(file) && Lexer56.OpenFile(file) &&
-			Lexer70.OpenFile(file);
+			Lexer70.OpenFile(file) && Lexer71.OpenFile(file);
 	}
 	
 	bool LexerOpenString(UnicodeString code) {
 		return Lexer53.OpenString(code) && Lexer54.OpenString(code) &&
 			Lexer55.OpenString(code) && Lexer56.OpenString(code) &&
-			Lexer70.OpenString(code);
+			Lexer70.OpenString(code) && Lexer71.OpenString(code);
 	}
 };
 
@@ -105,6 +108,10 @@ public:
 		CHECK_EQUAL(token, Lexer70.NextToken());\
 		ActualLexeme.remove(); \
 		Lexer70.GetLexeme(ActualLexeme);\
+		CHECK_EQUAL(expectedLexeme, ActualLexeme);\
+		CHECK_EQUAL(token, Lexer71.NextToken());\
+		ActualLexeme.remove();\
+		Lexer71.GetLexeme(ActualLexeme);\
 		CHECK_EQUAL(expectedLexeme, ActualLexeme);
 
 #define CHECK_TOKEN(token) \
@@ -112,7 +119,8 @@ public:
 	CHECK_EQUAL(token, Lexer54.NextToken());\
 	CHECK_EQUAL(token, Lexer55.NextToken());\
 	CHECK_EQUAL(token, Lexer56.NextToken());\
-	CHECK_EQUAL(token, Lexer70.NextToken());
+	CHECK_EQUAL(token, Lexer70.NextToken());\
+	CHECK_EQUAL(token, Lexer71.NextToken());
 
 #define CHECK_V55_TOKEN(token) \
 	CHECK_EQUAL(token, Lexer55.NextToken());
@@ -128,14 +136,16 @@ public:
 		CHECK_EQUAL(position, Lexer54.GetCharacterPosition());\
 		CHECK_EQUAL(position, Lexer55.GetCharacterPosition());\
 		CHECK_EQUAL(position, Lexer56.GetCharacterPosition());\
-		CHECK_EQUAL(position, Lexer70.GetCharacterPosition());
+		CHECK_EQUAL(position, Lexer70.GetCharacterPosition());\
+		CHECK_EQUAL(position, Lexer71.GetCharacterPosition());
 
 #define CHECK_TOKEN_LINE(lineNumber) \
 		CHECK_EQUAL(lineNumber, Lexer53.GetLineNumber());\
 		CHECK_EQUAL(lineNumber, Lexer54.GetLineNumber());\
 		CHECK_EQUAL(lineNumber, Lexer55.GetLineNumber());\
 		CHECK_EQUAL(lineNumber, Lexer56.GetLineNumber());\
-		CHECK_EQUAL(lineNumber, Lexer70.GetLineNumber());
+		CHECK_EQUAL(lineNumber, Lexer70.GetLineNumber());\
+		CHECK_EQUAL(lineNumber, Lexer71.GetLineNumber());
 
 
 SUITE(LexicalAnalyzerTestClass) {
