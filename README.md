@@ -9,7 +9,7 @@ file. pelet was born out of the [Triumph 4 PHP](http://triumph4php.com)
 project.
 
 The pelet project aims to conform to the PHP syntax to its fullest.  Currently, pelet
-can parse source code written for PHP version 7.0 (closures, namespaces, traits, simple arrays,
+can parse source code written for PHP version 7.1 (closures, namespaces, traits, simple arrays,
 scalar type hints, anonymous classes).
 
 License
@@ -35,14 +35,14 @@ These are the cases that pelet supports
 - Full PHP 5.6 support; constant expressions, variadic parameters, argument unpacking, exponent operator, function
   and constant importing and aliasing.
 - Full PHP 7.0 support; grouped imports, return type declarations, null coalesce and spaceship operators, uniform
-  variable syntax).
+  variable syntax.
+- Full PHP 7.1 support; Nullable types, array destructuring, class constant visibility, multi-catch exception handling.
+
 - Fully tested (see tests/ subdirectory in the distribution)
 
 Requirements
 -------------
-- The library can be compiled and run on Windows and Linux. It will most likely be 
-possible to compile and run this library can run on a MAC, however it has not been 
-tested.
+- The library can be compiled and run on Windows and Linux, and Mac OS X. 
 - ICU library is required (ver. 4.2+)
 
 Optional: These are only needed if you want to make changes to the library (most
