@@ -253,13 +253,15 @@ enum YYCONDTYPE {
  * PHP_56: handle PHP 5.6 source code (exponential operator, splat "...", constant expressions)
  * PHP_70: handle PHP 7.0 source code (parameter/return type declarations, null coalesce, spaceship, 
  *         anonymous classes)
+ * PHP_71: handle PHP 7.1 source code (nullable types, void functions, array destructuring) 
  */
 enum PELET_API Versions {
 	PHP_53,
 	PHP_54,
 	PHP_55,
 	PHP_56,
-	PHP_70
+	PHP_70,
+	PHP_71
 };
 
 /**

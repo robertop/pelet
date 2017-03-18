@@ -28,6 +28,7 @@
 #include <pelet/Php55LexicalAnalyzer.h>
 #include <pelet/Php56LexicalAnalyzer.h>
 #include <pelet/Php70LexicalAnalyzer.h>
+#include <pelet/Php71LexicalAnalyzer.h>
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
@@ -110,6 +111,9 @@ int pelet::LexicalAnalyzerClass::NextToken() {
 	}
 	else if (PHP_70 == Version) {
 		return Buffer ? pelet::Next70Token(Buffer, Condition) : T_END;
+	}
+	else if (PHP_71 == Version) {
+		return Buffer ? pelet::Next71Token(Buffer, Condition) : T_END;
 	}
 
 	return Buffer ? pelet::Next53Token(Buffer, Condition) : T_END;

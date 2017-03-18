@@ -38,6 +38,7 @@ extern int php54_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php55_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php56_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 extern int php70_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
+extern int php71_lint_parse(pelet::LexicalAnalyzerClass &analyzer);
 
 extern int php53_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
 extern int php54_resource_parse(pelet::LexicalAnalyzerClass &analyzer, pelet::ResourceParserObserverClass& observers);
@@ -86,6 +87,10 @@ bool pelet::ParserClass::ScanFile(const std::string& file, pelet::LintResultsCla
 			ret = php70parse(Lexer, observers) == 0;
 			results.Scope = observers.CurrentScope();
 		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
+		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -129,6 +134,10 @@ bool pelet::ParserClass::ScanFile(FILE* file, const UnicodeString& filename, pel
 			ret = php70parse(Lexer, observers) == 0;
 			results.Scope = observers.CurrentScope();
 		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
+		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -170,6 +179,10 @@ bool pelet::ParserClass::ScanString(const UnicodeString& code, pelet::LintResult
 		}
 		else if (pelet::PHP_70 == Version) {
 			ret = php70parse(Lexer, observers) == 0;
+			results.Scope = observers.CurrentScope();
+		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71parse(Lexer, observers) == 0;
 			results.Scope = observers.CurrentScope();
 		}
 		results.Error = Lexer.ParserError;
@@ -225,6 +238,9 @@ bool pelet::ParserClass::LintFile(const std::string& file, LintResultsClass& res
 		else if (pelet::PHP_70 == Version) {
 			ret = php70_lint_parse(Lexer) == 0;
 		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71_lint_parse(Lexer) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.File = file;
 		results.LineNumber = Lexer.GetLineNumber();
@@ -253,6 +269,9 @@ bool pelet::ParserClass::LintFile(FILE* file, const UnicodeString& filename, Lin
 		else if (pelet::PHP_70 == Version) {
 			ret = php70_lint_parse(Lexer) == 0;
 		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71_lint_parse(Lexer) == 0;
+		}
 		results.Error = Lexer.ParserError;
 		results.UnicodeFilename = filename;
 		///results.Scope = observers.CurrentScope();
@@ -280,6 +299,9 @@ bool pelet::ParserClass::LintString(const UnicodeString& code, LintResultsClass&
 		}
 		else if (pelet::PHP_70 == Version) {
 			ret = php70_lint_parse(Lexer) == 0;
+		}
+		else if (pelet::PHP_71 == Version) {
+			ret = php71_lint_parse(Lexer) == 0;
 		}
 		results.Error = Lexer.ParserError;
 		results.File = "";
@@ -400,6 +422,9 @@ void pelet::ParserClass::ParseExpression(UnicodeString expressionString, pelet::
 		}
 		else if (pelet::PHP_70 == Version) {
 			php70parse(Lexer, observers);
+		}
+		else if (pelet::PHP_71 == Version) {
+			php71parse(Lexer, observers);
 		}
 		Lexer.Close();
 	}
