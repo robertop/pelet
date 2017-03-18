@@ -680,8 +680,8 @@ implements_list:
 foreach_variable:
 		variable                          { $$ = observers.ExpressionMakeAsAssignmentExpression($1); }
 	|	'&' variable                      { $$ = observers.ExpressionMakeAsAssignmentExpression($2); }
-	|	T_LIST '(' array_pair_list ')'    { $$ = observers.ExpressionMakeAssignmentList($3, NULL); }
-	|	'[' array_pair_list ']'           { $$ = observers.ExpressionMakeAssignmentList($2, NULL); }
+	|	T_LIST '(' array_pair_list ')'    { $$ = observers.ExpressionMakeAssignmentList($3, observers.ExpressionNil()); }
+	|	'[' array_pair_list ']'           { $$ = observers.ExpressionMakeAssignmentList($2, observers.ExpressionNil()); }
 ;
 
 for_statement:

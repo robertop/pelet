@@ -4539,13 +4539,13 @@ yyreduce:
   case 189:
 /* Line 1802 of yacc.c  */
 #line 683 "/Users/roberto/Projects/pelet/src/Php71FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (4)].statementList), NULL); }
+    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (4)].statementList), observers.ExpressionNil()); }
     break;
 
   case 190:
 /* Line 1802 of yacc.c  */
 #line 684 "/Users/roberto/Projects/pelet/src/Php71FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(2) - (3)].statementList), NULL); }
+    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(2) - (3)].statementList), observers.ExpressionNil()); }
     break;
 
   case 191:
