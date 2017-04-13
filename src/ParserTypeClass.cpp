@@ -415,8 +415,9 @@ void pelet::AnyExpressionObserverClass::ExpressionAssignmentListFound(pelet::Ass
 		pelet::VariableClass var = expression->Destinations[i];
 		CheckExpression(&var);
 	}
-	
-	CheckExpression(expression->Expression);
+	if (expression->Expression) {
+		CheckExpression(expression->Expression);
+	}
 	OnAnyExpression(expression);
 }
 
