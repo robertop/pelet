@@ -1540,12 +1540,14 @@ void pelet::FullParserObserverClass::RecurseExpression(pelet::ExpressionClass* e
 		switch (expr->ExpressionType) {
 		case pelet::ExpressionClass::ASSIGNMENT:
 			RecurseExpression(&((pelet::AssignmentExpressionClass*)expr)->Destination);
-			if (((pelet::AssignmentListExpressionClass*)expr)->Expression) {
+			if (((pelet::AssignmentExpressionClass*)expr)->Expression) {
 				RecurseExpression(((pelet::AssignmentExpressionClass*)expr)->Expression);
 			}
 			break;
 		case pelet::ExpressionClass::ASSIGNMENT_LIST:
-			RecurseExpression(((pelet::AssignmentListExpressionClass*)expr)->Expression);
+			if (((pelet::AssignmentListExpressionClass*)expr)->Expression) {
+				RecurseExpression(((pelet::AssignmentListExpressionClass*)expr)->Expression);
+			}
 			break;
 		case pelet::ExpressionClass::ASSIGNMENT_COMPOUND:
 			RecurseExpression(((pelet::AssignmentCompoundExpressionClass*)expr)->RightOperand);

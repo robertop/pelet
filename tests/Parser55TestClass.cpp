@@ -147,4 +147,24 @@ TEST_FIXTURE(Parser55FeaturesTestClass, ParserClassStaticIndirectVariable) {
 	CHECK_VECTOR_SIZE(0, Observer.VariableExpressions);
 }
 
+TEST_FIXTURE(Parser55FeaturesTestClass, ParserListInForeach) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"$array = [2, 5];\n"
+		"foreach ($array as list($a, $b)) {\n"
+    	"  echo \"A: $a; B: $b\n\";\n"
+		"}\n"
+    );
+
+	CHECK(Parser.ScanString(code, LintResults));
+	// not capturing indirect variables for now
+	CHECK_VECTOR_SIZE(3, Observer.VariableName);
+	CHECK_UNISTR_EQUALS("$array", Observer.VariableName[0]);
+	CHECK_UNISTR_EQUALS("$a", Observer.VariableName[1]);
+	CHECK_UNISTR_EQUALS("$b", Observer.VariableName[2]);
+}
+
 }
