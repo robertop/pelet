@@ -114,4 +114,37 @@ TEST_FIXTURE(Parser55FeaturesTestClass, ExpressionsInEmpty) {
 	CHECK(Parser.LintString(code, LintResults));
 }
 
+TEST_FIXTURE(Parser55FeaturesTestClass, ParserTernaryWithDefault) {
+	Parser.SetClassObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"class MyClass {\n"
+		"  function stop($name) {\n"
+		"    $this->name = $name ?: new MyClass(); \n"
+		"  }\n"
+		"}\n"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+	CHECK_VECTOR_SIZE(1, Observer.ClassName);
+	CHECK_UNISTR_EQUALS("MyClass", Observer.ClassName[0]);
+}
+
+TEST_FIXTURE(Parser55FeaturesTestClass, ParserClassStaticIndirectVariable) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+	Parser.SetVariableObserver(&Observer);
+	UnicodeString code = _U(
+		"<?php\n"
+		"class MyClass {\n"
+		"  function stop() {\n"
+		"    $this::$appname = null;\n"
+	    "	}\n"
+	    "}\n"
+    );
+
+	CHECK(Parser.ScanString(code, LintResults));
+	// not capturing indirect variables for now
+	CHECK_VECTOR_SIZE(0, Observer.VariableExpressions);
+}
+
 }

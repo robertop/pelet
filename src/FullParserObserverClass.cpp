@@ -1418,16 +1418,20 @@ void pelet::FullParserObserverClass::RecurseExpression(pelet::ExpressionClass* e
 	if (Variable) {
 		if (pelet::ExpressionClass::ASSIGNMENT == expr->ExpressionType) {
 			pelet::AssignmentExpressionClass* assignmentExpr = (pelet::AssignmentExpressionClass*)expr;
-			Variable->VariableFound(assignmentExpr->Destination.Scope.NamespaceName, 
-				assignmentExpr->Destination.Scope.ClassName, assignmentExpr->Destination.Scope.MethodName, 
-				assignmentExpr->Destination, assignmentExpr->Expression, assignmentExpr->Destination.Comment);
+			if (!assignmentExpr->Destination.ChainList.empty() && assignmentExpr->Expression) {
+				Variable->VariableFound(assignmentExpr->Destination.Scope.NamespaceName, 
+					assignmentExpr->Destination.Scope.ClassName, assignmentExpr->Destination.Scope.MethodName, 
+					assignmentExpr->Destination, assignmentExpr->Expression, assignmentExpr->Destination.Comment);
+			}
 		}
 		else if (pelet::ExpressionClass::ASSIGNMENT_LIST == expr->ExpressionType) {
 			pelet::AssignmentListExpressionClass* assignmentListExpr = (pelet::AssignmentListExpressionClass*)expr;
 			for (size_t i = 0; i < assignmentListExpr->Destinations.size(); ++i) {
-				Variable->VariableFound(assignmentListExpr->Scope.NamespaceName, 
-					assignmentListExpr->Scope.ClassName, assignmentListExpr->Scope.MethodName, 
-					assignmentListExpr->Destinations[i], assignmentListExpr->Expression, assignmentListExpr->Destinations[i].Comment);
+				if (!assignmentListExpr->Destinations[i].ChainList.empty() && assignmentListExpr->Expression) {
+					Variable->VariableFound(assignmentListExpr->Scope.NamespaceName, 
+						assignmentListExpr->Scope.ClassName, assignmentListExpr->Scope.MethodName, 
+						assignmentListExpr->Destinations[i], assignmentListExpr->Expression, assignmentListExpr->Destinations[i].Comment);
+				}
 			}
 		}
 	}
@@ -1536,7 +1540,9 @@ void pelet::FullParserObserverClass::RecurseExpression(pelet::ExpressionClass* e
 		switch (expr->ExpressionType) {
 		case pelet::ExpressionClass::ASSIGNMENT:
 			RecurseExpression(&((pelet::AssignmentExpressionClass*)expr)->Destination);
-			RecurseExpression(((pelet::AssignmentExpressionClass*)expr)->Expression);
+			if (((pelet::AssignmentListExpressionClass*)expr)->Expression) {
+				RecurseExpression(((pelet::AssignmentExpressionClass*)expr)->Expression);
+			}
 			break;
 		case pelet::ExpressionClass::ASSIGNMENT_LIST:
 			RecurseExpression(((pelet::AssignmentListExpressionClass*)expr)->Expression);
@@ -1558,7 +1564,10 @@ void pelet::FullParserObserverClass::RecurseExpression(pelet::ExpressionClass* e
 		case pelet::ExpressionClass::TERNARY_OPERATION:
 			RecurseExpression(((pelet::TernaryOperationClass*)expr)->Expression1);
 			RecurseExpression(((pelet::TernaryOperationClass*)expr)->Expression2);
-			RecurseExpression(((pelet::TernaryOperationClass*)expr)->Expression3);
+			if (expr && ((pelet::TernaryOperationClass*)expr)->Expression3) {
+				// ternary could have a null third expression "?:"
+				RecurseExpression(((pelet::TernaryOperationClass*)expr)->Expression3);
+			}
 			break;
 		case pelet::ExpressionClass::INSTANCEOF_OPERATION:
 			RecurseExpression(((pelet::InstanceOfOperationClass*)expr)->Expression1);

@@ -24,6 +24,6 @@
  ##
 
 # script that compiles this project and runs the unit tests.
-./premake4-macosx  --icu-config=/usr/local/Cellar/icu4c/54.1/bin/icu-config gmake
+./premake4-macosx  --icu-config=/usr/local/Cellar/icu4c/58.2/bin/icu-config gmake
 cd build/gmake && make -j3
 cd ../../Debug && ./tests
