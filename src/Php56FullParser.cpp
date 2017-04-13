@@ -4831,7 +4831,7 @@ yyreduce:
   case 117:
 /* Line 1802 of yacc.c  */
 #line 686 "/Users/roberto/Projects/pelet/src/Php56FullParser.y"
-    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (4)].statementList), NULL); }
+    { (yyval.expression) = observers.ExpressionMakeAssignmentList((yyvsp[(3) - (4)].statementList), observers.ExpressionNil()); }
     break;
 
   case 118:

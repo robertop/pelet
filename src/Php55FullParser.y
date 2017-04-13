@@ -636,7 +636,7 @@ foreach_optional_arg:
 foreach_variable:
 		variable			                            { $$ = observers.ExpressionMakeAsAssignmentExpression($1); }
 	|	'&' variable		                            { $$ = observers.ExpressionMakeAsAssignmentExpression($2); }
-	|	T_LIST '('  assignment_list ')'                 { { $$ = observers.ExpressionMakeAssignmentList($3, NULL); } }
+	|	T_LIST '('  assignment_list ')'                 { { $$ = observers.ExpressionMakeAssignmentList($3, observers.ExpressionNil()); } }
 ;
 
 for_statement:
