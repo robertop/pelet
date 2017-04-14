@@ -50,13 +50,13 @@ newoption {
 
 -- these are the ICU unicode string libraries (in Win32)
 ICU_LIBS_RELEASE = {
-       "icudt", "icuin", "icuio", "icule",
+       "icudata", "icui18n", "icuio", "icule",
        "iculx", "icutu", "icuuc"
 }
 
 -- these are the ICU unicode string libraries (in Win32)
 ICU_LIBS_DEBUG = {
-       "icudt", "icuind", "icuiod", "iculed",
+       "icudatad", "icui18nd", "icuiod", "iculed",
        "iculxd", "icutud", "icuucd"
 }
 
