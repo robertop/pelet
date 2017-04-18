@@ -361,8 +361,9 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 
 	// variable arguments are also made with the ellipsis operator
 	for (size_t i = 0; i < parameters->GetCount(); i++) {
-		hasVariableArguments = parameters->IsVariadicAt(i);
-		if (hasVariableArguments) {
+		bool isVariadic = parameters->IsVariadicAt(i);
+		if (isVariadic) {
+			hasVariableArguments = true;
 			break;
 		}
 	}
@@ -407,8 +408,9 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 
 	// variable arguments are also made with the ellipsis operator
 	for (size_t i = 0; i < parameters->GetCount(); i++) {
-		hasVariableArguments = parameters->IsVariadicAt(i);
-		if (hasVariableArguments) {
+		bool isVariadic = parameters->IsVariadicAt(i);
+		if (isVariadic) {
+			hasVariableArguments = true;
 			break;
 		}
 	}
