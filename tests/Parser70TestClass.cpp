@@ -539,4 +539,82 @@ TEST_FIXTURE(Parser70FeaturesTestClass, AnyExpression) {
 	CHECK_EQUAL(pelet::ExpressionClass::ANONYMOUS_CLASS, anyObserver.Expressions[2]->ExpressionType);
 }
 
+TEST_FIXTURE(Parser70FeaturesTestClass, TraitsInNamespaces) {
+	Parser.SetClassObserver(&Observer);
+	Parser.SetClassMemberObserver(&Observer);
+	UnicodeString code = _U(
+		"namespace Traits {\n"
+		"  trait Language {"
+		"      public function smallTalk() {"
+		"          echo 'a';"
+		"      }"
+		"     public function bigTalk() {"
+		"          echo 'A';"
+		"      }"
+		"  }"
+		"  trait Sayings {"
+		"    public function smallTalk() {"
+		"      echo 'a';"
+		"    }"
+		" }"
+		"}"
+		"namespace App {"
+		"  use Traits\\Language;\n"
+		"  class Private_Talker { "
+		"   use Language { "
+		"     smallTalk as private; "
+		"     bigTalk as protected; "
+		"   }"
+		"  }"
+		"}"
+		"namespace Lib {"
+		"  use Traits\\Language;\n"
+		"  class Private_Talker { "
+		"   use Language, \\Traits\\Sayings { "
+		"     Language::smallTalk as private talk; "
+		"     \\Traits\\Sayings::smallTalk insteadof Language; "
+		"   }"
+		"  }"
+		"}"
+	);
+	CHECK(Parser.ScanString(code, LintResults));
+
+	CHECK_VECTOR_SIZE(7, Observer.TraitClassName);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[0]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[1]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[2]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[3]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[4]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[5]);
+	CHECK_UNISTR_EQUALS("Private_Talker", Observer.TraitClassName[6]);
+
+	CHECK_VECTOR_SIZE(7, Observer.TraitUsed);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitUsed[0]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitUsed[1]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitUsed[2]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitUsed[3]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Sayings", Observer.TraitUsed[4]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitUsed[5]);
+	CHECK_UNISTR_EQUALS("\\Traits\\Sayings", Observer.TraitUsed[6]);
+
+	CHECK_VECTOR_SIZE(4, Observer.TraitMethodName);
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[0]);
+	CHECK_UNISTR_EQUALS("bigTalk", Observer.TraitMethodName[1]);
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[2]);
+	CHECK_UNISTR_EQUALS("smallTalk", Observer.TraitMethodName[3]);
+
+	CHECK_VECTOR_SIZE(1, Observer.TraitInsteadOf);
+	CHECK_UNISTR_EQUALS("\\Traits\\Language", Observer.TraitInsteadOf[0]);
+
+	CHECK_VECTOR_SIZE(3, Observer.TraitAlias);
+	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[0]);
+	CHECK_UNISTR_EQUALS("", Observer.TraitAlias[1]);
+	CHECK_UNISTR_EQUALS("talk", Observer.TraitAlias[2]);
+
+	CHECK_VECTOR_SIZE(3, Observer.TraitAliasVisibility);
+	CHECK_EQUAL(pelet::TokenClass::PRIVATE, Observer.TraitAliasVisibility[0]);
+	CHECK_EQUAL(pelet::TokenClass::PROTECTED, Observer.TraitAliasVisibility[1]);
+	CHECK_EQUAL(pelet::TokenClass::PRIVATE, Observer.TraitAliasVisibility[2]);
+}
+
 }
