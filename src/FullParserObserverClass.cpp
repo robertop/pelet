@@ -2257,6 +2257,10 @@ pelet::StatementListClass* pelet::FullParserObserverClass::TraitUseMake(pelet::Q
 			pelet::TraitAliasClass* traitDeclaration = (pelet::TraitAliasClass* )traitAdaptations->At(i);
 			traitDeclaration->NamespaceName = DeclaredNamespace.ToSignature();
 			traitDeclaration->ClassName = Scope.ClassName;
+			// a trait alias only has 1 trait "usage"
+			if (!nameList->Names.empty()) {
+				traitDeclaration->TraitUsedClassName = Scope.FullyQualify(*nameList->Names[0], DeclaredNamespace);
+			}
 			list->Push(traitDeclaration);
 		} else if (pelet::StatementClass::TRAIT_INSTEADOF_DECLARATION == type) {
 			pelet::TraitInsteadOfClass* insteadOfDeclaration = (pelet::TraitInsteadOfClass* )traitAdaptations->At(i);
