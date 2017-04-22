@@ -715,6 +715,33 @@ TEST_FIXTURE(ParserStringSharedTestClass, ScanStringFunctionVariableArgsAndDefau
 	}
 }
 
+TEST_FIXTURE(ParserStringSharedTestClass, ScanStringFunctionVariableArgsInMethod) {
+	EACH_PARSER() {
+		// check that default arguments does not prevent variable argument detection.
+		Parser->SetClassMemberObserver(Observer);
+		UnicodeString code = _U(
+
+			// test variable argument detection inside a method
+			"namespace App;\n"
+			"class ActionClass {\n"
+			"  /** @param $tag */\n"
+			"  protected function do_action($tag) {\n"
+			"    $args = func_get_args();\n"
+			"  }\n"
+			"}\n"
+		);
+
+		CHECK(Parser->ScanString(code, *LintResults));
+		CHECK_UNISTR_EQUALS("", LintResults->Error);
+
+		CHECK_VECTOR_SIZE(1, Observer->MethodSignature);
+		CHECK_UNISTR_EQUALS("protected function do_action($tag)", Observer->MethodSignature[0]);
+
+		CHECK_VECTOR_SIZE(1, Observer->MethodHasVariableArguments);
+		CHECK(Observer->MethodHasVariableArguments[0]);
+	}
+}
+
 TEST_FIXTURE(ParserStringSharedTestClass, ScanStringMethodVariableArgsWithExpressionObserver) {
 	EACH_PARSER() {	
 		// when adding the expression observer an entirely different parser
