@@ -356,8 +356,24 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	pelet::FunctionCallCountObserverClass callCount;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
 	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("\\func_get_arg");
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+	callCount.FunctionName = DeclaredNamespace.ToSignature() + UNICODE_STRING_SIMPLE("\\func_get_args");
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
 	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("\\func_get_args");
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+
+	// functions that are not found in the declared namespace fallback to global
+	// function; but this parser will fully qualify global functions with
+	// the current namespace since the parser does not know which functions
+	// are global and which are not. End result is that we need to search the
+	// expressions for namespaced functions too
+	callCount.FunctionName = DeclaredNamespace.ToSignature() + UNICODE_STRING_SIMPLE("\\func_get_args");
+	hasVariableArguments |= callCount.CountCalls(functionStatements) > 0;
+
 
 	// variable arguments are also made with the ellipsis operator
 	for (size_t i = 0; i < parameters->GetCount(); i++) {
@@ -403,7 +419,22 @@ pelet::StatementListClass* pelet::FullParserObserverClass::ClassMemberSymbolMake
 	pelet::FunctionCallCountObserverClass callCount;
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_arg");
 	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("\\func_get_arg");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
+	callCount.FunctionName = DeclaredNamespace.ToSignature() + UNICODE_STRING_SIMPLE("\\func_get_arg");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
+
 	callCount.FunctionName = UNICODE_STRING_SIMPLE("func_get_args");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
+	callCount.FunctionName = UNICODE_STRING_SIMPLE("\\func_get_args");
+	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
+
+	// functions that are not found in the declared namespace fallback to global
+	// function; but this parser will fully qualify global functions with
+	// the current namespace since the parser does not know which functions
+	// are global and which are not. End result is that we need to search the
+	// expressions for namespaced functions too
+	callCount.FunctionName = DeclaredNamespace.ToSignature() + UNICODE_STRING_SIMPLE("\\func_get_args");
 	hasVariableArguments |= callCount.CountCalls(&methodBody->MethodStatements) > 0;
 
 	// variable arguments are also made with the ellipsis operator
