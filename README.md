@@ -149,6 +149,16 @@ when it enounters an artifact.
 
 See sample.cpp file for a full-fledged, running example.
 
+Generating Offline Documentation
+-------
+The library include Doxygen configuration file under docs where you can generate offline documentation.
+To make use of it, make sure that you have Doxygen installed (version 1.8.13 or above is guaranteed though older might work).
+In your terminal (or command shell) just:
+1. change to docs directory with `cd docs/`
+2. run command `doxygen DoxyFile html`
+
+The generated documentation is found at `docs/output/html`
+
 Help
 -----
 I gave pelet its name for a reason; this is a simple library.  The source is fairly well documented and 
